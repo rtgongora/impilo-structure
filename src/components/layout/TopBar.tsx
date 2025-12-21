@@ -14,6 +14,7 @@ import {
   LogOut,
   Settings,
   Bell,
+  UserPlus,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import {
@@ -26,6 +27,7 @@ import {
 import { Badge } from "@/components/ui/badge";
 import { CriticalEventButton } from "@/components/ehr/CriticalEventButton";
 import { CDSAlertBadge } from "@/components/ehr/ClinicalDecisionSupport";
+import { Link } from "react-router-dom";
 
 const iconMap: Record<string, React.ComponentType<{ className?: string }>> = {
   Boxes,
@@ -75,6 +77,20 @@ export function TopBar() {
               </Button>
             );
           })}
+          
+          <div className="h-5 w-px bg-topbar-muted/30 mx-1" />
+          
+          <Button
+            variant="ghost"
+            size="sm"
+            className="text-topbar-muted hover:text-topbar-foreground hover:bg-topbar-foreground/10"
+            asChild
+          >
+            <Link to="/registration">
+              <UserPlus className="w-4 h-4 mr-1.5" />
+              Register
+            </Link>
+          </Button>
         </nav>
       </div>
 
