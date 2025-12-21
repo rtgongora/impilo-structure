@@ -67,6 +67,31 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       .eq('user_id', userId);
   };
 
+  const createSession = async (userId: string, accessToken: string) => {
+    const deviceInfo = getDeviceInfo();
+    await supabase.from('user_sessions').insert({
+      user_id: userId,
+      session_token: accessToken.substring(0, 50), // Store partial token for identification
+      user_agent: navigator.userAgent,
+      device_info: deviceInfo,
+      is_active: true,
+    });
+  };
+
+  const endSession = async (accessToken: string) => {
+    await supabase
+      .from('user_sessions')
+      .update({ is_active: false, ended_at: new Date().toISOString() })
+      .eq('session_token', accessToken.substring(0, 50));
+  };
+
+  const getDeviceInfo = () => {
+    const ua = navigator.userAgent;
+    if (/mobile/i.test(ua)) return 'Mobile';
+    if (/tablet/i.test(ua)) return 'Tablet';
+    return 'Desktop';
+  };
+
   const refreshProfile = async () => {
     if (user) {
       const profileData = await fetchProfile(user.id);
@@ -85,9 +110,19 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         if (session?.user) {
           setTimeout(() => {
             fetchProfile(session.user.id).then(setProfile);
+            
+            // Track session on sign in
+            if (event === 'SIGNED_IN' && session.access_token) {
+              createSession(session.user.id, session.access_token);
+            }
           }, 0);
         } else {
           setProfile(null);
+        }
+        
+        // End session on sign out
+        if (event === 'SIGNED_OUT' && session?.access_token) {
+          endSession(session.access_token);
         }
         
         setLoading(false);

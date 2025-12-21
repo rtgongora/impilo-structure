@@ -4,6 +4,7 @@ import { useAuth } from '@/contexts/AuthContext';
 import { usePermissions } from '@/hooks/usePermissions';
 import { usePresence } from '@/hooks/usePresence';
 import { supabase } from '@/integrations/supabase/client';
+import SessionsManagement from '@/components/admin/SessionsManagement';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
@@ -48,7 +49,8 @@ import {
   ArrowRight,
   Download,
   CalendarIcon,
-  X
+  X,
+  Globe
 } from 'lucide-react';
 import { format, startOfDay, endOfDay, isWithinInterval } from 'date-fns';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
@@ -555,6 +557,10 @@ const AdminDashboard = () => {
               <UserCog className="w-4 h-4" />
               User Management
             </TabsTrigger>
+            <TabsTrigger value="sessions" className="flex items-center gap-2">
+              <Globe className="w-4 h-4" />
+              Sessions
+            </TabsTrigger>
             <TabsTrigger value="audit" className="flex items-center gap-2">
               <History className="w-4 h-4" />
               Audit Log
@@ -724,6 +730,10 @@ const AdminDashboard = () => {
                 )}
               </CardContent>
             </Card>
+          </TabsContent>
+
+          <TabsContent value="sessions">
+            <SessionsManagement users={users.map(u => ({ user_id: u.user_id, display_name: u.display_name }))} />
           </TabsContent>
 
           <TabsContent value="audit">
