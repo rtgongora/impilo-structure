@@ -17,10 +17,6 @@ interface EHRContextValue {
   activeMenuItem: EncounterMenuItem;
   setActiveMenuItem: (item: EncounterMenuItem) => void;
   
-  // Orders sub-menu navigation
-  activeOrdersSubItem: string;
-  setActiveOrdersSubItem: (subItem: string) => void;
-  
   // Top bar actions
   activeTopBarAction: TopBarAction | null;
   setActiveTopBarAction: (action: TopBarAction | null) => void;
@@ -48,7 +44,6 @@ const EHRContext = createContext<EHRContextValue | null>(null);
 export function EHRProvider({ children }: { children: ReactNode }) {
   const [currentEncounter] = useState<Encounter>(MOCK_ENCOUNTER);
   const [activeMenuItem, setActiveMenuItem] = useState<EncounterMenuItem>("overview");
-  const [activeOrdersSubItem, setActiveOrdersSubItem] = useState<string>("order-entry");
   const [activeTopBarAction, setActiveTopBarAction] = useState<TopBarAction | null>(null);
   const [activeWorkspace, setActiveWorkspace] = useState<WorkspaceData | null>(null);
   const [activeCriticalEvent, setActiveCriticalEvent] = useState<CriticalEventData | null>(null);
@@ -116,8 +111,6 @@ export function EHRProvider({ children }: { children: ReactNode }) {
         currentEncounter,
         activeMenuItem,
         setActiveMenuItem,
-        activeOrdersSubItem,
-        setActiveOrdersSubItem,
         activeTopBarAction,
         setActiveTopBarAction,
         activeWorkspace,
