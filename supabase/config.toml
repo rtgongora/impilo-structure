@@ -17,3 +17,6 @@ verify_jwt = true
 
 [functions.totp-management]
 verify_jwt = true
+
+[functions.send-verification-email]
+verify_jwt = false
