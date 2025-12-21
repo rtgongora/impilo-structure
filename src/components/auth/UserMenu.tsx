@@ -1,5 +1,6 @@
 import React, { useContext, useState } from 'react';
 import { AuthContext } from '@/contexts/AuthContext';
+import { usePermissions } from '@/hooks/usePermissions';
 import { Button } from '@/components/ui/button';
 import {
   DropdownMenu,
@@ -11,7 +12,7 @@ import {
 } from '@/components/ui/dropdown-menu';
 import { Avatar, AvatarFallback } from '@/components/ui/avatar';
 import { Badge } from '@/components/ui/badge';
-import { LogOut, User, Settings, Shield } from 'lucide-react';
+import { LogOut, User, Settings, Shield, UserCog } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { toast } from 'sonner';
 import {
@@ -24,8 +25,11 @@ import { PermissionsDisplay } from './PermissionsDisplay';
 
 export const UserMenu: React.FC = () => {
   const context = useContext(AuthContext);
+  const { hasPermission, isRole } = usePermissions();
   const navigate = useNavigate();
   const [showPermissions, setShowPermissions] = useState(false);
+
+  const isAdmin = hasPermission('manage_users') || isRole('admin');
 
   // Gracefully handle missing context during HMR
   if (!context) return null;
@@ -123,6 +127,19 @@ export const UserMenu: React.FC = () => {
           <Shield className="mr-2 h-4 w-4" />
           <span>View Permissions</span>
         </DropdownMenuItem>
+
+        {isAdmin && (
+          <>
+            <DropdownMenuSeparator />
+            <DropdownMenuItem 
+              className="cursor-pointer"
+              onClick={() => navigate('/admin')}
+            >
+              <UserCog className="mr-2 h-4 w-4" />
+              <span>Admin Dashboard</span>
+            </DropdownMenuItem>
+          </>
+        )}
         
         <DropdownMenuSeparator />
         
