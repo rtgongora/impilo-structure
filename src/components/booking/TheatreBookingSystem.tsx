@@ -10,7 +10,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { Skeleton } from "@/components/ui/skeleton";
-import { useTheatreData } from "@/hooks/useTheatreData";
+import { useTheatreBookings } from "@/hooks/useTheatreData";
 import { 
   Clock,
   Plus,
@@ -46,10 +46,18 @@ const TIME_SLOTS = Array.from({ length: 24 }, (_, i) => {
 });
 
 export function TheatreBookingSystem() {
-  const { bookings, stats, loading, createBooking, updateBookingStatus, refetch } = useTheatreData();
+  const { bookings, loading, createBooking, updateBookingStatus, refetch } = useTheatreBookings();
   const [selectedTheatre, setSelectedTheatre] = useState<string>("all");
   const [searchTerm, setSearchTerm] = useState("");
   const [isNewBookingOpen, setIsNewBookingOpen] = useState(false);
+
+  // Calculate stats from bookings
+  const stats = {
+    scheduled: bookings.filter(b => b.status === "scheduled").length,
+    confirmed: bookings.filter(b => b.status === "confirmed").length,
+    inProgress: bookings.filter(b => b.status === "in_progress").length,
+    completed: bookings.filter(b => b.status === "completed").length
+  };
 
   const [newBooking, setNewBooking] = useState({
     patientId: "",
@@ -58,8 +66,9 @@ export function TheatreBookingSystem() {
     surgeonId: "",
     anaesthetistId: "",
     theatreRoom: "",
-    scheduledStart: "",
-    scheduledEnd: "",
+    scheduledDate: new Date(),
+    startTime: "08:00",
+    duration: 60,
     priority: "elective",
     preOpNotes: ""
   });
@@ -101,7 +110,7 @@ export function TheatreBookingSystem() {
   };
 
   const handleCreateBooking = async () => {
-    if (!newBooking.patientId || !newBooking.procedureName || !newBooking.theatreRoom || !newBooking.scheduledStart || !newBooking.scheduledEnd) {
+    if (!newBooking.patientId || !newBooking.procedureName || !newBooking.theatreRoom || !newBooking.startTime) {
       toast.error("Please fill in all required fields");
       return;
     }
@@ -109,15 +118,15 @@ export function TheatreBookingSystem() {
     await createBooking({
       patient_id: newBooking.patientId,
       procedure_name: newBooking.procedureName,
-      procedure_code: newBooking.procedureCode || null,
-      surgeon_id: newBooking.surgeonId || null,
-      anaesthetist_id: newBooking.anaesthetistId || null,
+      procedure_code: newBooking.procedureCode || undefined,
+      surgeon_id: newBooking.surgeonId || undefined,
+      anaesthetist_id: newBooking.anaesthetistId || undefined,
       theatre_room: newBooking.theatreRoom,
-      scheduled_start: newBooking.scheduledStart,
-      scheduled_end: newBooking.scheduledEnd,
+      scheduled_date: newBooking.scheduledDate,
+      start_time: newBooking.startTime,
+      duration: newBooking.duration,
       priority: newBooking.priority,
-      pre_op_notes: newBooking.preOpNotes || null,
-      status: "scheduled"
+      pre_op_notes: newBooking.preOpNotes || undefined
     });
 
     setIsNewBookingOpen(false);
@@ -128,8 +137,9 @@ export function TheatreBookingSystem() {
       surgeonId: "",
       anaesthetistId: "",
       theatreRoom: "",
-      scheduledStart: "",
-      scheduledEnd: "",
+      scheduledDate: new Date(),
+      startTime: "08:00",
+      duration: 60,
       priority: "elective",
       preOpNotes: ""
     });
@@ -242,19 +252,29 @@ export function TheatreBookingSystem() {
                 </Select>
               </div>
               <div className="space-y-2">
-                <Label>Scheduled Start *</Label>
+                <Label>Scheduled Date *</Label>
                 <Input
-                  type="datetime-local"
-                  value={newBooking.scheduledStart}
-                  onChange={(e) => setNewBooking(prev => ({ ...prev, scheduledStart: e.target.value }))}
+                  type="date"
+                  value={newBooking.scheduledDate.toISOString().split('T')[0]}
+                  onChange={(e) => setNewBooking(prev => ({ ...prev, scheduledDate: new Date(e.target.value) }))}
                 />
               </div>
               <div className="space-y-2">
-                <Label>Scheduled End *</Label>
+                <Label>Start Time *</Label>
                 <Input
-                  type="datetime-local"
-                  value={newBooking.scheduledEnd}
-                  onChange={(e) => setNewBooking(prev => ({ ...prev, scheduledEnd: e.target.value }))}
+                  type="time"
+                  value={newBooking.startTime}
+                  onChange={(e) => setNewBooking(prev => ({ ...prev, startTime: e.target.value }))}
+                />
+              </div>
+              <div className="space-y-2">
+                <Label>Duration (minutes)</Label>
+                <Input
+                  type="number"
+                  value={newBooking.duration}
+                  onChange={(e) => setNewBooking(prev => ({ ...prev, duration: parseInt(e.target.value) || 60 }))}
+                  min={15}
+                  step={15}
                 />
               </div>
               <div className="col-span-2 space-y-2">

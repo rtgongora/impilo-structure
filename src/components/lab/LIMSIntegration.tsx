@@ -8,7 +8,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Progress } from "@/components/ui/progress";
 import { Skeleton } from "@/components/ui/skeleton";
-import { useLabData } from "@/hooks/useLabData";
+import { useLabOrders, useLabResults } from "@/hooks/useLabData";
 import {
   Search,
   FlaskConical,
@@ -45,7 +45,19 @@ const qcData = [
 ];
 
 export function LIMSIntegration() {
-  const { orders, results, stats, loading, refetch } = useLabData();
+  const { orders, loading: ordersLoading, refetch: refetchOrders } = useLabOrders();
+  const { results, loading: resultsLoading } = useLabResults();
+  const loading = ordersLoading || resultsLoading;
+  const refetch = refetchOrders;
+  
+  // Calculate stats from data
+  const stats = {
+    pending: orders.filter(o => o.status === "pending").length,
+    inProgress: orders.filter(o => o.status === "in_progress").length,
+    completed: orders.filter(o => o.status === "completed").length,
+    critical: results.filter(r => r.is_critical).length
+  };
+  
   const [activeTab, setActiveTab] = useState("orders");
   const [searchQuery, setSearchQuery] = useState("");
   const [statusFilter, setStatusFilter] = useState<string>("all");
