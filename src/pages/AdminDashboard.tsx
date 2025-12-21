@@ -7,6 +7,7 @@ import { supabase } from '@/integrations/supabase/client';
 import SessionsManagement from '@/components/admin/SessionsManagement';
 import SystemSettings from '@/components/admin/SystemSettings';
 import SecurityEvents from '@/components/admin/SecurityEvents';
+import LockedAccounts from '@/components/admin/LockedAccounts';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
@@ -883,7 +884,8 @@ const AdminDashboard = () => {
             </Card>
           </TabsContent>
 
-          <TabsContent value="security">
+          <TabsContent value="security" className="space-y-6">
+            <LockedAccounts />
             <SecurityEvents />
           </TabsContent>
 
