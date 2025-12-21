@@ -15,7 +15,11 @@ import {
   Users,
   Home,
   Building,
-  IdCard
+  IdCard,
+  Loader2,
+  BadgeCheck,
+  Copy,
+  CheckCircle2
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -24,9 +28,13 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { Progress } from "@/components/ui/progress";
+import { Badge } from "@/components/ui/badge";
 import { BiometricCapture, BiometricData, BiometricSummary, BiometricType } from "./BiometricCapture";
 import { ConsentCapture, ConsentData } from "./ConsentCapture";
 import { cn } from "@/lib/utils";
+import { supabase } from "@/integrations/supabase/client";
+import { ClientRegistryService, BiometricUtils } from "@/services/registryServices";
+import { toast } from "sonner";
 
 interface RegistrationStep {
   id: string;
@@ -42,6 +50,7 @@ const STEPS: RegistrationStep[] = [
   { id: "biometrics", title: "Biometrics", description: "Fingerprint, iris & facial", icon: Fingerprint },
   { id: "consent", title: "Consent", description: "Data & treatment consent", icon: Shield },
   { id: "review", title: "Review", description: "Confirm details", icon: FileCheck },
+  { id: "complete", title: "Complete", description: "Registration confirmed", icon: BadgeCheck },
 ];
 
 interface ClientData {
@@ -114,6 +123,14 @@ export function RegistrationWizard({ onComplete, onCancel }: RegistrationWizardP
   const [currentStep, setCurrentStep] = useState(0);
   const [clientData, setClientData] = useState<ClientData>(initialClientData);
   const [activeBiometric, setActiveBiometric] = useState<BiometricType>("fingerprint");
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [registrationResult, setRegistrationResult] = useState<{
+    patientId: string;
+    mrn: string;
+    impiloId: string;
+    mosipUin: string;
+  } | null>(null);
+  const [copiedField, setCopiedField] = useState<string | null>(null);
 
   const progress = ((currentStep + 1) / STEPS.length) * 100;
 
@@ -144,7 +161,99 @@ export function RegistrationWizard({ onComplete, onCancel }: RegistrationWizardP
     }
   };
 
-  const handleComplete = () => {
+  const copyToClipboard = async (text: string, field: string) => {
+    await navigator.clipboard.writeText(text);
+    setCopiedField(field);
+    toast.success('Copied to clipboard');
+    setTimeout(() => setCopiedField(null), 2000);
+  };
+
+  const handleComplete = async () => {
+    setIsSubmitting(true);
+    
+    try {
+      // Step 1: Create patient record in database
+      const { data: patient, error: patientError } = await supabase
+        .from('patients')
+        .insert({
+          first_name: clientData.firstName,
+          middle_name: clientData.middleName || null,
+          last_name: clientData.lastName,
+          date_of_birth: clientData.dateOfBirth,
+          gender: clientData.gender,
+          national_id: clientData.nationalId || null,
+          phone_primary: clientData.phone,
+          phone_secondary: clientData.alternatePhone || null,
+          email: clientData.email || null,
+          address_line1: clientData.address,
+          city: clientData.city,
+          province: clientData.district,
+          postal_code: clientData.postalCode || null,
+          emergency_contact_name: clientData.nokName,
+          emergency_contact_phone: clientData.nokPhone,
+          emergency_contact_relationship: clientData.nokRelationship,
+          mrn: `MRN-${Date.now()}` // Temporary, will be replaced by trigger
+        })
+        .select()
+        .single();
+
+      if (patientError) throw patientError;
+
+      // Step 2: Submit to Client Registry Service (MOSIP) and get Impilo ID
+      toast.info('Registering with Client Registry...', { 
+        description: 'Submitting to MOSIP for identity verification'
+      });
+      
+      const registryResult = await ClientRegistryService.registerClient(
+        patient.id,
+        clientData.nationalId || undefined
+      );
+
+      // Step 3: Update patient_identifiers with biometric hashes if captured
+      if (clientData.biometrics.length > 0) {
+        const biometricUpdates: Record<string, string> = {};
+        
+        clientData.biometrics.forEach(bio => {
+          const hashKey = `biometric_${bio.type}_hash`;
+          biometricUpdates[hashKey] = bio.hash;
+        });
+
+        await supabase
+          .from('patient_identifiers')
+          .update({
+            ...biometricUpdates,
+            biometric_enrolled_at: new Date().toISOString(),
+            verified_at: new Date().toISOString()
+          })
+          .eq('impilo_id', registryResult.impiloId);
+      }
+
+      // Step 4: Set the result and move to completion step
+      setRegistrationResult({
+        patientId: patient.id,
+        mrn: patient.mrn,
+        impiloId: registryResult.impiloId,
+        mosipUin: registryResult.mosipUin
+      });
+
+      toast.success('Client registered successfully!', {
+        description: `Impilo ID: ${registryResult.impiloId}`
+      });
+
+      // Move to completion step
+      setCurrentStep(STEPS.length - 1);
+      
+    } catch (error) {
+      console.error('Registration error:', error);
+      toast.error('Registration failed', {
+        description: error instanceof Error ? error.message : 'An error occurred'
+      });
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
+
+  const handleFinish = () => {
     onComplete?.(clientData);
   };
 
@@ -616,6 +725,105 @@ export function RegistrationWizard({ onComplete, onCancel }: RegistrationWizardP
             </Card>
           </div>
         );
+
+      case "complete":
+        return (
+          <div className="space-y-6 text-center py-8">
+            {registrationResult ? (
+              <>
+                <motion.div
+                  initial={{ scale: 0 }}
+                  animate={{ scale: 1 }}
+                  transition={{ type: "spring", stiffness: 200, damping: 15 }}
+                  className="w-24 h-24 mx-auto bg-emerald-500/10 rounded-full flex items-center justify-center"
+                >
+                  <CheckCircle2 className="w-14 h-14 text-emerald-500" />
+                </motion.div>
+
+                <div>
+                  <h3 className="text-2xl font-bold text-foreground mb-2">
+                    Registration Complete!
+                  </h3>
+                  <p className="text-muted-foreground">
+                    Client has been successfully registered with the Client Registry Service
+                  </p>
+                </div>
+
+                {/* Impilo ID Card */}
+                <Card className="max-w-md mx-auto bg-gradient-to-br from-primary/5 to-primary/10 border-primary/20">
+                  <CardHeader className="pb-2">
+                    <CardTitle className="text-sm text-muted-foreground">Impilo ID (Client Registry)</CardTitle>
+                  </CardHeader>
+                  <CardContent className="space-y-4">
+                    <div className="flex items-center justify-between p-3 bg-background rounded-lg border">
+                      <span className="font-mono text-xl font-bold text-primary">
+                        {registrationResult.impiloId}
+                      </span>
+                      <Button
+                        variant="ghost"
+                        size="icon"
+                        onClick={() => copyToClipboard(registrationResult.impiloId, 'impiloId')}
+                      >
+                        {copiedField === 'impiloId' ? (
+                          <Check className="w-4 h-4 text-emerald-500" />
+                        ) : (
+                          <Copy className="w-4 h-4" />
+                        )}
+                      </Button>
+                    </div>
+
+                    <div className="grid grid-cols-2 gap-3 text-sm">
+                      <div className="p-2 bg-background rounded border">
+                        <p className="text-muted-foreground text-xs">MOSIP UIN</p>
+                        <p className="font-mono text-xs">{registrationResult.mosipUin}</p>
+                      </div>
+                      <div className="p-2 bg-background rounded border">
+                        <p className="text-muted-foreground text-xs">MRN</p>
+                        <p className="font-mono text-xs">{registrationResult.mrn}</p>
+                      </div>
+                    </div>
+                  </CardContent>
+                </Card>
+
+                {/* Patient Details Summary */}
+                <div className="max-w-md mx-auto text-left">
+                  <div className="p-4 bg-muted rounded-lg space-y-2">
+                    <div className="flex items-center gap-3">
+                      <div className="w-10 h-10 rounded-full bg-primary/10 flex items-center justify-center">
+                        <User className="w-5 h-5 text-primary" />
+                      </div>
+                      <div>
+                        <p className="font-semibold">
+                          {clientData.firstName} {clientData.middleName} {clientData.lastName}
+                        </p>
+                        <p className="text-sm text-muted-foreground">
+                          {clientData.gender} • DOB: {clientData.dateOfBirth}
+                        </p>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+                {/* Registry Badges */}
+                <div className="flex items-center justify-center gap-3">
+                  <Badge variant="outline" className="text-xs">
+                    <BadgeCheck className="w-3 h-3 mr-1 text-emerald-500" />
+                    MOSIP Verified
+                  </Badge>
+                  <Badge variant="outline" className="text-xs">
+                    <Fingerprint className="w-3 h-3 mr-1 text-primary" />
+                    {clientData.biometrics.length} Biometrics Enrolled
+                  </Badge>
+                </div>
+              </>
+            ) : (
+              <div className="py-12">
+                <Loader2 className="w-12 h-12 mx-auto animate-spin text-muted-foreground" />
+                <p className="mt-4 text-muted-foreground">Processing registration...</p>
+              </div>
+            )}
+          </div>
+        );
         
       default:
         return null;
@@ -703,15 +911,33 @@ export function RegistrationWizard({ onComplete, onCancel }: RegistrationWizardP
               Previous
             </Button>
           )}
-          {currentStep < STEPS.length - 1 ? (
+          {currentStep < STEPS.length - 2 ? (
             <Button onClick={nextStep}>
               Next
               <ChevronRight className="w-4 h-4 ml-1" />
             </Button>
+          ) : currentStep === STEPS.length - 2 ? (
+            <Button 
+              onClick={handleComplete} 
+              className="bg-success hover:bg-success/90"
+              disabled={isSubmitting}
+            >
+              {isSubmitting ? (
+                <>
+                  <Loader2 className="w-4 h-4 mr-1 animate-spin" />
+                  Registering...
+                </>
+              ) : (
+                <>
+                  <Check className="w-4 h-4 mr-1" />
+                  Complete Registration
+                </>
+              )}
+            </Button>
           ) : (
-            <Button onClick={handleComplete} className="bg-success hover:bg-success/90">
+            <Button onClick={handleFinish} className="bg-primary hover:bg-primary/90">
               <Check className="w-4 h-4 mr-1" />
-              Complete Registration
+              Done
             </Button>
           )}
         </div>
