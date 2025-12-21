@@ -44,7 +44,8 @@ import {
   RefreshCw,
   History,
   Clock,
-  ArrowRight
+  ArrowRight,
+  Download
 } from 'lucide-react';
 import { format } from 'date-fns';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
@@ -243,6 +244,41 @@ const AdminDashboard = () => {
       default:
         return 'secondary';
     }
+  };
+
+  const exportAuditLogsCSV = () => {
+    if (auditLogs.length === 0) {
+      toast.error('No audit logs to export');
+      return;
+    }
+
+    const headers = ['Date', 'Time', 'Performed By', 'Target User', 'Previous Role', 'New Role', 'Action'];
+    const rows = auditLogs.map(log => [
+      format(new Date(log.created_at), 'yyyy-MM-dd'),
+      format(new Date(log.created_at), 'HH:mm:ss'),
+      log.performer_name || 'Unknown',
+      log.metadata?.target_name || log.target_name || 'Unknown',
+      log.old_value?.role || 'N/A',
+      log.new_value?.role || 'N/A',
+      log.action,
+    ]);
+
+    const csvContent = [
+      headers.join(','),
+      ...rows.map(row => row.map(cell => `"${String(cell).replace(/"/g, '""')}"`).join(','))
+    ].join('\n');
+
+    const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+    const url = URL.createObjectURL(blob);
+    const link = document.createElement('a');
+    link.setAttribute('href', url);
+    link.setAttribute('download', `audit-logs-${format(new Date(), 'yyyy-MM-dd')}.csv`);
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+    URL.revokeObjectURL(url);
+
+    toast.success('Audit logs exported successfully');
   };
 
   const filteredUsers = users.filter(u => {
@@ -471,10 +507,16 @@ const AdminDashboard = () => {
                       Track all role changes and administrative actions
                     </CardDescription>
                   </div>
-                  <Button variant="outline" size="sm" onClick={fetchAuditLogs} disabled={logsLoading}>
-                    <RefreshCw className={`w-4 h-4 mr-2 ${logsLoading ? 'animate-spin' : ''}`} />
-                    Refresh
-                  </Button>
+                  <div className="flex items-center gap-2">
+                    <Button variant="outline" size="sm" onClick={exportAuditLogsCSV} disabled={auditLogs.length === 0}>
+                      <Download className="w-4 h-4 mr-2" />
+                      Export CSV
+                    </Button>
+                    <Button variant="outline" size="sm" onClick={fetchAuditLogs} disabled={logsLoading}>
+                      <RefreshCw className={`w-4 h-4 mr-2 ${logsLoading ? 'animate-spin' : ''}`} />
+                      Refresh
+                    </Button>
+                  </div>
                 </div>
               </CardHeader>
               <CardContent>
