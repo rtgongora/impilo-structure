@@ -16,6 +16,8 @@ import Auth from "./pages/Auth";
 import ResetPassword from "./pages/ResetPassword";
 import ProfileSettings from "./pages/ProfileSettings";
 import AdminDashboard from "./pages/AdminDashboard";
+import Queue from "./pages/Queue";
+import Beds from "./pages/Beds";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -38,6 +40,21 @@ const App = () => (
             <Route path="/encounter" element={
               <ProtectedRoute>
                 <Encounter />
+              </ProtectedRoute>
+            } />
+            <Route path="/encounter/:encounterId" element={
+              <ProtectedRoute>
+                <Encounter />
+              </ProtectedRoute>
+            } />
+            <Route path="/queue" element={
+              <ProtectedRoute>
+                <Queue />
+              </ProtectedRoute>
+            } />
+            <Route path="/beds" element={
+              <ProtectedRoute>
+                <Beds />
               </ProtectedRoute>
             } />
             <Route path="/patients" element={

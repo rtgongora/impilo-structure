@@ -1,8 +1,6 @@
-import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "@/contexts/AuthContext";
 import { Button } from "@/components/ui/button";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { 
   Activity, 
@@ -10,23 +8,23 @@ import {
   ChevronRight, 
   Settings, 
   LogOut,
-  Users,
-  Bed,
-  Stethoscope
+  ArrowLeft,
 } from "lucide-react";
-import { QueueManagementLive } from "@/components/ehr/queue/QueueManagementLive";
+import { BedManagement } from "@/components/ehr/beds/BedManagement";
 
-const Queue = () => {
+const Beds = () => {
   const { profile, signOut } = useAuth();
   const navigate = useNavigate();
-  const [workspace, setWorkspace] = useState<'my-queue' | 'ward' | 'department'>('my-queue');
 
   return (
-    <div className="min-h-screen bg-background">
+    <div className="min-h-screen bg-background flex flex-col">
       {/* Header */}
       <header className="sticky top-0 z-50 border-b bg-card shadow-sm">
         <div className="container mx-auto px-4 py-3 flex items-center justify-between">
           <div className="flex items-center gap-4">
+            <Button variant="ghost" size="icon" onClick={() => navigate("/queue")}>
+              <ArrowLeft className="h-4 w-4" />
+            </Button>
             <div className="flex items-center gap-2 cursor-pointer" onClick={() => navigate("/")}>
               <Activity className="h-8 w-8 text-primary" />
               <div>
@@ -40,14 +38,10 @@ const Queue = () => {
             <Building2 className="h-4 w-4" />
             <span>Central Hospital</span>
             <ChevronRight className="h-4 w-4" />
-            <span className="text-foreground font-medium">Queue Management</span>
+            <span className="text-foreground font-medium">Bed Management</span>
           </div>
 
           <div className="flex items-center gap-4">
-            <Button variant="outline" size="sm" onClick={() => navigate("/beds")}>
-              <Bed className="h-4 w-4 mr-2" />
-              Bed Management
-            </Button>
             <Avatar className="h-9 w-9">
               <AvatarImage src={profile?.avatar_url || ""} />
               <AvatarFallback className="bg-primary text-primary-foreground text-sm">
@@ -68,39 +62,11 @@ const Queue = () => {
         </div>
       </header>
 
-      <main className="container mx-auto px-4 py-6">
-        {/* Workspace Switcher */}
-        <div className="mb-6">
-          <Tabs value={workspace} onValueChange={(v) => setWorkspace(v as typeof workspace)}>
-            <TabsList>
-              <TabsTrigger value="my-queue" className="flex items-center gap-2">
-                <Users className="h-4 w-4" />
-                My Queue
-              </TabsTrigger>
-              <TabsTrigger value="ward" className="flex items-center gap-2">
-                <Bed className="h-4 w-4" />
-                Ward View
-              </TabsTrigger>
-              <TabsTrigger value="department" className="flex items-center gap-2">
-                <Stethoscope className="h-4 w-4" />
-                Department
-              </TabsTrigger>
-            </TabsList>
-
-            <TabsContent value="my-queue" className="mt-4">
-              <QueueManagementLive workspace="my-queue" />
-            </TabsContent>
-            <TabsContent value="ward" className="mt-4">
-              <QueueManagementLive workspace="ward" wardFilter="Ward 3A" />
-            </TabsContent>
-            <TabsContent value="department" className="mt-4">
-              <QueueManagementLive workspace="department" />
-            </TabsContent>
-          </Tabs>
-        </div>
+      <main className="flex-1">
+        <BedManagement />
       </main>
     </div>
   );
 };
 
-export default Queue;
+export default Beds;
