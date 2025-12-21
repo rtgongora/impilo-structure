@@ -68,6 +68,7 @@ interface UserProfile {
   license_number: string | null;
   created_at: string;
   updated_at: string;
+  last_active_at: string | null;
 }
 
 interface AuditLog {
@@ -356,6 +357,29 @@ const AdminDashboard = () => {
     }
   };
 
+  const getActivityStatus = (lastActiveAt: string | null) => {
+    if (!lastActiveAt) return { label: 'Never', color: 'text-muted-foreground' };
+    
+    const now = new Date();
+    const lastActive = new Date(lastActiveAt);
+    const diffMs = now.getTime() - lastActive.getTime();
+    const diffMins = Math.floor(diffMs / (1000 * 60));
+    const diffHours = Math.floor(diffMs / (1000 * 60 * 60));
+    const diffDays = Math.floor(diffMs / (1000 * 60 * 60 * 24));
+
+    if (diffMins < 5) {
+      return { label: 'Online now', color: 'text-green-500' };
+    } else if (diffMins < 60) {
+      return { label: `${diffMins}m ago`, color: 'text-yellow-500' };
+    } else if (diffHours < 24) {
+      return { label: `${diffHours}h ago`, color: 'text-orange-500' };
+    } else if (diffDays < 7) {
+      return { label: `${diffDays}d ago`, color: 'text-muted-foreground' };
+    } else {
+      return { label: format(lastActive, 'dd MMM'), color: 'text-muted-foreground' };
+    }
+  };
+
   // Filter audit logs by date range
   const filteredAuditLogs = auditLogs.filter(log => {
     const logDate = new Date(log.created_at);
@@ -601,6 +625,7 @@ const AdminDashboard = () => {
                         </TableHead>
                         <TableHead>Name</TableHead>
                         <TableHead>Role</TableHead>
+                        <TableHead>Last Active</TableHead>
                         <TableHead>Specialty</TableHead>
                         <TableHead>Department</TableHead>
                         <TableHead>Joined</TableHead>
@@ -610,7 +635,7 @@ const AdminDashboard = () => {
                     <TableBody>
                       {filteredUsers.length === 0 ? (
                         <TableRow>
-                          <TableCell colSpan={7} className="text-center py-8 text-muted-foreground">
+                          <TableCell colSpan={8} className="text-center py-8 text-muted-foreground">
                             No users found
                           </TableCell>
                         </TableRow>
@@ -634,6 +659,16 @@ const AdminDashboard = () => {
                               <Badge variant={getRoleBadgeVariant(userProfile.role) as any}>
                                 {userProfile.role.toUpperCase()}
                               </Badge>
+                            </TableCell>
+                            <TableCell>
+                              {(() => {
+                                const status = getActivityStatus(userProfile.last_active_at);
+                                return (
+                                  <span className={`text-sm font-medium ${status.color}`}>
+                                    {status.label}
+                                  </span>
+                                );
+                              })()}
                             </TableCell>
                             <TableCell className="text-sm">
                               {userProfile.specialty || '-'}

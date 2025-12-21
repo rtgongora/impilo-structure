@@ -60,6 +60,13 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     return data as Profile | null;
   };
 
+  const updateLastActive = async (userId: string) => {
+    await supabase
+      .from('profiles')
+      .update({ last_active_at: new Date().toISOString() })
+      .eq('user_id', userId);
+  };
+
   const refreshProfile = async () => {
     if (user) {
       const profileData = await fetchProfile(user.id);
@@ -94,6 +101,8 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       
       if (session?.user) {
         fetchProfile(session.user.id).then(setProfile);
+        // Update last active on session load
+        updateLastActive(session.user.id);
       }
       
       setLoading(false);
