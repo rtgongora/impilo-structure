@@ -6,6 +6,7 @@ import { BrowserRouter, Routes, Route } from "react-router-dom";
 import { AuthProvider } from "@/contexts/AuthContext";
 import { WorkspaceProvider } from "@/contexts/WorkspaceContext";
 import { ProtectedRoute } from "@/components/auth/ProtectedRoute";
+import ModuleHome from "./pages/ModuleHome";
 import Dashboard from "./pages/Dashboard";
 import Encounter from "./pages/Encounter";
 import Patients from "./pages/Patients";
@@ -48,7 +49,7 @@ const App = () => (
             <Route path="/reset-password" element={<ResetPassword />} />
             <Route path="/" element={
               <ProtectedRoute>
-                <Dashboard />
+                <ModuleHome />
               </ProtectedRoute>
             } />
             <Route path="/dashboard" element={
