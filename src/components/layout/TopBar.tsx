@@ -8,6 +8,7 @@ import {
   Receipt,
   AlertTriangle,
   User,
+  Users,
   LogOut,
   Settings,
   Bell,
@@ -29,6 +30,7 @@ const iconMap: Record<string, React.ComponentType<{ className?: string }>> = {
   Route,
   Package,
   Receipt,
+  Users,
 };
 
 export function TopBar() {
