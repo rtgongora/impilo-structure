@@ -101,7 +101,8 @@ const Dashboard = () => {
     { label: "Stock Management", icon: Package, path: "/stock", description: "Inventory & supplies" },
     { label: "Consumables", icon: Syringe, path: "/consumables", description: "Track consumable usage" },
     { label: "Charges & Billing", icon: DollarSign, path: "/charges", description: "Encounter charges" },
-    { label: "Reports", icon: BarChart3, path: "#", description: "Analytics & dashboards" },
+    { label: "Reports", icon: BarChart3, path: "/reports", description: "Analytics & dashboards" },
+    { label: "Odoo ERP", icon: Building2, path: "/odoo", description: "ERP integration" },
     { label: "Administration", icon: Building2, path: "/admin", description: "System settings" },
     { label: "Patient Portal", icon: UserPlus, path: "/portal", description: "Patient self-service" },
   ];
