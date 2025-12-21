@@ -101,9 +101,38 @@ const Auth = () => {
     setIsSubmitting(false);
   };
 
-  const handleTwoFactorVerified = () => {
+  const handleTwoFactorVerified = async (trustDevice?: boolean) => {
+    if (trustDevice) {
+      // Store trusted device
+      try {
+        const { data: { user } } = await supabase.auth.getUser();
+        if (user) {
+          const deviceFingerprint = btoa(navigator.userAgent + navigator.language + screen.width + screen.height);
+          await supabase.from('trusted_devices').insert({
+            user_id: user.id,
+            device_fingerprint: deviceFingerprint,
+            device_name: getDeviceName(),
+            user_agent: navigator.userAgent,
+            ip_address: null // Will be set by server if needed
+          });
+        }
+      } catch (error) {
+        console.error('Failed to save trusted device:', error);
+      }
+    }
     toast.success('Welcome back!');
     navigate('/');
+  };
+
+  const getDeviceName = () => {
+    const ua = navigator.userAgent;
+    if (ua.includes('Windows')) return 'Windows PC';
+    if (ua.includes('Mac')) return 'Mac';
+    if (ua.includes('Linux')) return 'Linux PC';
+    if (ua.includes('iPhone')) return 'iPhone';
+    if (ua.includes('iPad')) return 'iPad';
+    if (ua.includes('Android')) return 'Android Device';
+    return 'Unknown Device';
   };
 
   const handleTwoFactorCancel = async () => {
