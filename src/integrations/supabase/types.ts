@@ -341,6 +341,96 @@ export type Database = {
           },
         ]
       }
+      clinical_orders: {
+        Row: {
+          cancel_reason: string | null
+          cancelled_at: string | null
+          cancelled_by: string | null
+          category: string | null
+          completed_at: string | null
+          completed_by: string | null
+          created_at: string
+          details: Json | null
+          encounter_id: string | null
+          id: string
+          instructions: string | null
+          order_name: string
+          order_type: string
+          ordered_at: string
+          ordered_by: string | null
+          patient_id: string
+          priority: string
+          quantity: number
+          status: string
+          updated_at: string
+          verified_at: string | null
+          verified_by: string | null
+        }
+        Insert: {
+          cancel_reason?: string | null
+          cancelled_at?: string | null
+          cancelled_by?: string | null
+          category?: string | null
+          completed_at?: string | null
+          completed_by?: string | null
+          created_at?: string
+          details?: Json | null
+          encounter_id?: string | null
+          id?: string
+          instructions?: string | null
+          order_name: string
+          order_type: string
+          ordered_at?: string
+          ordered_by?: string | null
+          patient_id: string
+          priority?: string
+          quantity?: number
+          status?: string
+          updated_at?: string
+          verified_at?: string | null
+          verified_by?: string | null
+        }
+        Update: {
+          cancel_reason?: string | null
+          cancelled_at?: string | null
+          cancelled_by?: string | null
+          category?: string | null
+          completed_at?: string | null
+          completed_by?: string | null
+          created_at?: string
+          details?: Json | null
+          encounter_id?: string | null
+          id?: string
+          instructions?: string | null
+          order_name?: string
+          order_type?: string
+          ordered_at?: string
+          ordered_by?: string | null
+          patient_id?: string
+          priority?: string
+          quantity?: number
+          status?: string
+          updated_at?: string
+          verified_at?: string | null
+          verified_by?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "clinical_orders_encounter_id_fkey"
+            columns: ["encounter_id"]
+            isOneToOne: false
+            referencedRelation: "encounters"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "clinical_orders_patient_id_fkey"
+            columns: ["patient_id"]
+            isOneToOne: false
+            referencedRelation: "patients"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       consumable_usage: {
         Row: {
           administered_at: string

@@ -17,12 +17,14 @@ import {
   Stethoscope,
   Zap,
   Star,
-  Clock,
   Send,
   Trash2,
   Package,
+  Loader2,
 } from "lucide-react";
 import { toast } from "sonner";
+import { supabase } from "@/integrations/supabase/client";
+import { useAuth } from "@/contexts/AuthContext";
 
 interface OrderItem {
   id: string;
@@ -104,10 +106,17 @@ const priorityConfig = {
   stat: { color: "bg-destructive/10 text-destructive", label: "STAT" },
 };
 
-export function OrderEntrySystem() {
+interface OrderEntrySystemProps {
+  patientId?: string;
+  encounterId?: string;
+}
+
+export function OrderEntrySystem({ patientId, encounterId }: OrderEntrySystemProps) {
+  const { user } = useAuth();
   const [cart, setCart] = useState<OrderItem[]>([]);
   const [searchQuery, setSearchQuery] = useState("");
   const [activeTab, setActiveTab] = useState("all");
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
   const addToCart = (item: Omit<OrderItem, "id" | "quantity">) => {
     const existingIndex = cart.findIndex((c) => c.name === item.name);
@@ -149,9 +158,43 @@ export function OrderEntrySystem() {
     setCart([]);
   };
 
-  const submitOrders = () => {
-    toast.success(`${cart.length} orders submitted successfully`);
-    setCart([]);
+  const submitOrders = async () => {
+    if (!patientId) {
+      toast.error("No patient selected. Orders saved locally only.");
+      setCart([]);
+      return;
+    }
+
+    setIsSubmitting(true);
+    try {
+      const ordersToInsert = cart.map((item) => ({
+        patient_id: patientId,
+        encounter_id: encounterId || null,
+        order_type: item.type,
+        order_name: item.name,
+        category: item.category,
+        quantity: item.quantity,
+        priority: item.priority,
+        ordered_by: user?.id || null,
+        details: {
+          frequency: item.frequency,
+        },
+      }));
+
+      const { error } = await supabase
+        .from("clinical_orders")
+        .insert(ordersToInsert);
+
+      if (error) throw error;
+
+      toast.success(`${cart.length} orders submitted successfully`);
+      setCart([]);
+    } catch (error) {
+      console.error("Error submitting orders:", error);
+      toast.error("Failed to submit orders. Please try again.");
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   const filteredItems = COMMON_ITEMS.filter((item) => {
@@ -359,9 +402,13 @@ export function OrderEntrySystem() {
                   <span>Total Items:</span>
                   <span className="font-medium">{cartTotal}</span>
                 </div>
-                <Button className="w-full" onClick={submitOrders}>
-                  <Send className="h-4 w-4 mr-2" />
-                  Submit Orders
+                <Button className="w-full" onClick={submitOrders} disabled={isSubmitting}>
+                  {isSubmitting ? (
+                    <Loader2 className="h-4 w-4 mr-2 animate-spin" />
+                  ) : (
+                    <Send className="h-4 w-4 mr-2" />
+                  )}
+                  {isSubmitting ? "Submitting..." : "Submit Orders"}
                 </Button>
               </div>
             </>
