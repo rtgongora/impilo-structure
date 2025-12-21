@@ -3,6 +3,7 @@ import { useEHR } from "@/contexts/EHRContext";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { X, Boxes, Route, Package, Receipt, Plus } from "lucide-react";
+import { QueueManagement } from "./queue/QueueManagement";
 
 interface TopBarPanelProps {
   action: TopBarAction;
@@ -40,6 +41,8 @@ export function TopBarPanel({ action }: TopBarPanelProps) {
 
   const renderContent = () => {
     switch (action) {
+      case "queue":
+        return <QueueManagement />;
       case "workspaces":
         return (
           <div className="grid grid-cols-3 gap-4">
