@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '@/contexts/AuthContext';
+import { supabase } from '@/integrations/supabase/client';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
@@ -8,17 +9,22 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { toast } from 'sonner';
-import { Stethoscope, Shield, Users } from 'lucide-react';
+import { Stethoscope, Shield, Users, ArrowLeft, Mail } from 'lucide-react';
 import { z } from 'zod';
 
 const emailSchema = z.string().email('Please enter a valid email address');
 const passwordSchema = z.string().min(6, 'Password must be at least 6 characters');
 
+type AuthView = 'main' | 'forgot-password';
+
 const Auth = () => {
   const navigate = useNavigate();
   const { user, signIn, signUp, loading } = useAuth();
   
+  const [view, setView] = useState<AuthView>('main');
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [resetEmailSent, setResetEmailSent] = useState(false);
+  const [forgotEmail, setForgotEmail] = useState('');
   
   // Login form state
   const [loginEmail, setLoginEmail] = useState('');
@@ -65,6 +71,49 @@ const Auth = () => {
     } else {
       toast.success('Welcome back!');
       navigate('/');
+    }
+    
+    setIsSubmitting(false);
+  };
+
+  const handleForgotPassword = async (e: React.FormEvent) => {
+    e.preventDefault();
+    
+    try {
+      emailSchema.parse(forgotEmail);
+    } catch (err) {
+      if (err instanceof z.ZodError) {
+        toast.error(err.errors[0].message);
+        return;
+      }
+    }
+    
+    setIsSubmitting(true);
+    
+    const redirectUrl = `${window.location.origin}/reset-password`;
+    
+    const { error } = await supabase.auth.resetPasswordForEmail(forgotEmail, {
+      redirectTo: redirectUrl,
+    });
+    
+    if (error) {
+      toast.error(error.message);
+    } else {
+      // Call edge function to send custom email
+      try {
+        const { data: { session } } = await supabase.auth.getSession();
+        await supabase.functions.invoke('send-password-reset', {
+          body: { 
+            email: forgotEmail, 
+            resetLink: redirectUrl 
+          }
+        });
+      } catch (emailError) {
+        console.log('Custom email sending failed, using default Supabase email');
+      }
+      
+      setResetEmailSent(true);
+      toast.success('Password reset email sent!');
     }
     
     setIsSubmitting(false);
@@ -120,6 +169,84 @@ const Auth = () => {
     return (
       <div className="min-h-screen flex items-center justify-center bg-background">
         <div className="animate-pulse text-muted-foreground">Loading...</div>
+      </div>
+    );
+  }
+
+  if (view === 'forgot-password') {
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-background via-muted to-background p-4">
+        <Card className="w-full max-w-md shadow-lg border-border/50">
+          <CardHeader className="text-center space-y-4">
+            <div className="mx-auto w-16 h-16 rounded-full bg-primary/10 flex items-center justify-center">
+              <Mail className="w-8 h-8 text-primary" />
+            </div>
+            <div>
+              <CardTitle className="text-2xl font-bold text-foreground">Reset Password</CardTitle>
+              <CardDescription className="text-muted-foreground">
+                {resetEmailSent 
+                  ? 'Check your email for the reset link' 
+                  : 'Enter your email to receive a reset link'}
+              </CardDescription>
+            </div>
+          </CardHeader>
+          
+          <CardContent>
+            {resetEmailSent ? (
+              <div className="space-y-4">
+                <p className="text-sm text-muted-foreground text-center">
+                  We've sent a password reset link to <strong>{forgotEmail}</strong>. 
+                  Check your inbox and follow the instructions.
+                </p>
+                <Button 
+                  variant="outline" 
+                  className="w-full"
+                  onClick={() => {
+                    setView('main');
+                    setResetEmailSent(false);
+                    setForgotEmail('');
+                  }}
+                >
+                  <ArrowLeft className="w-4 h-4 mr-2" />
+                  Back to Sign In
+                </Button>
+              </div>
+            ) : (
+              <form onSubmit={handleForgotPassword} className="space-y-4">
+                <div className="space-y-2">
+                  <Label htmlFor="forgot-email">Email</Label>
+                  <Input
+                    id="forgot-email"
+                    type="email"
+                    placeholder="doctor@hospital.com"
+                    value={forgotEmail}
+                    onChange={(e) => setForgotEmail(e.target.value)}
+                    required
+                    autoComplete="email"
+                  />
+                </div>
+                
+                <Button 
+                  type="submit" 
+                  className="w-full" 
+                  disabled={isSubmitting}
+                >
+                  {isSubmitting ? 'Sending...' : 'Send Reset Link'}
+                </Button>
+                
+                <Button 
+                  type="button"
+                  variant="outline" 
+                  className="w-full"
+                  onClick={() => setView('main')}
+                >
+                  <ArrowLeft className="w-4 h-4 mr-2" />
+                  Back to Sign In
+                </Button>
+              </form>
+            )}
+          </CardContent>
+        </Card>
       </div>
     );
   }
@@ -186,6 +313,15 @@ const Auth = () => {
                   disabled={isSubmitting}
                 >
                   {isSubmitting ? 'Signing in...' : 'Sign In'}
+                </Button>
+                
+                <Button 
+                  type="button"
+                  variant="link" 
+                  className="w-full text-muted-foreground"
+                  onClick={() => setView('forgot-password')}
+                >
+                  Forgot your password?
                 </Button>
               </form>
             </TabsContent>
