@@ -14,3 +14,6 @@ verify_jwt = false
 
 [functions.send-security-notification]
 verify_jwt = true
+
+[functions.totp-management]
+verify_jwt = true
