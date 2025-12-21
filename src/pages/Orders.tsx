@@ -58,6 +58,10 @@ const Orders = () => {
                   <Syringe className="h-4 w-4 mr-2" />
                   Administer Meds
                 </TabsTrigger>
+                <TabsTrigger value="timeline" disabled={!selectedPatient}>
+                  <Timer className="h-4 w-4 mr-2" />
+                  Med Timeline
+                </TabsTrigger>
               </TabsList>
 
               <TabsContent value="new">
@@ -85,6 +89,22 @@ const Orders = () => {
                     <Syringe className="h-12 w-12 mx-auto mb-3 opacity-50" />
                     <p>No active encounter for this patient</p>
                     <p className="text-sm">Medication administration requires an active encounter</p>
+                  </div>
+                )}
+              </TabsContent>
+
+              <TabsContent value="timeline">
+                {selectedPatient && selectedPatient.encounterId && (
+                  <MedicationTimeline
+                    patientId={selectedPatient.id}
+                    encounterId={selectedPatient.encounterId}
+                  />
+                )}
+                {selectedPatient && !selectedPatient.encounterId && (
+                  <div className="text-center py-8 text-muted-foreground">
+                    <Timer className="h-12 w-12 mx-auto mb-3 opacity-50" />
+                    <p>No active encounter for this patient</p>
+                    <p className="text-sm">Medication timeline requires an active encounter</p>
                   </div>
                 )}
               </TabsContent>
