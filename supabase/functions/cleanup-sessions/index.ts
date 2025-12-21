@@ -6,8 +6,8 @@ const corsHeaders = {
   "Access-Control-Allow-Headers": "authorization, x-client-info, apikey, content-type",
 };
 
-// Configurable timeout in minutes (default 30 minutes)
-const SESSION_TIMEOUT_MINUTES = 30;
+// Default timeout in minutes if not configured
+const DEFAULT_SESSION_TIMEOUT_MINUTES = 30;
 
 serve(async (req) => {
   if (req.method === "OPTIONS") {
@@ -20,9 +20,29 @@ serve(async (req) => {
       Deno.env.get("SUPABASE_SERVICE_ROLE_KEY") ?? ""
     );
 
+    // Fetch the configurable timeout from system_settings
+    let timeoutMinutes = DEFAULT_SESSION_TIMEOUT_MINUTES;
+    
+    const { data: settingsData, error: settingsError } = await supabaseClient
+      .from("system_settings")
+      .select("value")
+      .eq("key", "session_timeout_minutes")
+      .maybeSingle();
+
+    if (settingsError) {
+      console.error("Error fetching settings:", settingsError);
+    } else if (settingsData?.value) {
+      const parsedValue = parseInt(String(settingsData.value), 10);
+      if (!isNaN(parsedValue) && parsedValue > 0) {
+        timeoutMinutes = parsedValue;
+      }
+    }
+
+    console.log(`Using session timeout of ${timeoutMinutes} minutes`);
+
     // Calculate the cutoff time
     const cutoffTime = new Date();
-    cutoffTime.setMinutes(cutoffTime.getMinutes() - SESSION_TIMEOUT_MINUTES);
+    cutoffTime.setMinutes(cutoffTime.getMinutes() - timeoutMinutes);
     
     console.log(`Cleaning up sessions inactive since: ${cutoffTime.toISOString()}`);
 
@@ -69,7 +89,7 @@ serve(async (req) => {
       JSON.stringify({ 
         success: true, 
         expiredSessionsCount: expiredCount,
-        timeoutMinutes: SESSION_TIMEOUT_MINUTES,
+        timeoutMinutes: timeoutMinutes,
         cutoffTime: cutoffTime.toISOString()
       }),
       { headers: { ...corsHeaders, "Content-Type": "application/json" } }
