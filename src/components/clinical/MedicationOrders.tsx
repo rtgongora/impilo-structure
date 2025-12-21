@@ -14,7 +14,7 @@ import { Switch } from "@/components/ui/switch";
 import { toast } from "sonner";
 import { Pill, Plus, Play, Pause, XCircle, CheckCircle, Loader2 } from "lucide-react";
 import { format } from "date-fns";
-
+import { generateMedicationSchedule, parseDuration } from "@/utils/medicationScheduleGenerator";
 interface MedicationFormData {
   medication_name: string;
   generic_name: string;
@@ -123,7 +123,7 @@ export function MedicationOrders({ encounterId, patientId: propPatientId, existi
   const onSubmit = async (data: MedicationFormData) => {
     setSaving(true);
     try {
-      const { error } = await supabase
+      const { data: newOrder, error } = await supabase
         .from('medication_orders')
         .insert({
           encounter_id: encounterId,
@@ -140,10 +140,28 @@ export function MedicationOrders({ encounterId, patientId: propPatientId, existi
           is_prn: data.is_prn,
           prn_reason: data.is_prn ? data.prn_reason : null,
           status: 'active',
-        });
+        })
+        .select('id')
+        .single();
       
       if (error) throw error;
-      toast.success('Medication order created successfully');
+
+      // Auto-generate medication schedule times
+      if (newOrder && !data.is_prn) {
+        try {
+          await generateMedicationSchedule({
+            medicationOrderId: newOrder.id,
+            frequency: data.frequency,
+            startDate: new Date(),
+            durationDays: parseDuration(data.duration),
+          });
+        } catch (scheduleError) {
+          console.error('Failed to generate schedule:', scheduleError);
+          // Don't fail the order creation if schedule generation fails
+        }
+      }
+
+      toast.success('Medication order created with schedule');
       reset();
       setDialogOpen(false);
       onOrderSaved?.();
