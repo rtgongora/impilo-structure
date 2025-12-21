@@ -67,6 +67,14 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       .eq('user_id', userId);
   };
 
+  const updateSessionActivity = async (sessionToken: string) => {
+    await supabase
+      .from('user_sessions')
+      .update({ last_activity_at: new Date().toISOString() })
+      .eq('session_token', sessionToken)
+      .eq('is_active', true);
+  };
+
   const createSession = async (userId: string, accessToken: string) => {
     const deviceInfo = getDeviceInfo();
     const { data: sessionData, error } = await supabase.from('user_sessions').insert({
@@ -145,12 +153,28 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         fetchProfile(session.user.id).then(setProfile);
         // Update last active on session load
         updateLastActive(session.user.id);
+        // Update session activity
+        if (session.access_token) {
+          updateSessionActivity(session.access_token.substring(0, 50));
+        }
       }
       
       setLoading(false);
     });
 
-    return () => subscription.unsubscribe();
+    // Set up activity tracking - update session every 5 minutes
+    const activityInterval = setInterval(() => {
+      supabase.auth.getSession().then(({ data: { session } }) => {
+        if (session?.access_token) {
+          updateSessionActivity(session.access_token.substring(0, 50));
+        }
+      });
+    }, 5 * 60 * 1000); // 5 minutes
+
+    return () => {
+      subscription.unsubscribe();
+      clearInterval(activityInterval);
+    };
   }, []);
 
   const signUp = async (
