@@ -183,6 +183,7 @@ export type Database = {
           ip_address: string | null
           is_active: boolean
           last_activity_at: string
+          location: string | null
           session_token: string
           started_at: string
           user_agent: string | null
@@ -195,6 +196,7 @@ export type Database = {
           ip_address?: string | null
           is_active?: boolean
           last_activity_at?: string
+          location?: string | null
           session_token: string
           started_at?: string
           user_agent?: string | null
@@ -207,6 +209,7 @@ export type Database = {
           ip_address?: string | null
           is_active?: boolean
           last_activity_at?: string
+          location?: string | null
           session_token?: string
           started_at?: string
           user_agent?: string | null

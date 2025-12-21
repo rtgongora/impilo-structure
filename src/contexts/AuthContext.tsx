@@ -69,13 +69,20 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
 
   const createSession = async (userId: string, accessToken: string) => {
     const deviceInfo = getDeviceInfo();
-    await supabase.from('user_sessions').insert({
+    const { data: sessionData, error } = await supabase.from('user_sessions').insert({
       user_id: userId,
-      session_token: accessToken.substring(0, 50), // Store partial token for identification
+      session_token: accessToken.substring(0, 50),
       user_agent: navigator.userAgent,
       device_info: deviceInfo,
       is_active: true,
-    });
+    }).select('id').single();
+    
+    // Call edge function to geolocate and update session
+    if (sessionData?.id) {
+      supabase.functions.invoke('geolocate-ip', {
+        body: { sessionId: sessionData.id }
+      }).catch(err => console.log('Geolocation update:', err));
+    }
   };
 
   const endSession = async (accessToken: string) => {
