@@ -10,7 +10,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { Separator } from "@/components/ui/separator";
 import { Skeleton } from "@/components/ui/skeleton";
-import { usePaymentData } from "@/hooks/usePaymentData";
+import { usePaymentTransactions, useInsuranceClaims } from "@/hooks/usePaymentData";
 import { 
   CreditCard,
   Smartphone,
@@ -41,7 +41,22 @@ const PAYMENT_METHODS = [
 const MOBILE_PROVIDERS = ["EcoCash", "OneMoney", "InnBucks", "Telecash"];
 
 export function PaymentGateway() {
-  const { transactions, claims, stats, loading, createTransaction, refetch } = usePaymentData();
+  const { transactions, loading: txLoading, todayTotal, pendingTotal, createTransaction, refetch: refetchTx } = usePaymentTransactions();
+  const { claims, loading: claimsLoading, refetch: refetchClaims } = useInsuranceClaims();
+  const loading = txLoading || claimsLoading;
+  const refetch = () => { refetchTx(); refetchClaims(); };
+  
+  // Calculate stats
+  const stats = {
+    todayTotal,
+    pendingTotal,
+    pendingClaims: claims.filter(c => c.status === "pending" || c.status === "submitted").length,
+    transactionCount: transactions.filter(t => {
+      const today = new Date().toDateString();
+      return new Date(t.created_at).toDateString() === today;
+    }).length
+  };
+  
   const [searchTerm, setSearchTerm] = useState("");
   const [filterMethod, setFilterMethod] = useState<string>("all");
   const [filterStatus, setFilterStatus] = useState<string>("all");
@@ -105,8 +120,7 @@ export function PaymentGateway() {
       amount: parseFloat(paymentForm.amount),
       payment_method: paymentForm.method,
       transaction_type: "payment",
-      notes: paymentForm.description || null,
-      status: paymentForm.method === "cash" ? "completed" : "pending"
+      notes: paymentForm.description || undefined
     });
 
     setIsPaymentOpen(false);

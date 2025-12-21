@@ -27,16 +27,16 @@ import { format } from "date-fns";
 import { cn } from "@/lib/utils";
 import { TreatmentGoals } from "./TreatmentGoals";
 import { NursingInterventions } from "./NursingInterventions";
-import { useCarePlanData } from "@/hooks/useCarePlanData";
+import { useCarePlans, CarePlanItem } from "@/hooks/useCarePlanData";
 
 export function NursingCarePlan() {
-  const { carePlans, carePlanItems, loading, refetch } = useCarePlanData();
+  const { carePlans, loading, refetch } = useCarePlans();
   const [activeTab, setActiveTab] = useState("overview");
   const [diagnosesExpanded, setDiagnosesExpanded] = useState(false);
 
   // Get the first active care plan for display
   const activePlan = carePlans.find(p => p.status === "active") || carePlans[0];
-  const planItems = activePlan ? carePlanItems.filter(item => item.care_plan_id === activePlan.id) : [];
+  const planItems: CarePlanItem[] = activePlan?.items || [];
 
   // Calculate progress from items
   const completedItems = planItems.filter(item => item.status === "completed").length;
