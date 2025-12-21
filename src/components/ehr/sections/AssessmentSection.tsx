@@ -19,11 +19,15 @@ import {
   CheckCircle2,
   Plus,
   Thermometer,
+  TestTube,
+  Clock,
 } from "lucide-react";
 import { format } from "date-fns";
 import { MOCK_TRIAGE, MOCK_HISTORY, MOCK_VITALS } from "@/data/mockClinicalData";
 import type { TriageCategory } from "@/types/clinical";
 import { VitalsRecorder } from "@/components/clinical/VitalsRecorder";
+import { LabResultsSystem } from "@/components/lab/LabResultsSystem";
+import { PatientTimeline } from "@/components/timeline/PatientTimeline";
 import { useParams } from "react-router-dom";
 
 const triageColors: Record<TriageCategory, { bg: string; border: string; text: string; label: string }> = {
@@ -397,14 +401,14 @@ export function AssessmentSection() {
 
   return (
     <Tabs defaultValue="triage" className="space-y-4">
-      <TabsList className="grid w-full grid-cols-4">
+      <TabsList className="grid w-full grid-cols-6">
         <TabsTrigger value="triage" className="flex items-center gap-2">
           <AlertTriangle className="w-4 h-4" />
-          Triage & Vitals
+          Triage
         </TabsTrigger>
         <TabsTrigger value="record-vitals" className="flex items-center gap-2">
           <Thermometer className="w-4 h-4" />
-          Record Vitals
+          Vitals
         </TabsTrigger>
         <TabsTrigger value="history" className="flex items-center gap-2">
           <FileText className="w-4 h-4" />
@@ -412,7 +416,15 @@ export function AssessmentSection() {
         </TabsTrigger>
         <TabsTrigger value="examination" className="flex items-center gap-2">
           <Stethoscope className="w-4 h-4" />
-          Examination
+          Exam
+        </TabsTrigger>
+        <TabsTrigger value="labs" className="flex items-center gap-2">
+          <TestTube className="w-4 h-4" />
+          Labs
+        </TabsTrigger>
+        <TabsTrigger value="timeline" className="flex items-center gap-2">
+          <Clock className="w-4 h-4" />
+          Timeline
         </TabsTrigger>
       </TabsList>
 
@@ -438,6 +450,14 @@ export function AssessmentSection() {
 
       <TabsContent value="examination">
         <ExaminationPanel />
+      </TabsContent>
+
+      <TabsContent value="labs">
+        <LabResultsSystem />
+      </TabsContent>
+
+      <TabsContent value="timeline">
+        <PatientTimeline />
       </TabsContent>
     </Tabs>
   );
