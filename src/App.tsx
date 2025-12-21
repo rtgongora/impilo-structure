@@ -23,6 +23,9 @@ import Pharmacy from "./pages/Pharmacy";
 import Theatre from "./pages/Theatre";
 import Payments from "./pages/Payments";
 import Portal from "./pages/Portal";
+import PACS from "./pages/PACS";
+import LIMS from "./pages/LIMS";
+import Install from "./pages/Install";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -117,7 +120,18 @@ const App = () => (
                 <Payments />
               </ProtectedRoute>
             } />
+            <Route path="/pacs" element={
+              <ProtectedRoute>
+                <PACS />
+              </ProtectedRoute>
+            } />
+            <Route path="/lims" element={
+              <ProtectedRoute>
+                <LIMS />
+              </ProtectedRoute>
+            } />
             <Route path="/portal" element={<Portal />} />
+            <Route path="/install" element={<Install />} />
             {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
             <Route path="*" element={<NotFound />} />
           </Routes>
