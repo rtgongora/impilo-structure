@@ -21,7 +21,7 @@ interface AddPatientDialogProps {
     visitType: VisitType;
     appointmentTime?: string;
   }) => void;
-  queueType: 'opd' | 'casualty';
+  queueType: 'opd' | 'casualty' | 'inpatient';
 }
 
 export function AddPatientDialog({ open, onOpenChange, onAdd, queueType }: AddPatientDialogProps) {
@@ -33,7 +33,7 @@ export function AddPatientDialog({ open, onOpenChange, onAdd, queueType }: AddPa
   const [visitType, setVisitType] = useState<VisitType>('in-person');
   const [appointmentTime, setAppointmentTime] = useState("");
   const [triageLevel, setTriageLevel] = useState<'red' | 'orange' | 'yellow' | 'green' | 'blue'>(
-    queueType === 'casualty' ? 'yellow' : 'green'
+    queueType === 'casualty' ? 'yellow' : queueType === 'inpatient' ? 'green' : 'green'
   );
 
   const handleSubmit = () => {
@@ -61,7 +61,7 @@ export function AddPatientDialog({ open, onOpenChange, onAdd, queueType }: AddPa
     setChiefComplaint("");
     setVisitType('in-person');
     setAppointmentTime("");
-    setTriageLevel(queueType === 'casualty' ? 'yellow' : 'green');
+    setTriageLevel(queueType === 'casualty' ? 'yellow' : queueType === 'inpatient' ? 'green' : 'green');
   };
 
   return (
