@@ -1,15 +1,16 @@
 import { useState, useCallback, useRef, useEffect } from "react";
 import { WebRTCManager, getSessionByReferralId } from "@/utils/WebRTCManager";
+import { useAuth } from "@/contexts/AuthContext";
 import { toast } from "sonner";
 
 export type CallState = "idle" | "connecting" | "connected" | "failed" | "ended";
 
 interface UseWebRTCOptions {
-  participantId: string;
   referralId: string;
 }
 
-export function useWebRTC({ participantId, referralId }: UseWebRTCOptions) {
+export function useWebRTC({ referralId }: UseWebRTCOptions) {
+  const { user, profile } = useAuth();
   const [callState, setCallState] = useState<CallState>("idle");
   const [localStream, setLocalStream] = useState<MediaStream | null>(null);
   const [remoteStream, setRemoteStream] = useState<MediaStream | null>(null);
@@ -21,13 +22,17 @@ export function useWebRTC({ participantId, referralId }: UseWebRTCOptions) {
 
   const initializeManager = useCallback(() => {
     if (managerRef.current) return managerRef.current;
+    if (!user) {
+      throw new Error("User must be authenticated to start a call");
+    }
 
-    const manager = new WebRTCManager(participantId, {
+    const manager = new WebRTCManager(user.id, {
       onRemoteStream: (stream) => {
         console.log("[useWebRTC] Remote stream received");
         setRemoteStream(stream);
         setCallState("connected");
-        toast.success("Connected to remote participant");
+        const participantName = profile?.display_name || "Participant";
+        toast.success(`Connected to ${participantName}`);
       },
       onConnectionStateChange: (state) => {
         console.log("[useWebRTC] Connection state:", state);
@@ -68,7 +73,7 @@ export function useWebRTC({ participantId, referralId }: UseWebRTCOptions) {
 
     managerRef.current = manager;
     return manager;
-  }, [participantId]);
+  }, [user, profile]);
 
   const startCall = useCallback(async (audio: boolean = true, video: boolean = true) => {
     try {
