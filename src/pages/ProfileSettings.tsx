@@ -14,6 +14,8 @@ import { AvatarUpload } from '@/components/profile/AvatarUpload';
 import { UserSessions } from '@/components/profile/UserSessions';
 import { PasswordChange } from '@/components/profile/PasswordChange';
 import { LoginHistory } from '@/components/profile/LoginHistory';
+import { TrustedDevices } from '@/components/profile/TrustedDevices';
+import { ActivityExport } from '@/components/profile/ActivityExport';
 import { TwoFactorSetup } from '@/components/auth/TwoFactorSetup';
 import { EmailVerificationStatus } from '@/components/auth/EmailVerificationStatus';
 
@@ -185,8 +187,14 @@ const ProfileSettings = () => {
         {/* Active Sessions */}
         <UserSessions />
 
+        {/* Trusted Devices */}
+        <TrustedDevices />
+
         {/* Login History */}
         <LoginHistory />
+
+        {/* Activity Export */}
+        <ActivityExport />
 
         {/* Account Info Card */}
         <Card>

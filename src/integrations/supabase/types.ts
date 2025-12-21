@@ -144,9 +144,11 @@ export type Database = {
           created_at: string
           department: string | null
           display_name: string
+          force_password_reset: boolean
           id: string
           last_active_at: string | null
           license_number: string | null
+          password_reset_reason: string | null
           phone: string | null
           role: Database["public"]["Enums"]["clinical_role"]
           specialty: string | null
@@ -161,9 +163,11 @@ export type Database = {
           created_at?: string
           department?: string | null
           display_name: string
+          force_password_reset?: boolean
           id?: string
           last_active_at?: string | null
           license_number?: string | null
+          password_reset_reason?: string | null
           phone?: string | null
           role?: Database["public"]["Enums"]["clinical_role"]
           specialty?: string | null
@@ -178,9 +182,11 @@ export type Database = {
           created_at?: string
           department?: string | null
           display_name?: string
+          force_password_reset?: boolean
           id?: string
           last_active_at?: string | null
           license_number?: string | null
+          password_reset_reason?: string | null
           phone?: string | null
           role?: Database["public"]["Enums"]["clinical_role"]
           specialty?: string | null
@@ -315,6 +321,45 @@ export type Database = {
             referencedColumns: ["id"]
           },
         ]
+      }
+      trusted_devices: {
+        Row: {
+          created_at: string
+          device_fingerprint: string
+          device_name: string | null
+          expires_at: string
+          id: string
+          ip_address: string | null
+          is_active: boolean
+          last_used_at: string
+          user_agent: string | null
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          device_fingerprint: string
+          device_name?: string | null
+          expires_at?: string
+          id?: string
+          ip_address?: string | null
+          is_active?: boolean
+          last_used_at?: string
+          user_agent?: string | null
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          device_fingerprint?: string
+          device_name?: string | null
+          expires_at?: string
+          id?: string
+          ip_address?: string | null
+          is_active?: boolean
+          last_used_at?: string
+          user_agent?: string | null
+          user_id?: string
+        }
+        Relationships: []
       }
       user_roles: {
         Row: {
