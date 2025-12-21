@@ -10,18 +10,38 @@ export type EncounterMenuItem =
   | "notes"
   | "outcome";
 
+export type OrdersSubMenuItem = "order-entry" | "order-sets" | "active-orders" | "results";
+
+export interface EncounterMenuSubItem {
+  id: string;
+  label: string;
+  icon: string;
+}
+
 export interface EncounterMenuItemConfig {
   id: EncounterMenuItem;
   label: string;
   description: string;
   icon: string;
+  subItems?: EncounterMenuSubItem[];
 }
 
 export const ENCOUNTER_MENU_ITEMS: EncounterMenuItemConfig[] = [
   { id: "overview", label: "Overview", description: "Patient summary and status", icon: "LayoutDashboard" },
   { id: "assessment", label: "Assessment", description: "Clinical assessments", icon: "ClipboardCheck" },
   { id: "problems", label: "Problems & Diagnoses", description: "Active problems and diagnoses", icon: "Stethoscope" },
-  { id: "orders", label: "Orders & Results", description: "Lab orders and results", icon: "FileText" },
+  { 
+    id: "orders", 
+    label: "Orders & Results", 
+    description: "Lab orders and results", 
+    icon: "FileText",
+    subItems: [
+      { id: "order-entry", label: "Order Entry", icon: "ShoppingCart" },
+      { id: "order-sets", label: "Order Sets", icon: "ClipboardList" },
+      { id: "active-orders", label: "Active Orders", icon: "FileText" },
+      { id: "results", label: "Results", icon: "FlaskConical" },
+    ]
+  },
   { id: "care", label: "Care & Management", description: "Care plans and management", icon: "Heart" },
   { id: "consults", label: "Consults & Referrals", description: "Specialist consultations", icon: "Users" },
   { id: "notes", label: "Notes & Attachments", description: "Clinical notes and documents", icon: "FileEdit" },

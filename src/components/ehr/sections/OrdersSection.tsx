@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { useParams } from "react-router-dom";
+import { useEHR } from "@/contexts/EHRContext";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -781,38 +782,13 @@ export function OrdersSection() {
   }
 
   const { encounterId } = useParams<{ encounterId?: string }>();
+  const { activeOrdersSubItem } = useEHR();
 
-  return (
-    <Tabs defaultValue="order-entry" className="space-y-4">
-      <TabsList className="flex-wrap">
-        <TabsTrigger value="order-entry" className="flex items-center gap-2">
-          <ShoppingCart className="w-4 h-4" />
-          Order Entry
-        </TabsTrigger>
-        <TabsTrigger value="order-sets" className="flex items-center gap-2">
-          <ClipboardList className="w-4 h-4" />
-          Order Sets
-        </TabsTrigger>
-        <TabsTrigger value="orders" className="flex items-center gap-2">
-          <FileText className="w-4 h-4" />
-          Active Orders
-        </TabsTrigger>
-        <TabsTrigger value="medications" className="flex items-center gap-2">
-          <Pill className="w-4 h-4" />
-          Medications
-        </TabsTrigger>
-        <TabsTrigger value="results" className="flex items-center gap-2">
-          <TestTube2 className="w-4 h-4" />
-          Results
-        </TabsTrigger>
-        <TabsTrigger value="procedures" className="flex items-center gap-2">
-          <Syringe className="w-4 h-4" />
-          Procedures
-        </TabsTrigger>
-      </TabsList>
-
-      <TabsContent value="order-entry">
-        {encounterId ? (
+  // Render content based on active sub-item from menu
+  const renderContent = () => {
+    switch (activeOrdersSubItem) {
+      case "order-entry":
+        return encounterId ? (
           <OrderEntrySystem patientId="" encounterId={encounterId} />
         ) : (
           <Card>
@@ -820,36 +796,63 @@ export function OrdersSection() {
               Select a patient encounter to place orders
             </CardContent>
           </Card>
-        )}
-      </TabsContent>
-
-      <TabsContent value="order-sets">
-        <OrderSetsSystem />
-      </TabsContent>
-
-      <TabsContent value="orders">
-        <OrdersPanel canOrder={canOrderLabs} />
-      </TabsContent>
-
-      <TabsContent value="medications">
-        {encounterId ? (
-          <MedicationOrders encounterId={encounterId} />
+        );
+      case "order-sets":
+        return <OrderSetsSystem />;
+      case "active-orders":
+        return (
+          <Tabs defaultValue="orders" className="space-y-4">
+            <TabsList className="flex-wrap">
+              <TabsTrigger value="orders" className="flex items-center gap-2">
+                <FileText className="w-4 h-4" />
+                Active Orders
+              </TabsTrigger>
+              <TabsTrigger value="medications" className="flex items-center gap-2">
+                <Pill className="w-4 h-4" />
+                Medications
+              </TabsTrigger>
+              <TabsTrigger value="procedures" className="flex items-center gap-2">
+                <Syringe className="w-4 h-4" />
+                Procedures
+              </TabsTrigger>
+            </TabsList>
+            <TabsContent value="orders">
+              <OrdersPanel canOrder={canOrderLabs} />
+            </TabsContent>
+            <TabsContent value="medications">
+              {encounterId ? (
+                <MedicationOrders encounterId={encounterId} />
+              ) : (
+                <Card>
+                  <CardContent className="p-6 text-center text-muted-foreground">
+                    Select a patient encounter to manage medication orders
+                  </CardContent>
+                </Card>
+              )}
+            </TabsContent>
+            <TabsContent value="procedures">
+              <ProceduresPanel />
+            </TabsContent>
+          </Tabs>
+        );
+      case "results":
+        return <ResultsPanel />;
+      default:
+        return encounterId ? (
+          <OrderEntrySystem patientId="" encounterId={encounterId} />
         ) : (
           <Card>
             <CardContent className="p-6 text-center text-muted-foreground">
-              Select a patient encounter to manage medication orders
+              Select a patient encounter to place orders
             </CardContent>
           </Card>
-        )}
-      </TabsContent>
+        );
+    }
+  };
 
-      <TabsContent value="results">
-        <ResultsPanel />
-      </TabsContent>
-
-      <TabsContent value="procedures">
-        <ProceduresPanel />
-      </TabsContent>
-    </Tabs>
+  return (
+    <div className="space-y-4">
+      {renderContent()}
+    </div>
   );
 }
