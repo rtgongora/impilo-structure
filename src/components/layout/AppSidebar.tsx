@@ -20,6 +20,8 @@ import {
   Home,
   FlaskConical,
   Receipt,
+  User,
+  ClipboardList,
 } from "lucide-react";
 import { NavLink } from "@/components/NavLink";
 import { useLocation } from "react-router-dom";
@@ -27,29 +29,38 @@ import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip";
+import { WorkspaceSelector } from "./WorkspaceSelector";
+import { useWorkspace } from "@/contexts/WorkspaceContext";
+import { useAuth } from "@/contexts/AuthContext";
 
 interface NavItem {
   label: string;
   icon: React.ComponentType<{ className?: string }>;
   path: string;
   description?: string;
+  roles?: string[]; // Which roles can see this item
 }
 
-const mainNavItems: NavItem[] = [
+// Priority items that appear first for everyone
+const priorityNavItems: NavItem[] = [
   { label: "Dashboard", icon: Home, path: "/", description: "Overview & worklist" },
-  { label: "Clinical EHR", icon: Stethoscope, path: "/encounter", description: "Patient encounters" },
-  { label: "Patient Queue", icon: Users, path: "/queue", description: "Queue management" },
-  { label: "Bed Management", icon: Bed, path: "/beds", description: "Ward & bed status" },
+  { label: "My Worklist", icon: ClipboardList, path: "/queue", description: "Your assigned work" },
+];
+
+// Role-specific primary items
+const clinicalNavItems: NavItem[] = [
+  { label: "Clinical EHR", icon: Stethoscope, path: "/encounter", description: "Patient encounters", roles: ["doctor", "nurse", "specialist"] },
+  { label: "Bed Management", icon: Bed, path: "/beds", description: "Ward & bed status", roles: ["doctor", "nurse", "admin"] },
   { label: "Appointments", icon: Calendar, path: "/appointments", description: "Scheduling" },
   { label: "Patients", icon: Users, path: "/patients", description: "Patient registry" },
 ];
 
-const clinicalNavItems: NavItem[] = [
-  { label: "Order Entry", icon: ShoppingCart, path: "/orders", description: "Clinical orders" },
+const ordersNavItems: NavItem[] = [
+  { label: "Order Entry", icon: ShoppingCart, path: "/orders", description: "Clinical orders", roles: ["doctor", "nurse", "specialist"] },
   { label: "Pharmacy", icon: Syringe, path: "/pharmacy", description: "Medication dispensing" },
   { label: "Laboratory", icon: FlaskConical, path: "/lims", description: "Lab results" },
   { label: "PACS Imaging", icon: FileText, path: "/pacs", description: "Medical imaging" },
-  { label: "Shift Handoff", icon: ArrowRightLeft, path: "/handoff", description: "Handoff reports" },
+  { label: "Shift Handoff", icon: ArrowRightLeft, path: "/handoff", description: "Handoff reports", roles: ["doctor", "nurse"] },
 ];
 
 const operationsNavItems: NavItem[] = [
@@ -63,18 +74,27 @@ const operationsNavItems: NavItem[] = [
 const systemNavItems: NavItem[] = [
   { label: "Reports", icon: BarChart3, path: "/reports", description: "Analytics" },
   { label: "Registration", icon: UserPlus, path: "/registration", description: "Patient registration" },
-  { label: "Odoo ERP", icon: Building2, path: "/odoo", description: "ERP integration" },
-  { label: "Admin", icon: Settings, path: "/admin", description: "System settings" },
+  { label: "Odoo ERP", icon: Building2, path: "/odoo", description: "ERP integration", roles: ["admin"] },
+  { label: "Admin", icon: Settings, path: "/admin", description: "System settings", roles: ["admin"] },
 ];
 
 interface NavSectionProps {
   title: string;
   items: NavItem[];
   collapsed: boolean;
+  userRole?: string;
 }
 
-function NavSection({ title, items, collapsed }: NavSectionProps) {
+function NavSection({ title, items, collapsed, userRole }: NavSectionProps) {
   const location = useLocation();
+
+  // Filter items by role
+  const visibleItems = items.filter((item) => {
+    if (!item.roles) return true;
+    return userRole && item.roles.includes(userRole);
+  });
+
+  if (visibleItems.length === 0) return null;
 
   return (
     <div className="mb-4">
@@ -84,7 +104,7 @@ function NavSection({ title, items, collapsed }: NavSectionProps) {
         </h3>
       )}
       <nav className="space-y-1">
-        {items.map((item) => {
+        {visibleItems.map((item) => {
           const isActive = location.pathname === item.path || 
             (item.path !== "/" && location.pathname.startsWith(item.path));
           
@@ -129,6 +149,13 @@ function NavSection({ title, items, collapsed }: NavSectionProps) {
 
 export function AppSidebar() {
   const [collapsed, setCollapsed] = useState(false);
+  const { currentView, setCurrentView } = useWorkspace();
+  const { profile } = useAuth();
+  const userRole = profile?.role || "nurse";
+
+  // Determine which sections to show based on role
+  const isAdmin = userRole === "admin";
+  const isClinical = ["doctor", "nurse", "specialist"].includes(userRole);
 
   return (
     <aside
@@ -157,12 +184,36 @@ export function AppSidebar() {
         )}
       </div>
 
+      {/* Workspace Selector */}
+      <WorkspaceSelector
+        currentView={currentView}
+        onViewChange={setCurrentView}
+        collapsed={collapsed}
+      />
+
       {/* Navigation */}
       <ScrollArea className="flex-1 py-4 px-2">
-        <NavSection title="Main" items={mainNavItems} collapsed={collapsed} />
-        <NavSection title="Clinical" items={clinicalNavItems} collapsed={collapsed} />
-        <NavSection title="Operations" items={operationsNavItems} collapsed={collapsed} />
-        <NavSection title="System" items={systemNavItems} collapsed={collapsed} />
+        {/* Priority section - always first */}
+        <NavSection title="Quick Access" items={priorityNavItems} collapsed={collapsed} userRole={userRole} />
+        
+        {/* Clinical section - prominent for clinical roles */}
+        {isClinical && (
+          <NavSection title="Clinical" items={clinicalNavItems} collapsed={collapsed} userRole={userRole} />
+        )}
+        
+        {/* Orders section */}
+        <NavSection title="Orders & Results" items={ordersNavItems} collapsed={collapsed} userRole={userRole} />
+        
+        {/* Operations section */}
+        <NavSection title="Operations" items={operationsNavItems} collapsed={collapsed} userRole={userRole} />
+        
+        {/* System section - shown last but visible to those who need it */}
+        <NavSection title="System" items={systemNavItems} collapsed={collapsed} userRole={userRole} />
+        
+        {/* For non-clinical roles, show clinical items at end */}
+        {!isClinical && (
+          <NavSection title="Clinical" items={clinicalNavItems} collapsed={collapsed} userRole={userRole} />
+        )}
       </ScrollArea>
 
       {/* Collapse Toggle */}
