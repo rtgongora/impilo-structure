@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '@/contexts/AuthContext';
 import { supabase } from '@/integrations/supabase/client';
@@ -11,6 +11,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { toast } from 'sonner';
 import { Stethoscope, Shield, Users, ArrowLeft, Mail } from 'lucide-react';
 import { z } from 'zod';
+import PasswordValidator from '@/components/auth/PasswordValidator';
 
 const emailSchema = z.string().email('Please enter a valid email address');
 const passwordSchema = z.string().min(6, 'Password must be at least 6 characters');
@@ -38,6 +39,11 @@ const Auth = () => {
   const [role, setRole] = useState<string>('doctor');
   const [specialty, setSpecialty] = useState('');
   const [department, setDepartment] = useState('');
+  const [isPasswordValid, setIsPasswordValid] = useState(false);
+
+  const handlePasswordValidationChange = useCallback((isValid: boolean) => {
+    setIsPasswordValid(isValid);
+  }, []);
 
   useEffect(() => {
     if (user) {
@@ -124,12 +130,16 @@ const Auth = () => {
     
     try {
       emailSchema.parse(signupEmail);
-      passwordSchema.parse(signupPassword);
     } catch (err) {
       if (err instanceof z.ZodError) {
         toast.error(err.errors[0].message);
         return;
       }
+    }
+    
+    if (!isPasswordValid) {
+      toast.error('Please meet all password requirements');
+      return;
     }
     
     if (signupPassword !== confirmPassword) {
@@ -404,6 +414,10 @@ const Auth = () => {
                     required
                     autoComplete="new-password"
                   />
+                  <PasswordValidator 
+                    password={signupPassword} 
+                    onValidationChange={handlePasswordValidationChange}
+                  />
                 </div>
                 
                 <div className="space-y-2">
@@ -417,12 +431,15 @@ const Auth = () => {
                     required
                     autoComplete="new-password"
                   />
+                  {confirmPassword && signupPassword !== confirmPassword && (
+                    <p className="text-xs text-destructive">Passwords do not match</p>
+                  )}
                 </div>
                 
                 <Button 
                   type="submit" 
                   className="w-full" 
-                  disabled={isSubmitting}
+                  disabled={isSubmitting || !isPasswordValid || signupPassword !== confirmPassword}
                 >
                   {isSubmitting ? 'Creating account...' : 'Create Account'}
                 </Button>
