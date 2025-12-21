@@ -50,10 +50,13 @@ import {
   Activity,
   Minus,
   ChevronRight,
+  ShieldAlert,
 } from "lucide-react";
 import { format } from "date-fns";
 import { MOCK_ORDERS, MOCK_LAB_RESULTS } from "@/data/mockClinicalData";
 import type { OrderStatus, OrderPriority } from "@/types/clinical";
+import { usePermissions } from "@/hooks/usePermissions";
+import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 
 const statusIcons: Record<OrderStatus, React.ReactNode> = {
   draft: <FileText className="w-4 h-4 text-muted-foreground" />,
@@ -138,7 +141,7 @@ const MOCK_HISTORICAL_LABS = {
   ],
 };
 
-function OrdersPanel() {
+function OrdersPanel({ canOrder = true }: { canOrder?: boolean }) {
   const [typeFilter, setTypeFilter] = useState<string>("all");
   const [statusFilter, setStatusFilter] = useState<string>("all");
   const [orders, setOrders] = useState(MOCK_ORDERS);
@@ -253,13 +256,14 @@ function OrdersPanel() {
           </SelectContent>
         </Select>
         <div className="flex-1" />
-        <Dialog open={isAddOpen} onOpenChange={setIsAddOpen}>
-          <DialogTrigger asChild>
-            <Button>
-              <Plus className="w-4 h-4 mr-2" />
-              New Order
-            </Button>
-          </DialogTrigger>
+        {canOrder && (
+          <Dialog open={isAddOpen} onOpenChange={setIsAddOpen}>
+            <DialogTrigger asChild>
+              <Button>
+                <Plus className="w-4 h-4 mr-2" />
+                New Order
+              </Button>
+            </DialogTrigger>
           <DialogContent className="bg-background max-w-lg">
             <DialogHeader>
               <DialogTitle>Create New Order</DialogTitle>
@@ -354,6 +358,7 @@ function OrdersPanel() {
             </DialogFooter>
           </DialogContent>
         </Dialog>
+        )}
       </div>
 
       <Card>
@@ -752,6 +757,23 @@ function ProceduresPanel() {
 }
 
 export function OrdersSection() {
+  const { hasPermission, role } = usePermissions();
+  
+  const canViewResults = hasPermission('view_lab_results');
+  const canOrderLabs = hasPermission('order_labs');
+
+  if (!canViewResults) {
+    return (
+      <Alert variant="destructive" className="max-w-md mx-auto my-8">
+        <ShieldAlert className="h-4 w-4" />
+        <AlertTitle>Access Restricted</AlertTitle>
+        <AlertDescription>
+          You don't have permission to view orders and results. This feature is available to clinical staff only.
+        </AlertDescription>
+      </Alert>
+    );
+  }
+
   return (
     <Tabs defaultValue="orders" className="space-y-4">
       <TabsList className="flex-wrap">
@@ -770,7 +792,7 @@ export function OrdersSection() {
       </TabsList>
 
       <TabsContent value="orders">
-        <OrdersPanel />
+        <OrdersPanel canOrder={canOrderLabs} />
       </TabsContent>
 
       <TabsContent value="results">
