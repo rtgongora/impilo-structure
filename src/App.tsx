@@ -5,7 +5,8 @@ import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import { AuthProvider } from "@/contexts/AuthContext";
 import { ProtectedRoute } from "@/components/auth/ProtectedRoute";
-import Index from "./pages/Index";
+import Dashboard from "./pages/Dashboard";
+import Encounter from "./pages/Encounter";
 import Registration from "./pages/Registration";
 import Auth from "./pages/Auth";
 import ResetPassword from "./pages/ResetPassword";
@@ -27,7 +28,12 @@ const App = () => (
             <Route path="/reset-password" element={<ResetPassword />} />
             <Route path="/" element={
               <ProtectedRoute>
-                <Index />
+                <Dashboard />
+              </ProtectedRoute>
+            } />
+            <Route path="/encounter" element={
+              <ProtectedRoute>
+                <Encounter />
               </ProtectedRoute>
             } />
             <Route path="/registration" element={
