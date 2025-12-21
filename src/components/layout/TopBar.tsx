@@ -17,6 +17,7 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { CriticalEventButton } from "@/components/ehr/CriticalEventButton";
 import { CDSAlertBadge } from "@/components/ehr/ClinicalDecisionSupport";
+import { AIDiagnosticAssistant } from "@/components/ehr/AIDiagnosticAssistant";
 import { AlertBadge } from "@/components/alerts/ClinicalAlerts";
 import { UserMenu } from "@/components/auth/UserMenu";
 import { Link } from "react-router-dom";
@@ -109,6 +110,9 @@ export function TopBar() {
         <PatientSearch />
 
         <div className="h-6 w-px bg-topbar-muted/30" />
+
+        {/* AI Diagnostic Assistant */}
+        <AIDiagnosticAssistant />
 
         {/* Clinical Alerts */}
         <AlertBadge />
