@@ -58,7 +58,7 @@ export function AppHeader({ title }: AppHeaderProps) {
             <Button
               variant="ghost"
               size="sm"
-              onClick={() => navigate("/dashboard")}
+              onClick={() => navigate("/")}
               className="text-muted-foreground hover:text-foreground"
             >
               <X className="w-4 h-4 mr-1" />
