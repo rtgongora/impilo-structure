@@ -10,6 +10,7 @@ import {
   Clock,
   ChevronDown,
   ChevronUp,
+  Home,
 } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -21,6 +22,7 @@ import {
 import { useState } from "react";
 import { format, differenceInYears } from "date-fns";
 import { VitalsMonitor } from "./VitalsMonitor";
+import { DischargeWorkflow } from "./discharge/DischargeWorkflow";
 
 interface Alert {
   id: string;
@@ -172,6 +174,15 @@ export function PatientBanner() {
                   {MOCK_ACTIVE_EPISODES.length} Active Episodes
                 </Badge>
               )}
+              
+              {/* Discharge Button */}
+              <DischargeWorkflow
+                encounterId={currentEncounter.id || "mock-encounter"}
+                patientName={patient.name}
+                mrn={patient.mrn}
+                ward={patient.ward}
+                bed={patient.bed}
+              />
             </div>
 
             {/* Expand/Collapse Button */}
