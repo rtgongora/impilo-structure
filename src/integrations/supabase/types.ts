@@ -714,6 +714,7 @@ export type Database = {
           notes: string | null
           reason_not_given: string | null
           route_used: string
+          signature_url: string | null
           status: string
         }
         Insert: {
@@ -727,6 +728,7 @@ export type Database = {
           notes?: string | null
           reason_not_given?: string | null
           route_used: string
+          signature_url?: string | null
           status?: string
         }
         Update: {
@@ -740,6 +742,7 @@ export type Database = {
           notes?: string | null
           reason_not_given?: string | null
           route_used?: string
+          signature_url?: string | null
           status?: string
         }
         Relationships: [
@@ -761,6 +764,7 @@ export type Database = {
       }
       medication_orders: {
         Row: {
+          barcode: string | null
           created_at: string
           dosage: string
           dosage_unit: string
@@ -785,6 +789,7 @@ export type Database = {
           verified_by: string | null
         }
         Insert: {
+          barcode?: string | null
           created_at?: string
           dosage: string
           dosage_unit: string
@@ -809,6 +814,7 @@ export type Database = {
           verified_by?: string | null
         }
         Update: {
+          barcode?: string | null
           created_at?: string
           dosage?: string
           dosage_unit?: string
