@@ -9,6 +9,8 @@ import Dashboard from "./pages/Dashboard";
 import Encounter from "./pages/Encounter";
 import Patients from "./pages/Patients";
 import Stock from "./pages/Stock";
+import Consumables from "./pages/Consumables";
+import Charges from "./pages/Charges";
 import Registration from "./pages/Registration";
 import Auth from "./pages/Auth";
 import ResetPassword from "./pages/ResetPassword";
@@ -46,6 +48,16 @@ const App = () => (
             <Route path="/stock" element={
               <ProtectedRoute>
                 <Stock />
+              </ProtectedRoute>
+            } />
+            <Route path="/consumables" element={
+              <ProtectedRoute>
+                <Consumables />
+              </ProtectedRoute>
+            } />
+            <Route path="/charges" element={
+              <ProtectedRoute>
+                <Charges />
               </ProtectedRoute>
             } />
             <Route path="/registration" element={
