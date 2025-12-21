@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '@/contexts/AuthContext';
 import { usePermissions } from '@/hooks/usePermissions';
+import { usePresence } from '@/hooks/usePresence';
 import { supabase } from '@/integrations/supabase/client';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -89,8 +90,9 @@ const CLINICAL_ROLES = ['doctor', 'nurse', 'specialist', 'patient', 'admin'] as 
 
 const AdminDashboard = () => {
   const navigate = useNavigate();
-  const { user } = useAuth();
+  const { user, profile } = useAuth();
   const { hasPermission, isRole } = usePermissions();
+  const { isUserOnline, getOnlineCount } = usePresence(user?.id, profile?.display_name);
   
   const [users, setUsers] = useState<UserProfile[]>([]);
   const [auditLogs, setAuditLogs] = useState<AuditLog[]>([]);
@@ -449,6 +451,7 @@ const AdminDashboard = () => {
 
   const userStats = {
     total: users.length,
+    online: getOnlineCount(),
     doctors: users.filter(u => u.role === 'doctor').length,
     nurses: users.filter(u => u.role === 'nurse').length,
     specialists: users.filter(u => u.role === 'specialist').length,
@@ -497,13 +500,25 @@ const AdminDashboard = () => {
         </div>
 
         {/* Stats Cards */}
-        <div className="grid grid-cols-5 gap-4">
+        <div className="grid grid-cols-6 gap-4">
           <Card>
             <CardContent className="p-4 flex items-center gap-3">
               <Users className="w-8 h-8 text-primary" />
               <div>
                 <div className="text-2xl font-bold">{userStats.total}</div>
                 <div className="text-xs text-muted-foreground">Total Users</div>
+              </div>
+            </CardContent>
+          </Card>
+          <Card className="bg-green-500/10 border-green-500/20">
+            <CardContent className="p-4 flex items-center gap-3">
+              <span className="relative flex h-3 w-3">
+                <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-green-400 opacity-75"></span>
+                <span className="relative inline-flex rounded-full h-3 w-3 bg-green-500"></span>
+              </span>
+              <div>
+                <div className="text-2xl font-bold text-green-600">{userStats.online}</div>
+                <div className="text-xs text-muted-foreground">Online Now</div>
               </div>
             </CardContent>
           </Card>
@@ -661,14 +676,26 @@ const AdminDashboard = () => {
                               </Badge>
                             </TableCell>
                             <TableCell>
-                              {(() => {
-                                const status = getActivityStatus(userProfile.last_active_at);
-                                return (
-                                  <span className={`text-sm font-medium ${status.color}`}>
-                                    {status.label}
-                                  </span>
-                                );
-                              })()}
+                              <div className="flex items-center gap-2">
+                                {isUserOnline(userProfile.user_id) ? (
+                                  <>
+                                    <span className="relative flex h-2 w-2">
+                                      <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-green-400 opacity-75"></span>
+                                      <span className="relative inline-flex rounded-full h-2 w-2 bg-green-500"></span>
+                                    </span>
+                                    <span className="text-sm font-medium text-green-500">Online</span>
+                                  </>
+                                ) : (
+                                  <>
+                                    <span className="relative flex h-2 w-2">
+                                      <span className="relative inline-flex rounded-full h-2 w-2 bg-muted-foreground/40"></span>
+                                    </span>
+                                    <span className={`text-sm ${getActivityStatus(userProfile.last_active_at).color}`}>
+                                      {getActivityStatus(userProfile.last_active_at).label}
+                                    </span>
+                                  </>
+                                )}
+                              </div>
                             </TableCell>
                             <TableCell className="text-sm">
                               {userProfile.specialty || '-'}
