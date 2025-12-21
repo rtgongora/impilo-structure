@@ -31,12 +31,14 @@ import {
   User,
   Scan,
   Pen,
+  ShieldAlert,
 } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/contexts/AuthContext";
 import { toast } from "sonner";
 import { BarcodeScanner } from "./BarcodeScanner";
 import { SignaturePad } from "./SignaturePad";
+import { DrugInteractionChecker } from "./DrugInteractionChecker";
 
 interface MedicationOrder {
   id: string;
@@ -75,7 +77,10 @@ export function MedicationAdministration({ patientId, encounterId }: MedicationA
   
   const [showBarcodeScanner, setShowBarcodeScanner] = useState(false);
   const [showSignaturePad, setShowSignaturePad] = useState(false);
+  const [showDrugInteractionChecker, setShowDrugInteractionChecker] = useState(false);
   const [signatureUrl, setSignatureUrl] = useState<string | null>(null);
+  const [currentMedications, setCurrentMedications] = useState<string[]>([]);
+  const [patientAllergies, setPatientAllergies] = useState<string[]>([]);
   
   const [adminStatus, setAdminStatus] = useState<"given" | "not_given">("given");
   const [dosageGiven, setDosageGiven] = useState("");
@@ -85,7 +90,24 @@ export function MedicationAdministration({ patientId, encounterId }: MedicationA
 
   useEffect(() => {
     fetchMedications();
+    fetchPatientData();
   }, [patientId, encounterId]);
+
+  const fetchPatientData = async () => {
+    try {
+      const { data: patient } = await supabase
+        .from("patients")
+        .select("allergies")
+        .eq("id", patientId)
+        .single();
+
+      if (patient?.allergies) {
+        setPatientAllergies(patient.allergies);
+      }
+    } catch (error) {
+      console.error("Error fetching patient data:", error);
+    }
+  };
 
   const fetchMedications = async () => {
     setIsLoading(true);
@@ -116,6 +138,23 @@ export function MedicationAdministration({ patientId, encounterId }: MedicationA
     setNotes("");
     setReasonNotGiven("");
     setSignatureUrl(null);
+    
+    // Get list of other current medications for interaction checking
+    const otherMeds = medications
+      .filter(m => m.id !== med.id && m.status === "active")
+      .map(m => m.medication_name);
+    setCurrentMedications(otherMeds);
+    
+    // Show drug interaction checker first if there are other medications
+    if (otherMeds.length > 0) {
+      setShowDrugInteractionChecker(true);
+    } else {
+      setShowBarcodeScanner(true);
+    }
+  };
+
+  const handleDrugInteractionProceed = () => {
+    setShowDrugInteractionChecker(false);
     setShowBarcodeScanner(true);
   };
 
@@ -235,6 +274,18 @@ export function MedicationAdministration({ patientId, encounterId }: MedicationA
           )}
         </CardContent>
       </Card>
+
+      {/* Drug Interaction Checker */}
+      {selectedMed && (
+        <DrugInteractionChecker
+          open={showDrugInteractionChecker}
+          newMedication={selectedMed.medication_name}
+          currentMedications={currentMedications}
+          patientAllergies={patientAllergies}
+          onProceed={handleDrugInteractionProceed}
+          onCancel={() => { setShowDrugInteractionChecker(false); setSelectedMed(null); }}
+        />
+      )}
 
       {selectedMed && (
         <BarcodeScanner
