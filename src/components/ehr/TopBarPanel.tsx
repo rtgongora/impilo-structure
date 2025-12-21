@@ -5,6 +5,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { X, Boxes, Route, Package, Receipt, Plus } from "lucide-react";
 import { QueueManagement } from "./queue/QueueManagement";
 import { BedManagement } from "./beds/BedManagement";
+import { OrderSetsSystem } from "./orders/OrderSetsSystem";
 
 interface TopBarPanelProps {
   action: TopBarAction;
@@ -46,6 +47,8 @@ export function TopBarPanel({ action }: TopBarPanelProps) {
         return <QueueManagement />;
       case "beds":
         return <BedManagement />;
+      case "ordersets":
+        return <OrderSetsSystem />;
       case "workspaces":
         return (
           <div className="grid grid-cols-3 gap-4">

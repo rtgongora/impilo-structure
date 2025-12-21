@@ -10,6 +10,7 @@ import {
   User,
   Users,
   Bed,
+  ClipboardList,
   LogOut,
   Settings,
   Bell,
@@ -33,6 +34,7 @@ const iconMap: Record<string, React.ComponentType<{ className?: string }>> = {
   Receipt,
   Users,
   Bed,
+  ClipboardList,
 };
 
 export function TopBar() {
