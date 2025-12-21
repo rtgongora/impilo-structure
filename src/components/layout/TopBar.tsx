@@ -12,6 +12,11 @@ import {
   Bell,
   UserPlus,
   Search,
+  ShoppingCart,
+  Pill,
+  Calendar,
+  CreditCard,
+  ClipboardCheck,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -31,6 +36,11 @@ const iconMap: Record<string, React.ComponentType<{ className?: string }>> = {
   Users,
   Bed,
   ClipboardList,
+  ShoppingCart,
+  Pill,
+  Calendar,
+  CreditCard,
+  ClipboardCheck,
 };
 
 export function TopBar() {
