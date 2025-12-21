@@ -22,6 +22,7 @@ import {
   Receipt,
   User,
   ClipboardList,
+  HelpCircle,
 } from "lucide-react";
 import { NavLink } from "@/components/NavLink";
 import { useLocation } from "react-router-dom";
@@ -74,6 +75,7 @@ const operationsNavItems: NavItem[] = [
 const systemNavItems: NavItem[] = [
   { label: "Reports", icon: BarChart3, path: "/reports", description: "Analytics" },
   { label: "Registration", icon: UserPlus, path: "/registration", description: "Patient registration" },
+  { label: "Help Desk", icon: HelpCircle, path: "/help", description: "FAQs & guides" },
   { label: "Odoo ERP", icon: Building2, path: "/odoo", description: "ERP integration", roles: ["admin"] },
   { label: "Admin", icon: Settings, path: "/admin", description: "System settings", roles: ["admin"] },
 ];

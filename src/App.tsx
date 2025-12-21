@@ -32,6 +32,7 @@ import Odoo from "./pages/Odoo";
 import Reports from "./pages/Reports";
 import Orders from "./pages/Orders";
 import Handoff from "./pages/Handoff";
+import HelpDesk from "./pages/HelpDesk";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -162,6 +163,11 @@ const App = () => (
             <Route path="/handoff" element={
               <ProtectedRoute>
                 <Handoff />
+              </ProtectedRoute>
+            } />
+            <Route path="/help" element={
+              <ProtectedRoute>
+                <HelpDesk />
               </ProtectedRoute>
             } />
             {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
