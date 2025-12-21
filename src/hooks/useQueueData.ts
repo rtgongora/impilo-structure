@@ -25,16 +25,11 @@ interface EncounterWithPatient {
 }
 
 const triageMap: Record<string, QueuePatient['triageLevel']> = {
-  'immediate': 'red',
+  'resuscitation': 'red',
   'emergency': 'orange',
   'urgent': 'yellow',
   'standard': 'green',
-  'routine': 'blue',
-  'red': 'red',
-  'orange': 'orange',
-  'yellow': 'yellow',
-  'green': 'green',
-  'blue': 'blue',
+  'non-urgent': 'blue',
 };
 
 const visitTypeMap: Record<string, VisitType> = {
