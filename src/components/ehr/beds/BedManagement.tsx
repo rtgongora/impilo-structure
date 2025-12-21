@@ -1,63 +1,17 @@
 import { useState } from "react";
-import { Grid3X3, List, RefreshCw, Plus, Filter } from "lucide-react";
+import { Grid3X3, List, RefreshCw, Filter, Loader2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { ToggleGroup, ToggleGroupItem } from "@/components/ui/toggle-group";
-import { BedCard, type BedData } from "./BedCard";
+import { BedCard } from "./BedCard";
 import { WardStats } from "./WardStats";
 import { BedActionDialog } from "./BedActionDialog";
-
-const WARDS = [
-  { id: 'medical', name: 'Medical Ward', capacity: 20 },
-  { id: 'surgical', name: 'Surgical Ward', capacity: 16 },
-  { id: 'maternity', name: 'Maternity Ward', capacity: 12 },
-  { id: 'paediatric', name: 'Paediatric Ward', capacity: 10 },
-  { id: 'icu', name: 'ICU', capacity: 8 },
-  { id: 'hdu', name: 'HDU', capacity: 6 },
-];
-
-const generateMockBeds = (): BedData[] => {
-  const beds: BedData[] = [];
-  const statuses: BedData['status'][] = ['available', 'occupied', 'reserved', 'maintenance', 'cleaning'];
-  const acuityLevels: BedData['patient']['acuityLevel'][] = ['critical', 'high', 'medium', 'low'];
-  const diagnoses = ['Pneumonia', 'Diabetes Management', 'Post-op Care', 'Heart Failure', 'Malaria', 'Typhoid', 'Trauma'];
-  const names = ['John Mwangi', 'Mary Wanjiku', 'Peter Ochieng', 'Grace Akinyi', 'James Kamau', 'Susan Njeri', 'David Kipchoge', 'Jane Atieno'];
-
-  WARDS.forEach(ward => {
-    for (let i = 1; i <= ward.capacity; i++) {
-      const status = statuses[Math.floor(Math.random() * 100) % 5];
-      const bed: BedData = {
-        id: `${ward.id}-${i}`,
-        bedNumber: `${ward.id.toUpperCase().slice(0, 3)}-${String(i).padStart(2, '0')}`,
-        wardId: ward.id,
-        status: status === 'occupied' || Math.random() > 0.4 ? 'occupied' : status,
-      };
-
-      if (bed.status === 'occupied') {
-        bed.patient = {
-          id: `P-${ward.id}-${i}`,
-          name: names[Math.floor(Math.random() * names.length)],
-          mrn: `MRN-${Math.floor(Math.random() * 90000) + 10000}`,
-          admissionDate: new Date(Date.now() - Math.floor(Math.random() * 14) * 24 * 60 * 60 * 1000),
-          diagnosis: diagnoses[Math.floor(Math.random() * diagnoses.length)],
-          attendingPhysician: `Dr. ${['Mwangi', 'Ochieng', 'Kamau', 'Njeri'][Math.floor(Math.random() * 4)]}`,
-          acuityLevel: acuityLevels[Math.floor(Math.random() * 4)],
-        };
-      } else if (bed.status === 'reserved') {
-        bed.reservedFor = 'Expected admission from Casualty';
-      }
-
-      beds.push(bed);
-    }
-  });
-
-  return beds;
-};
+import { useBedData, WARDS, type BedData } from "@/hooks/useBedData";
 
 export function BedManagement() {
-  const [beds, setBeds] = useState<BedData[]>(generateMockBeds);
+  const { beds, loading, refetch, updateBedStatus } = useBedData();
   const [activeWard, setActiveWard] = useState('medical');
   const [viewMode, setViewMode] = useState<'grid' | 'list'>('grid');
   const [filterStatus, setFilterStatus] = useState<string>('all');
@@ -76,42 +30,23 @@ export function BedManagement() {
     setDialogOpen(true);
   };
 
-  const handleBedAction = (bedId: string, action: string) => {
-    setBeds(prev => prev.map(bed => {
-      if (bed.id !== bedId) return bed;
-      
-      switch (action) {
-        case 'discharge':
-        case 'transfer':
-          return { ...bed, status: 'cleaning' as const, patient: undefined };
-        case 'reserve':
-          return { ...bed, status: 'reserved' as const, reservedFor: 'Pending admission' };
-        case 'available':
-          return { ...bed, status: 'available' as const, reservedFor: undefined };
-        case 'admit':
-          return {
-            ...bed,
-            status: 'occupied' as const,
-            patient: {
-              id: `P-${Date.now()}`,
-              name: 'New Patient',
-              mrn: `MRN-${Math.floor(Math.random() * 90000) + 10000}`,
-              admissionDate: new Date(),
-              diagnosis: 'To be determined',
-              attendingPhysician: 'Dr. Mwangi',
-              acuityLevel: 'medium' as const,
-            },
-          };
-        default:
-          return bed;
-      }
-    }));
+  const handleBedAction = async (bedId: string, action: string) => {
+    await updateBedStatus(bedId, action);
+    setDialogOpen(false);
   };
 
   // Calculate total stats
   const totalBeds = beds.length;
   const totalOccupied = beds.filter(b => b.status === 'occupied').length;
   const totalAvailable = beds.filter(b => b.status === 'available').length;
+
+  if (loading) {
+    return (
+      <div className="h-full flex items-center justify-center">
+        <Loader2 className="h-8 w-8 animate-spin text-muted-foreground" />
+      </div>
+    );
+  }
 
   return (
     <div className="h-full flex flex-col bg-background">
@@ -124,7 +59,7 @@ export function BedManagement() {
             </p>
           </div>
           <div className="flex items-center gap-2">
-            <Button variant="outline" size="sm" onClick={() => setBeds(generateMockBeds())}>
+            <Button variant="outline" size="sm" onClick={refetch}>
               <RefreshCw className="h-4 w-4 mr-1" />
               Refresh
             </Button>

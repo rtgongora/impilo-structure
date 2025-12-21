@@ -167,6 +167,68 @@ export type Database = {
         }
         Relationships: []
       }
+      beds: {
+        Row: {
+          acuity_level: string | null
+          admission_date: string | null
+          attending_physician: string | null
+          bed_number: string
+          created_at: string
+          diagnosis: string | null
+          id: string
+          patient_id: string | null
+          patient_mrn: string | null
+          patient_name: string | null
+          reserved_for: string | null
+          status: string
+          updated_at: string
+          ward_id: string
+          ward_name: string
+        }
+        Insert: {
+          acuity_level?: string | null
+          admission_date?: string | null
+          attending_physician?: string | null
+          bed_number: string
+          created_at?: string
+          diagnosis?: string | null
+          id?: string
+          patient_id?: string | null
+          patient_mrn?: string | null
+          patient_name?: string | null
+          reserved_for?: string | null
+          status?: string
+          updated_at?: string
+          ward_id: string
+          ward_name: string
+        }
+        Update: {
+          acuity_level?: string | null
+          admission_date?: string | null
+          attending_physician?: string | null
+          bed_number?: string
+          created_at?: string
+          diagnosis?: string | null
+          id?: string
+          patient_id?: string | null
+          patient_mrn?: string | null
+          patient_name?: string | null
+          reserved_for?: string | null
+          status?: string
+          updated_at?: string
+          ward_id?: string
+          ward_name?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "beds_patient_id_fkey"
+            columns: ["patient_id"]
+            isOneToOne: false
+            referencedRelation: "patients"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       charge_items: {
         Row: {
           base_price: number

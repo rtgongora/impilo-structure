@@ -6,9 +6,11 @@ import { Textarea } from "@/components/ui/textarea";
 import { 
   Plus, FileEdit, Paperclip, Clock, User, FileText, Stethoscope, 
   Users, ClipboardList, Image, File, Download, Trash2, Eye,
-  ChevronDown, ChevronUp, Calendar, Building2
+  ChevronDown, ChevronUp, Calendar, Building2, PenSquare
 } from "lucide-react";
 import { useState } from "react";
+import { useParams } from "react-router-dom";
+import { SOAPNoteEditor } from "@/components/clinical/SOAPNoteEditor";
 
 const MOCK_SOAP_NOTES = [
   {
@@ -176,11 +178,16 @@ const getCategoryColor = (category: string) => {
 export function NotesSection() {
   const [expandedSoap, setExpandedSoap] = useState<number | null>(1);
   const [expandedRound, setExpandedRound] = useState<number | null>(1);
+  const { encounterId } = useParams<{ encounterId?: string }>();
 
   return (
     <div className="space-y-6">
-      <Tabs defaultValue="soap" className="w-full">
-        <TabsList className="grid w-full grid-cols-4">
+      <Tabs defaultValue="soap-live" className="w-full">
+        <TabsList className="grid w-full grid-cols-5">
+          <TabsTrigger value="soap-live" className="flex items-center gap-2">
+            <PenSquare className="w-4 h-4" />
+            Write Note
+          </TabsTrigger>
           <TabsTrigger value="soap" className="flex items-center gap-2">
             <Stethoscope className="w-4 h-4" />
             SOAP Notes
@@ -198,6 +205,19 @@ export function NotesSection() {
             Attachments
           </TabsTrigger>
         </TabsList>
+
+        {/* Live SOAP Note Editor */}
+        <TabsContent value="soap-live" className="space-y-4">
+          {encounterId ? (
+            <SOAPNoteEditor encounterId={encounterId} />
+          ) : (
+            <Card>
+              <CardContent className="p-6 text-center text-muted-foreground">
+                Select a patient encounter to write SOAP notes
+              </CardContent>
+            </Card>
+          )}
+        </TabsContent>
 
         {/* SOAP Notes */}
         <TabsContent value="soap" className="space-y-4">

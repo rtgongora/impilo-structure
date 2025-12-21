@@ -18,10 +18,13 @@ import {
   Users,
   CheckCircle2,
   Plus,
+  Thermometer,
 } from "lucide-react";
 import { format } from "date-fns";
 import { MOCK_TRIAGE, MOCK_HISTORY, MOCK_VITALS } from "@/data/mockClinicalData";
 import type { TriageCategory } from "@/types/clinical";
+import { VitalsRecorder } from "@/components/clinical/VitalsRecorder";
+import { useParams } from "react-router-dom";
 
 const triageColors: Record<TriageCategory, { bg: string; border: string; text: string; label: string }> = {
   red: { bg: "bg-critical", border: "border-critical", text: "text-critical-foreground", label: "Immediate" },
@@ -390,12 +393,18 @@ function ExaminationPanel() {
 }
 
 export function AssessmentSection() {
+  const { encounterId } = useParams<{ encounterId?: string }>();
+
   return (
     <Tabs defaultValue="triage" className="space-y-4">
-      <TabsList className="grid w-full grid-cols-3">
+      <TabsList className="grid w-full grid-cols-4">
         <TabsTrigger value="triage" className="flex items-center gap-2">
           <AlertTriangle className="w-4 h-4" />
           Triage & Vitals
+        </TabsTrigger>
+        <TabsTrigger value="record-vitals" className="flex items-center gap-2">
+          <Thermometer className="w-4 h-4" />
+          Record Vitals
         </TabsTrigger>
         <TabsTrigger value="history" className="flex items-center gap-2">
           <FileText className="w-4 h-4" />
@@ -409,6 +418,18 @@ export function AssessmentSection() {
 
       <TabsContent value="triage">
         <TriagePanel />
+      </TabsContent>
+
+      <TabsContent value="record-vitals">
+        {encounterId ? (
+          <VitalsRecorder encounterId={encounterId} />
+        ) : (
+          <Card>
+            <CardContent className="p-6 text-center text-muted-foreground">
+              Select a patient encounter to record vitals
+            </CardContent>
+          </Card>
+        )}
       </TabsContent>
 
       <TabsContent value="history">

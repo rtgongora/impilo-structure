@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { useParams } from "react-router-dom";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -57,6 +58,7 @@ import { MOCK_ORDERS, MOCK_LAB_RESULTS } from "@/data/mockClinicalData";
 import type { OrderStatus, OrderPriority } from "@/types/clinical";
 import { usePermissions } from "@/hooks/usePermissions";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
+import { MedicationOrders } from "@/components/clinical/MedicationOrders";
 
 const statusIcons: Record<OrderStatus, React.ReactNode> = {
   draft: <FileText className="w-4 h-4 text-muted-foreground" />,
@@ -774,12 +776,18 @@ export function OrdersSection() {
     );
   }
 
+  const { encounterId } = useParams<{ encounterId?: string }>();
+
   return (
     <Tabs defaultValue="orders" className="space-y-4">
       <TabsList className="flex-wrap">
         <TabsTrigger value="orders" className="flex items-center gap-2">
           <FileText className="w-4 h-4" />
           Orders
+        </TabsTrigger>
+        <TabsTrigger value="medications" className="flex items-center gap-2">
+          <Pill className="w-4 h-4" />
+          Medications
         </TabsTrigger>
         <TabsTrigger value="results" className="flex items-center gap-2">
           <TestTube2 className="w-4 h-4" />
@@ -793,6 +801,18 @@ export function OrdersSection() {
 
       <TabsContent value="orders">
         <OrdersPanel canOrder={canOrderLabs} />
+      </TabsContent>
+
+      <TabsContent value="medications">
+        {encounterId ? (
+          <MedicationOrders encounterId={encounterId} />
+        ) : (
+          <Card>
+            <CardContent className="p-6 text-center text-muted-foreground">
+              Select a patient encounter to manage medication orders
+            </CardContent>
+          </Card>
+        )}
       </TabsContent>
 
       <TabsContent value="results">

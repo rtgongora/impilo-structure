@@ -85,11 +85,12 @@ const Dashboard = () => {
     { label: "Patient Queue", icon: Users, path: "/queue", action: "queue", color: "bg-blue-500" },
     { label: "Bed Management", icon: Bed, path: "/beds", action: "beds", color: "bg-purple-500" },
     { label: "New Registration", icon: UserPlus, path: "/registration", color: "bg-green-500" },
-    { label: "My Schedule", icon: Calendar, path: "#", color: "bg-orange-500" },
+    { label: "Appointments", icon: Calendar, path: "/appointments", color: "bg-orange-500" },
   ];
 
   const systemModules = [
     { label: "Clinical EHR", icon: Stethoscope, path: "/encounter", description: "Patient encounters & documentation" },
+    { label: "Appointments", icon: Calendar, path: "/appointments", description: "Schedule & manage appointments" },
     { label: "Patients", icon: Users, path: "/patients", description: "Patient registry & records" },
     { label: "Stock Management", icon: Package, path: "/stock", description: "Inventory & supplies" },
     { label: "Consumables", icon: Syringe, path: "/consumables", description: "Track consumable usage" },
