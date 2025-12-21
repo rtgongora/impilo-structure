@@ -84,11 +84,42 @@ serve(async (req) => {
     }
 
     console.log(`Successfully cleaned up ${expiredCount} expired sessions`);
+
+    // Also clean up expired trusted devices
+    const now = new Date().toISOString();
+    
+    const { data: expiredDevices, error: deviceSelectError } = await supabaseClient
+      .from("trusted_devices")
+      .select("id")
+      .or(`expires_at.lt.${now},is_active.eq.false`);
+
+    if (deviceSelectError) {
+      console.error("Error finding expired devices:", deviceSelectError);
+    } else {
+      const expiredDeviceCount = expiredDevices?.length || 0;
+      console.log(`Found ${expiredDeviceCount} expired trusted devices`);
+
+      if (expiredDeviceCount > 0) {
+        const { error: deviceDeleteError } = await supabaseClient
+          .from("trusted_devices")
+          .delete()
+          .or(`expires_at.lt.${now},is_active.eq.false`);
+
+        if (deviceDeleteError) {
+          console.error("Error deleting expired devices:", deviceDeleteError);
+        } else {
+          console.log(`Successfully cleaned up ${expiredDeviceCount} expired trusted devices`);
+        }
+      }
+    }
+
+    const expiredDeviceCount = expiredDevices?.length || 0;
     
     return new Response(
       JSON.stringify({ 
         success: true, 
         expiredSessionsCount: expiredCount,
+        expiredDevicesCount: expiredDeviceCount,
         timeoutMinutes: timeoutMinutes,
         cutoffTime: cutoffTime.toISOString()
       }),
