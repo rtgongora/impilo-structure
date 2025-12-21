@@ -5,10 +5,11 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Alert, AlertDescription } from '@/components/ui/alert';
+import { Checkbox } from '@/components/ui/checkbox';
 import { Loader2, Shield, ArrowLeft } from 'lucide-react';
 
 interface TwoFactorVerifyProps {
-  onVerified: () => void;
+  onVerified: (trustDevice?: boolean) => void;
   onCancel: () => void;
   email: string;
 }
@@ -18,6 +19,7 @@ export function TwoFactorVerify({ onVerified, onCancel, email }: TwoFactorVerify
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
   const [isBackupCode, setIsBackupCode] = useState(false);
+  const [trustDevice, setTrustDevice] = useState(false);
 
   const handleVerify = async () => {
     const cleanCode = isBackupCode ? code.toUpperCase() : code.replace(/\D/g, '');
@@ -47,7 +49,7 @@ export function TwoFactorVerify({ onVerified, onCancel, email }: TwoFactorVerify
           // Show warning about backup code usage
           console.log('Backup code used, notify user');
         }
-        onVerified();
+        onVerified(trustDevice);
       }
     } catch (err: any) {
       setError(err.message || 'Invalid verification code');
@@ -102,6 +104,20 @@ export function TwoFactorVerify({ onVerified, onCancel, email }: TwoFactorVerify
             className="text-center text-2xl tracking-widest font-mono"
             autoFocus
           />
+        </div>
+
+        <div className="flex items-center space-x-2">
+          <Checkbox
+            id="trust-device"
+            checked={trustDevice}
+            onCheckedChange={(checked) => setTrustDevice(checked === true)}
+          />
+          <Label 
+            htmlFor="trust-device" 
+            className="text-sm text-muted-foreground cursor-pointer"
+          >
+            Trust this device for 30 days
+          </Label>
         </div>
 
         <Button 
