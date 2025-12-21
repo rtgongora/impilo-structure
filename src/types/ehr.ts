@@ -28,7 +28,19 @@ export const ENCOUNTER_MENU_ITEMS: EncounterMenuItemConfig[] = [
   { id: "outcome", label: "Visit Outcome", description: "Encounter disposition", icon: "CheckCircle" },
 ];
 
-export type TopBarAction = "workspaces" | "pathways" | "consumables" | "charges" | "queue" | "beds" | "ordersets" | "handoff" | "orderentry";
+export type TopBarAction = 
+  | "workspaces" 
+  | "pathways" 
+  | "consumables" 
+  | "charges" 
+  | "queue" 
+  | "beds" 
+  | "ordersets" 
+  | "handoff" 
+  | "orderentry"
+  | "pharmacy"
+  | "theatre"
+  | "payments";
 
 export interface TopBarActionConfig {
   id: TopBarAction;
@@ -41,6 +53,9 @@ export const TOP_BAR_ACTIONS: TopBarActionConfig[] = [
   { id: "beds", label: "Beds", icon: "Bed" },
   { id: "ordersets", label: "Order Sets", icon: "ClipboardList" },
   { id: "orderentry", label: "Order Entry", icon: "ShoppingCart" },
+  { id: "pharmacy", label: "Pharmacy", icon: "Pill" },
+  { id: "theatre", label: "Theatre Booking", icon: "Calendar" },
+  { id: "payments", label: "Payments", icon: "CreditCard" },
   { id: "handoff", label: "Shift Handoff", icon: "ClipboardCheck" },
   { id: "workspaces", label: "Workspaces", icon: "Boxes" },
   { id: "pathways", label: "Care Pathways", icon: "Route" },

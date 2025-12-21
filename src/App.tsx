@@ -19,6 +19,10 @@ import AdminDashboard from "./pages/AdminDashboard";
 import Queue from "./pages/Queue";
 import Beds from "./pages/Beds";
 import Appointments from "./pages/Appointments";
+import Pharmacy from "./pages/Pharmacy";
+import Theatre from "./pages/Theatre";
+import Payments from "./pages/Payments";
+import Portal from "./pages/Portal";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -98,6 +102,22 @@ const App = () => (
                 <AdminDashboard />
               </ProtectedRoute>
             } />
+            <Route path="/pharmacy" element={
+              <ProtectedRoute>
+                <Pharmacy />
+              </ProtectedRoute>
+            } />
+            <Route path="/theatre" element={
+              <ProtectedRoute>
+                <Theatre />
+              </ProtectedRoute>
+            } />
+            <Route path="/payments" element={
+              <ProtectedRoute>
+                <Payments />
+              </ProtectedRoute>
+            } />
+            <Route path="/portal" element={<Portal />} />
             {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
             <Route path="*" element={<NotFound />} />
           </Routes>
