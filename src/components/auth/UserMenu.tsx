@@ -1,5 +1,5 @@
-import React from 'react';
-import { useAuth } from '@/contexts/AuthContext';
+import React, { useContext } from 'react';
+import { AuthContext } from '@/contexts/AuthContext';
 import { Button } from '@/components/ui/button';
 import {
   DropdownMenu,
@@ -16,8 +16,13 @@ import { useNavigate } from 'react-router-dom';
 import { toast } from 'sonner';
 
 export const UserMenu: React.FC = () => {
-  const { user, profile, signOut } = useAuth();
+  const context = useContext(AuthContext);
   const navigate = useNavigate();
+
+  // Gracefully handle missing context during HMR
+  if (!context) return null;
+
+  const { user, profile, signOut } = context;
 
   if (!user) return null;
 
