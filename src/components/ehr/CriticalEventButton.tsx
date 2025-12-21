@@ -11,6 +11,7 @@ import {
 } from "@/components/ui/dialog";
 import { useState } from "react";
 import { CriticalEventType } from "@/types/ehr";
+import { usePermissions } from "@/hooks/usePermissions";
 
 const CRITICAL_EVENT_TYPES: { id: CriticalEventType; label: string; description: string }[] = [
   { id: "code-blue", label: "Code Blue", description: "Cardiac/Respiratory Arrest" },
@@ -21,7 +22,21 @@ const CRITICAL_EVENT_TYPES: { id: CriticalEventType; label: string; description:
 
 export function CriticalEventButton() {
   const { isCriticalEventActive, activateCriticalEvent } = useEHR();
+  const { hasPermission } = usePermissions();
   const [open, setOpen] = useState(false);
+
+  // Only clinical staff can trigger critical events
+  if (!hasPermission('critical_events')) {
+    if (isCriticalEventActive) {
+      return (
+        <div className="flex items-center gap-2 px-3 py-1.5 rounded-lg bg-critical text-critical-foreground animate-pulse">
+          <Zap className="w-4 h-4" />
+          <span className="text-sm font-semibold">CRITICAL EVENT ACTIVE</span>
+        </div>
+      );
+    }
+    return null;
+  }
 
   const handleActivate = (type: CriticalEventType) => {
     activateCriticalEvent(type, "Manual activation");

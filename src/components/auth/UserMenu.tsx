@@ -1,4 +1,4 @@
-import React, { useContext } from 'react';
+import React, { useContext, useState } from 'react';
 import { AuthContext } from '@/contexts/AuthContext';
 import { Button } from '@/components/ui/button';
 import {
@@ -11,13 +11,21 @@ import {
 } from '@/components/ui/dropdown-menu';
 import { Avatar, AvatarFallback } from '@/components/ui/avatar';
 import { Badge } from '@/components/ui/badge';
-import { LogOut, User, Settings } from 'lucide-react';
+import { LogOut, User, Settings, Shield } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { toast } from 'sonner';
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+} from '@/components/ui/dialog';
+import { PermissionsDisplay } from './PermissionsDisplay';
 
 export const UserMenu: React.FC = () => {
   const context = useContext(AuthContext);
   const navigate = useNavigate();
+  const [showPermissions, setShowPermissions] = useState(false);
 
   // Gracefully handle missing context during HMR
   if (!context) return null;
@@ -57,6 +65,7 @@ export const UserMenu: React.FC = () => {
   };
 
   return (
+    <>
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
         <Button variant="ghost" className="relative h-9 w-9 rounded-full">
@@ -103,6 +112,14 @@ export const UserMenu: React.FC = () => {
           <Settings className="mr-2 h-4 w-4" />
           <span>Profile Settings</span>
         </DropdownMenuItem>
+
+        <DropdownMenuItem 
+          className="cursor-pointer"
+          onClick={() => setShowPermissions(true)}
+        >
+          <Shield className="mr-2 h-4 w-4" />
+          <span>View Permissions</span>
+        </DropdownMenuItem>
         
         <DropdownMenuSeparator />
         
@@ -115,5 +132,15 @@ export const UserMenu: React.FC = () => {
         </DropdownMenuItem>
       </DropdownMenuContent>
     </DropdownMenu>
+
+    <Dialog open={showPermissions} onOpenChange={setShowPermissions}>
+      <DialogContent className="max-w-2xl">
+        <DialogHeader>
+          <DialogTitle className="sr-only">Your Permissions</DialogTitle>
+        </DialogHeader>
+        <PermissionsDisplay />
+      </DialogContent>
+    </Dialog>
+    </>
   );
 };
