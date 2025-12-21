@@ -16,96 +16,18 @@ import {
   Activity,
   Target,
   ClipboardList,
-  CheckCircle2,
-  Clock,
   TrendingUp,
   Plus,
 } from "lucide-react";
 import { format } from "date-fns";
 import { useEHR } from "@/contexts/EHRContext";
 import {
-  MOCK_MAR,
   MOCK_NURSING_TASKS,
   MOCK_CARE_PLAN,
   MOCK_FLUID_BALANCE,
 } from "@/data/mockClinicalData";
+import { MedicationAdministrationRecord } from "../MedicationAdministrationRecord";
 
-function MedicationAdministrationPanel() {
-  const marEntries = MOCK_MAR;
-  const scheduledCount = marEntries.filter(m => m.status === 'scheduled').length;
-  const givenCount = marEntries.filter(m => m.status === 'given').length;
-
-  const getStatusBadge = (status: string) => {
-    switch (status) {
-      case 'given':
-        return <Badge className="bg-success text-success-foreground">Given</Badge>;
-      case 'scheduled':
-        return <Badge variant="outline">Scheduled</Badge>;
-      case 'missed':
-        return <Badge variant="destructive">Missed</Badge>;
-      case 'held':
-        return <Badge variant="secondary">Held</Badge>;
-      case 'refused':
-        return <Badge variant="secondary">Refused</Badge>;
-      default:
-        return <Badge variant="outline">{status}</Badge>;
-    }
-  };
-
-  return (
-    <div className="space-y-4">
-      <div className="flex items-center justify-between">
-        <div className="flex items-center gap-4">
-          <div className="text-center p-3 bg-success/10 rounded-lg">
-            <div className="text-2xl font-semibold text-success">{givenCount}</div>
-            <div className="text-xs text-muted-foreground">Given</div>
-          </div>
-          <div className="text-center p-3 bg-muted rounded-lg">
-            <div className="text-2xl font-semibold">{scheduledCount}</div>
-            <div className="text-xs text-muted-foreground">Scheduled</div>
-          </div>
-        </div>
-        <Button>
-          <Plus className="w-4 h-4 mr-2" />
-          Record Administration
-        </Button>
-      </div>
-
-      <Card>
-        <CardContent className="p-0">
-          <Table>
-            <TableHeader>
-              <TableRow>
-                <TableHead>Time</TableHead>
-                <TableHead>Medication</TableHead>
-                <TableHead>Dose</TableHead>
-                <TableHead>Route</TableHead>
-                <TableHead>Status</TableHead>
-                <TableHead>Given By</TableHead>
-              </TableRow>
-            </TableHeader>
-            <TableBody>
-              {marEntries.map(entry => (
-                <TableRow key={entry.id}>
-                  <TableCell className="font-mono text-sm">
-                    {format(entry.scheduledTime, "HH:mm")}
-                  </TableCell>
-                  <TableCell className="font-medium">{entry.medication}</TableCell>
-                  <TableCell>{entry.dose}</TableCell>
-                  <TableCell>{entry.route}</TableCell>
-                  <TableCell>{getStatusBadge(entry.status)}</TableCell>
-                  <TableCell className="text-sm text-muted-foreground">
-                    {entry.administeredBy || "—"}
-                  </TableCell>
-                </TableRow>
-              ))}
-            </TableBody>
-          </Table>
-        </CardContent>
-      </Card>
-    </div>
-  );
-}
 
 function FluidBalancePanel() {
   const todayBalance = MOCK_FLUID_BALANCE[0];
@@ -441,8 +363,8 @@ export function CareSection() {
 
       {isInpatient && (
         <>
-          <TabsContent value="mar">
-            <MedicationAdministrationPanel />
+          <TabsContent value="mar" className="m-0 -mx-6 -mb-6">
+            <MedicationAdministrationRecord />
           </TabsContent>
           <TabsContent value="fluids">
             <FluidBalancePanel />
