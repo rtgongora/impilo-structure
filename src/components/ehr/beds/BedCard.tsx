@@ -1,24 +1,9 @@
 import { User, Clock, AlertTriangle } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { cn } from "@/lib/utils";
+import { type BedData } from "@/hooks/useBedData";
 
-export interface BedData {
-  id: string;
-  bedNumber: string;
-  wardId: string;
-  status: 'available' | 'occupied' | 'reserved' | 'maintenance' | 'cleaning';
-  patient?: {
-    id: string;
-    name: string;
-    mrn: string;
-    admissionDate: Date;
-    diagnosis: string;
-    attendingPhysician: string;
-    acuityLevel: 'critical' | 'high' | 'medium' | 'low';
-  };
-  reservedFor?: string;
-  reservedUntil?: Date;
-}
+export type { BedData } from "@/hooks/useBedData";
 
 interface BedCardProps {
   bed: BedData;

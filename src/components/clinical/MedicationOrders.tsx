@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useForm } from "react-hook-form";
 import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
@@ -48,7 +48,7 @@ interface MedicationOrder {
 
 interface MedicationOrdersProps {
   encounterId: string;
-  patientId: string;
+  patientId?: string;
   existingOrders?: MedicationOrder[];
   onOrderSaved?: () => void;
 }
@@ -84,10 +84,24 @@ const FREQUENCIES = [
   'Weekly',
 ];
 
-export function MedicationOrders({ encounterId, patientId, existingOrders = [], onOrderSaved }: MedicationOrdersProps) {
+export function MedicationOrders({ encounterId, patientId: propPatientId, existingOrders = [], onOrderSaved }: MedicationOrdersProps) {
   const [dialogOpen, setDialogOpen] = useState(false);
   const [saving, setSaving] = useState(false);
-  
+  const [patientId, setPatientId] = useState(propPatientId || '');
+
+  // Fetch patient ID from encounter if not provided
+  useEffect(() => {
+    if (!propPatientId && encounterId) {
+      supabase
+        .from('encounters')
+        .select('patient_id')
+        .eq('id', encounterId)
+        .single()
+        .then(({ data }) => {
+          if (data?.patient_id) setPatientId(data.patient_id);
+        });
+    }
+  }, [propPatientId, encounterId]);
   const { register, handleSubmit, reset, setValue, watch } = useForm<MedicationFormData>({
     defaultValues: {
       medication_name: '',
