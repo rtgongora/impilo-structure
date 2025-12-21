@@ -39,6 +39,7 @@ import { toast } from "sonner";
 import { BarcodeScanner } from "./BarcodeScanner";
 import { SignaturePad } from "./SignaturePad";
 import { DrugInteractionChecker } from "./DrugInteractionChecker";
+import { AllergyCrossCheck } from "./AllergyCrossCheck";
 
 interface MedicationOrder {
   id: string;
@@ -78,6 +79,7 @@ export function MedicationAdministration({ patientId, encounterId }: MedicationA
   const [showBarcodeScanner, setShowBarcodeScanner] = useState(false);
   const [showSignaturePad, setShowSignaturePad] = useState(false);
   const [showDrugInteractionChecker, setShowDrugInteractionChecker] = useState(false);
+  const [showAllergyCrossCheck, setShowAllergyCrossCheck] = useState(false);
   const [signatureUrl, setSignatureUrl] = useState<string | null>(null);
   const [currentMedications, setCurrentMedications] = useState<string[]>([]);
   const [patientAllergies, setPatientAllergies] = useState<string[]>([]);
@@ -145,8 +147,19 @@ export function MedicationAdministration({ patientId, encounterId }: MedicationA
       .map(m => m.medication_name);
     setCurrentMedications(otherMeds);
     
-    // Show drug interaction checker first if there are other medications
-    if (otherMeds.length > 0) {
+    // Start with allergy cross-check if patient has allergies
+    if (patientAllergies.length > 0) {
+      setShowAllergyCrossCheck(true);
+    } else if (otherMeds.length > 0) {
+      setShowDrugInteractionChecker(true);
+    } else {
+      setShowBarcodeScanner(true);
+    }
+  };
+
+  const handleAllergyCrossCheckProceed = () => {
+    setShowAllergyCrossCheck(false);
+    if (currentMedications.length > 0) {
       setShowDrugInteractionChecker(true);
     } else {
       setShowBarcodeScanner(true);
@@ -274,6 +287,17 @@ export function MedicationAdministration({ patientId, encounterId }: MedicationA
           )}
         </CardContent>
       </Card>
+
+      {/* Allergy Cross-Check */}
+      {selectedMed && (
+        <AllergyCrossCheck
+          open={showAllergyCrossCheck}
+          medicationName={selectedMed.medication_name}
+          patientAllergies={patientAllergies}
+          onProceed={handleAllergyCrossCheckProceed}
+          onCancel={() => { setShowAllergyCrossCheck(false); setSelectedMed(null); }}
+        />
+      )}
 
       {/* Drug Interaction Checker */}
       {selectedMed && (
