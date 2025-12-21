@@ -9,6 +9,7 @@ import {
 import { ScrollArea } from "@/components/ui/scroll-area";
 import {
   Bell,
+  BellOff,
   ClipboardList,
   Clock,
   CheckCircle,
@@ -17,6 +18,7 @@ import {
 } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/contexts/AuthContext";
+import { usePushNotifications } from "@/hooks/usePushNotifications";
 import { toast } from "sonner";
 import { useNavigate } from "react-router-dom";
 
@@ -37,6 +39,7 @@ export function HandoffNotifications() {
   const [pendingHandoffs, setPendingHandoffs] = useState<PendingHandoff[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [isAccepting, setIsAccepting] = useState<string | null>(null);
+  const { isSupported, permission, requestPermission, sendNotification } = usePushNotifications();
 
   useEffect(() => {
     if (user) {
@@ -99,6 +102,14 @@ export function HandoffNotifications() {
           fetchPendingHandoffs();
 
           if (payload.eventType === "INSERT" && payload.new.status === "pending") {
+            // Send browser push notification
+            if (permission === "granted") {
+              sendNotification("New Shift Handoff", {
+                body: "A colleague has submitted a handoff for your review",
+                tag: `handoff-${payload.new.id}`,
+              });
+            }
+            
             toast.info("New shift handoff pending", {
               description: "A colleague has submitted a handoff for your review",
               action: {
@@ -238,6 +249,31 @@ export function HandoffNotifications() {
                 ))}
               </div>
             </ScrollArea>
+          )}
+
+          {/* Push notification toggle */}
+          {isSupported && (
+            <div className="flex items-center justify-between pt-2 border-t">
+              <span className="text-xs text-muted-foreground">Push notifications</span>
+              <Button
+                variant="ghost"
+                size="sm"
+                onClick={async () => {
+                  if (permission !== "granted") {
+                    const granted = await requestPermission();
+                    if (granted) {
+                      toast.success("Push notifications enabled");
+                    }
+                  }
+                }}
+              >
+                {permission === "granted" ? (
+                  <Bell className="h-4 w-4 text-emerald-500" />
+                ) : (
+                  <BellOff className="h-4 w-4" />
+                )}
+              </Button>
+            </div>
           )}
 
           <Button

@@ -4,6 +4,7 @@ import { useNavigate } from "react-router-dom";
 import { PatientSearch } from "@/components/search/PatientSearch";
 import { HandoffNotifications } from "@/components/handoff/HandoffNotifications";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { NurseMedDashboard } from "@/components/orders/NurseMedDashboard";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
@@ -241,7 +242,7 @@ const Dashboard = () => {
           ))}
         </div>
 
-        <div className="grid lg:grid-cols-3 gap-6">
+        <div className="grid lg:grid-cols-4 gap-6">
           {/* Main Worklist Area */}
           <div className="lg:col-span-2">
             <Card>
@@ -320,6 +321,11 @@ const Dashboard = () => {
                 </Tabs>
               </CardContent>
             </Card>
+          </div>
+
+          {/* Medication Dashboard */}
+          <div className="lg:col-span-1">
+            <NurseMedDashboard />
           </div>
 
           {/* Right Sidebar */}
