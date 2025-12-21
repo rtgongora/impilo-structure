@@ -1,1 +1,4 @@
 project_id = "jwrmwzvelxyswtxleajf"
+
+[functions.send-role-notification]
+verify_jwt = true
