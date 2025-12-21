@@ -824,6 +824,63 @@ export type Database = {
           },
         ]
       }
+      facilities: {
+        Row: {
+          address_line1: string | null
+          city: string | null
+          country: string | null
+          created_at: string | null
+          email: string | null
+          facility_type: string
+          gofr_id: string
+          id: string
+          is_active: boolean | null
+          latitude: number | null
+          level: string | null
+          longitude: number | null
+          name: string
+          phone: string | null
+          province: string | null
+          updated_at: string | null
+        }
+        Insert: {
+          address_line1?: string | null
+          city?: string | null
+          country?: string | null
+          created_at?: string | null
+          email?: string | null
+          facility_type: string
+          gofr_id: string
+          id?: string
+          is_active?: boolean | null
+          latitude?: number | null
+          level?: string | null
+          longitude?: number | null
+          name: string
+          phone?: string | null
+          province?: string | null
+          updated_at?: string | null
+        }
+        Update: {
+          address_line1?: string | null
+          city?: string | null
+          country?: string | null
+          created_at?: string | null
+          email?: string | null
+          facility_type?: string
+          gofr_id?: string
+          id?: string
+          is_active?: boolean | null
+          latitude?: number | null
+          level?: string | null
+          longitude?: number | null
+          name?: string
+          phone?: string | null
+          province?: string | null
+          updated_at?: string | null
+        }
+        Relationships: []
+      }
       insurance_claims: {
         Row: {
           approved_amount: number | null
@@ -1284,6 +1341,56 @@ export type Database = {
           },
         ]
       }
+      patient_identifiers: {
+        Row: {
+          biometric_enrolled_at: string | null
+          biometric_facial_hash: string | null
+          biometric_fingerprint_hash: string | null
+          biometric_iris_hash: string | null
+          created_at: string | null
+          id: string
+          impilo_id: string
+          mosip_uin: string | null
+          patient_id: string | null
+          updated_at: string | null
+          verified_at: string | null
+        }
+        Insert: {
+          biometric_enrolled_at?: string | null
+          biometric_facial_hash?: string | null
+          biometric_fingerprint_hash?: string | null
+          biometric_iris_hash?: string | null
+          created_at?: string | null
+          id?: string
+          impilo_id: string
+          mosip_uin?: string | null
+          patient_id?: string | null
+          updated_at?: string | null
+          verified_at?: string | null
+        }
+        Update: {
+          biometric_enrolled_at?: string | null
+          biometric_facial_hash?: string | null
+          biometric_fingerprint_hash?: string | null
+          biometric_iris_hash?: string | null
+          created_at?: string | null
+          id?: string
+          impilo_id?: string
+          mosip_uin?: string | null
+          patient_id?: string | null
+          updated_at?: string | null
+          verified_at?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "patient_identifiers_patient_id_fkey"
+            columns: ["patient_id"]
+            isOneToOne: false
+            referencedRelation: "patients"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       patients: {
         Row: {
           address_line1: string | null
@@ -1459,15 +1566,21 @@ export type Database = {
         Row: {
           avatar_url: string | null
           backup_codes: string[] | null
+          biometric_enrolled_at: string | null
+          biometric_facial_hash: string | null
+          biometric_fingerprint_hash: string | null
+          biometric_iris_hash: string | null
           created_at: string
           department: string | null
           display_name: string
+          facility_id: string | null
           force_password_reset: boolean
           id: string
           last_active_at: string | null
           license_number: string | null
           password_reset_reason: string | null
           phone: string | null
+          provider_registry_id: string | null
           role: Database["public"]["Enums"]["clinical_role"]
           specialty: string | null
           totp_enabled: boolean
@@ -1478,15 +1591,21 @@ export type Database = {
         Insert: {
           avatar_url?: string | null
           backup_codes?: string[] | null
+          biometric_enrolled_at?: string | null
+          biometric_facial_hash?: string | null
+          biometric_fingerprint_hash?: string | null
+          biometric_iris_hash?: string | null
           created_at?: string
           department?: string | null
           display_name: string
+          facility_id?: string | null
           force_password_reset?: boolean
           id?: string
           last_active_at?: string | null
           license_number?: string | null
           password_reset_reason?: string | null
           phone?: string | null
+          provider_registry_id?: string | null
           role?: Database["public"]["Enums"]["clinical_role"]
           specialty?: string | null
           totp_enabled?: boolean
@@ -1497,21 +1616,63 @@ export type Database = {
         Update: {
           avatar_url?: string | null
           backup_codes?: string[] | null
+          biometric_enrolled_at?: string | null
+          biometric_facial_hash?: string | null
+          biometric_fingerprint_hash?: string | null
+          biometric_iris_hash?: string | null
           created_at?: string
           department?: string | null
           display_name?: string
+          facility_id?: string | null
           force_password_reset?: boolean
           id?: string
           last_active_at?: string | null
           license_number?: string | null
           password_reset_reason?: string | null
           phone?: string | null
+          provider_registry_id?: string | null
           role?: Database["public"]["Enums"]["clinical_role"]
           specialty?: string | null
           totp_enabled?: boolean
           totp_secret?: string | null
           updated_at?: string
           user_id?: string
+        }
+        Relationships: []
+      }
+      provider_registry_logs: {
+        Row: {
+          action: string
+          biometric_method: string | null
+          created_at: string | null
+          id: string
+          ip_address: string | null
+          provider_registry_id: string
+          user_agent: string | null
+          user_id: string | null
+          verification_status: string | null
+        }
+        Insert: {
+          action: string
+          biometric_method?: string | null
+          created_at?: string | null
+          id?: string
+          ip_address?: string | null
+          provider_registry_id: string
+          user_agent?: string | null
+          user_id?: string | null
+          verification_status?: string | null
+        }
+        Update: {
+          action?: string
+          biometric_method?: string | null
+          created_at?: string | null
+          id?: string
+          ip_address?: string | null
+          provider_registry_id?: string
+          user_agent?: string | null
+          user_id?: string | null
+          verification_status?: string | null
         }
         Relationships: []
       }

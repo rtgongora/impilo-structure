@@ -1,51 +1,24 @@
-import React, { useState, useEffect, useCallback } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '@/contexts/AuthContext';
 import { supabase } from '@/integrations/supabase/client';
-import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
-import { Label } from '@/components/ui/label';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { toast } from 'sonner';
-import { Stethoscope, Shield, Users, ArrowLeft, Mail } from 'lucide-react';
-import { z } from 'zod';
-import PasswordValidator from '@/components/auth/PasswordValidator';
-import { TwoFactorVerify } from '@/components/auth/TwoFactorVerify';
+import { ProviderIdLookup } from '@/components/auth/ProviderIdLookup';
+import { BiometricAuth } from '@/components/auth/BiometricAuth';
+import { 
+  type ProviderRegistryRecord, 
+  type FacilityRegistryRecord 
+} from '@/services/registryServices';
 
-const emailSchema = z.string().email('Please enter a valid email address');
-const passwordSchema = z.string().min(6, 'Password must be at least 6 characters');
-
-type AuthView = 'main' | 'forgot-password' | '2fa-verify';
+type AuthView = 'lookup' | 'biometric';
 
 const Auth = () => {
   const navigate = useNavigate();
-  const { user, signIn, signUp, loading } = useAuth();
+  const { user, loading } = useAuth();
   
-  const [view, setView] = useState<AuthView>('main');
-  const [isSubmitting, setIsSubmitting] = useState(false);
-  const [resetEmailSent, setResetEmailSent] = useState(false);
-  const [forgotEmail, setForgotEmail] = useState('');
-  const [pendingTwoFactorEmail, setPendingTwoFactorEmail] = useState('');
-  
-  // Login form state
-  const [loginEmail, setLoginEmail] = useState('');
-  const [loginPassword, setLoginPassword] = useState('');
-  
-  // Signup form state
-  const [signupEmail, setSignupEmail] = useState('');
-  const [signupPassword, setSignupPassword] = useState('');
-  const [confirmPassword, setConfirmPassword] = useState('');
-  const [displayName, setDisplayName] = useState('');
-  const [role, setRole] = useState<string>('doctor');
-  const [specialty, setSpecialty] = useState('');
-  const [department, setDepartment] = useState('');
-  const [isPasswordValid, setIsPasswordValid] = useState(false);
-
-  const handlePasswordValidationChange = useCallback((isValid: boolean) => {
-    setIsPasswordValid(isValid);
-  }, []);
+  const [view, setView] = useState<AuthView>('lookup');
+  const [provider, setProvider] = useState<ProviderRegistryRecord | null>(null);
+  const [facility, setFacility] = useState<FacilityRegistryRecord | null>(null);
 
   useEffect(() => {
     if (user) {
@@ -53,220 +26,68 @@ const Auth = () => {
     }
   }, [user, navigate]);
 
-  const getDeviceFingerprint = () => {
-    return btoa(navigator.userAgent + navigator.language + screen.width + screen.height);
+  const handleProviderFound = (
+    providerData: ProviderRegistryRecord, 
+    facilityData: FacilityRegistryRecord
+  ) => {
+    setProvider(providerData);
+    setFacility(facilityData);
+    setView('biometric');
   };
 
-  const checkTrustedDevice = async (userId: string): Promise<boolean> => {
-    const fingerprint = getDeviceFingerprint();
-    const { data } = await supabase
-      .from('trusted_devices')
-      .select('id, expires_at')
-      .eq('user_id', userId)
-      .eq('device_fingerprint', fingerprint)
-      .eq('is_active', true)
-      .single();
+  const handleBiometricVerified = async (method: string, confidence: number) => {
+    if (!provider) return;
 
-    if (data && new Date(data.expires_at) > new Date()) {
-      // Update last_used_at
-      await supabase
-        .from('trusted_devices')
-        .update({ last_used_at: new Date().toISOString() })
-        .eq('id', data.id);
-      return true;
-    }
-    return false;
-  };
-
-  const handleLogin = async (e: React.FormEvent) => {
-    e.preventDefault();
-    
     try {
-      emailSchema.parse(loginEmail);
-      passwordSchema.parse(loginPassword);
-    } catch (err) {
-      if (err instanceof z.ZodError) {
-        toast.error(err.errors[0].message);
+      // Find the user account associated with this provider ID
+      const { data: profile } = await supabase
+        .from('profiles')
+        .select('user_id')
+        .eq('provider_registry_id', provider.providerId)
+        .maybeSingle();
+
+      if (!profile) {
+        toast.error('No user account linked to this Provider ID');
+        setView('lookup');
         return;
       }
-    }
-    
-    setIsSubmitting(true);
-    
-    const { error } = await signIn(loginEmail, loginPassword);
-    
-    if (error) {
-      if (error.message.includes('Invalid login credentials')) {
-        toast.error('Invalid email or password');
-      } else if (error.message.includes('2FA_REQUIRED')) {
-        setPendingTwoFactorEmail(loginEmail);
-        setView('2fa-verify');
-      } else {
-        toast.error(error.message);
-      }
-    } else {
-      const { data: { user } } = await supabase.auth.getUser();
-      
-      if (user) {
-        // Check if 2FA is enabled
-        const { data: profile } = await supabase
-          .from('profiles')
-          .select('totp_enabled')
-          .eq('user_id', user.id)
-          .single();
-        
-        if (profile?.totp_enabled) {
-          // Check if this is a trusted device
-          const isTrusted = await checkTrustedDevice(user.id);
-          
-          if (isTrusted) {
-            toast.success('Welcome back! (Trusted device)');
-            navigate('/');
-          } else {
-            setPendingTwoFactorEmail(loginEmail);
-            setView('2fa-verify');
-          }
-        } else {
-          toast.success('Welcome back!');
-          navigate('/');
-        }
-      }
-    }
-    
-    setIsSubmitting(false);
-  };
 
-  const handleTwoFactorVerified = async (trustDevice?: boolean) => {
-    if (trustDevice) {
-      try {
-        const { data: { user } } = await supabase.auth.getUser();
-        if (user) {
-          const deviceFingerprint = getDeviceFingerprint();
-          await supabase.from('trusted_devices').insert({
-            user_id: user.id,
-            device_fingerprint: deviceFingerprint,
-            device_name: getDeviceName(),
-            user_agent: navigator.userAgent,
-            ip_address: null
-          });
-        }
-      } catch (error) {
-        console.error('Failed to save trusted device:', error);
-      }
-    }
-    toast.success('Welcome back!');
-    navigate('/');
-  };
+      // Log the biometric authentication
+      await supabase.from('provider_registry_logs').insert({
+        user_id: profile.user_id,
+        provider_registry_id: provider.providerId,
+        action: 'biometric_login',
+        biometric_method: method,
+        verification_status: 'success',
+        user_agent: navigator.userAgent
+      });
 
-  const getDeviceName = () => {
-    const ua = navigator.userAgent;
-    if (ua.includes('Windows')) return 'Windows PC';
-    if (ua.includes('Mac')) return 'Mac';
-    if (ua.includes('Linux')) return 'Linux PC';
-    if (ua.includes('iPhone')) return 'iPhone';
-    if (ua.includes('iPad')) return 'iPad';
-    if (ua.includes('Android')) return 'Android Device';
-    return 'Unknown Device';
-  };
+      // For demo purposes, we'll sign in with a magic link approach
+      // In production, this would use a secure token-based auth after biometric verification
+      toast.success(`Welcome, ${provider.fullName}!`, {
+        description: `Verified via ${method} (${(confidence * 100).toFixed(1)}% confidence)`
+      });
 
-  const handleTwoFactorCancel = async () => {
-    // Sign out since user cancelled 2FA
-    await supabase.auth.signOut();
-    setView('main');
-    setPendingTwoFactorEmail('');
-  };
-
-  const handleForgotPassword = async (e: React.FormEvent) => {
-    e.preventDefault();
-    
-    try {
-      emailSchema.parse(forgotEmail);
-    } catch (err) {
-      if (err instanceof z.ZodError) {
-        toast.error(err.errors[0].message);
-        return;
-      }
-    }
-    
-    setIsSubmitting(true);
-    
-    const redirectUrl = `${window.location.origin}/reset-password`;
-    
-    const { error } = await supabase.auth.resetPasswordForEmail(forgotEmail, {
-      redirectTo: redirectUrl,
-    });
-    
-    if (error) {
-      toast.error(error.message);
-    } else {
-      // Call edge function to send custom email
-      try {
-        const { data: { session } } = await supabase.auth.getSession();
-        await supabase.functions.invoke('send-password-reset', {
-          body: { 
-            email: forgotEmail, 
-            resetLink: redirectUrl 
-          }
-        });
-      } catch (emailError) {
-        console.log('Custom email sending failed, using default Supabase email');
-      }
-      
-      setResetEmailSent(true);
-      toast.success('Password reset email sent!');
-    }
-    
-    setIsSubmitting(false);
-  };
-
-  const handleSignup = async (e: React.FormEvent) => {
-    e.preventDefault();
-    
-    try {
-      emailSchema.parse(signupEmail);
-    } catch (err) {
-      if (err instanceof z.ZodError) {
-        toast.error(err.errors[0].message);
-        return;
-      }
-    }
-    
-    if (!isPasswordValid) {
-      toast.error('Please meet all password requirements');
-      return;
-    }
-    
-    if (signupPassword !== confirmPassword) {
-      toast.error('Passwords do not match');
-      return;
-    }
-    
-    if (!displayName.trim()) {
-      toast.error('Please enter your name');
-      return;
-    }
-    
-    setIsSubmitting(true);
-    
-    const { error } = await signUp(signupEmail, signupPassword, {
-      display_name: displayName,
-      role,
-      specialty: specialty || undefined,
-      department: department || undefined
-    });
-    
-    if (error) {
-      if (error.message.includes('already registered')) {
-        toast.error('An account with this email already exists');
-      } else {
-        toast.error(error.message);
-      }
-    } else {
-      toast.success('Account created successfully!');
+      // Redirect to dashboard - in production, this would complete the auth session
       navigate('/');
+      
+    } catch (error) {
+      console.error('Authentication error:', error);
+      toast.error('Failed to complete authentication');
     }
-    
-    setIsSubmitting(false);
+  };
+
+  const handleBiometricFailed = (error: string) => {
+    toast.error('Biometric verification failed', { description: error });
+    setView('lookup');
+    setProvider(null);
+    setFacility(null);
+  };
+
+  const handleCancel = () => {
+    setView('lookup');
+    setProvider(null);
+    setFacility(null);
   };
 
   if (loading) {
@@ -277,283 +98,24 @@ const Auth = () => {
     );
   }
 
-  if (view === '2fa-verify') {
-    return (
-      <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-background via-muted to-background p-4">
-        <TwoFactorVerify 
-          email={pendingTwoFactorEmail}
-          onVerified={handleTwoFactorVerified}
-          onCancel={handleTwoFactorCancel}
-        />
-      </div>
-    );
-  }
-
-  if (view === 'forgot-password') {
-    return (
-      <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-background via-muted to-background p-4">
-        <Card className="w-full max-w-md shadow-lg border-border/50">
-          <CardHeader className="text-center space-y-4">
-            <div className="mx-auto w-16 h-16 rounded-full bg-primary/10 flex items-center justify-center">
-              <Mail className="w-8 h-8 text-primary" />
-            </div>
-            <div>
-              <CardTitle className="text-2xl font-bold text-foreground">Reset Password</CardTitle>
-              <CardDescription className="text-muted-foreground">
-                {resetEmailSent 
-                  ? 'Check your email for the reset link' 
-                  : 'Enter your email to receive a reset link'}
-              </CardDescription>
-            </div>
-          </CardHeader>
-          
-          <CardContent>
-            {resetEmailSent ? (
-              <div className="space-y-4">
-                <p className="text-sm text-muted-foreground text-center">
-                  We've sent a password reset link to <strong>{forgotEmail}</strong>. 
-                  Check your inbox and follow the instructions.
-                </p>
-                <Button 
-                  variant="outline" 
-                  className="w-full"
-                  onClick={() => {
-                    setView('main');
-                    setResetEmailSent(false);
-                    setForgotEmail('');
-                  }}
-                >
-                  <ArrowLeft className="w-4 h-4 mr-2" />
-                  Back to Sign In
-                </Button>
-              </div>
-            ) : (
-              <form onSubmit={handleForgotPassword} className="space-y-4">
-                <div className="space-y-2">
-                  <Label htmlFor="forgot-email">Email</Label>
-                  <Input
-                    id="forgot-email"
-                    type="email"
-                    placeholder="doctor@hospital.com"
-                    value={forgotEmail}
-                    onChange={(e) => setForgotEmail(e.target.value)}
-                    required
-                    autoComplete="email"
-                  />
-                </div>
-                
-                <Button 
-                  type="submit" 
-                  className="w-full" 
-                  disabled={isSubmitting}
-                >
-                  {isSubmitting ? 'Sending...' : 'Send Reset Link'}
-                </Button>
-                
-                <Button 
-                  type="button"
-                  variant="outline" 
-                  className="w-full"
-                  onClick={() => setView('main')}
-                >
-                  <ArrowLeft className="w-4 h-4 mr-2" />
-                  Back to Sign In
-                </Button>
-              </form>
-            )}
-          </CardContent>
-        </Card>
-      </div>
-    );
-  }
-
   return (
     <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-background via-muted to-background p-4">
-      <Card className="w-full max-w-md shadow-lg border-border/50">
-        <CardHeader className="text-center space-y-4">
-          <div className="mx-auto w-16 h-16 rounded-full bg-primary/10 flex items-center justify-center">
-            <Stethoscope className="w-8 h-8 text-primary" />
-          </div>
-          <div>
-            <CardTitle className="text-2xl font-bold text-foreground">Impilo EHR</CardTitle>
-            <CardDescription className="text-muted-foreground">
-              Secure Clinical Teleconsultation Platform
-            </CardDescription>
-          </div>
-        </CardHeader>
-        
-        <CardContent>
-          <Tabs defaultValue="login" className="space-y-4">
-            <TabsList className="grid w-full grid-cols-2">
-              <TabsTrigger value="login" className="flex items-center gap-2">
-                <Shield className="w-4 h-4" />
-                Sign In
-              </TabsTrigger>
-              <TabsTrigger value="signup" className="flex items-center gap-2">
-                <Users className="w-4 h-4" />
-                Register
-              </TabsTrigger>
-            </TabsList>
-            
-            <TabsContent value="login">
-              <form onSubmit={handleLogin} className="space-y-4">
-                <div className="space-y-2">
-                  <Label htmlFor="login-email">Email</Label>
-                  <Input
-                    id="login-email"
-                    type="email"
-                    placeholder="doctor@hospital.com"
-                    value={loginEmail}
-                    onChange={(e) => setLoginEmail(e.target.value)}
-                    required
-                    autoComplete="email"
-                  />
-                </div>
-                
-                <div className="space-y-2">
-                  <Label htmlFor="login-password">Password</Label>
-                  <Input
-                    id="login-password"
-                    type="password"
-                    placeholder="••••••••"
-                    value={loginPassword}
-                    onChange={(e) => setLoginPassword(e.target.value)}
-                    required
-                    autoComplete="current-password"
-                  />
-                </div>
-                
-                <Button 
-                  type="submit" 
-                  className="w-full" 
-                  disabled={isSubmitting}
-                >
-                  {isSubmitting ? 'Signing in...' : 'Sign In'}
-                </Button>
-                
-                <Button 
-                  type="button"
-                  variant="link" 
-                  className="w-full text-muted-foreground"
-                  onClick={() => setView('forgot-password')}
-                >
-                  Forgot your password?
-                </Button>
-              </form>
-            </TabsContent>
-            
-            <TabsContent value="signup">
-              <form onSubmit={handleSignup} className="space-y-4">
-                <div className="space-y-2">
-                  <Label htmlFor="display-name">Full Name</Label>
-                  <Input
-                    id="display-name"
-                    type="text"
-                    placeholder="Dr. Jane Smith"
-                    value={displayName}
-                    onChange={(e) => setDisplayName(e.target.value)}
-                    required
-                  />
-                </div>
-                
-                <div className="space-y-2">
-                  <Label htmlFor="signup-email">Email</Label>
-                  <Input
-                    id="signup-email"
-                    type="email"
-                    placeholder="doctor@hospital.com"
-                    value={signupEmail}
-                    onChange={(e) => setSignupEmail(e.target.value)}
-                    required
-                    autoComplete="email"
-                  />
-                </div>
-                
-                <div className="space-y-2">
-                  <Label htmlFor="role">Clinical Role</Label>
-                  <Select value={role} onValueChange={setRole}>
-                    <SelectTrigger>
-                      <SelectValue placeholder="Select your role" />
-                    </SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="doctor">Doctor</SelectItem>
-                      <SelectItem value="nurse">Nurse</SelectItem>
-                      <SelectItem value="specialist">Specialist</SelectItem>
-                      <SelectItem value="patient">Patient</SelectItem>
-                      <SelectItem value="admin">Administrator</SelectItem>
-                    </SelectContent>
-                  </Select>
-                </div>
-                
-                <div className="grid grid-cols-2 gap-3">
-                  <div className="space-y-2">
-                    <Label htmlFor="specialty">Specialty</Label>
-                    <Input
-                      id="specialty"
-                      type="text"
-                      placeholder="Cardiology"
-                      value={specialty}
-                      onChange={(e) => setSpecialty(e.target.value)}
-                    />
-                  </div>
-                  
-                  <div className="space-y-2">
-                    <Label htmlFor="department">Department</Label>
-                    <Input
-                      id="department"
-                      type="text"
-                      placeholder="Internal Medicine"
-                      value={department}
-                      onChange={(e) => setDepartment(e.target.value)}
-                    />
-                  </div>
-                </div>
-                
-                <div className="space-y-2">
-                  <Label htmlFor="signup-password">Password</Label>
-                  <Input
-                    id="signup-password"
-                    type="password"
-                    placeholder="••••••••"
-                    value={signupPassword}
-                    onChange={(e) => setSignupPassword(e.target.value)}
-                    required
-                    autoComplete="new-password"
-                  />
-                  <PasswordValidator 
-                    password={signupPassword} 
-                    onValidationChange={handlePasswordValidationChange}
-                  />
-                </div>
-                
-                <div className="space-y-2">
-                  <Label htmlFor="confirm-password">Confirm Password</Label>
-                  <Input
-                    id="confirm-password"
-                    type="password"
-                    placeholder="••••••••"
-                    value={confirmPassword}
-                    onChange={(e) => setConfirmPassword(e.target.value)}
-                    required
-                    autoComplete="new-password"
-                  />
-                  {confirmPassword && signupPassword !== confirmPassword && (
-                    <p className="text-xs text-destructive">Passwords do not match</p>
-                  )}
-                </div>
-                
-                <Button 
-                  type="submit" 
-                  className="w-full" 
-                  disabled={isSubmitting || !isPasswordValid || signupPassword !== confirmPassword}
-                >
-                  {isSubmitting ? 'Creating account...' : 'Create Account'}
-                </Button>
-              </form>
-            </TabsContent>
-          </Tabs>
-        </CardContent>
-      </Card>
+      {view === 'lookup' && (
+        <ProviderIdLookup 
+          onProviderFound={handleProviderFound}
+          onCancel={() => navigate('/')}
+        />
+      )}
+
+      {view === 'biometric' && provider && (
+        <BiometricAuth
+          providerId={provider.providerId}
+          onVerified={handleBiometricVerified}
+          onFailed={handleBiometricFailed}
+          onCancel={handleCancel}
+          requiredMethods={['fingerprint', 'facial', 'iris']}
+        />
+      )}
     </div>
   );
 };
