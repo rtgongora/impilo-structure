@@ -28,6 +28,8 @@ import LIMS from "./pages/LIMS";
 import Install from "./pages/Install";
 import Odoo from "./pages/Odoo";
 import Reports from "./pages/Reports";
+import Orders from "./pages/Orders";
+import Handoff from "./pages/Handoff";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -142,6 +144,16 @@ const App = () => (
             <Route path="/reports" element={
               <ProtectedRoute>
                 <Reports />
+              </ProtectedRoute>
+            } />
+            <Route path="/orders" element={
+              <ProtectedRoute>
+                <Orders />
+              </ProtectedRoute>
+            } />
+            <Route path="/handoff" element={
+              <ProtectedRoute>
+                <Handoff />
               </ProtectedRoute>
             } />
             {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
