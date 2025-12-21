@@ -5,6 +5,7 @@ import { PatientSearch } from "@/components/search/PatientSearch";
 import { HandoffNotifications } from "@/components/handoff/HandoffNotifications";
 import { PushNotificationPrompt } from "@/components/notifications/PushNotificationPrompt";
 import { VoiceCommandButton } from "@/components/voice/VoiceCommandButton";
+import { MedicationDueAlerts } from "@/components/alerts/MedicationDueAlerts";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { NurseMedDashboard } from "@/components/orders/NurseMedDashboard";
 import { Button } from "@/components/ui/button";
@@ -329,7 +330,8 @@ const Dashboard = () => {
           </div>
 
           {/* Medication Dashboard */}
-          <div className="lg:col-span-1">
+          <div className="lg:col-span-1 space-y-6">
+            <MedicationDueAlerts />
             <NurseMedDashboard />
           </div>
 
