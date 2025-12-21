@@ -2,6 +2,7 @@ import { useState } from "react";
 import { useAuth } from "@/contexts/AuthContext";
 import { useNavigate } from "react-router-dom";
 import { PatientSearch } from "@/components/search/PatientSearch";
+import { HandoffNotifications } from "@/components/handoff/HandoffNotifications";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -130,7 +131,10 @@ const Dashboard = () => {
           <PatientSearch />
 
           <div className="flex items-center gap-4">
-            {/* Notifications */}
+            {/* Handoff Notifications */}
+            <HandoffNotifications />
+
+            {/* General Notifications */}
             <Button variant="ghost" size="icon" className="relative">
               <Bell className="h-5 w-5" />
               <span className="absolute -top-1 -right-1 h-4 w-4 bg-red-500 text-white text-xs rounded-full flex items-center justify-center">
