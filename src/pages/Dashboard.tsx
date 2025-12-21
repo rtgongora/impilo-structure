@@ -13,6 +13,8 @@ import { Badge } from "@/components/ui/badge";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { ScrollArea } from "@/components/ui/scroll-area";
+import { Skeleton } from "@/components/ui/skeleton";
+import { useDashboardData } from "@/hooks/useDashboardData";
 import { 
   Users, 
   ClipboardList, 
@@ -38,31 +40,11 @@ import {
   ArrowRightLeft
 } from "lucide-react";
 
-// Mock worklist data - will be replaced with real data
-const mockMyPatients = [
-  { id: "P001", name: "Sarah M. Johnson", mrn: "MRN-2024-001847", ward: "Ward 4A", bed: "Bed 12", priority: "high", status: "In Progress", lastUpdate: "10 min ago" },
-  { id: "P002", name: "James K. Ochieng", mrn: "MRN-2024-001832", ward: "Ward 3B", bed: "Bed 5", priority: "medium", status: "Pending Review", lastUpdate: "25 min ago" },
-  { id: "P003", name: "Mary W. Njeri", mrn: "MRN-2024-001856", ward: "ICU", bed: "Bed 2", priority: "critical", status: "Active", lastUpdate: "5 min ago" },
-  { id: "P004", name: "Peter M. Kamau", mrn: "MRN-2024-001801", ward: "Ward 2A", bed: "Bed 8", priority: "low", status: "Discharge Pending", lastUpdate: "1 hour ago" },
-];
-
-const mockTasks = [
-  { id: 1, title: "Review lab results for Sarah Johnson", type: "Lab Review", due: "Overdue", priority: "high" },
-  { id: 2, title: "Complete discharge summary - Peter Kamau", type: "Documentation", due: "Today", priority: "medium" },
-  { id: 3, title: "Medication reconciliation - Mary Njeri", type: "Medication", due: "Today", priority: "high" },
-  { id: 4, title: "Consult response pending - Cardiology", type: "Consult", due: "Tomorrow", priority: "low" },
-];
-
-const mockNotifications = [
-  { id: 1, message: "Critical lab value: Potassium 6.2 mEq/L for Mary Njeri", time: "5 min ago", type: "critical" },
-  { id: 2, message: "New consult request from Dr. Mwangi", time: "15 min ago", type: "info" },
-  { id: 3, message: "Discharge order signed for Peter Kamau", time: "1 hour ago", type: "success" },
-];
-
 const Dashboard = () => {
   const { profile, signOut } = useAuth();
   const navigate = useNavigate();
   const [activeTab, setActiveTab] = useState("worklist");
+  const { patients, tasks, stats, loading } = useDashboardData();
 
   const handleSignOut = async () => {
     await signOut();
@@ -191,8 +173,12 @@ const Dashboard = () => {
                 <Users className="h-5 w-5 text-blue-600" />
               </div>
               <div>
-                <p className="text-2xl font-bold">{mockMyPatients.length}</p>
-                <p className="text-xs text-muted-foreground">My Patients</p>
+                {loading ? (
+                  <Skeleton className="h-8 w-8" />
+                ) : (
+                  <p className="text-2xl font-bold">{stats.myPatients}</p>
+                )}
+                <p className="text-xs text-muted-foreground">Active Patients</p>
               </div>
             </CardContent>
           </Card>
@@ -202,7 +188,11 @@ const Dashboard = () => {
                 <ClipboardList className="h-5 w-5 text-orange-600" />
               </div>
               <div>
-                <p className="text-2xl font-bold">{mockTasks.length}</p>
+                {loading ? (
+                  <Skeleton className="h-8 w-8" />
+                ) : (
+                  <p className="text-2xl font-bold">{stats.pendingTasks}</p>
+                )}
                 <p className="text-xs text-muted-foreground">Pending Tasks</p>
               </div>
             </CardContent>
@@ -213,7 +203,11 @@ const Dashboard = () => {
                 <AlertCircle className="h-5 w-5 text-red-600" />
               </div>
               <div>
-                <p className="text-2xl font-bold">1</p>
+                {loading ? (
+                  <Skeleton className="h-8 w-8" />
+                ) : (
+                  <p className="text-2xl font-bold">{stats.criticalAlerts}</p>
+                )}
                 <p className="text-xs text-muted-foreground">Critical Alerts</p>
               </div>
             </CardContent>
@@ -224,7 +218,11 @@ const Dashboard = () => {
                 <CheckCircle2 className="h-5 w-5 text-green-600" />
               </div>
               <div>
-                <p className="text-2xl font-bold">12</p>
+                {loading ? (
+                  <Skeleton className="h-8 w-8" />
+                ) : (
+                  <p className="text-2xl font-bold">{stats.completedToday}</p>
+                )}
                 <p className="text-xs text-muted-foreground">Completed Today</p>
               </div>
             </CardContent>
@@ -268,59 +266,77 @@ const Dashboard = () => {
                   <TabsContent value="worklist" className="mt-0">
                     <ScrollArea className="h-[400px]">
                       <div className="space-y-3">
-                        {mockMyPatients.map((patient) => (
-                          <div
-                            key={patient.id}
-                            className="flex items-center justify-between p-3 rounded-lg border hover:bg-accent cursor-pointer transition-colors"
-                            onClick={() => navigate("/")}
-                          >
-                            <div className="flex items-center gap-3">
-                              <div className={`w-1 h-12 rounded-full ${getPriorityColor(patient.priority)}`} />
-                              <div>
-                                <p className="font-medium">{patient.name}</p>
-                                <p className="text-sm text-muted-foreground">{patient.mrn}</p>
-                              </div>
-                            </div>
-                            <div className="text-right">
-                              <div className="flex items-center gap-2 mb-1">
-                                <Bed className="h-3 w-3 text-muted-foreground" />
-                                <span className="text-sm">{patient.ward} • {patient.bed}</span>
-                              </div>
-                              {getStatusBadge(patient.status)}
-                            </div>
-                            <div className="flex items-center gap-1 text-xs text-muted-foreground">
-                              <Clock className="h-3 w-3" />
-                              {patient.lastUpdate}
-                            </div>
-                            <ChevronRight className="h-4 w-4 text-muted-foreground" />
+                        {loading ? (
+                          [1, 2, 3].map((i) => <Skeleton key={i} className="h-20 w-full" />)
+                        ) : patients.length === 0 ? (
+                          <div className="text-center py-8 text-muted-foreground">
+                            <Users className="w-12 h-12 mx-auto mb-4 opacity-50" />
+                            <p>No active patients</p>
                           </div>
-                        ))}
+                        ) : (
+                          patients.map((patient) => (
+                            <div
+                              key={patient.id}
+                              className="flex items-center justify-between p-3 rounded-lg border hover:bg-accent cursor-pointer transition-colors"
+                              onClick={() => patient.encounterId && navigate(`/encounter?id=${patient.encounterId}`)}
+                            >
+                              <div className="flex items-center gap-3">
+                                <div className={`w-1 h-12 rounded-full ${getPriorityColor(patient.priority)}`} />
+                                <div>
+                                  <p className="font-medium">{patient.name}</p>
+                                  <p className="text-sm text-muted-foreground">{patient.mrn}</p>
+                                </div>
+                              </div>
+                              <div className="text-right">
+                                <div className="flex items-center gap-2 mb-1">
+                                  <Bed className="h-3 w-3 text-muted-foreground" />
+                                  <span className="text-sm">{patient.ward || "—"} • {patient.bed || "—"}</span>
+                                </div>
+                                {getStatusBadge(patient.status)}
+                              </div>
+                              <div className="flex items-center gap-1 text-xs text-muted-foreground">
+                                <Clock className="h-3 w-3" />
+                                {patient.lastUpdate}
+                              </div>
+                              <ChevronRight className="h-4 w-4 text-muted-foreground" />
+                            </div>
+                          ))
+                        )}
                       </div>
                     </ScrollArea>
                   </TabsContent>
                   <TabsContent value="tasks" className="mt-0">
                     <ScrollArea className="h-[400px]">
                       <div className="space-y-3">
-                        {mockTasks.map((task) => (
-                          <div
-                            key={task.id}
-                            className="flex items-center justify-between p-3 rounded-lg border hover:bg-accent cursor-pointer transition-colors"
-                          >
-                            <div className="flex items-center gap-3">
-                              <div className={`w-1 h-10 rounded-full ${getPriorityColor(task.priority)}`} />
-                              <div>
-                                <p className="font-medium text-sm">{task.title}</p>
-                                <Badge variant="outline" className="text-xs">{task.type}</Badge>
-                              </div>
-                            </div>
-                            <Badge 
-                              variant={task.due === "Overdue" ? "destructive" : "secondary"}
-                              className="text-xs"
-                            >
-                              {task.due}
-                            </Badge>
+                        {loading ? (
+                          [1, 2, 3].map((i) => <Skeleton key={i} className="h-16 w-full" />)
+                        ) : tasks.length === 0 ? (
+                          <div className="text-center py-8 text-muted-foreground">
+                            <ClipboardList className="w-12 h-12 mx-auto mb-4 opacity-50" />
+                            <p>No pending tasks</p>
                           </div>
-                        ))}
+                        ) : (
+                          tasks.map((task) => (
+                            <div
+                              key={task.id}
+                              className="flex items-center justify-between p-3 rounded-lg border hover:bg-accent cursor-pointer transition-colors"
+                            >
+                              <div className="flex items-center gap-3">
+                                <div className={`w-1 h-10 rounded-full ${getPriorityColor(task.priority)}`} />
+                                <div>
+                                  <p className="font-medium text-sm">{task.title}</p>
+                                  <Badge variant="outline" className="text-xs">{task.type}</Badge>
+                                </div>
+                              </div>
+                              <Badge 
+                                variant={task.due === "Overdue" ? "destructive" : "secondary"}
+                                className="text-xs"
+                              >
+                                {task.due}
+                              </Badge>
+                            </div>
+                          ))
+                        )}
                       </div>
                     </ScrollArea>
                   </TabsContent>

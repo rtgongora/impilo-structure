@@ -18,91 +18,10 @@ import {
   Minus,
   FileText,
   Beaker,
+  Loader2,
 } from "lucide-react";
-
-interface LabResult {
-  id: string;
-  testName: string;
-  category: string;
-  value: string;
-  unit: string;
-  referenceRange: string;
-  status: "normal" | "high" | "low" | "critical";
-  orderedAt: Date;
-  collectedAt?: Date;
-  resultedAt?: Date;
-  orderStatus: "ordered" | "collected" | "processing" | "resulted";
-  orderedBy: string;
-}
-
-const MOCK_RESULTS: LabResult[] = [
-  {
-    id: "LAB-001",
-    testName: "Complete Blood Count",
-    category: "Hematology",
-    value: "14.2",
-    unit: "g/dL",
-    referenceRange: "12.0-16.0",
-    status: "normal",
-    orderedAt: new Date(Date.now() - 86400000),
-    collectedAt: new Date(Date.now() - 82800000),
-    resultedAt: new Date(Date.now() - 3600000),
-    orderStatus: "resulted",
-    orderedBy: "Dr. Sarah Moyo",
-  },
-  {
-    id: "LAB-002",
-    testName: "Fasting Blood Glucose",
-    category: "Chemistry",
-    value: "142",
-    unit: "mg/dL",
-    referenceRange: "70-100",
-    status: "high",
-    orderedAt: new Date(Date.now() - 172800000),
-    collectedAt: new Date(Date.now() - 169200000),
-    resultedAt: new Date(Date.now() - 86400000),
-    orderStatus: "resulted",
-    orderedBy: "Dr. James Ncube",
-  },
-  {
-    id: "LAB-003",
-    testName: "Creatinine",
-    category: "Chemistry",
-    value: "0.8",
-    unit: "mg/dL",
-    referenceRange: "0.6-1.2",
-    status: "normal",
-    orderedAt: new Date(Date.now() - 7200000),
-    orderStatus: "processing",
-    orderedBy: "Dr. Sarah Moyo",
-  },
-  {
-    id: "LAB-004",
-    testName: "Potassium",
-    category: "Chemistry",
-    value: "5.8",
-    unit: "mEq/L",
-    referenceRange: "3.5-5.0",
-    status: "critical",
-    orderedAt: new Date(Date.now() - 259200000),
-    collectedAt: new Date(Date.now() - 255600000),
-    resultedAt: new Date(Date.now() - 172800000),
-    orderStatus: "resulted",
-    orderedBy: "Dr. James Ncube",
-  },
-  {
-    id: "LAB-005",
-    testName: "Urinalysis",
-    category: "Urinalysis",
-    value: "",
-    unit: "",
-    referenceRange: "",
-    status: "normal",
-    orderedAt: new Date(Date.now() - 1800000),
-    orderStatus: "collected",
-    orderedBy: "Dr. Sarah Moyo",
-  },
-];
+import { useLabResults, LabResult } from "@/hooks/useLabData";
+import { Skeleton } from "@/components/ui/skeleton";
 
 const statusConfig = {
   normal: { color: "bg-emerald-500/10 text-emerald-500 border-emerald-500/20", icon: Minus, label: "Normal" },
@@ -112,29 +31,61 @@ const statusConfig = {
 };
 
 const orderStatusConfig = {
-  ordered: { color: "bg-muted text-muted-foreground", icon: Clock, label: "Ordered" },
+  pending: { color: "bg-muted text-muted-foreground", icon: Clock, label: "Pending" },
   collected: { color: "bg-blue-500/10 text-blue-500", icon: TestTube, label: "Collected" },
   processing: { color: "bg-amber-500/10 text-amber-500", icon: Beaker, label: "Processing" },
   resulted: { color: "bg-emerald-500/10 text-emerald-500", icon: CheckCircle, label: "Resulted" },
+  completed: { color: "bg-emerald-500/10 text-emerald-500", icon: CheckCircle, label: "Completed" },
 };
 
-export function LabResultsSystem() {
+interface LabResultsSystemProps {
+  encounterId?: string;
+}
+
+export function LabResultsSystem({ encounterId }: LabResultsSystemProps) {
+  const { results, loading } = useLabResults(encounterId);
   const [searchQuery, setSearchQuery] = useState("");
   const [activeTab, setActiveTab] = useState("all");
 
-  const filteredResults = MOCK_RESULTS.filter((result) => {
+  const getResultStatus = (result: LabResult): keyof typeof statusConfig => {
+    if (result.is_critical) return "critical";
+    if (result.is_abnormal) return "high"; // simplified - could be high or low
+    return "normal";
+  };
+
+  const filteredResults = results.filter((result) => {
     const matchesSearch =
-      result.testName.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      result.category.toLowerCase().includes(searchQuery.toLowerCase());
+      result.test_name.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      (result.category || "").toLowerCase().includes(searchQuery.toLowerCase());
 
     if (activeTab === "all") return matchesSearch;
-    if (activeTab === "pending") return matchesSearch && result.orderStatus !== "resulted";
-    if (activeTab === "abnormal") return matchesSearch && result.status !== "normal";
+    if (activeTab === "pending") return matchesSearch && result.status !== "completed";
+    if (activeTab === "abnormal") return matchesSearch && (result.is_abnormal || result.is_critical);
     return matchesSearch;
   });
 
-  const pendingCount = MOCK_RESULTS.filter((r) => r.orderStatus !== "resulted").length;
-  const abnormalCount = MOCK_RESULTS.filter((r) => r.status !== "normal").length;
+  const pendingCount = results.filter((r) => r.status !== "completed").length;
+  const abnormalCount = results.filter((r) => r.is_abnormal || r.is_critical).length;
+
+  if (loading) {
+    return (
+      <div className="space-y-4">
+        <div className="flex items-center justify-between">
+          <Skeleton className="h-6 w-48" />
+          <div className="flex gap-2">
+            <Skeleton className="h-9 w-20" />
+            <Skeleton className="h-9 w-20" />
+          </div>
+        </div>
+        <Skeleton className="h-10 w-full" />
+        <div className="space-y-3">
+          {[1, 2, 3].map((i) => (
+            <Skeleton key={i} className="h-32 w-full" />
+          ))}
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="space-y-4">
@@ -167,7 +118,7 @@ export function LabResultsSystem() {
 
       <Tabs value={activeTab} onValueChange={setActiveTab}>
         <TabsList>
-          <TabsTrigger value="all">All Results ({MOCK_RESULTS.length})</TabsTrigger>
+          <TabsTrigger value="all">All Results ({results.length})</TabsTrigger>
           <TabsTrigger value="pending">Pending ({pendingCount})</TabsTrigger>
           <TabsTrigger value="abnormal" className="text-destructive">
             Abnormal ({abnormalCount})
@@ -177,72 +128,82 @@ export function LabResultsSystem() {
         <TabsContent value={activeTab} className="mt-4">
           <ScrollArea className="h-[500px]">
             <div className="space-y-3">
-              {filteredResults.map((result) => {
-                const StatusIcon = statusConfig[result.status].icon;
-                const OrderIcon = orderStatusConfig[result.orderStatus].icon;
+              {filteredResults.length === 0 ? (
+                <div className="text-center py-12 text-muted-foreground">
+                  <TestTube className="w-12 h-12 mx-auto mb-4 opacity-50" />
+                  <p>No lab results found</p>
+                </div>
+              ) : (
+                filteredResults.map((result) => {
+                  const resultStatus = getResultStatus(result);
+                  const StatusIcon = statusConfig[resultStatus].icon;
+                  const orderStatus = orderStatusConfig[result.status as keyof typeof orderStatusConfig] || orderStatusConfig.pending;
+                  const OrderIcon = orderStatus.icon;
 
-                return (
-                  <Card key={result.id} className="hover:shadow-md transition-shadow">
-                    <CardContent className="p-4">
-                      <div className="flex items-start justify-between">
-                        <div className="flex-1">
-                          <div className="flex items-center gap-3">
-                            <div className="h-10 w-10 rounded-lg bg-primary/10 flex items-center justify-center">
-                              <TestTube className="h-5 w-5 text-primary" />
+                  return (
+                    <Card key={result.id} className="hover:shadow-md transition-shadow">
+                      <CardContent className="p-4">
+                        <div className="flex items-start justify-between">
+                          <div className="flex-1">
+                            <div className="flex items-center gap-3">
+                              <div className="h-10 w-10 rounded-lg bg-primary/10 flex items-center justify-center">
+                                <TestTube className="h-5 w-5 text-primary" />
+                              </div>
+                              <div>
+                                <h4 className="font-medium">{result.test_name}</h4>
+                                <p className="text-sm text-muted-foreground">{result.category || "General"}</p>
+                              </div>
                             </div>
-                            <div>
-                              <h4 className="font-medium">{result.testName}</h4>
-                              <p className="text-sm text-muted-foreground">{result.category}</p>
-                            </div>
-                          </div>
 
-                          <div className="mt-3 flex items-center gap-4 text-sm">
-                            <Badge variant="outline" className={orderStatusConfig[result.orderStatus].color}>
-                              <OrderIcon className="h-3 w-3 mr-1" />
-                              {orderStatusConfig[result.orderStatus].label}
-                            </Badge>
-
-                            {result.orderStatus === "resulted" && (
-                              <Badge variant="outline" className={statusConfig[result.status].color}>
-                                <StatusIcon className="h-3 w-3 mr-1" />
-                                {statusConfig[result.status].label}
+                            <div className="mt-3 flex items-center gap-4 text-sm">
+                              <Badge variant="outline" className={orderStatus.color}>
+                                <OrderIcon className="h-3 w-3 mr-1" />
+                                {orderStatus.label}
                               </Badge>
-                            )}
 
-                            <span className="text-muted-foreground">
-                              Ordered by {result.orderedBy}
-                            </span>
+                              {result.status === "completed" && result.result_value && (
+                                <Badge variant="outline" className={statusConfig[resultStatus].color}>
+                                  <StatusIcon className="h-3 w-3 mr-1" />
+                                  {statusConfig[resultStatus].label}
+                                </Badge>
+                              )}
+
+                              {result.test_code && (
+                                <span className="text-muted-foreground">
+                                  Code: {result.test_code}
+                                </span>
+                              )}
+                            </div>
+                          </div>
+
+                          <div className="text-right">
+                            {result.result_value && (
+                              <div className="mb-2">
+                                <span className={`text-2xl font-bold ${
+                                  result.is_critical ? "text-destructive" :
+                                  result.is_abnormal ? "text-amber-500" : ""
+                                }`}>
+                                  {result.result_value}
+                                </span>
+                                <span className="text-sm text-muted-foreground ml-1">{result.result_unit}</span>
+                              </div>
+                            )}
+                            {result.reference_range && (
+                              <p className="text-xs text-muted-foreground">
+                                Ref: {result.reference_range} {result.result_unit}
+                              </p>
+                            )}
+                            <Button variant="ghost" size="sm" className="mt-2">
+                              <FileText className="h-4 w-4 mr-1" />
+                              Details
+                            </Button>
                           </div>
                         </div>
-
-                        <div className="text-right">
-                          {result.orderStatus === "resulted" && result.value && (
-                            <div className="mb-2">
-                              <span className={`text-2xl font-bold ${
-                                result.status === "critical" ? "text-destructive" :
-                                result.status === "high" ? "text-amber-500" :
-                                result.status === "low" ? "text-blue-500" : ""
-                              }`}>
-                                {result.value}
-                              </span>
-                              <span className="text-sm text-muted-foreground ml-1">{result.unit}</span>
-                            </div>
-                          )}
-                          {result.referenceRange && (
-                            <p className="text-xs text-muted-foreground">
-                              Ref: {result.referenceRange} {result.unit}
-                            </p>
-                          )}
-                          <Button variant="ghost" size="sm" className="mt-2">
-                            <FileText className="h-4 w-4 mr-1" />
-                            Details
-                          </Button>
-                        </div>
-                      </div>
-                    </CardContent>
-                  </Card>
-                );
-              })}
+                      </CardContent>
+                    </Card>
+                  );
+                })
+              )}
             </div>
           </ScrollArea>
         </TabsContent>
