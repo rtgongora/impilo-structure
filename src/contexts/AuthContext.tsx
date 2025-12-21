@@ -11,6 +11,7 @@ interface Profile {
   department: string | null;
   phone: string | null;
   license_number: string | null;
+  avatar_url: string | null;
 }
 
 interface AuthContextType {

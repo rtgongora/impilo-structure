@@ -10,7 +10,7 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
-import { Avatar, AvatarFallback } from '@/components/ui/avatar';
+import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Badge } from '@/components/ui/badge';
 import { LogOut, User, Settings, Shield, UserCog } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
@@ -74,6 +74,10 @@ export const UserMenu: React.FC = () => {
       <DropdownMenuTrigger asChild>
         <Button variant="ghost" className="relative h-9 w-9 rounded-full">
           <Avatar className="h-9 w-9">
+            <AvatarImage 
+              src={profile?.avatar_url || undefined} 
+              alt={profile?.display_name || 'User'} 
+            />
             <AvatarFallback className="bg-primary text-primary-foreground text-sm">
               {profile?.display_name ? getInitials(profile.display_name) : <User className="w-4 h-4" />}
             </AvatarFallback>
