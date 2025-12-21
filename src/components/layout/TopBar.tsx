@@ -11,13 +11,16 @@ import {
   ClipboardList,
   Bell,
   UserPlus,
+  Search,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { CriticalEventButton } from "@/components/ehr/CriticalEventButton";
 import { CDSAlertBadge } from "@/components/ehr/ClinicalDecisionSupport";
+import { AlertBadge } from "@/components/alerts/ClinicalAlerts";
 import { UserMenu } from "@/components/auth/UserMenu";
 import { Link } from "react-router-dom";
+import { PatientSearch } from "@/components/search/PatientSearch";
 
 const iconMap: Record<string, React.ComponentType<{ className?: string }>> = {
   Boxes,
@@ -102,23 +105,19 @@ export function TopBar() {
 
       {/* Right: Critical Event, CDS & User */}
       <div className="flex items-center gap-2">
+        {/* Patient Search */}
+        <PatientSearch />
+
+        <div className="h-6 w-px bg-topbar-muted/30" />
+
+        {/* Clinical Alerts */}
+        <AlertBadge />
+
         {/* Clinical Decision Support */}
         <CDSAlertBadge />
 
         {/* Critical Event Button - Always Visible */}
         <CriticalEventButton />
-
-        <div className="h-6 w-px bg-topbar-muted/30" />
-
-        {/* Notifications */}
-        <Button
-          variant="ghost"
-          size="icon"
-          className="text-topbar-muted hover:text-topbar-foreground hover:bg-topbar-foreground/10 relative"
-        >
-          <Bell className="w-5 h-5" />
-          <span className="absolute -top-0.5 -right-0.5 w-2 h-2 bg-critical rounded-full" />
-        </Button>
 
         {/* User Menu */}
         <UserMenu />

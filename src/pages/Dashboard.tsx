@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { useAuth } from "@/contexts/AuthContext";
 import { useNavigate } from "react-router-dom";
+import { PatientSearch } from "@/components/search/PatientSearch";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -114,13 +115,8 @@ const Dashboard = () => {
             </div>
           </div>
 
-          {/* Current Location Breadcrumb */}
-          <div className="hidden md:flex items-center gap-2 text-sm text-muted-foreground">
-            <Building2 className="h-4 w-4" />
-            <span>Central Hospital</span>
-            <ChevronRight className="h-4 w-4" />
-            <span className="text-foreground font-medium">Dashboard</span>
-          </div>
+          {/* Patient Search */}
+          <PatientSearch />
 
           <div className="flex items-center gap-4">
             {/* Notifications */}
