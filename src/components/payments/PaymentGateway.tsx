@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Input } from "@/components/ui/input";
@@ -9,182 +9,27 @@ import { ScrollArea } from "@/components/ui/scroll-area";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { Separator } from "@/components/ui/separator";
+import { Skeleton } from "@/components/ui/skeleton";
+import { usePaymentData } from "@/hooks/usePaymentData";
 import { 
   CreditCard,
   Smartphone,
   Banknote,
   Building2,
-  Send,
   Download,
   Search,
   Plus,
   CheckCircle2,
   Clock,
   XCircle,
-  AlertTriangle,
   Receipt,
   FileText,
   RefreshCw,
-  ArrowUpRight,
   ArrowDownLeft,
-  Wallet,
   DollarSign,
-  Shield,
-  Users
+  Shield
 } from "lucide-react";
-import { toast } from "sonner";
-
-interface Transaction {
-  id: string;
-  type: "payment" | "refund" | "remittance" | "claim";
-  method: "cash" | "card" | "mobile_money" | "bank_transfer" | "insurance";
-  amount: number;
-  currency: string;
-  status: "completed" | "pending" | "failed" | "processing";
-  reference: string;
-  patientName?: string;
-  patientMrn?: string;
-  description: string;
-  createdAt: string;
-  provider?: string;
-}
-
-interface InsuranceClaim {
-  id: string;
-  claimNumber: string;
-  patientName: string;
-  patientMrn: string;
-  insurer: string;
-  policyNumber: string;
-  totalAmount: number;
-  approvedAmount?: number;
-  status: "submitted" | "processing" | "approved" | "partially_approved" | "rejected" | "paid";
-  submittedAt: string;
-  items: { description: string; amount: number; approved?: boolean }[];
-}
-
-const MOCK_TRANSACTIONS: Transaction[] = [
-  {
-    id: "1",
-    type: "payment",
-    method: "cash",
-    amount: 50.00,
-    currency: "USD",
-    status: "completed",
-    reference: "TXN-2024-0001",
-    patientName: "John Doe",
-    patientMrn: "MRN-2024-000001",
-    description: "Consultation Fee",
-    createdAt: "2024-01-15T10:30:00",
-    provider: "Front Desk"
-  },
-  {
-    id: "2",
-    type: "payment",
-    method: "mobile_money",
-    amount: 120.00,
-    currency: "USD",
-    status: "completed",
-    reference: "TXN-2024-0002",
-    patientName: "Jane Smith",
-    patientMrn: "MRN-2024-000002",
-    description: "Lab Tests",
-    createdAt: "2024-01-15T11:15:00",
-    provider: "EcoCash"
-  },
-  {
-    id: "3",
-    type: "payment",
-    method: "card",
-    amount: 500.00,
-    currency: "USD",
-    status: "processing",
-    reference: "TXN-2024-0003",
-    patientName: "Robert Brown",
-    patientMrn: "MRN-2024-000003",
-    description: "Surgery Deposit",
-    createdAt: "2024-01-15T14:00:00",
-    provider: "VISA"
-  },
-  {
-    id: "4",
-    type: "remittance",
-    method: "bank_transfer",
-    amount: 1500.00,
-    currency: "USD",
-    status: "pending",
-    reference: "REM-2024-0001",
-    description: "Diaspora Remittance - Family Medical",
-    createdAt: "2024-01-15T09:00:00",
-    provider: "CBZ Bank"
-  },
-  {
-    id: "5",
-    type: "claim",
-    method: "insurance",
-    amount: 850.00,
-    currency: "USD",
-    status: "completed",
-    reference: "CLM-2024-0001",
-    patientName: "Mary Johnson",
-    patientMrn: "MRN-2024-000004",
-    description: "PSMAS Claim Payment",
-    createdAt: "2024-01-14T16:30:00",
-    provider: "PSMAS"
-  }
-];
-
-const MOCK_CLAIMS: InsuranceClaim[] = [
-  {
-    id: "1",
-    claimNumber: "CLM-2024-0001",
-    patientName: "John Doe",
-    patientMrn: "MRN-2024-000001",
-    insurer: "PSMAS",
-    policyNumber: "PSM-2024-123456",
-    totalAmount: 450.00,
-    approvedAmount: 400.00,
-    status: "approved",
-    submittedAt: "2024-01-10",
-    items: [
-      { description: "Consultation", amount: 50.00, approved: true },
-      { description: "Blood Tests", amount: 150.00, approved: true },
-      { description: "X-Ray", amount: 200.00, approved: true },
-      { description: "Medication", amount: 50.00, approved: false }
-    ]
-  },
-  {
-    id: "2",
-    claimNumber: "CLM-2024-0002",
-    patientName: "Jane Smith",
-    patientMrn: "MRN-2024-000002",
-    insurer: "CIMAS",
-    policyNumber: "CIM-2024-789012",
-    totalAmount: 2500.00,
-    status: "processing",
-    submittedAt: "2024-01-12",
-    items: [
-      { description: "Hospital Admission", amount: 1000.00 },
-      { description: "Surgery", amount: 1200.00 },
-      { description: "Post-Op Medication", amount: 300.00 }
-    ]
-  },
-  {
-    id: "3",
-    claimNumber: "CLM-2024-0003",
-    patientName: "Robert Brown",
-    patientMrn: "MRN-2024-000003",
-    insurer: "First Mutual",
-    policyNumber: "FM-2024-345678",
-    totalAmount: 180.00,
-    status: "submitted",
-    submittedAt: "2024-01-15",
-    items: [
-      { description: "Specialist Consultation", amount: 80.00 },
-      { description: "ECG", amount: 100.00 }
-    ]
-  }
-];
+import { format } from "date-fns";
 
 const PAYMENT_METHODS = [
   { id: "cash", name: "Cash", icon: Banknote, color: "bg-success" },
@@ -194,21 +39,16 @@ const PAYMENT_METHODS = [
 ];
 
 const MOBILE_PROVIDERS = ["EcoCash", "OneMoney", "InnBucks", "Telecash"];
-const INSURERS = ["PSMAS", "CIMAS", "First Mutual", "Alliance Health", "Fidelity Life"];
 
 export function PaymentGateway() {
-  const [transactions, setTransactions] = useState<Transaction[]>(MOCK_TRANSACTIONS);
-  const [claims, setClaims] = useState<InsuranceClaim[]>(MOCK_CLAIMS);
+  const { transactions, claims, stats, loading, createTransaction, refetch } = usePaymentData();
   const [searchTerm, setSearchTerm] = useState("");
   const [filterMethod, setFilterMethod] = useState<string>("all");
   const [filterStatus, setFilterStatus] = useState<string>("all");
   const [isPaymentOpen, setIsPaymentOpen] = useState(false);
-  const [isClaimOpen, setIsClaimOpen] = useState(false);
-  const [selectedMethod, setSelectedMethod] = useState<string>("");
 
   const [paymentForm, setPaymentForm] = useState({
-    patientName: "",
-    patientMrn: "",
+    patientId: "",
     amount: "",
     description: "",
     method: "",
@@ -217,21 +57,12 @@ export function PaymentGateway() {
 
   const filteredTransactions = transactions.filter(t => {
     const matchesSearch = 
-      t.reference.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      t.patientName?.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      t.description.toLowerCase().includes(searchTerm.toLowerCase());
-    const matchesMethod = filterMethod === "all" || t.method === filterMethod;
+      t.transaction_number.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      t.notes?.toLowerCase().includes(searchTerm.toLowerCase());
+    const matchesMethod = filterMethod === "all" || t.payment_method === filterMethod;
     const matchesStatus = filterStatus === "all" || t.status === filterStatus;
     return matchesSearch && matchesMethod && matchesStatus;
   });
-
-  const todayTotal = transactions
-    .filter(t => t.status === "completed" && t.type === "payment")
-    .reduce((sum, t) => sum + t.amount, 0);
-
-  const pendingTotal = transactions
-    .filter(t => t.status === "pending" || t.status === "processing")
-    .reduce((sum, t) => sum + t.amount, 0);
 
   const getStatusColor = (status: string) => {
     switch (status) {
@@ -264,29 +95,23 @@ export function PaymentGateway() {
     }
   };
 
-  const handlePayment = () => {
-    const transaction: Transaction = {
-      id: Date.now().toString(),
-      type: "payment",
-      method: paymentForm.method as any,
-      amount: parseFloat(paymentForm.amount),
-      currency: "USD",
-      status: paymentForm.method === "cash" ? "completed" : "processing",
-      reference: `TXN-2024-${String(transactions.length + 1).padStart(4, '0')}`,
-      patientName: paymentForm.patientName,
-      patientMrn: paymentForm.patientMrn,
-      description: paymentForm.description,
-      createdAt: new Date().toISOString(),
-      provider: paymentForm.provider
-    };
+  const handlePayment = async () => {
+    if (!paymentForm.patientId || !paymentForm.amount || !paymentForm.method) {
+      return;
+    }
 
-    setTransactions(prev => [transaction, ...prev]);
+    await createTransaction({
+      patient_id: paymentForm.patientId,
+      amount: parseFloat(paymentForm.amount),
+      payment_method: paymentForm.method,
+      transaction_type: "payment",
+      notes: paymentForm.description || null,
+      status: paymentForm.method === "cash" ? "completed" : "pending"
+    });
+
     setIsPaymentOpen(false);
-    toast.success(`Payment ${paymentForm.method === "cash" ? "completed" : "initiated"} successfully`);
-    
     setPaymentForm({
-      patientName: "",
-      patientMrn: "",
+      patientId: "",
       amount: "",
       description: "",
       method: "",
@@ -303,7 +128,11 @@ export function PaymentGateway() {
             <div className="flex items-center justify-between">
               <div>
                 <p className="text-sm text-muted-foreground">Today's Collections</p>
-                <p className="text-2xl font-bold text-success">${todayTotal.toFixed(2)}</p>
+                {loading ? (
+                  <Skeleton className="h-8 w-24" />
+                ) : (
+                  <p className="text-2xl font-bold text-success">${stats.todayTotal.toFixed(2)}</p>
+                )}
               </div>
               <div className="h-12 w-12 rounded-full bg-success/10 flex items-center justify-center">
                 <ArrowDownLeft className="h-6 w-6 text-success" />
@@ -316,7 +145,11 @@ export function PaymentGateway() {
             <div className="flex items-center justify-between">
               <div>
                 <p className="text-sm text-muted-foreground">Pending Payments</p>
-                <p className="text-2xl font-bold text-warning">${pendingTotal.toFixed(2)}</p>
+                {loading ? (
+                  <Skeleton className="h-8 w-24" />
+                ) : (
+                  <p className="text-2xl font-bold text-warning">${stats.pendingTotal.toFixed(2)}</p>
+                )}
               </div>
               <div className="h-12 w-12 rounded-full bg-warning/10 flex items-center justify-center">
                 <Clock className="h-6 w-6 text-warning" />
@@ -329,7 +162,11 @@ export function PaymentGateway() {
             <div className="flex items-center justify-between">
               <div>
                 <p className="text-sm text-muted-foreground">Pending Claims</p>
-                <p className="text-2xl font-bold">{claims.filter(c => c.status !== "paid").length}</p>
+                {loading ? (
+                  <Skeleton className="h-8 w-16" />
+                ) : (
+                  <p className="text-2xl font-bold">{stats.pendingClaims}</p>
+                )}
               </div>
               <div className="h-12 w-12 rounded-full bg-primary/10 flex items-center justify-center">
                 <FileText className="h-6 w-6 text-primary" />
@@ -342,7 +179,11 @@ export function PaymentGateway() {
             <div className="flex items-center justify-between">
               <div>
                 <p className="text-sm text-muted-foreground">Transactions Today</p>
-                <p className="text-2xl font-bold">{transactions.length}</p>
+                {loading ? (
+                  <Skeleton className="h-8 w-12" />
+                ) : (
+                  <p className="text-2xl font-bold">{stats.transactionCount}</p>
+                )}
               </div>
               <div className="h-12 w-12 rounded-full bg-secondary flex items-center justify-center">
                 <Receipt className="h-6 w-6 text-muted-foreground" />
@@ -358,9 +199,12 @@ export function PaymentGateway() {
           <TabsList>
             <TabsTrigger value="transactions">Transactions</TabsTrigger>
             <TabsTrigger value="claims">Insurance Claims</TabsTrigger>
-            <TabsTrigger value="remittances">Remittances</TabsTrigger>
           </TabsList>
           <div className="flex gap-2">
+            <Button variant="outline" onClick={() => refetch()}>
+              <RefreshCw className="h-4 w-4 mr-2" />
+              Refresh
+            </Button>
             <Dialog open={isPaymentOpen} onOpenChange={setIsPaymentOpen}>
               <DialogTrigger asChild>
                 <Button>
@@ -412,27 +256,17 @@ export function PaymentGateway() {
 
                   <Separator />
 
-                  <div className="grid grid-cols-2 gap-4">
-                    <div className="space-y-2">
-                      <Label>Patient Name</Label>
-                      <Input
-                        value={paymentForm.patientName}
-                        onChange={(e) => setPaymentForm(prev => ({ ...prev, patientName: e.target.value }))}
-                        placeholder="Enter patient name"
-                      />
-                    </div>
-                    <div className="space-y-2">
-                      <Label>Patient MRN</Label>
-                      <Input
-                        value={paymentForm.patientMrn}
-                        onChange={(e) => setPaymentForm(prev => ({ ...prev, patientMrn: e.target.value }))}
-                        placeholder="Enter MRN"
-                      />
-                    </div>
+                  <div className="space-y-2">
+                    <Label>Patient ID *</Label>
+                    <Input
+                      value={paymentForm.patientId}
+                      onChange={(e) => setPaymentForm(prev => ({ ...prev, patientId: e.target.value }))}
+                      placeholder="Enter patient ID"
+                    />
                   </div>
 
                   <div className="space-y-2">
-                    <Label>Amount (USD)</Label>
+                    <Label>Amount (USD) *</Label>
                     <Input
                       type="number"
                       value={paymentForm.amount}
@@ -452,7 +286,7 @@ export function PaymentGateway() {
                 </div>
                 <div className="flex justify-end gap-2">
                   <Button variant="outline" onClick={() => setIsPaymentOpen(false)}>Cancel</Button>
-                  <Button onClick={handlePayment} disabled={!paymentForm.method || !paymentForm.amount}>
+                  <Button onClick={handlePayment} disabled={!paymentForm.method || !paymentForm.amount || !paymentForm.patientId}>
                     Process Payment
                   </Button>
                 </div>
@@ -498,7 +332,6 @@ export function PaymentGateway() {
                   <SelectContent>
                     <SelectItem value="all">All Status</SelectItem>
                     <SelectItem value="completed">Completed</SelectItem>
-                    <SelectItem value="processing">Processing</SelectItem>
                     <SelectItem value="pending">Pending</SelectItem>
                     <SelectItem value="failed">Failed</SelectItem>
                   </SelectContent>
@@ -507,206 +340,104 @@ export function PaymentGateway() {
             </CardHeader>
             <CardContent className="flex-1 overflow-hidden p-0">
               <ScrollArea className="h-full">
-                <table className="w-full">
-                  <thead className="sticky top-0 bg-card">
-                    <tr className="border-b">
-                      <th className="text-left p-3 font-medium">Reference</th>
-                      <th className="text-left p-3 font-medium">Patient</th>
-                      <th className="text-left p-3 font-medium">Description</th>
-                      <th className="text-left p-3 font-medium">Method</th>
-                      <th className="text-left p-3 font-medium">Amount</th>
-                      <th className="text-left p-3 font-medium">Status</th>
-                      <th className="text-left p-3 font-medium">Date</th>
-                      <th className="p-3"></th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    {filteredTransactions.map(txn => {
-                      const MethodIcon = getMethodIcon(txn.method);
+                <div className="p-4 space-y-3">
+                  {loading ? (
+                    [1, 2, 3].map((i) => (
+                      <Card key={i} className="p-4">
+                        <Skeleton className="h-16 w-full" />
+                      </Card>
+                    ))
+                  ) : filteredTransactions.length === 0 ? (
+                    <div className="text-center py-8 text-muted-foreground">
+                      <Receipt className="w-12 h-12 mx-auto mb-4 opacity-50" />
+                      <p>No transactions found</p>
+                    </div>
+                  ) : (
+                    filteredTransactions.map((transaction) => {
+                      const MethodIcon = getMethodIcon(transaction.payment_method);
                       return (
-                        <tr key={txn.id} className="border-b hover:bg-muted/50">
-                          <td className="p-3 font-mono text-sm">{txn.reference}</td>
-                          <td className="p-3">
-                            {txn.patientName ? (
-                              <div>
-                                <p className="font-medium">{txn.patientName}</p>
-                                <p className="text-xs text-muted-foreground">{txn.patientMrn}</p>
+                        <Card key={transaction.id} className="p-4">
+                          <div className="flex items-center justify-between">
+                            <div className="flex items-center gap-4">
+                              <div className="h-10 w-10 rounded-full bg-muted flex items-center justify-center">
+                                <MethodIcon className="h-5 w-5" />
                               </div>
-                            ) : (
-                              <span className="text-muted-foreground">-</span>
-                            )}
-                          </td>
-                          <td className="p-3">{txn.description}</td>
-                          <td className="p-3">
-                            <div className="flex items-center gap-2">
-                              <MethodIcon className="h-4 w-4 text-muted-foreground" />
-                              <span className="capitalize">{txn.method.replace("_", " ")}</span>
-                              {txn.provider && (
-                                <Badge variant="outline" className="text-xs">{txn.provider}</Badge>
-                              )}
+                              <div>
+                                <p className="font-medium">{transaction.transaction_number}</p>
+                                <p className="text-sm text-muted-foreground">
+                                  {transaction.transaction_type} • {transaction.notes || "No description"}
+                                </p>
+                              </div>
                             </div>
-                          </td>
-                          <td className="p-3 font-medium">
-                            {txn.type === "refund" ? "-" : ""}${txn.amount.toFixed(2)}
-                          </td>
-                          <td className="p-3">
-                            <Badge className={getStatusColor(txn.status)} variant="secondary">
-                              {txn.status}
-                            </Badge>
-                          </td>
-                          <td className="p-3 text-sm text-muted-foreground">
-                            {new Date(txn.createdAt).toLocaleString()}
-                          </td>
-                          <td className="p-3">
-                            <Button size="sm" variant="ghost">
-                              <Receipt className="h-4 w-4" />
-                            </Button>
-                          </td>
-                        </tr>
+                            <div className="text-right">
+                              <p className="font-bold text-lg">
+                                {transaction.currency} {transaction.amount.toFixed(2)}
+                              </p>
+                              <Badge className={getStatusColor(transaction.status)}>
+                                {transaction.status}
+                              </Badge>
+                            </div>
+                            <div className="text-sm text-muted-foreground">
+                              {format(new Date(transaction.created_at), "dd MMM HH:mm")}
+                            </div>
+                          </div>
+                        </Card>
                       );
-                    })}
-                  </tbody>
-                </table>
+                    })
+                  )}
+                </div>
               </ScrollArea>
             </CardContent>
           </Card>
         </TabsContent>
 
-        {/* Insurance Claims Tab */}
+        {/* Claims Tab */}
         <TabsContent value="claims" className="flex-1 overflow-hidden mt-4">
-          <div className="flex gap-4 mb-4">
-            <Button>
-              <Plus className="h-4 w-4 mr-2" />
-              New Claim
-            </Button>
-            <Button variant="outline">
-              <RefreshCw className="h-4 w-4 mr-2" />
-              Check Claim Status
-            </Button>
-          </div>
-          <div className="space-y-4">
-            {claims.map(claim => (
-              <Card key={claim.id}>
-                <CardContent className="p-4">
-                  <div className="flex items-start justify-between">
-                    <div className="flex-1">
-                      <div className="flex items-center gap-3 mb-2">
-                        <Shield className="h-5 w-5 text-primary" />
-                        <h4 className="font-semibold">{claim.claimNumber}</h4>
-                        <Badge className={getStatusColor(claim.status)}>{claim.status}</Badge>
-                      </div>
-                      <div className="grid grid-cols-4 gap-4 text-sm">
-                        <div>
-                          <span className="text-muted-foreground">Patient:</span>
-                          <p className="font-medium">{claim.patientName}</p>
-                        </div>
-                        <div>
-                          <span className="text-muted-foreground">Insurer:</span>
-                          <p className="font-medium">{claim.insurer}</p>
-                        </div>
-                        <div>
-                          <span className="text-muted-foreground">Policy:</span>
-                          <p className="font-medium">{claim.policyNumber}</p>
-                        </div>
-                        <div>
-                          <span className="text-muted-foreground">Submitted:</span>
-                          <p className="font-medium">{claim.submittedAt}</p>
-                        </div>
-                      </div>
-                      <div className="mt-3 p-3 bg-muted rounded-lg">
-                        <p className="text-sm font-medium mb-2">Claim Items</p>
-                        <div className="space-y-1">
-                          {claim.items.map((item, i) => (
-                            <div key={i} className="flex items-center justify-between text-sm">
-                              <span className="flex items-center gap-2">
-                                {item.approved !== undefined && (
-                                  item.approved ? 
-                                    <CheckCircle2 className="h-3 w-3 text-success" /> : 
-                                    <XCircle className="h-3 w-3 text-destructive" />
-                                )}
-                                {item.description}
-                              </span>
-                              <span className={item.approved === false ? "line-through text-muted-foreground" : ""}>
-                                ${item.amount.toFixed(2)}
-                              </span>
-                            </div>
-                          ))}
-                        </div>
-                      </div>
-                    </div>
-                    <div className="text-right ml-4">
-                      <p className="text-sm text-muted-foreground">Total Claimed</p>
-                      <p className="text-xl font-bold">${claim.totalAmount.toFixed(2)}</p>
-                      {claim.approvedAmount && (
-                        <>
-                          <p className="text-sm text-muted-foreground mt-2">Approved</p>
-                          <p className="text-lg font-bold text-success">${claim.approvedAmount.toFixed(2)}</p>
-                        </>
-                      )}
-                    </div>
+          <Card className="h-full">
+            <ScrollArea className="h-full">
+              <div className="p-4 space-y-3">
+                {loading ? (
+                  [1, 2, 3].map((i) => (
+                    <Card key={i} className="p-4">
+                      <Skeleton className="h-20 w-full" />
+                    </Card>
+                  ))
+                ) : claims.length === 0 ? (
+                  <div className="text-center py-8 text-muted-foreground">
+                    <FileText className="w-12 h-12 mx-auto mb-4 opacity-50" />
+                    <p>No insurance claims found</p>
                   </div>
-                </CardContent>
-              </Card>
-            ))}
-          </div>
-        </TabsContent>
-
-        {/* Remittances Tab */}
-        <TabsContent value="remittances" className="flex-1 overflow-hidden mt-4">
-          <Card>
-            <CardHeader>
-              <CardTitle className="text-base flex items-center gap-2">
-                <Send className="h-5 w-5" />
-                Diaspora Remittances (MusheX Gateway)
-              </CardTitle>
-              <CardDescription>
-                Receive health payments from family abroad via CBZ Bank integration
-              </CardDescription>
-            </CardHeader>
-            <CardContent>
-              <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
-                <Card className="bg-gradient-to-br from-primary/10 to-primary/5">
-                  <CardContent className="p-4">
-                    <p className="text-sm text-muted-foreground">Total Received (This Month)</p>
-                    <p className="text-2xl font-bold">$4,250.00</p>
-                  </CardContent>
-                </Card>
-                <Card>
-                  <CardContent className="p-4">
-                    <p className="text-sm text-muted-foreground">Pending Receipts</p>
-                    <p className="text-2xl font-bold text-warning">$1,500.00</p>
-                  </CardContent>
-                </Card>
-                <Card>
-                  <CardContent className="p-4">
-                    <p className="text-sm text-muted-foreground">Active Beneficiaries</p>
-                    <p className="text-2xl font-bold">12</p>
-                  </CardContent>
-                </Card>
-              </div>
-
-              <div className="space-y-3">
-                {transactions.filter(t => t.type === "remittance").map(rem => (
-                  <div key={rem.id} className="flex items-center justify-between p-4 bg-muted rounded-lg">
-                    <div className="flex items-center gap-4">
-                      <div className="h-10 w-10 rounded-full bg-primary/10 flex items-center justify-center">
-                        <ArrowDownLeft className="h-5 w-5 text-primary" />
+                ) : (
+                  claims.map((claim) => (
+                    <Card key={claim.id} className="p-4">
+                      <div className="flex items-start justify-between">
+                        <div>
+                          <div className="flex items-center gap-2 mb-1">
+                            <h4 className="font-medium">{claim.claim_number}</h4>
+                            <Badge className={getStatusColor(claim.status)}>
+                              {claim.status}
+                            </Badge>
+                          </div>
+                          <p className="text-sm text-muted-foreground">
+                            {claim.insurance_provider} • Policy: {claim.policy_number || "N/A"}
+                          </p>
+                        </div>
+                        <div className="text-right">
+                          <p className="font-bold">
+                            ${claim.total_amount.toFixed(2)}
+                          </p>
+                          {claim.approved_amount && (
+                            <p className="text-sm text-success">
+                              Approved: ${claim.approved_amount.toFixed(2)}
+                            </p>
+                          )}
+                        </div>
                       </div>
-                      <div>
-                        <p className="font-medium">{rem.description}</p>
-                        <p className="text-sm text-muted-foreground">
-                          {rem.provider} • {new Date(rem.createdAt).toLocaleDateString()}
-                        </p>
-                      </div>
-                    </div>
-                    <div className="flex items-center gap-4">
-                      <Badge className={getStatusColor(rem.status)}>{rem.status}</Badge>
-                      <span className="text-lg font-bold">${rem.amount.toFixed(2)}</span>
-                    </div>
-                  </div>
-                ))}
+                    </Card>
+                  ))
+                )}
               </div>
-            </CardContent>
+            </ScrollArea>
           </Card>
         </TabsContent>
       </Tabs>

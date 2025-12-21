@@ -353,7 +353,7 @@ const Dashboard = () => {
 
           {/* Right Sidebar */}
           <div className="space-y-6">
-            {/* Notifications */}
+            {/* Notifications - using live alerts */}
             <Card>
               <CardHeader className="pb-3">
                 <CardTitle className="text-lg flex items-center gap-2">
@@ -364,21 +364,30 @@ const Dashboard = () => {
               <CardContent>
                 <ScrollArea className="h-[200px]">
                   <div className="space-y-3">
-                    {mockNotifications.map((notification) => (
-                      <div
-                        key={notification.id}
-                        className={`p-3 rounded-lg border-l-4 ${
-                          notification.type === "critical" 
-                            ? "border-l-red-500 bg-red-50" 
-                            : notification.type === "success"
-                            ? "border-l-green-500 bg-green-50"
-                            : "border-l-blue-500 bg-blue-50"
-                        }`}
-                      >
-                        <p className="text-sm">{notification.message}</p>
-                        <p className="text-xs text-muted-foreground mt-1">{notification.time}</p>
+                    {stats.criticalAlerts > 0 ? (
+                      <div className="p-3 rounded-lg border-l-4 border-l-red-500 bg-red-50">
+                        <p className="text-sm">{stats.criticalAlerts} critical alert(s) require attention</p>
+                        <p className="text-xs text-muted-foreground mt-1">Check clinical alerts</p>
                       </div>
-                    ))}
+                    ) : null}
+                    {stats.pendingTasks > 0 ? (
+                      <div className="p-3 rounded-lg border-l-4 border-l-blue-500 bg-blue-50">
+                        <p className="text-sm">{stats.pendingTasks} pending task(s)</p>
+                        <p className="text-xs text-muted-foreground mt-1">Review your worklist</p>
+                      </div>
+                    ) : null}
+                    {stats.completedToday > 0 ? (
+                      <div className="p-3 rounded-lg border-l-4 border-l-green-500 bg-green-50">
+                        <p className="text-sm">{stats.completedToday} task(s) completed today</p>
+                        <p className="text-xs text-muted-foreground mt-1">Great progress!</p>
+                      </div>
+                    ) : null}
+                    {stats.criticalAlerts === 0 && stats.pendingTasks === 0 && stats.completedToday === 0 && (
+                      <div className="text-center py-4 text-muted-foreground">
+                        <Bell className="w-8 h-8 mx-auto mb-2 opacity-50" />
+                        <p className="text-sm">No recent alerts</p>
+                      </div>
+                    )}
                   </div>
                 </ScrollArea>
               </CardContent>

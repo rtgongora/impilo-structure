@@ -3,23 +3,21 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { ScrollArea } from "@/components/ui/scroll-area";
 import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Progress } from "@/components/ui/progress";
+import { Skeleton } from "@/components/ui/skeleton";
+import { useLabData } from "@/hooks/useLabData";
 import {
   Search,
   FlaskConical,
   TestTube,
-  FileText,
   Clock,
   CheckCircle2,
   AlertCircle,
   AlertTriangle,
   RefreshCw,
-  Download,
-  Printer,
   Eye,
   Plus,
   Barcode,
@@ -27,135 +25,11 @@ import {
   TrendingUp,
   TrendingDown,
   Minus,
-  Beaker,
-  Microscope,
-  Pipette,
-  ThermometerSun,
-  Droplet
+  Printer
 } from "lucide-react";
+import { format } from "date-fns";
 
-// Mock lab orders
-const mockLabOrders = [
-  {
-    id: "LAB001",
-    patientName: "Sarah M. Johnson",
-    patientId: "MRN-2024-001847",
-    orderDate: "2024-12-20 08:30",
-    orderingProvider: "Dr. James Mwangi",
-    tests: ["CBC", "BMP", "LFT"],
-    priority: "stat",
-    status: "in_progress",
-    department: "Chemistry",
-    collectedAt: "2024-12-20 09:15"
-  },
-  {
-    id: "LAB002",
-    patientName: "James K. Ochieng",
-    patientId: "MRN-2024-001832",
-    orderDate: "2024-12-20 07:45",
-    orderingProvider: "Dr. Sarah Kimani",
-    tests: ["Urinalysis", "Culture"],
-    priority: "routine",
-    status: "pending_collection",
-    department: "Microbiology",
-    collectedAt: null
-  },
-  {
-    id: "LAB003",
-    patientName: "Mary W. Njeri",
-    patientId: "MRN-2024-001856",
-    orderDate: "2024-12-20 06:00",
-    orderingProvider: "Dr. Peter Kamau",
-    tests: ["Troponin", "D-Dimer", "BNP"],
-    priority: "stat",
-    status: "completed",
-    department: "Chemistry",
-    collectedAt: "2024-12-20 06:15"
-  },
-  {
-    id: "LAB004",
-    patientName: "Peter M. Kamau",
-    patientId: "MRN-2024-001801",
-    orderDate: "2024-12-19 14:30",
-    orderingProvider: "Dr. Grace Wanjiku",
-    tests: ["HbA1c", "Lipid Panel"],
-    priority: "routine",
-    status: "completed",
-    department: "Chemistry",
-    collectedAt: "2024-12-19 15:00"
-  },
-];
-
-// Mock lab results
-const mockResults = [
-  {
-    id: "RES001",
-    orderId: "LAB003",
-    patientName: "Mary W. Njeri",
-    test: "Troponin I",
-    value: "0.85",
-    unit: "ng/mL",
-    refRange: "< 0.04",
-    status: "critical_high",
-    flag: "H",
-    resultTime: "2024-12-20 07:30",
-    verifiedBy: "Dr. Lab Tech"
-  },
-  {
-    id: "RES002",
-    orderId: "LAB003",
-    patientName: "Mary W. Njeri",
-    test: "D-Dimer",
-    value: "2.5",
-    unit: "mg/L FEU",
-    refRange: "< 0.5",
-    status: "high",
-    flag: "H",
-    resultTime: "2024-12-20 07:45",
-    verifiedBy: "Dr. Lab Tech"
-  },
-  {
-    id: "RES003",
-    orderId: "LAB004",
-    patientName: "Peter M. Kamau",
-    test: "HbA1c",
-    value: "7.2",
-    unit: "%",
-    refRange: "4.0 - 5.6",
-    status: "high",
-    flag: "H",
-    resultTime: "2024-12-19 16:30",
-    verifiedBy: "Dr. Lab Tech"
-  },
-  {
-    id: "RES004",
-    orderId: "LAB004",
-    patientName: "Peter M. Kamau",
-    test: "Total Cholesterol",
-    value: "185",
-    unit: "mg/dL",
-    refRange: "< 200",
-    status: "normal",
-    flag: null,
-    resultTime: "2024-12-19 16:30",
-    verifiedBy: "Dr. Lab Tech"
-  },
-  {
-    id: "RES005",
-    orderId: "LAB004",
-    patientName: "Peter M. Kamau",
-    test: "LDL Cholesterol",
-    value: "125",
-    unit: "mg/dL",
-    refRange: "< 100",
-    status: "high",
-    flag: "H",
-    resultTime: "2024-12-19 16:30",
-    verifiedBy: "Dr. Lab Tech"
-  },
-];
-
-// Mock analyzers
+// Mock analyzers (these would come from a separate integration)
 const mockAnalyzers = [
   { id: "AN001", name: "Chemistry Analyzer 1", type: "Cobas c702", status: "running", queue: 12, uptime: 99.5 },
   { id: "AN002", name: "Hematology Analyzer", type: "Sysmex XN-1000", status: "running", queue: 8, uptime: 98.2 },
@@ -171,6 +45,7 @@ const qcData = [
 ];
 
 export function LIMSIntegration() {
+  const { orders, results, stats, loading, refetch } = useLabData();
   const [activeTab, setActiveTab] = useState("orders");
   const [searchQuery, setSearchQuery] = useState("");
   const [statusFilter, setStatusFilter] = useState<string>("all");
@@ -178,14 +53,14 @@ export function LIMSIntegration() {
 
   const getStatusBadge = (status: string) => {
     switch (status) {
-      case "pending_collection":
-        return <Badge variant="outline" className="bg-yellow-50"><Clock className="w-3 h-3 mr-1" />Pending Collection</Badge>;
+      case "pending":
+        return <Badge variant="outline" className="bg-yellow-50"><Clock className="w-3 h-3 mr-1" />Pending</Badge>;
       case "in_progress":
         return <Badge variant="secondary"><RefreshCw className="w-3 h-3 mr-1 animate-spin" />In Progress</Badge>;
       case "completed":
         return <Badge className="bg-green-500"><CheckCircle2 className="w-3 h-3 mr-1" />Completed</Badge>;
-      case "critical":
-        return <Badge variant="destructive"><AlertCircle className="w-3 h-3 mr-1" />Critical</Badge>;
+      case "cancelled":
+        return <Badge variant="destructive"><AlertCircle className="w-3 h-3 mr-1" />Cancelled</Badge>;
       default:
         return <Badge variant="outline">{status}</Badge>;
     }
@@ -204,22 +79,18 @@ export function LIMSIntegration() {
     }
   };
 
-  const getResultFlag = (status: string, flag: string | null) => {
-    if (status === "critical_high" || status === "critical_low") {
-      return <Badge variant="destructive" className="animate-pulse">{flag}!</Badge>;
+  const getResultFlag = (isAbnormal: boolean | null, isCritical: boolean | null) => {
+    if (isCritical) {
+      return <Badge variant="destructive" className="animate-pulse">CRIT</Badge>;
     }
-    if (status === "high") {
-      return <Badge className="bg-orange-500">{flag}</Badge>;
-    }
-    if (status === "low") {
-      return <Badge className="bg-blue-500">{flag}</Badge>;
+    if (isAbnormal) {
+      return <Badge className="bg-orange-500">ABN</Badge>;
     }
     return null;
   };
 
-  const getTrendIcon = (status: string) => {
-    if (status.includes("high")) return <TrendingUp className="w-4 h-4 text-orange-500" />;
-    if (status.includes("low")) return <TrendingDown className="w-4 h-4 text-blue-500" />;
+  const getTrendIcon = (isAbnormal: boolean | null, isCritical: boolean | null) => {
+    if (isCritical || isAbnormal) return <TrendingUp className="w-4 h-4 text-orange-500" />;
     return <Minus className="w-4 h-4 text-muted-foreground" />;
   };
 
@@ -236,10 +107,11 @@ export function LIMSIntegration() {
     }
   };
 
-  const filteredOrders = mockLabOrders.filter(order => {
-    const matchesSearch = order.patientName.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      order.patientId.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      order.id.toLowerCase().includes(searchQuery.toLowerCase());
+  const filteredOrders = orders.filter(order => {
+    const matchesSearch = order.order_number.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      order.patient?.first_name?.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      order.patient?.last_name?.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      order.patient?.mrn?.toLowerCase().includes(searchQuery.toLowerCase());
     const matchesStatus = statusFilter === "all" || order.status === statusFilter;
     const matchesPriority = priorityFilter === "all" || order.priority === priorityFilter;
     return matchesSearch && matchesStatus && matchesPriority;
@@ -254,6 +126,10 @@ export function LIMSIntegration() {
           <p className="text-muted-foreground">Manage lab orders, results, and QC</p>
         </div>
         <div className="flex items-center gap-2">
+          <Button variant="outline" onClick={() => refetch()}>
+            <RefreshCw className="w-4 h-4 mr-2" />
+            Refresh
+          </Button>
           <Button variant="outline">
             <Barcode className="w-4 h-4 mr-2" />
             Scan Sample
@@ -273,7 +149,11 @@ export function LIMSIntegration() {
               <TestTube className="w-5 h-5 text-blue-600" />
             </div>
             <div>
-              <p className="text-2xl font-bold">48</p>
+              {loading ? (
+                <Skeleton className="h-8 w-12" />
+              ) : (
+                <p className="text-2xl font-bold">{stats.pending}</p>
+              )}
               <p className="text-xs text-muted-foreground">Pending Orders</p>
             </div>
           </CardContent>
@@ -284,7 +164,11 @@ export function LIMSIntegration() {
               <FlaskConical className="w-5 h-5 text-yellow-600" />
             </div>
             <div>
-              <p className="text-2xl font-bold">23</p>
+              {loading ? (
+                <Skeleton className="h-8 w-12" />
+              ) : (
+                <p className="text-2xl font-bold">{stats.inProgress}</p>
+              )}
               <p className="text-xs text-muted-foreground">In Progress</p>
             </div>
           </CardContent>
@@ -295,7 +179,11 @@ export function LIMSIntegration() {
               <CheckCircle2 className="w-5 h-5 text-green-600" />
             </div>
             <div>
-              <p className="text-2xl font-bold">156</p>
+              {loading ? (
+                <Skeleton className="h-8 w-12" />
+              ) : (
+                <p className="text-2xl font-bold">{stats.completed}</p>
+              )}
               <p className="text-xs text-muted-foreground">Completed Today</p>
             </div>
           </CardContent>
@@ -306,7 +194,11 @@ export function LIMSIntegration() {
               <AlertCircle className="w-5 h-5 text-red-600" />
             </div>
             <div>
-              <p className="text-2xl font-bold">3</p>
+              {loading ? (
+                <Skeleton className="h-8 w-12" />
+              ) : (
+                <p className="text-2xl font-bold">{stats.critical}</p>
+              )}
               <p className="text-xs text-muted-foreground">Critical Results</p>
             </div>
           </CardContent>
@@ -339,7 +231,7 @@ export function LIMSIntegration() {
               </SelectTrigger>
               <SelectContent>
                 <SelectItem value="all">All Status</SelectItem>
-                <SelectItem value="pending_collection">Pending</SelectItem>
+                <SelectItem value="pending">Pending</SelectItem>
                 <SelectItem value="in_progress">In Progress</SelectItem>
                 <SelectItem value="completed">Completed</SelectItem>
               </SelectContent>
@@ -355,9 +247,6 @@ export function LIMSIntegration() {
                 <SelectItem value="routine">Routine</SelectItem>
               </SelectContent>
             </Select>
-            <Button variant="outline" size="icon">
-              <RefreshCw className="w-4 h-4" />
-            </Button>
           </div>
 
           {/* Orders Table */}
@@ -365,49 +254,65 @@ export function LIMSIntegration() {
             <Table>
               <TableHeader>
                 <TableRow>
-                  <TableHead>Order ID</TableHead>
+                  <TableHead>Order #</TableHead>
                   <TableHead>Patient</TableHead>
-                  <TableHead>Tests</TableHead>
+                  <TableHead>Department</TableHead>
                   <TableHead>Priority</TableHead>
                   <TableHead>Status</TableHead>
-                  <TableHead>Department</TableHead>
                   <TableHead>Ordered</TableHead>
                   <TableHead>Actions</TableHead>
                 </TableRow>
               </TableHeader>
               <TableBody>
-                {filteredOrders.map((order) => (
-                  <TableRow key={order.id}>
-                    <TableCell className="font-mono">{order.id}</TableCell>
-                    <TableCell>
-                      <div>
-                        <p className="font-medium">{order.patientName}</p>
-                        <p className="text-xs text-muted-foreground">{order.patientId}</p>
-                      </div>
-                    </TableCell>
-                    <TableCell>
-                      <div className="flex flex-wrap gap-1">
-                        {order.tests.map((test, i) => (
-                          <Badge key={i} variant="outline" className="text-xs">{test}</Badge>
-                        ))}
-                      </div>
-                    </TableCell>
-                    <TableCell>{getPriorityBadge(order.priority)}</TableCell>
-                    <TableCell>{getStatusBadge(order.status)}</TableCell>
-                    <TableCell>{order.department}</TableCell>
-                    <TableCell className="text-sm text-muted-foreground">{order.orderDate}</TableCell>
-                    <TableCell>
-                      <div className="flex items-center gap-1">
-                        <Button variant="ghost" size="icon">
-                          <Eye className="w-4 h-4" />
-                        </Button>
-                        <Button variant="ghost" size="icon">
-                          <Barcode className="w-4 h-4" />
-                        </Button>
-                      </div>
+                {loading ? (
+                  [1, 2, 3].map((i) => (
+                    <TableRow key={i}>
+                      <TableCell><Skeleton className="h-4 w-24" /></TableCell>
+                      <TableCell><Skeleton className="h-4 w-32" /></TableCell>
+                      <TableCell><Skeleton className="h-4 w-20" /></TableCell>
+                      <TableCell><Skeleton className="h-4 w-16" /></TableCell>
+                      <TableCell><Skeleton className="h-4 w-24" /></TableCell>
+                      <TableCell><Skeleton className="h-4 w-20" /></TableCell>
+                      <TableCell><Skeleton className="h-4 w-16" /></TableCell>
+                    </TableRow>
+                  ))
+                ) : filteredOrders.length === 0 ? (
+                  <TableRow>
+                    <TableCell colSpan={7} className="text-center py-8 text-muted-foreground">
+                      No lab orders found
                     </TableCell>
                   </TableRow>
-                ))}
+                ) : (
+                  filteredOrders.map((order) => (
+                    <TableRow key={order.id}>
+                      <TableCell className="font-mono">{order.order_number}</TableCell>
+                      <TableCell>
+                        <div>
+                          <p className="font-medium">
+                            {order.patient?.first_name} {order.patient?.last_name}
+                          </p>
+                          <p className="text-xs text-muted-foreground">{order.patient?.mrn}</p>
+                        </div>
+                      </TableCell>
+                      <TableCell>{order.department || "—"}</TableCell>
+                      <TableCell>{getPriorityBadge(order.priority)}</TableCell>
+                      <TableCell>{getStatusBadge(order.status)}</TableCell>
+                      <TableCell className="text-sm text-muted-foreground">
+                        {format(new Date(order.ordered_at), "dd MMM HH:mm")}
+                      </TableCell>
+                      <TableCell>
+                        <div className="flex items-center gap-1">
+                          <Button variant="ghost" size="icon">
+                            <Eye className="w-4 h-4" />
+                          </Button>
+                          <Button variant="ghost" size="icon">
+                            <Barcode className="w-4 h-4" />
+                          </Button>
+                        </div>
+                      </TableCell>
+                    </TableRow>
+                  ))
+                )}
               </TableBody>
             </Table>
           </Card>
@@ -421,7 +326,6 @@ export function LIMSIntegration() {
             <Table>
               <TableHeader>
                 <TableRow>
-                  <TableHead>Patient</TableHead>
                   <TableHead>Test</TableHead>
                   <TableHead>Result</TableHead>
                   <TableHead>Reference Range</TableHead>
@@ -432,37 +336,53 @@ export function LIMSIntegration() {
                 </TableRow>
               </TableHeader>
               <TableBody>
-                {mockResults.map((result) => (
-                  <TableRow key={result.id} className={result.status.includes("critical") ? "bg-red-50" : ""}>
-                    <TableCell>
-                      <div>
-                        <p className="font-medium">{result.patientName}</p>
-                        <p className="text-xs text-muted-foreground">{result.orderId}</p>
-                      </div>
-                    </TableCell>
-                    <TableCell className="font-medium">{result.test}</TableCell>
-                    <TableCell>
-                      <span className={`font-bold ${result.status.includes("critical") ? "text-red-600" : result.status !== "normal" ? "text-orange-600" : ""}`}>
-                        {result.value}
-                      </span>
-                      <span className="text-muted-foreground ml-1">{result.unit}</span>
-                    </TableCell>
-                    <TableCell className="text-muted-foreground">{result.refRange}</TableCell>
-                    <TableCell>{getResultFlag(result.status, result.flag)}</TableCell>
-                    <TableCell>{getTrendIcon(result.status)}</TableCell>
-                    <TableCell className="text-sm text-muted-foreground">{result.resultTime}</TableCell>
-                    <TableCell>
-                      <div className="flex items-center gap-1">
-                        <Button variant="ghost" size="icon">
-                          <Eye className="w-4 h-4" />
-                        </Button>
-                        <Button variant="ghost" size="icon">
-                          <Printer className="w-4 h-4" />
-                        </Button>
-                      </div>
+                {loading ? (
+                  [1, 2, 3].map((i) => (
+                    <TableRow key={i}>
+                      <TableCell><Skeleton className="h-4 w-24" /></TableCell>
+                      <TableCell><Skeleton className="h-4 w-16" /></TableCell>
+                      <TableCell><Skeleton className="h-4 w-20" /></TableCell>
+                      <TableCell><Skeleton className="h-4 w-12" /></TableCell>
+                      <TableCell><Skeleton className="h-4 w-8" /></TableCell>
+                      <TableCell><Skeleton className="h-4 w-20" /></TableCell>
+                      <TableCell><Skeleton className="h-4 w-16" /></TableCell>
+                    </TableRow>
+                  ))
+                ) : results.length === 0 ? (
+                  <TableRow>
+                    <TableCell colSpan={7} className="text-center py-8 text-muted-foreground">
+                      No lab results found
                     </TableCell>
                   </TableRow>
-                ))}
+                ) : (
+                  results.map((result) => (
+                    <TableRow key={result.id} className={result.is_critical ? "bg-red-50" : ""}>
+                      <TableCell className="font-medium">{result.test_name}</TableCell>
+                      <TableCell>
+                        <span className={`font-bold ${result.is_critical ? "text-red-600" : result.is_abnormal ? "text-orange-600" : ""}`}>
+                          {result.result_value || "—"}
+                        </span>
+                        <span className="text-muted-foreground ml-1">{result.result_unit}</span>
+                      </TableCell>
+                      <TableCell className="text-muted-foreground">{result.reference_range || "—"}</TableCell>
+                      <TableCell>{getResultFlag(result.is_abnormal, result.is_critical)}</TableCell>
+                      <TableCell>{getTrendIcon(result.is_abnormal, result.is_critical)}</TableCell>
+                      <TableCell className="text-sm text-muted-foreground">
+                        {result.performed_at ? format(new Date(result.performed_at), "dd MMM HH:mm") : "—"}
+                      </TableCell>
+                      <TableCell>
+                        <div className="flex items-center gap-1">
+                          <Button variant="ghost" size="icon">
+                            <Eye className="w-4 h-4" />
+                          </Button>
+                          <Button variant="ghost" size="icon">
+                            <Printer className="w-4 h-4" />
+                          </Button>
+                        </div>
+                      </TableCell>
+                    </TableRow>
+                  ))
+                )}
               </TableBody>
             </Table>
           </Card>
@@ -474,30 +394,27 @@ export function LIMSIntegration() {
               <Card key={analyzer.id}>
                 <CardHeader className="pb-2">
                   <div className="flex items-center justify-between">
-                    <CardTitle className="text-lg">{analyzer.name}</CardTitle>
+                    <CardTitle className="text-base">{analyzer.name}</CardTitle>
                     {getAnalyzerStatus(analyzer.status)}
                   </div>
-                  <p className="text-sm text-muted-foreground">{analyzer.type}</p>
                 </CardHeader>
-                <CardContent className="space-y-4">
-                  <div className="grid grid-cols-3 gap-4 text-center">
-                    <div>
-                      <p className="text-2xl font-bold">{analyzer.queue}</p>
-                      <p className="text-xs text-muted-foreground">In Queue</p>
+                <CardContent>
+                  <div className="space-y-3">
+                    <div className="flex justify-between text-sm">
+                      <span className="text-muted-foreground">Type</span>
+                      <span>{analyzer.type}</span>
                     </div>
-                    <div>
-                      <p className="text-2xl font-bold">{analyzer.uptime}%</p>
-                      <p className="text-xs text-muted-foreground">Uptime</p>
+                    <div className="flex justify-between text-sm">
+                      <span className="text-muted-foreground">Queue</span>
+                      <span>{analyzer.queue} samples</span>
                     </div>
-                    <div>
-                      <p className="text-2xl font-bold">24</p>
-                      <p className="text-xs text-muted-foreground">Today</p>
+                    <div className="space-y-1">
+                      <div className="flex justify-between text-sm">
+                        <span className="text-muted-foreground">Uptime</span>
+                        <span>{analyzer.uptime}%</span>
+                      </div>
+                      <Progress value={analyzer.uptime} className="h-2" />
                     </div>
-                  </div>
-                  <Progress value={analyzer.queue * 5} className="h-2" />
-                  <div className="flex items-center justify-between text-xs text-muted-foreground">
-                    <span>Queue Capacity</span>
-                    <span>{analyzer.queue}/20</span>
                   </div>
                 </CardContent>
               </Card>
@@ -506,64 +423,37 @@ export function LIMSIntegration() {
         </TabsContent>
 
         <TabsContent value="qc" className="space-y-4">
-          <div className="grid grid-cols-3 gap-4">
-            <Card className="col-span-2">
-              <CardHeader>
-                <CardTitle className="text-lg">QC Results - Chemistry Analyzer 1</CardTitle>
-              </CardHeader>
-              <CardContent>
-                <Table>
-                  <TableHeader>
-                    <TableRow>
-                      <TableHead>Control Level</TableHead>
-                      <TableHead>Measured Value</TableHead>
-                      <TableHead>Target Mean</TableHead>
-                      <TableHead>SD</TableHead>
-                      <TableHead>Status</TableHead>
-                    </TableRow>
-                  </TableHeader>
-                  <TableBody>
-                    {qcData.map((qc, i) => (
-                      <TableRow key={i}>
-                        <TableCell className="font-medium">{qc.level}</TableCell>
-                        <TableCell>{qc.value}</TableCell>
-                        <TableCell>{qc.mean}</TableCell>
-                        <TableCell>±{qc.sd}</TableCell>
-                        <TableCell>
-                          <Badge className={qc.status === "pass" ? "bg-green-500" : "bg-yellow-500"}>
-                            {qc.status === "pass" ? "Pass" : "Warning"}
-                          </Badge>
-                        </TableCell>
-                      </TableRow>
-                    ))}
-                  </TableBody>
-                </Table>
-              </CardContent>
-            </Card>
-            <Card>
-              <CardHeader>
-                <CardTitle className="text-lg">QC Summary</CardTitle>
-              </CardHeader>
-              <CardContent className="space-y-4">
-                <div className="flex items-center justify-between">
-                  <span className="text-sm">Overall Status</span>
-                  <Badge className="bg-green-500">Pass</Badge>
-                </div>
-                <div className="flex items-center justify-between">
-                  <span className="text-sm">Last Run</span>
-                  <span className="text-sm text-muted-foreground">08:00 AM</span>
-                </div>
-                <div className="flex items-center justify-between">
-                  <span className="text-sm">Next Run</span>
-                  <span className="text-sm text-muted-foreground">12:00 PM</span>
-                </div>
-                <Button className="w-full">
-                  <FlaskConical className="w-4 h-4 mr-2" />
-                  Run QC Now
-                </Button>
-              </CardContent>
-            </Card>
-          </div>
+          <Card>
+            <CardHeader>
+              <CardTitle className="text-lg">Quality Control Results</CardTitle>
+            </CardHeader>
+            <Table>
+              <TableHeader>
+                <TableRow>
+                  <TableHead>Level</TableHead>
+                  <TableHead>Value</TableHead>
+                  <TableHead>Mean</TableHead>
+                  <TableHead>SD</TableHead>
+                  <TableHead>Status</TableHead>
+                </TableRow>
+              </TableHeader>
+              <TableBody>
+                {qcData.map((qc, i) => (
+                  <TableRow key={i}>
+                    <TableCell className="font-medium">{qc.level}</TableCell>
+                    <TableCell>{qc.value}</TableCell>
+                    <TableCell>{qc.mean}</TableCell>
+                    <TableCell>{qc.sd}</TableCell>
+                    <TableCell>
+                      <Badge className={qc.status === "pass" ? "bg-green-500" : "bg-orange-500"}>
+                        {qc.status.toUpperCase()}
+                      </Badge>
+                    </TableCell>
+                  </TableRow>
+                ))}
+              </TableBody>
+            </Table>
+          </Card>
         </TabsContent>
       </Tabs>
     </div>
