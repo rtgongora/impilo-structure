@@ -77,6 +77,270 @@ export type Database = {
         }
         Relationships: []
       }
+      charge_items: {
+        Row: {
+          base_price: number
+          category: string
+          code: string
+          created_at: string
+          description: string | null
+          id: string
+          is_active: boolean
+          is_taxable: boolean
+          name: string
+          stock_item_id: string | null
+          tax_rate: number | null
+          updated_at: string
+        }
+        Insert: {
+          base_price?: number
+          category: string
+          code: string
+          created_at?: string
+          description?: string | null
+          id?: string
+          is_active?: boolean
+          is_taxable?: boolean
+          name: string
+          stock_item_id?: string | null
+          tax_rate?: number | null
+          updated_at?: string
+        }
+        Update: {
+          base_price?: number
+          category?: string
+          code?: string
+          created_at?: string
+          description?: string | null
+          id?: string
+          is_active?: boolean
+          is_taxable?: boolean
+          name?: string
+          stock_item_id?: string | null
+          tax_rate?: number | null
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "charge_items_stock_item_id_fkey"
+            columns: ["stock_item_id"]
+            isOneToOne: false
+            referencedRelation: "stock_items"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      consumable_usage: {
+        Row: {
+          administered_at: string
+          administered_by: string | null
+          batch_number: string | null
+          charge_id: string | null
+          encounter_id: string
+          id: string
+          location_id: string
+          notes: string | null
+          quantity: number
+          stock_item_id: string
+          total_cost: number
+          unit_cost: number
+        }
+        Insert: {
+          administered_at?: string
+          administered_by?: string | null
+          batch_number?: string | null
+          charge_id?: string | null
+          encounter_id: string
+          id?: string
+          location_id: string
+          notes?: string | null
+          quantity: number
+          stock_item_id: string
+          total_cost: number
+          unit_cost: number
+        }
+        Update: {
+          administered_at?: string
+          administered_by?: string | null
+          batch_number?: string | null
+          charge_id?: string | null
+          encounter_id?: string
+          id?: string
+          location_id?: string
+          notes?: string | null
+          quantity?: number
+          stock_item_id?: string
+          total_cost?: number
+          unit_cost?: number
+        }
+        Relationships: [
+          {
+            foreignKeyName: "consumable_usage_charge_id_fkey"
+            columns: ["charge_id"]
+            isOneToOne: false
+            referencedRelation: "encounter_charges"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "consumable_usage_encounter_id_fkey"
+            columns: ["encounter_id"]
+            isOneToOne: false
+            referencedRelation: "encounters"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "consumable_usage_location_id_fkey"
+            columns: ["location_id"]
+            isOneToOne: false
+            referencedRelation: "stock_locations"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "consumable_usage_stock_item_id_fkey"
+            columns: ["stock_item_id"]
+            isOneToOne: false
+            referencedRelation: "stock_items"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      encounter_charges: {
+        Row: {
+          charge_item_id: string
+          charged_at: string
+          charged_by: string | null
+          discount_amount: number | null
+          discount_percent: number | null
+          encounter_id: string
+          id: string
+          is_voided: boolean
+          notes: string | null
+          quantity: number
+          tax_amount: number | null
+          total_amount: number
+          unit_price: number
+          voided_by: string | null
+          voided_reason: string | null
+        }
+        Insert: {
+          charge_item_id: string
+          charged_at?: string
+          charged_by?: string | null
+          discount_amount?: number | null
+          discount_percent?: number | null
+          encounter_id: string
+          id?: string
+          is_voided?: boolean
+          notes?: string | null
+          quantity?: number
+          tax_amount?: number | null
+          total_amount: number
+          unit_price: number
+          voided_by?: string | null
+          voided_reason?: string | null
+        }
+        Update: {
+          charge_item_id?: string
+          charged_at?: string
+          charged_by?: string | null
+          discount_amount?: number | null
+          discount_percent?: number | null
+          encounter_id?: string
+          id?: string
+          is_voided?: boolean
+          notes?: string | null
+          quantity?: number
+          tax_amount?: number | null
+          total_amount?: number
+          unit_price?: number
+          voided_by?: string | null
+          voided_reason?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "encounter_charges_charge_item_id_fkey"
+            columns: ["charge_item_id"]
+            isOneToOne: false
+            referencedRelation: "charge_items"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "encounter_charges_encounter_id_fkey"
+            columns: ["encounter_id"]
+            isOneToOne: false
+            referencedRelation: "encounters"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      encounters: {
+        Row: {
+          admission_date: string
+          attending_physician_id: string | null
+          bed: string | null
+          chief_complaint: string | null
+          created_at: string
+          created_by: string | null
+          discharge_date: string | null
+          encounter_number: string
+          encounter_type: string
+          id: string
+          notes: string | null
+          patient_id: string
+          primary_diagnosis: string | null
+          status: string
+          triage_category: string | null
+          updated_at: string
+          ward: string | null
+        }
+        Insert: {
+          admission_date?: string
+          attending_physician_id?: string | null
+          bed?: string | null
+          chief_complaint?: string | null
+          created_at?: string
+          created_by?: string | null
+          discharge_date?: string | null
+          encounter_number: string
+          encounter_type: string
+          id?: string
+          notes?: string | null
+          patient_id: string
+          primary_diagnosis?: string | null
+          status?: string
+          triage_category?: string | null
+          updated_at?: string
+          ward?: string | null
+        }
+        Update: {
+          admission_date?: string
+          attending_physician_id?: string | null
+          bed?: string | null
+          chief_complaint?: string | null
+          created_at?: string
+          created_by?: string | null
+          discharge_date?: string | null
+          encounter_number?: string
+          encounter_type?: string
+          id?: string
+          notes?: string | null
+          patient_id?: string
+          primary_diagnosis?: string | null
+          status?: string
+          triage_category?: string | null
+          updated_at?: string
+          ward?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "encounters_patient_id_fkey"
+            columns: ["patient_id"]
+            isOneToOne: false
+            referencedRelation: "patients"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       ip_whitelist: {
         Row: {
           created_at: string
@@ -134,6 +398,108 @@ export type Database = {
           ip_address?: string | null
           success?: boolean
           user_agent?: string | null
+        }
+        Relationships: []
+      }
+      patients: {
+        Row: {
+          address_line1: string | null
+          address_line2: string | null
+          allergies: string[] | null
+          blood_type: string | null
+          chronic_conditions: string[] | null
+          city: string | null
+          country: string | null
+          created_at: string
+          created_by: string | null
+          date_of_birth: string
+          email: string | null
+          emergency_contact_name: string | null
+          emergency_contact_phone: string | null
+          emergency_contact_relationship: string | null
+          first_name: string
+          gender: string
+          id: string
+          insurance_expiry: string | null
+          insurance_policy_number: string | null
+          insurance_provider: string | null
+          is_active: boolean
+          last_name: string
+          middle_name: string | null
+          mrn: string
+          national_id: string | null
+          passport_number: string | null
+          phone_primary: string | null
+          phone_secondary: string | null
+          postal_code: string | null
+          province: string | null
+          updated_at: string
+        }
+        Insert: {
+          address_line1?: string | null
+          address_line2?: string | null
+          allergies?: string[] | null
+          blood_type?: string | null
+          chronic_conditions?: string[] | null
+          city?: string | null
+          country?: string | null
+          created_at?: string
+          created_by?: string | null
+          date_of_birth: string
+          email?: string | null
+          emergency_contact_name?: string | null
+          emergency_contact_phone?: string | null
+          emergency_contact_relationship?: string | null
+          first_name: string
+          gender: string
+          id?: string
+          insurance_expiry?: string | null
+          insurance_policy_number?: string | null
+          insurance_provider?: string | null
+          is_active?: boolean
+          last_name: string
+          middle_name?: string | null
+          mrn: string
+          national_id?: string | null
+          passport_number?: string | null
+          phone_primary?: string | null
+          phone_secondary?: string | null
+          postal_code?: string | null
+          province?: string | null
+          updated_at?: string
+        }
+        Update: {
+          address_line1?: string | null
+          address_line2?: string | null
+          allergies?: string[] | null
+          blood_type?: string | null
+          chronic_conditions?: string[] | null
+          city?: string | null
+          country?: string | null
+          created_at?: string
+          created_by?: string | null
+          date_of_birth?: string
+          email?: string | null
+          emergency_contact_name?: string | null
+          emergency_contact_phone?: string | null
+          emergency_contact_relationship?: string | null
+          first_name?: string
+          gender?: string
+          id?: string
+          insurance_expiry?: string | null
+          insurance_policy_number?: string | null
+          insurance_provider?: string | null
+          is_active?: boolean
+          last_name?: string
+          middle_name?: string | null
+          mrn?: string
+          national_id?: string | null
+          passport_number?: string | null
+          phone_primary?: string | null
+          phone_secondary?: string | null
+          postal_code?: string | null
+          province?: string | null
+          updated_at?: string
         }
         Relationships: []
       }
@@ -230,6 +596,319 @@ export type Database = {
           severity?: string
           user_agent?: string | null
           user_id?: string | null
+        }
+        Relationships: []
+      }
+      stock_categories: {
+        Row: {
+          created_at: string
+          description: string | null
+          id: string
+          is_active: boolean
+          name: string
+          parent_category_id: string | null
+        }
+        Insert: {
+          created_at?: string
+          description?: string | null
+          id?: string
+          is_active?: boolean
+          name: string
+          parent_category_id?: string | null
+        }
+        Update: {
+          created_at?: string
+          description?: string | null
+          id?: string
+          is_active?: boolean
+          name?: string
+          parent_category_id?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "stock_categories_parent_category_id_fkey"
+            columns: ["parent_category_id"]
+            isOneToOne: false
+            referencedRelation: "stock_categories"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      stock_items: {
+        Row: {
+          category_id: string | null
+          created_at: string
+          description: string | null
+          id: string
+          is_active: boolean
+          is_chargeable: boolean
+          is_consumable: boolean
+          name: string
+          reorder_level: number
+          reorder_quantity: number
+          requires_prescription: boolean
+          selling_price: number
+          sku: string
+          storage_conditions: string | null
+          supplier_id: string | null
+          unit_cost: number
+          unit_of_measure: string
+          updated_at: string
+        }
+        Insert: {
+          category_id?: string | null
+          created_at?: string
+          description?: string | null
+          id?: string
+          is_active?: boolean
+          is_chargeable?: boolean
+          is_consumable?: boolean
+          name: string
+          reorder_level?: number
+          reorder_quantity?: number
+          requires_prescription?: boolean
+          selling_price?: number
+          sku: string
+          storage_conditions?: string | null
+          supplier_id?: string | null
+          unit_cost?: number
+          unit_of_measure?: string
+          updated_at?: string
+        }
+        Update: {
+          category_id?: string | null
+          created_at?: string
+          description?: string | null
+          id?: string
+          is_active?: boolean
+          is_chargeable?: boolean
+          is_consumable?: boolean
+          name?: string
+          reorder_level?: number
+          reorder_quantity?: number
+          requires_prescription?: boolean
+          selling_price?: number
+          sku?: string
+          storage_conditions?: string | null
+          supplier_id?: string | null
+          unit_cost?: number
+          unit_of_measure?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "stock_items_category_id_fkey"
+            columns: ["category_id"]
+            isOneToOne: false
+            referencedRelation: "stock_categories"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "stock_items_supplier_id_fkey"
+            columns: ["supplier_id"]
+            isOneToOne: false
+            referencedRelation: "suppliers"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      stock_levels: {
+        Row: {
+          batch_number: string | null
+          expiry_date: string | null
+          id: string
+          item_id: string
+          last_counted_at: string | null
+          location_id: string
+          quantity_on_hand: number
+          quantity_reserved: number
+          updated_at: string
+        }
+        Insert: {
+          batch_number?: string | null
+          expiry_date?: string | null
+          id?: string
+          item_id: string
+          last_counted_at?: string | null
+          location_id: string
+          quantity_on_hand?: number
+          quantity_reserved?: number
+          updated_at?: string
+        }
+        Update: {
+          batch_number?: string | null
+          expiry_date?: string | null
+          id?: string
+          item_id?: string
+          last_counted_at?: string | null
+          location_id?: string
+          quantity_on_hand?: number
+          quantity_reserved?: number
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "stock_levels_item_id_fkey"
+            columns: ["item_id"]
+            isOneToOne: false
+            referencedRelation: "stock_items"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "stock_levels_location_id_fkey"
+            columns: ["location_id"]
+            isOneToOne: false
+            referencedRelation: "stock_locations"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      stock_locations: {
+        Row: {
+          created_at: string
+          description: string | null
+          id: string
+          is_active: boolean
+          location_type: string
+          name: string
+        }
+        Insert: {
+          created_at?: string
+          description?: string | null
+          id?: string
+          is_active?: boolean
+          location_type: string
+          name: string
+        }
+        Update: {
+          created_at?: string
+          description?: string | null
+          id?: string
+          is_active?: boolean
+          location_type?: string
+          name?: string
+        }
+        Relationships: []
+      }
+      stock_movements: {
+        Row: {
+          batch_number: string | null
+          created_at: string
+          encounter_id: string | null
+          from_location_id: string | null
+          id: string
+          item_id: string
+          movement_type: string
+          performed_by: string | null
+          quantity: number
+          reason: string | null
+          reference_number: string | null
+          to_location_id: string | null
+          unit_cost: number | null
+        }
+        Insert: {
+          batch_number?: string | null
+          created_at?: string
+          encounter_id?: string | null
+          from_location_id?: string | null
+          id?: string
+          item_id: string
+          movement_type: string
+          performed_by?: string | null
+          quantity: number
+          reason?: string | null
+          reference_number?: string | null
+          to_location_id?: string | null
+          unit_cost?: number | null
+        }
+        Update: {
+          batch_number?: string | null
+          created_at?: string
+          encounter_id?: string | null
+          from_location_id?: string | null
+          id?: string
+          item_id?: string
+          movement_type?: string
+          performed_by?: string | null
+          quantity?: number
+          reason?: string | null
+          reference_number?: string | null
+          to_location_id?: string | null
+          unit_cost?: number | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "stock_movements_encounter_id_fkey"
+            columns: ["encounter_id"]
+            isOneToOne: false
+            referencedRelation: "encounters"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "stock_movements_from_location_id_fkey"
+            columns: ["from_location_id"]
+            isOneToOne: false
+            referencedRelation: "stock_locations"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "stock_movements_item_id_fkey"
+            columns: ["item_id"]
+            isOneToOne: false
+            referencedRelation: "stock_items"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "stock_movements_to_location_id_fkey"
+            columns: ["to_location_id"]
+            isOneToOne: false
+            referencedRelation: "stock_locations"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      suppliers: {
+        Row: {
+          address: string | null
+          city: string | null
+          contact_person: string | null
+          country: string | null
+          created_at: string
+          email: string | null
+          id: string
+          is_active: boolean
+          name: string
+          payment_terms: string | null
+          phone: string | null
+          updated_at: string
+        }
+        Insert: {
+          address?: string | null
+          city?: string | null
+          contact_person?: string | null
+          country?: string | null
+          created_at?: string
+          email?: string | null
+          id?: string
+          is_active?: boolean
+          name: string
+          payment_terms?: string | null
+          phone?: string | null
+          updated_at?: string
+        }
+        Update: {
+          address?: string | null
+          city?: string | null
+          contact_person?: string | null
+          country?: string | null
+          created_at?: string
+          email?: string | null
+          id?: string
+          is_active?: boolean
+          name?: string
+          payment_terms?: string | null
+          phone?: string | null
+          updated_at?: string
         }
         Relationships: []
       }
@@ -426,6 +1105,8 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
+      generate_encounter_number: { Args: never; Returns: string }
+      generate_mrn: { Args: never; Returns: string }
       has_role: {
         Args: {
           _role: Database["public"]["Enums"]["app_role"]
