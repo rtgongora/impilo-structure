@@ -34,6 +34,8 @@ import { format } from "date-fns";
 import { cn } from "@/lib/utils";
 import { toast } from "sonner";
 import { WorklistItem } from "@/contexts/ProviderContext";
+import { VideoCallPanel } from "./VideoCallPanel";
+import { useWebRTC } from "@/hooks/useWebRTC";
 
 // Stage 5: Teleconsultation Session
 interface ChatMessage {
@@ -78,7 +80,7 @@ interface TeleconsultSessionProps {
 }
 
 export function TeleconsultSession({ referral, onSubmitResponse, onClose }: TeleconsultSessionProps) {
-  const [activeMode, setActiveMode] = useState<"chat" | "audio" | "video" | "board">("chat");
+  const [activeMode, setActiveMode] = useState<"chat" | "call" | "board">("chat");
   const [messages, setMessages] = useState<ChatMessage[]>([
     {
       id: "1",
@@ -98,9 +100,6 @@ export function TeleconsultSession({ referral, onSubmitResponse, onClose }: Tele
     },
   ]);
   const [newMessage, setNewMessage] = useState("");
-  const [isCallActive, setIsCallActive] = useState(false);
-  const [isMuted, setIsMuted] = useState(false);
-  const [isVideoOff, setIsVideoOff] = useState(false);
   const [responseDraft, setResponseDraft] = useState<ResponseDraft>({
     clinicalInterpretation: "",
     workingDiagnosis: "",
@@ -127,6 +126,23 @@ export function TeleconsultSession({ referral, onSubmitResponse, onClose }: Tele
   });
   const [lastSaved, setLastSaved] = useState<Date | null>(null);
 
+  // WebRTC hook for real-time video/audio
+  const {
+    callState,
+    localStream,
+    remoteStream,
+    isMuted,
+    isVideoOff,
+    remoteParticipant,
+    startCall,
+    endCall,
+    toggleMute,
+    toggleVideo,
+  } = useWebRTC({
+    participantId: "dr-consultant-001", // Would come from auth context in production
+    referralId: referral.id,
+  });
+
   const sendMessage = () => {
     if (!newMessage.trim()) return;
     
@@ -143,18 +159,6 @@ export function TeleconsultSession({ referral, onSubmitResponse, onClose }: Tele
     setNewMessage("");
   };
 
-  const startCall = (type: "audio" | "video") => {
-    setActiveMode(type);
-    setIsCallActive(true);
-    toast.info(`${type === "audio" ? "Audio" : "Video"} call started`);
-  };
-
-  const endCall = () => {
-    setIsCallActive(false);
-    setActiveMode("chat");
-    toast.info("Call ended");
-  };
-
   const autoSave = () => {
     setLastSaved(new Date());
     // In real implementation, this would save to backend
@@ -165,10 +169,22 @@ export function TeleconsultSession({ referral, onSubmitResponse, onClose }: Tele
     toast.success("Response submitted successfully");
   };
 
+  const handleStartCall = async (audio: boolean, video: boolean) => {
+    setActiveMode("call");
+    await startCall(audio, video);
+  };
+
+  const handleEndCall = async () => {
+    await endCall();
+    setActiveMode("chat");
+  };
+
+  const isCallActive = callState === "connecting" || callState === "connected";
+
   return (
     <div className="h-full flex">
       {/* LEFT PANE: Communication */}
-      <div className="w-80 border-r flex flex-col">
+      <div className="w-96 border-r flex flex-col">
         <div className="p-3 border-b">
           <h3 className="font-semibold">Communication</h3>
           <div className="flex gap-1 mt-2">
@@ -180,18 +196,9 @@ export function TeleconsultSession({ referral, onSubmitResponse, onClose }: Tele
               <MessageSquare className="w-4 h-4" />
             </Button>
             <Button
-              variant={activeMode === "audio" ? "default" : "outline"}
+              variant={activeMode === "call" ? "default" : "outline"}
               size="sm"
-              onClick={() => !isCallActive && startCall("audio")}
-              disabled={isCallActive && activeMode !== "audio"}
-            >
-              <Phone className="w-4 h-4" />
-            </Button>
-            <Button
-              variant={activeMode === "video" ? "default" : "outline"}
-              size="sm"
-              onClick={() => !isCallActive && startCall("video")}
-              disabled={isCallActive && activeMode !== "video"}
+              onClick={() => setActiveMode("call")}
             >
               <Video className="w-4 h-4" />
             </Button>
@@ -205,100 +212,94 @@ export function TeleconsultSession({ referral, onSubmitResponse, onClose }: Tele
           </div>
         </div>
 
-        {/* Call Controls (when active) */}
-        {isCallActive && (
-          <div className="p-3 bg-primary/10 border-b">
-            <div className="flex items-center justify-between mb-2">
-              <Badge variant="outline" className="bg-success/10 text-success border-success/50">
-                <span className="w-2 h-2 bg-success rounded-full mr-2 animate-pulse" />
-                {activeMode === "audio" ? "Audio Call" : "Video Call"}
-              </Badge>
-              <span className="text-xs text-muted-foreground">
-                <Clock className="w-3 h-3 inline mr-1" />
-                00:05:23
-              </span>
-            </div>
-            <div className="flex justify-center gap-2">
-              <Button
-                variant={isMuted ? "destructive" : "outline"}
-                size="icon"
-                className="rounded-full"
-                onClick={() => setIsMuted(!isMuted)}
-              >
-                {isMuted ? <MicOff className="w-4 h-4" /> : <Mic className="w-4 h-4" />}
-              </Button>
-              {activeMode === "video" && (
-                <Button
-                  variant={isVideoOff ? "destructive" : "outline"}
-                  size="icon"
-                  className="rounded-full"
-                  onClick={() => setIsVideoOff(!isVideoOff)}
-                >
-                  {isVideoOff ? <VideoOff className="w-4 h-4" /> : <Video className="w-4 h-4" />}
-                </Button>
-              )}
-              <Button
-                variant="destructive"
-                size="icon"
-                className="rounded-full"
-                onClick={endCall}
-              >
-                <PhoneOff className="w-4 h-4" />
-              </Button>
-            </div>
+        {/* Video Call Panel (when in call mode) */}
+        {activeMode === "call" && (
+          <div className="flex-1 flex flex-col">
+            <VideoCallPanel
+              callState={callState}
+              localStream={localStream}
+              remoteStream={remoteStream}
+              isMuted={isMuted}
+              isVideoOff={isVideoOff}
+              remoteParticipant={remoteParticipant}
+              onStartCall={handleStartCall}
+              onEndCall={handleEndCall}
+              onToggleMute={toggleMute}
+              onToggleVideo={toggleVideo}
+            />
           </div>
         )}
 
-        {/* Chat Messages */}
-        <ScrollArea className="flex-1 p-3">
-          <div className="space-y-3">
-            {messages.map((msg) => (
-              <div
-                key={msg.id}
-                className={cn(
-                  "rounded-lg p-3",
-                  msg.type === "system" && "bg-muted/50 text-center text-sm text-muted-foreground",
-                  msg.type === "text" && msg.sender === "Dr. J. Mwangi" && "bg-primary/10 ml-4",
-                  msg.type === "text" && msg.sender !== "Dr. J. Mwangi" && "bg-muted mr-4"
-                )}
-              >
-                {msg.type !== "system" && (
-                  <div className="flex items-center gap-2 mb-1">
-                    <Avatar className="w-6 h-6">
-                      <AvatarFallback className="text-xs">
-                        {msg.sender.split(" ").map(n => n[0]).join("")}
-                      </AvatarFallback>
-                    </Avatar>
-                    <span className="font-medium text-xs">{msg.sender}</span>
-                    <span className="text-xs text-muted-foreground">{msg.senderRole}</span>
+        {/* Chat Messages (when in chat mode) */}
+        {activeMode === "chat" && (
+          <>
+            <ScrollArea className="flex-1 p-3">
+              <div className="space-y-3">
+                {messages.map((msg) => (
+                  <div
+                    key={msg.id}
+                    className={cn(
+                      "rounded-lg p-3",
+                      msg.type === "system" && "bg-muted/50 text-center text-sm text-muted-foreground",
+                      msg.type === "text" && msg.sender === "Dr. J. Mwangi" && "bg-primary/10 ml-4",
+                      msg.type === "text" && msg.sender !== "Dr. J. Mwangi" && "bg-muted mr-4"
+                    )}
+                  >
+                    {msg.type !== "system" && (
+                      <div className="flex items-center gap-2 mb-1">
+                        <Avatar className="w-6 h-6">
+                          <AvatarFallback className="text-xs">
+                            {msg.sender.split(" ").map(n => n[0]).join("")}
+                          </AvatarFallback>
+                        </Avatar>
+                        <span className="font-medium text-xs">{msg.sender}</span>
+                        <span className="text-xs text-muted-foreground">{msg.senderRole}</span>
+                      </div>
+                    )}
+                    <p className="text-sm">{msg.content}</p>
+                    <p className="text-xs text-muted-foreground mt-1">
+                      {format(msg.timestamp, "HH:mm")}
+                    </p>
                   </div>
-                )}
-                <p className="text-sm">{msg.content}</p>
-                <p className="text-xs text-muted-foreground mt-1">
-                  {format(msg.timestamp, "HH:mm")}
-                </p>
+                ))}
               </div>
-            ))}
-          </div>
-        </ScrollArea>
+            </ScrollArea>
 
-        {/* Message Input */}
-        <div className="p-3 border-t">
-          <div className="flex gap-2">
-            <Button variant="outline" size="icon" className="shrink-0">
-              <Paperclip className="w-4 h-4" />
-            </Button>
-            <Input
-              value={newMessage}
-              onChange={(e) => setNewMessage(e.target.value)}
-              onKeyDown={(e) => e.key === "Enter" && sendMessage()}
-              placeholder="Type a message..."
-            />
-            <Button onClick={sendMessage} size="icon" className="shrink-0">
-              <Send className="w-4 h-4" />
-            </Button>
+            {/* Message Input */}
+            <div className="p-3 border-t">
+              <div className="flex gap-2">
+                <Button variant="outline" size="icon" className="shrink-0">
+                  <Paperclip className="w-4 h-4" />
+                </Button>
+                <Input
+                  value={newMessage}
+                  onChange={(e) => setNewMessage(e.target.value)}
+                  onKeyDown={(e) => e.key === "Enter" && sendMessage()}
+                  placeholder="Type a message..."
+                />
+                <Button onClick={sendMessage} size="icon" className="shrink-0">
+                  <Send className="w-4 h-4" />
+                </Button>
+              </div>
+            </div>
+          </>
+        )}
+
+        {/* Active Call Indicator (when in chat but call is active) */}
+        {activeMode === "chat" && isCallActive && (
+          <div 
+            className="p-3 bg-success/10 border-t cursor-pointer hover:bg-success/20"
+            onClick={() => setActiveMode("call")}
+          >
+            <div className="flex items-center justify-between">
+              <Badge className="bg-success text-success-foreground animate-pulse">
+                <span className="w-2 h-2 bg-success-foreground rounded-full mr-2" />
+                Call Active
+              </Badge>
+              <span className="text-xs text-muted-foreground">Tap to view</span>
+            </div>
           </div>
-        </div>
+        )}
       </div>
 
       {/* CENTER PANE: Response Note Draft */}
