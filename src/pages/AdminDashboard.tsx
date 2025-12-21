@@ -54,6 +54,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { Calendar } from '@/components/ui/calendar';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
+import { Checkbox } from '@/components/ui/checkbox';
 import { cn } from '@/lib/utils';
 
 interface UserProfile {
@@ -100,6 +101,12 @@ const AdminDashboard = () => {
   const [editingUser, setEditingUser] = useState<UserProfile | null>(null);
   const [editRole, setEditRole] = useState<string>('');
   const [isSaving, setIsSaving] = useState(false);
+  
+  // Bulk selection
+  const [selectedUsers, setSelectedUsers] = useState<Set<string>>(new Set());
+  const [bulkRole, setBulkRole] = useState<string>('');
+  const [showBulkDialog, setShowBulkDialog] = useState(false);
+  const [isBulkSaving, setIsBulkSaving] = useState(false);
   
   // Date range filter for audit logs
   const [dateFrom, setDateFrom] = useState<Date | undefined>(undefined);
@@ -238,6 +245,100 @@ const AdminDashboard = () => {
     }
 
     setIsSaving(false);
+  };
+
+  // Bulk role assignment
+  const toggleUserSelection = (userId: string) => {
+    const newSelection = new Set(selectedUsers);
+    if (newSelection.has(userId)) {
+      newSelection.delete(userId);
+    } else {
+      newSelection.add(userId);
+    }
+    setSelectedUsers(newSelection);
+  };
+
+  const toggleSelectAll = () => {
+    const selectableUsers = filteredUsers.filter(u => u.user_id !== user?.id);
+    if (selectedUsers.size === selectableUsers.length) {
+      setSelectedUsers(new Set());
+    } else {
+      setSelectedUsers(new Set(selectableUsers.map(u => u.id)));
+    }
+  };
+
+  const handleBulkRoleChange = async () => {
+    if (!bulkRole || selectedUsers.size === 0 || !user) return;
+
+    setIsBulkSaving(true);
+    const currentUserProfile = users.find(u => u.user_id === user.id);
+    const changedByName = currentUserProfile?.display_name || 'An administrator';
+
+    let successCount = 0;
+    let errorCount = 0;
+
+    for (const profileId of selectedUsers) {
+      const targetUser = users.find(u => u.id === profileId);
+      if (!targetUser) continue;
+
+      const oldRole = targetUser.role;
+
+      const { error } = await supabase
+        .from('profiles')
+        .update({ role: bulkRole as any })
+        .eq('id', profileId);
+
+      if (error) {
+        errorCount++;
+        continue;
+      }
+
+      // Log the change
+      await supabase.from('audit_logs').insert({
+        action: 'role_change',
+        entity_type: 'profile',
+        entity_id: profileId,
+        performed_by: user.id,
+        old_value: { role: oldRole },
+        new_value: { role: bulkRole },
+        metadata: { 
+          target_name: targetUser.display_name,
+          target_user_id: targetUser.user_id,
+          bulk_operation: true
+        },
+      });
+
+      // Send email notification (fire and forget)
+      supabase.functions.invoke('send-role-notification', {
+        body: {
+          userId: targetUser.user_id,
+          oldRole: oldRole,
+          newRole: bulkRole,
+          changedByName: changedByName,
+        },
+      }).catch(console.error);
+
+      successCount++;
+    }
+
+    // Update local state
+    setUsers(prev => 
+      prev.map(u => selectedUsers.has(u.id) ? { ...u, role: bulkRole as any } : u)
+    );
+
+    setSelectedUsers(new Set());
+    setShowBulkDialog(false);
+    setBulkRole('');
+    setIsBulkSaving(false);
+
+    if (successCount > 0) {
+      toast.success(`Updated ${successCount} user${successCount > 1 ? 's' : ''} to ${bulkRole}`);
+    }
+    if (errorCount > 0) {
+      toast.error(`Failed to update ${errorCount} user${errorCount > 1 ? 's' : ''}`);
+    }
+
+    fetchAuditLogs();
   };
 
   const getRoleBadgeVariant = (role: string) => {
@@ -459,6 +560,30 @@ const AdminDashboard = () => {
                   </Select>
                 </div>
 
+                {/* Bulk Action Bar */}
+                {selectedUsers.size > 0 && (
+                  <div className="flex items-center justify-between p-3 bg-primary/10 rounded-lg border border-primary/20">
+                    <span className="text-sm font-medium">
+                      {selectedUsers.size} user{selectedUsers.size > 1 ? 's' : ''} selected
+                    </span>
+                    <div className="flex items-center gap-2">
+                      <Button
+                        variant="outline"
+                        size="sm"
+                        onClick={() => setSelectedUsers(new Set())}
+                      >
+                        Clear Selection
+                      </Button>
+                      <Button
+                        size="sm"
+                        onClick={() => setShowBulkDialog(true)}
+                      >
+                        Change Role
+                      </Button>
+                    </div>
+                  </div>
+                )}
+
                 {/* Users Table */}
                 {loading ? (
                   <div className="flex items-center justify-center py-12">
@@ -468,6 +593,12 @@ const AdminDashboard = () => {
                   <Table>
                     <TableHeader>
                       <TableRow>
+                        <TableHead className="w-12">
+                          <Checkbox
+                            checked={selectedUsers.size > 0 && selectedUsers.size === filteredUsers.filter(u => u.user_id !== user?.id).length}
+                            onCheckedChange={toggleSelectAll}
+                          />
+                        </TableHead>
                         <TableHead>Name</TableHead>
                         <TableHead>Role</TableHead>
                         <TableHead>Specialty</TableHead>
@@ -479,13 +610,20 @@ const AdminDashboard = () => {
                     <TableBody>
                       {filteredUsers.length === 0 ? (
                         <TableRow>
-                          <TableCell colSpan={6} className="text-center py-8 text-muted-foreground">
+                          <TableCell colSpan={7} className="text-center py-8 text-muted-foreground">
                             No users found
                           </TableCell>
                         </TableRow>
                       ) : (
                         filteredUsers.map((userProfile) => (
-                          <TableRow key={userProfile.id}>
+                          <TableRow key={userProfile.id} className={selectedUsers.has(userProfile.id) ? 'bg-primary/5' : ''}>
+                            <TableCell>
+                              <Checkbox
+                                checked={selectedUsers.has(userProfile.id)}
+                                onCheckedChange={() => toggleUserSelection(userProfile.id)}
+                                disabled={userProfile.user_id === user?.id}
+                              />
+                            </TableCell>
                             <TableCell>
                               <div className="font-medium">{userProfile.display_name}</div>
                               {userProfile.phone && (
@@ -724,6 +862,80 @@ const AdminDashboard = () => {
                   </>
                 ) : (
                   'Save Changes'
+                )}
+              </Button>
+            </DialogFooter>
+          </DialogContent>
+        </Dialog>
+
+        {/* Bulk Role Change Dialog */}
+        <Dialog open={showBulkDialog} onOpenChange={setShowBulkDialog}>
+          <DialogContent>
+            <DialogHeader>
+              <DialogTitle>Bulk Role Assignment</DialogTitle>
+              <DialogDescription>
+                Change the role for {selectedUsers.size} selected user{selectedUsers.size > 1 ? 's' : ''}
+              </DialogDescription>
+            </DialogHeader>
+            
+            <div className="py-4 space-y-4">
+              <div className="space-y-2">
+                <label className="text-sm font-medium">Selected Users</label>
+                <div className="flex flex-wrap gap-1 max-h-24 overflow-y-auto">
+                  {Array.from(selectedUsers).map(id => {
+                    const u = users.find(user => user.id === id);
+                    return u ? (
+                      <Badge key={id} variant="outline" className="text-xs">
+                        {u.display_name}
+                      </Badge>
+                    ) : null;
+                  })}
+                </div>
+              </div>
+              
+              <div className="space-y-2">
+                <label className="text-sm font-medium">New Role for All</label>
+                <Select value={bulkRole} onValueChange={setBulkRole}>
+                  <SelectTrigger>
+                    <SelectValue placeholder="Select role" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {CLINICAL_ROLES.map((role) => (
+                      <SelectItem key={role} value={role}>
+                        {role.charAt(0).toUpperCase() + role.slice(1)}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              </div>
+
+              {bulkRole === 'admin' && (
+                <Alert>
+                  <ShieldAlert className="h-4 w-4" />
+                  <AlertTitle>Warning</AlertTitle>
+                  <AlertDescription>
+                    You are about to grant admin access to {selectedUsers.size} user{selectedUsers.size > 1 ? 's' : ''}. 
+                    Admin users have full system access. Proceed with caution.
+                  </AlertDescription>
+                </Alert>
+              )}
+            </div>
+
+            <DialogFooter>
+              <Button variant="outline" onClick={() => setShowBulkDialog(false)}>
+                Cancel
+              </Button>
+              <Button 
+                onClick={handleBulkRoleChange} 
+                disabled={isBulkSaving || !bulkRole}
+              >
+                {isBulkSaving ? (
+                  <>
+                    <Loader2 className="w-4 h-4 mr-2 animate-spin" />
+                    Updating...
+                  </>
+                ) : (
+                  `Update ${selectedUsers.size} User${selectedUsers.size > 1 ? 's' : ''}`
                 )}
               </Button>
             </DialogFooter>
