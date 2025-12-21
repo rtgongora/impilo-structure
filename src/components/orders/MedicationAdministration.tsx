@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -29,10 +29,14 @@ import {
   Syringe,
   AlertTriangle,
   User,
+  Scan,
+  Pen,
 } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/contexts/AuthContext";
 import { toast } from "sonner";
+import { BarcodeScanner } from "./BarcodeScanner";
+import { SignaturePad } from "./SignaturePad";
 
 interface MedicationOrder {
   id: string;
@@ -46,6 +50,7 @@ interface MedicationOrder {
   start_date: string;
   is_prn: boolean | null;
   instructions: string | null;
+  barcode: string | null;
 }
 
 interface MedicationAdministrationProps {
@@ -68,12 +73,19 @@ export function MedicationAdministration({ patientId, encounterId }: MedicationA
   const [selectedMed, setSelectedMed] = useState<MedicationOrder | null>(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
   
-  // Administration form state
+  const [showBarcodeScanner, setShowBarcodeScanner] = useState(false);
+  const [showSignaturePad, setShowSignaturePad] = useState(false);
+  const [signatureUrl, setSignatureUrl] = useState<string | null>(null);
+  
   const [adminStatus, setAdminStatus] = useState<"given" | "not_given">("given");
   const [dosageGiven, setDosageGiven] = useState("");
   const [routeUsed, setRouteUsed] = useState("");
   const [notes, setNotes] = useState("");
   const [reasonNotGiven, setReasonNotGiven] = useState("");
+
+  useEffect(() => {
+    fetchMedications();
+  }, [patientId, encounterId]);
 
   const fetchMedications = async () => {
     setIsLoading(true);
@@ -96,10 +108,6 @@ export function MedicationAdministration({ patientId, encounterId }: MedicationA
     }
   };
 
-  useState(() => {
-    fetchMedications();
-  });
-
   const openAdminDialog = (med: MedicationOrder) => {
     setSelectedMed(med);
     setDosageGiven(`${med.dosage} ${med.dosage_unit}`);
@@ -107,22 +115,36 @@ export function MedicationAdministration({ patientId, encounterId }: MedicationA
     setAdminStatus("given");
     setNotes("");
     setReasonNotGiven("");
+    setSignatureUrl(null);
+    setShowBarcodeScanner(true);
+  };
+
+  const handleBarcodeVerified = () => {
+    setShowBarcodeScanner(false);
     setShowAdminDialog(true);
   };
 
-  const handleAdminister = async () => {
-    if (!selectedMed || !user) return;
-
+  const proceedToSignature = () => {
     if (adminStatus === "given" && !dosageGiven) {
       toast.error("Please enter the dosage given");
       return;
     }
-
     if (adminStatus === "not_given" && !reasonNotGiven) {
       toast.error("Please provide a reason for not giving medication");
       return;
     }
+    setShowAdminDialog(false);
+    setShowSignaturePad(true);
+  };
 
+  const handleSignatureComplete = (url: string) => {
+    setSignatureUrl(url);
+    setShowSignaturePad(false);
+    handleAdminister(url);
+  };
+
+  const handleAdminister = async (sigUrl?: string) => {
+    if (!selectedMed || !user) return;
     setIsSubmitting(true);
     try {
       const { error } = await supabase.from("medication_administrations").insert({
@@ -134,16 +156,11 @@ export function MedicationAdministration({ patientId, encounterId }: MedicationA
         route_used: routeUsed,
         notes: notes || null,
         reason_not_given: adminStatus === "not_given" ? reasonNotGiven : null,
+        signature_url: sigUrl || signatureUrl,
       });
-
       if (error) throw error;
-
-      toast.success(
-        adminStatus === "given" 
-          ? `${selectedMed.medication_name} administered successfully` 
-          : "Administration recorded as not given"
-      );
-      setShowAdminDialog(false);
+      toast.success(`${selectedMed.medication_name} administered and signed`);
+      setSelectedMed(null);
       fetchMedications();
     } catch (error) {
       console.error("Error recording administration:", error);
@@ -183,12 +200,8 @@ export function MedicationAdministration({ patientId, encounterId }: MedicationA
               <div className="space-y-3">
                 {medications.map((med) => {
                   const statusInfo = statusConfig[med.status] || statusConfig.active;
-
                   return (
-                    <div
-                      key={med.id}
-                      className="p-4 rounded-lg border hover:bg-muted/50 transition-colors"
-                    >
+                    <div key={med.id} className="p-4 rounded-lg border hover:bg-muted/50 transition-colors">
                       <div className="flex items-start justify-between">
                         <div className="flex items-start gap-3">
                           <div className="h-10 w-10 rounded-lg bg-blue-500/10 flex items-center justify-center">
@@ -197,16 +210,9 @@ export function MedicationAdministration({ patientId, encounterId }: MedicationA
                           <div>
                             <div className="flex items-center gap-2">
                               <h4 className="font-medium">{med.medication_name}</h4>
-                              {med.is_prn && (
-                                <Badge variant="outline" className="text-xs">PRN</Badge>
-                              )}
-                              <Badge variant="outline" className={statusInfo.color}>
-                                {statusInfo.label}
-                              </Badge>
+                              {med.is_prn && <Badge variant="outline" className="text-xs">PRN</Badge>}
+                              <Badge variant="outline" className={statusInfo.color}>{statusInfo.label}</Badge>
                             </div>
-                            {med.generic_name && (
-                              <p className="text-xs text-muted-foreground">{med.generic_name}</p>
-                            )}
                             <div className="flex items-center gap-2 mt-1 text-sm text-muted-foreground">
                               <span>{med.dosage} {med.dosage_unit}</span>
                               <span>•</span>
@@ -214,20 +220,10 @@ export function MedicationAdministration({ patientId, encounterId }: MedicationA
                               <span>•</span>
                               <span>{med.frequency}</span>
                             </div>
-                            {med.instructions && (
-                              <p className="text-xs text-muted-foreground mt-1 italic">
-                                {med.instructions}
-                              </p>
-                            )}
                           </div>
                         </div>
-
-                        <Button
-                          size="sm"
-                          onClick={() => openAdminDialog(med)}
-                          disabled={med.status !== "active"}
-                        >
-                          <CheckCircle className="h-4 w-4 mr-1" />
+                        <Button size="sm" onClick={() => openAdminDialog(med)} disabled={med.status !== "active"}>
+                          <Scan className="h-4 w-4 mr-1" />
                           Administer
                         </Button>
                       </div>
@@ -240,7 +236,16 @@ export function MedicationAdministration({ patientId, encounterId }: MedicationA
         </CardContent>
       </Card>
 
-      {/* Administration Dialog */}
+      {selectedMed && (
+        <BarcodeScanner
+          open={showBarcodeScanner}
+          expectedBarcode={selectedMed.barcode || undefined}
+          medicationName={selectedMed.medication_name}
+          onVerified={handleBarcodeVerified}
+          onCancel={() => { setShowBarcodeScanner(false); setSelectedMed(null); }}
+        />
+      )}
+
       <Dialog open={showAdminDialog} onOpenChange={setShowAdminDialog}>
         <DialogContent className="max-w-md">
           <DialogHeader>
@@ -249,116 +254,62 @@ export function MedicationAdministration({ patientId, encounterId }: MedicationA
               Record Administration
             </DialogTitle>
           </DialogHeader>
-
           {selectedMed && (
             <div className="space-y-4">
-              {/* Medication Info */}
+              <div className="flex items-center gap-2 p-2 rounded-lg bg-emerald-500/10 text-emerald-600 dark:text-emerald-400">
+                <CheckCircle className="h-4 w-4" />
+                <span className="text-sm font-medium">Medication Verified</span>
+              </div>
               <div className="p-3 rounded-lg bg-muted/50">
                 <h4 className="font-medium">{selectedMed.medication_name}</h4>
-                <p className="text-sm text-muted-foreground">
-                  {selectedMed.dosage} {selectedMed.dosage_unit} • {selectedMed.route} • {selectedMed.frequency}
-                </p>
+                <p className="text-sm text-muted-foreground">{selectedMed.dosage} {selectedMed.dosage_unit} • {selectedMed.route}</p>
               </div>
-
-              {/* Nurse Info */}
               <div className="flex items-center gap-2 text-sm">
                 <User className="h-4 w-4 text-muted-foreground" />
-                <span>Administering Nurse: <strong>{profile?.display_name || "Unknown"}</strong></span>
+                <span>Nurse: <strong>{profile?.display_name || "Unknown"}</strong></span>
               </div>
-
-              {/* Status Selection */}
               <div className="space-y-2">
-                <Label>Administration Status</Label>
+                <Label>Status</Label>
                 <Select value={adminStatus} onValueChange={(v) => setAdminStatus(v as "given" | "not_given")}>
-                  <SelectTrigger>
-                    <SelectValue />
-                  </SelectTrigger>
+                  <SelectTrigger><SelectValue /></SelectTrigger>
                   <SelectContent>
-                    <SelectItem value="given">
-                      <div className="flex items-center gap-2">
-                        <CheckCircle className="h-4 w-4 text-emerald-500" />
-                        Given
-                      </div>
-                    </SelectItem>
-                    <SelectItem value="not_given">
-                      <div className="flex items-center gap-2">
-                        <XCircle className="h-4 w-4 text-destructive" />
-                        Not Given
-                      </div>
-                    </SelectItem>
+                    <SelectItem value="given">Given</SelectItem>
+                    <SelectItem value="not_given">Not Given</SelectItem>
                   </SelectContent>
                 </Select>
               </div>
-
               {adminStatus === "given" ? (
-                <>
-                  <div className="grid grid-cols-2 gap-3">
-                    <div className="space-y-2">
-                      <Label>Dosage Given</Label>
-                      <Input
-                        value={dosageGiven}
-                        onChange={(e) => setDosageGiven(e.target.value)}
-                        placeholder="e.g., 500 mg"
-                      />
-                    </div>
-                    <div className="space-y-2">
-                      <Label>Route Used</Label>
-                      <Input
-                        value={routeUsed}
-                        onChange={(e) => setRouteUsed(e.target.value)}
-                        placeholder="e.g., PO, IV"
-                      />
-                    </div>
-                  </div>
-
+                <div className="grid grid-cols-2 gap-3">
                   <div className="space-y-2">
-                    <Label>Notes (Optional)</Label>
-                    <Textarea
-                      value={notes}
-                      onChange={(e) => setNotes(e.target.value)}
-                      placeholder="Any observations or notes..."
-                      rows={2}
-                    />
+                    <Label>Dosage</Label>
+                    <Input value={dosageGiven} onChange={(e) => setDosageGiven(e.target.value)} />
                   </div>
-                </>
+                  <div className="space-y-2">
+                    <Label>Route</Label>
+                    <Input value={routeUsed} onChange={(e) => setRouteUsed(e.target.value)} />
+                  </div>
+                </div>
               ) : (
                 <div className="space-y-2">
-                  <Label className="flex items-center gap-2">
-                    <AlertTriangle className="h-4 w-4 text-amber-500" />
-                    Reason Not Given
-                  </Label>
-                  <Textarea
-                    value={reasonNotGiven}
-                    onChange={(e) => setReasonNotGiven(e.target.value)}
-                    placeholder="Patient refused, NPO status, adverse reaction, etc."
-                    rows={3}
-                  />
+                  <Label>Reason Not Given</Label>
+                  <Textarea value={reasonNotGiven} onChange={(e) => setReasonNotGiven(e.target.value)} rows={2} />
                 </div>
               )}
-
-              {/* Timestamp */}
-              <div className="flex items-center gap-2 text-sm text-muted-foreground">
-                <Clock className="h-4 w-4" />
-                <span>Time: {new Date().toLocaleString()}</span>
-              </div>
             </div>
           )}
-
           <DialogFooter>
-            <Button variant="outline" onClick={() => setShowAdminDialog(false)}>
-              Cancel
-            </Button>
-            <Button onClick={handleAdminister} disabled={isSubmitting}>
-              {isSubmitting ? (
-                <Loader2 className="h-4 w-4 mr-2 animate-spin" />
-              ) : (
-                <CheckCircle className="h-4 w-4 mr-2" />
-              )}
-              Confirm Administration
-            </Button>
+            <Button variant="outline" onClick={() => setShowAdminDialog(false)}>Cancel</Button>
+            <Button onClick={proceedToSignature}><Pen className="h-4 w-4 mr-2" />Sign & Confirm</Button>
           </DialogFooter>
         </DialogContent>
       </Dialog>
+
+      <SignaturePad
+        open={showSignaturePad}
+        onClose={() => setShowSignaturePad(false)}
+        onSignatureComplete={handleSignatureComplete}
+        nurseName={profile?.display_name || "Unknown"}
+      />
     </>
   );
 }

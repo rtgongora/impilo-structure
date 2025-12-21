@@ -3,9 +3,10 @@ import { OrderEntrySystem } from "@/components/orders/OrderEntrySystem";
 import { PatientSelector } from "@/components/orders/PatientSelector";
 import { PatientOrdersView } from "@/components/orders/PatientOrdersView";
 import { MedicationAdministration } from "@/components/orders/MedicationAdministration";
+import { MedicationTimeline } from "@/components/orders/MedicationTimeline";
 import { Button } from "@/components/ui/button";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { ArrowLeft, ShoppingCart, ClipboardList, Syringe } from "lucide-react";
+import { ArrowLeft, ShoppingCart, ClipboardList, Syringe, Timer } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 
 interface SelectedPatient {
