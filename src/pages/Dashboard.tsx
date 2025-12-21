@@ -3,6 +3,8 @@ import { useAuth } from "@/contexts/AuthContext";
 import { useNavigate } from "react-router-dom";
 import { PatientSearch } from "@/components/search/PatientSearch";
 import { HandoffNotifications } from "@/components/handoff/HandoffNotifications";
+import { PushNotificationPrompt } from "@/components/notifications/PushNotificationPrompt";
+import { VoiceCommandButton } from "@/components/voice/VoiceCommandButton";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { NurseMedDashboard } from "@/components/orders/NurseMedDashboard";
 import { Button } from "@/components/ui/button";
