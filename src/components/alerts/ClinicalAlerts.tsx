@@ -1,5 +1,4 @@
-import { useState, useEffect } from "react";
-import { supabase } from "@/integrations/supabase/client";
+import { useState } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -16,116 +15,21 @@ import {
   AlertTriangle,
   Bell,
   Heart,
-  Thermometer,
   Activity,
   Pill,
   Clock,
   CheckCircle,
   X,
-  ChevronRight,
 } from "lucide-react";
 import { formatDistanceToNow } from "date-fns";
+import { useClinicalAlerts, ClinicalAlert } from "@/hooks/useClinicalAlerts";
+import { Skeleton } from "@/components/ui/skeleton";
 
 export type AlertSeverity = "critical" | "warning" | "info";
 export type AlertCategory = "vitals" | "medication" | "lab" | "protocol" | "system";
 
-export interface ClinicalAlert {
-  id: string;
-  title: string;
-  description: string;
-  severity: AlertSeverity;
-  category: AlertCategory;
-  patientId?: string;
-  patientName?: string;
-  mrn?: string;
-  encounterId?: string;
-  timestamp: Date;
-  acknowledged: boolean;
-  acknowledgedBy?: string;
-  acknowledgedAt?: Date;
-  actionUrl?: string;
-  value?: string | number;
-  normalRange?: string;
-}
-
-const MOCK_ALERTS: ClinicalAlert[] = [
-  {
-    id: "1",
-    title: "Critical Blood Pressure",
-    description: "Systolic BP > 180 mmHg requires immediate attention",
-    severity: "critical",
-    category: "vitals",
-    patientName: "Sarah Moyo",
-    mrn: "MRN-2025-000001",
-    timestamp: new Date(Date.now() - 5 * 60 * 1000),
-    acknowledged: false,
-    value: "185/110",
-    normalRange: "90-140/60-90",
-  },
-  {
-    id: "2",
-    title: "Medication Due",
-    description: "Insulin administration overdue by 30 minutes",
-    severity: "warning",
-    category: "medication",
-    patientName: "Tendai Mwari",
-    mrn: "MRN-2025-000002",
-    timestamp: new Date(Date.now() - 35 * 60 * 1000),
-    acknowledged: false,
-  },
-  {
-    id: "3",
-    title: "Abnormal Lab Result",
-    description: "Potassium level critically low",
-    severity: "critical",
-    category: "lab",
-    patientName: "James Nyathi",
-    mrn: "MRN-2025-000003",
-    timestamp: new Date(Date.now() - 15 * 60 * 1000),
-    acknowledged: false,
-    value: "2.8 mEq/L",
-    normalRange: "3.5-5.0",
-  },
-  {
-    id: "4",
-    title: "Sepsis Protocol Triggered",
-    description: "qSOFA score ≥2, consider sepsis workup",
-    severity: "critical",
-    category: "protocol",
-    patientName: "Grace Mutamba",
-    mrn: "MRN-2025-000004",
-    timestamp: new Date(Date.now() - 10 * 60 * 1000),
-    acknowledged: false,
-  },
-  {
-    id: "5",
-    title: "Fall Risk Assessment Due",
-    description: "Patient requires fall risk reassessment",
-    severity: "info",
-    category: "protocol",
-    patientName: "Peter Chiweza",
-    mrn: "MRN-2025-000005",
-    timestamp: new Date(Date.now() - 2 * 60 * 60 * 1000),
-    acknowledged: false,
-  },
-  {
-    id: "6",
-    title: "Low Oxygen Saturation",
-    description: "SpO2 dropped below 92%",
-    severity: "warning",
-    category: "vitals",
-    patientName: "Mary Sibanda",
-    mrn: "MRN-2025-000006",
-    timestamp: new Date(Date.now() - 8 * 60 * 1000),
-    acknowledged: true,
-    acknowledgedAt: new Date(Date.now() - 5 * 60 * 1000),
-    value: "89%",
-    normalRange: ">94%",
-  },
-];
-
 const severityConfig: Record<
-  AlertSeverity,
+  string,
   { color: string; bgColor: string; icon: React.ComponentType<{ className?: string }> }
 > = {
   critical: {
@@ -145,58 +49,58 @@ const severityConfig: Record<
   },
 };
 
-const categoryIcons: Record<AlertCategory, React.ComponentType<{ className?: string }>> = {
+const categoryIcons: Record<string, React.ComponentType<{ className?: string }>> = {
   vitals: Heart,
+  vital_abnormal: Heart,
   medication: Pill,
+  medication_due: Pill,
   lab: Activity,
+  lab_critical: Activity,
   protocol: Clock,
+  allergy: AlertTriangle,
+  fall_risk: AlertTriangle,
   system: Bell,
 };
 
 interface ClinicalAlertsProps {
   encounterId?: string;
+  patientId?: string;
   showHeader?: boolean;
 }
 
-export function ClinicalAlerts({ encounterId, showHeader = true }: ClinicalAlertsProps) {
-  const [alerts, setAlerts] = useState<ClinicalAlert[]>(MOCK_ALERTS);
-  const [filter, setFilter] = useState<AlertSeverity | "all">("all");
-
-  const activeAlerts = alerts.filter((a) => !a.acknowledged);
-  const criticalCount = activeAlerts.filter((a) => a.severity === "critical").length;
-  const warningCount = activeAlerts.filter((a) => a.severity === "warning").length;
+export function ClinicalAlerts({ encounterId, patientId, showHeader = true }: ClinicalAlertsProps) {
+  const { 
+    alerts, 
+    activeAlerts, 
+    criticalCount, 
+    warningCount, 
+    loading,
+    acknowledgeAlert, 
+    resolveAlert 
+  } = useClinicalAlerts(patientId, encounterId);
+  
+  const [filter, setFilter] = useState<string>("all");
 
   const filteredAlerts = alerts.filter((alert) => {
     if (filter === "all") return true;
     return alert.severity === filter;
   });
 
-  const handleAcknowledge = (alertId: string) => {
-    setAlerts((prev) =>
-      prev.map((alert) =>
-        alert.id === alertId
-          ? {
-              ...alert,
-              acknowledged: true,
-              acknowledgedAt: new Date(),
-              acknowledgedBy: "Current User",
-            }
-          : alert
-      )
-    );
+  const handleAcknowledge = async (alertId: string) => {
+    await acknowledgeAlert(alertId);
   };
 
-  const handleDismiss = (alertId: string) => {
-    setAlerts((prev) => prev.filter((alert) => alert.id !== alertId));
+  const handleDismiss = async (alertId: string) => {
+    await resolveAlert(alertId);
   };
 
   const AlertCard = ({ alert }: { alert: ClinicalAlert }) => {
-    const config = severityConfig[alert.severity];
-    const CategoryIcon = categoryIcons[alert.category];
+    const config = severityConfig[alert.severity] || severityConfig.info;
+    const CategoryIcon = categoryIcons[alert.alert_type] || Bell;
     const SeverityIcon = config.icon;
 
     return (
-      <Card className={`border ${config.bgColor} ${alert.acknowledged ? "opacity-60" : ""}`}>
+      <Card className={`border ${config.bgColor} ${alert.is_acknowledged ? "opacity-60" : ""}`}>
         <CardContent className="p-4">
           <div className="flex items-start gap-3">
             <div className={`p-2 rounded-full ${config.bgColor}`}>
@@ -218,41 +122,26 @@ export function ClinicalAlerts({ encounterId, showHeader = true }: ClinicalAlert
                   {alert.severity}
                 </Badge>
               </div>
-              <p className="text-sm text-muted-foreground mt-1">{alert.description}</p>
+              <p className="text-sm text-muted-foreground mt-1">{alert.message}</p>
               
-              {alert.patientName && (
+              {alert.patient && (
                 <div className="flex items-center gap-2 mt-2 text-xs">
-                  <span className="font-medium">{alert.patientName}</span>
-                  <span className="text-muted-foreground">({alert.mrn})</span>
-                </div>
-              )}
-
-              {alert.value && (
-                <div className="mt-2 p-2 bg-background rounded border">
-                  <div className="flex items-center justify-between text-sm">
-                    <span className="text-muted-foreground">Current Value:</span>
-                    <span className={`font-mono font-bold ${config.color}`}>
-                      {alert.value}
-                    </span>
-                  </div>
-                  {alert.normalRange && (
-                    <div className="flex items-center justify-between text-xs mt-1">
-                      <span className="text-muted-foreground">Normal Range:</span>
-                      <span>{alert.normalRange}</span>
-                    </div>
-                  )}
+                  <span className="font-medium">
+                    {alert.patient.first_name} {alert.patient.last_name}
+                  </span>
+                  <span className="text-muted-foreground">({alert.patient.mrn})</span>
                 </div>
               )}
 
               <div className="flex items-center justify-between mt-3">
                 <div className="flex items-center gap-2 text-xs text-muted-foreground">
                   <CategoryIcon className="w-3 h-3" />
-                  <span className="capitalize">{alert.category}</span>
+                  <span className="capitalize">{alert.alert_type.replace("_", " ")}</span>
                   <span>•</span>
-                  <span>{formatDistanceToNow(alert.timestamp, { addSuffix: true })}</span>
+                  <span>{formatDistanceToNow(new Date(alert.created_at), { addSuffix: true })}</span>
                 </div>
                 
-                {!alert.acknowledged ? (
+                {!alert.is_acknowledged ? (
                   <div className="flex items-center gap-1">
                     <Button
                       variant="ghost"
@@ -286,6 +175,19 @@ export function ClinicalAlerts({ encounterId, showHeader = true }: ClinicalAlert
       </Card>
     );
   };
+
+  if (loading) {
+    return (
+      <div className="space-y-4">
+        {showHeader && <Skeleton className="h-8 w-48" />}
+        <div className="space-y-3">
+          {[1, 2, 3].map((i) => (
+            <Skeleton key={i} className="h-32 w-full" />
+          ))}
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="space-y-4">
@@ -341,9 +243,7 @@ export function ClinicalAlerts({ encounterId, showHeader = true }: ClinicalAlert
 
 // Alert Badge Component for TopBar
 export function AlertBadge() {
-  const [alerts] = useState<ClinicalAlert[]>(MOCK_ALERTS);
-  const activeAlerts = alerts.filter((a) => !a.acknowledged);
-  const criticalCount = activeAlerts.filter((a) => a.severity === "critical").length;
+  const { activeAlerts, criticalCount } = useClinicalAlerts();
 
   if (activeAlerts.length === 0) return null;
 
