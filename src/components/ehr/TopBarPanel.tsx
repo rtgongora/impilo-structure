@@ -20,6 +20,10 @@ const WORKSPACES = [
   { id: "dialysis", name: "Dialysis", description: "Renal replacement therapy" },
   { id: "physiotherapy", name: "Physiotherapy", description: "Physical rehabilitation" },
   { id: "psychotherapy", name: "Psychotherapy", description: "Mental health therapy" },
+  { id: "sexual_assault", name: "Sexual Assault", description: "Forensic examination" },
+  { id: "poisoning", name: "Poisoning", description: "Overdose management" },
+  { id: "neonatal_resus", name: "Neonatal Resuscitation", description: "Newborn resuscitation" },
+  { id: "anaesthesia_preop", name: "Anaesthesia Pre-Op", description: "Pre-operative assessment" },
 ];
 
 const CARE_PATHWAYS = [
