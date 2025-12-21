@@ -18,6 +18,7 @@ import {
   ClipboardList,
   TrendingUp,
   Plus,
+  Heart,
 } from "lucide-react";
 import { format } from "date-fns";
 import { useEHR } from "@/contexts/EHRContext";
@@ -27,6 +28,7 @@ import {
   MOCK_FLUID_BALANCE,
 } from "@/data/mockClinicalData";
 import { MedicationAdministrationRecord } from "../MedicationAdministrationRecord";
+import { NursingCarePlan } from "../care/NursingCarePlan";
 
 
 function FluidBalancePanel() {
@@ -356,8 +358,12 @@ export function CareSection() {
           </>
         )}
         <TabsTrigger value="plan" className="flex items-center gap-2">
+          <Heart className="w-4 h-4" />
+          Nursing Care Plan
+        </TabsTrigger>
+        <TabsTrigger value="goals" className="flex items-center gap-2">
           <Target className="w-4 h-4" />
-          Care Plan
+          Goals & Interventions
         </TabsTrigger>
       </TabsList>
 
@@ -377,6 +383,10 @@ export function CareSection() {
       
       <TabsContent value="plan">
         <CarePlanPanel />
+      </TabsContent>
+      
+      <TabsContent value="goals">
+        <NursingCarePlan />
       </TabsContent>
     </Tabs>
   );
