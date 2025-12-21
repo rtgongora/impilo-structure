@@ -83,10 +83,73 @@ export function ShiftHandoffReport() {
 
       if (error) throw error;
 
+      // Get encounter IDs and patient IDs for additional data
+      const encounterIds = (encounters || []).map((e) => e.id);
+      const patientIds = (encounters || []).map((e) => e.patient_id);
+
+      // Fetch latest vitals for each encounter
+      const { data: vitalsData } = await supabase
+        .from("vital_signs")
+        .select("*")
+        .in("encounter_id", encounterIds)
+        .order("recorded_at", { ascending: false });
+
+      // Fetch active medications for each patient
+      const { data: medsData } = await supabase
+        .from("medication_orders")
+        .select("*")
+        .in("patient_id", patientIds)
+        .eq("status", "active")
+        .order("start_date", { ascending: false });
+
+      // Group vitals by encounter_id (take latest)
+      const vitalsByEncounter: Record<string, typeof vitalsData extends (infer T)[] ? T : never> = {};
+      (vitalsData || []).forEach((v) => {
+        if (!vitalsByEncounter[v.encounter_id]) {
+          vitalsByEncounter[v.encounter_id] = v;
+        }
+      });
+
+      // Group medications by patient_id
+      const medsByPatient: Record<string, string[]> = {};
+      (medsData || []).forEach((m) => {
+        if (!medsByPatient[m.patient_id]) {
+          medsByPatient[m.patient_id] = [];
+        }
+        if (medsByPatient[m.patient_id].length < 3) {
+          medsByPatient[m.patient_id].push(`${m.medication_name} ${m.dosage}${m.dosage_unit}`);
+        }
+      });
+
       // Transform to HandoffPatient format
       const handoffPatients: HandoffPatient[] = (encounters || []).map((enc) => {
         const patient = enc.patients as { id: string; first_name: string; last_name: string; mrn: string };
         const acuity = mapTriageToAcuity(enc.triage_category);
+        const vitals = vitalsByEncounter[enc.id];
+        const meds = medsByPatient[patient.id] || [];
+
+        // Determine vitals status
+        let vitalsStatus: "stable" | "concerning" | "critical" = "stable";
+        let lastVitals = "No recent vitals";
+        
+        if (vitals) {
+          const bp = vitals.blood_pressure_systolic;
+          const hr = vitals.pulse_rate;
+          const spo2 = vitals.oxygen_saturation;
+          
+          // Critical thresholds
+          if ((bp && (bp > 180 || bp < 90)) || (hr && (hr > 130 || hr < 50)) || (spo2 && spo2 < 90)) {
+            vitalsStatus = "critical";
+          } else if ((bp && (bp > 140 || bp < 100)) || (hr && (hr > 100 || hr < 60)) || (spo2 && spo2 < 94)) {
+            vitalsStatus = "concerning";
+          }
+          
+          lastVitals = [
+            bp ? `BP ${bp}/${vitals.blood_pressure_diastolic}` : null,
+            hr ? `HR ${hr}` : null,
+            spo2 ? `SpO2 ${spo2}%` : null,
+          ].filter(Boolean).join(", ") || "Partial vitals";
+        }
         
         return {
           id: patient.id,
@@ -98,9 +161,9 @@ export function ShiftHandoffReport() {
           acuity,
           keyEvents: [],
           pendingTasks: [],
-          medications: [],
-          vitalsStatus: "stable" as const,
-          lastVitals: "No recent vitals",
+          medications: meds,
+          vitalsStatus,
+          lastVitals,
         };
       });
 
