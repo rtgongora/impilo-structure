@@ -1125,6 +1125,48 @@ export type Database = {
         }
         Relationships: []
       }
+      shift_handoffs: {
+        Row: {
+          completed_at: string | null
+          created_at: string
+          general_notes: string | null
+          id: string
+          incoming_user_id: string | null
+          outgoing_user_id: string
+          patient_ids: string[] | null
+          shift_date: string
+          shift_time: string
+          status: string
+          updated_at: string
+        }
+        Insert: {
+          completed_at?: string | null
+          created_at?: string
+          general_notes?: string | null
+          id?: string
+          incoming_user_id?: string | null
+          outgoing_user_id: string
+          patient_ids?: string[] | null
+          shift_date?: string
+          shift_time: string
+          status?: string
+          updated_at?: string
+        }
+        Update: {
+          completed_at?: string | null
+          created_at?: string
+          general_notes?: string | null
+          id?: string
+          incoming_user_id?: string | null
+          outgoing_user_id?: string
+          patient_ids?: string[] | null
+          shift_date?: string
+          shift_time?: string
+          status?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
       stock_categories: {
         Row: {
           created_at: string
