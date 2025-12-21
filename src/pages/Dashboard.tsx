@@ -1,62 +1,40 @@
 import { useState } from "react";
 import { useAuth } from "@/contexts/AuthContext";
 import { useNavigate } from "react-router-dom";
-import { PatientSearch } from "@/components/search/PatientSearch";
-import { HandoffNotifications } from "@/components/handoff/HandoffNotifications";
-import { PushNotificationPrompt } from "@/components/notifications/PushNotificationPrompt";
-import { VoiceCommandButton } from "@/components/voice/VoiceCommandButton";
 import { MedicationDueAlerts } from "@/components/alerts/MedicationDueAlerts";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { NurseMedDashboard } from "@/components/orders/NurseMedDashboard";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Skeleton } from "@/components/ui/skeleton";
 import { useDashboardData } from "@/hooks/useDashboardData";
+import { AppLayout } from "@/components/layout/AppLayout";
 import { 
   Users, 
   ClipboardList, 
   Calendar, 
-  Bell, 
-  Activity, 
   Bed,
-  FileText,
-  Settings,
-  LogOut,
-  ChevronRight,
   Clock,
   AlertCircle,
   CheckCircle2,
   UserPlus,
-  Stethoscope,
-  Package,
-  BarChart3,
-  Building2,
-  Syringe,
-  DollarSign,
-  ShoppingCart,
-  ArrowRightLeft
+  ChevronRight,
 } from "lucide-react";
 
 const Dashboard = () => {
-  const { profile, signOut } = useAuth();
+  const { profile } = useAuth();
   const navigate = useNavigate();
   const [activeTab, setActiveTab] = useState("worklist");
   const { patients, tasks, stats, loading } = useDashboardData();
 
-  const handleSignOut = async () => {
-    await signOut();
-    navigate("/auth");
-  };
-
   const getPriorityColor = (priority: string) => {
     switch (priority) {
-      case "critical": return "bg-red-500";
-      case "high": return "bg-orange-500";
-      case "medium": return "bg-yellow-500";
-      case "low": return "bg-green-500";
+      case "critical": return "bg-critical";
+      case "high": return "bg-warning";
+      case "medium": return "bg-warning/60";
+      case "low": return "bg-success";
       default: return "bg-muted";
     }
   };
@@ -66,95 +44,21 @@ const Dashboard = () => {
       case "Active": return <Badge variant="default">Active</Badge>;
       case "In Progress": return <Badge variant="secondary">In Progress</Badge>;
       case "Pending Review": return <Badge variant="outline">Pending Review</Badge>;
-      case "Discharge Pending": return <Badge className="bg-green-100 text-green-800">Discharge Pending</Badge>;
+      case "Discharge Pending": return <Badge className="bg-success/20 text-success">Discharge Pending</Badge>;
       default: return <Badge variant="outline">{status}</Badge>;
     }
   };
 
   const quickActions = [
-    { label: "Patient Queue", icon: Users, path: "/queue", action: "queue", color: "bg-blue-500" },
-    { label: "Bed Management", icon: Bed, path: "/beds", action: "beds", color: "bg-purple-500" },
-    { label: "New Registration", icon: UserPlus, path: "/registration", color: "bg-green-500" },
-    { label: "Appointments", icon: Calendar, path: "/appointments", color: "bg-orange-500" },
-  ];
-
-  const systemModules = [
-    { label: "Clinical EHR", icon: Stethoscope, path: "/encounter", description: "Patient encounters & documentation" },
-    { label: "Order Entry", icon: ShoppingCart, path: "/orders", description: "Clinical orders & prescriptions" },
-    { label: "Shift Handoff", icon: ArrowRightLeft, path: "/handoff", description: "Shift handoff reports" },
-    { label: "Appointments", icon: Calendar, path: "/appointments", description: "Schedule & manage appointments" },
-    { label: "Patients", icon: Users, path: "/patients", description: "Patient registry & records" },
-    { label: "Pharmacy", icon: Syringe, path: "/pharmacy", description: "Medication dispensing" },
-    { label: "Theatre Booking", icon: Building2, path: "/theatre", description: "Surgical scheduling" },
-    { label: "Payments", icon: DollarSign, path: "/payments", description: "Billing & payments" },
-    { label: "PACS Imaging", icon: FileText, path: "/pacs", description: "Medical imaging viewer" },
-    { label: "Laboratory", icon: Activity, path: "/lims", description: "Lab results & orders" },
-    { label: "Stock Management", icon: Package, path: "/stock", description: "Inventory & supplies" },
-    { label: "Consumables", icon: Syringe, path: "/consumables", description: "Track consumable usage" },
-    { label: "Charges & Billing", icon: DollarSign, path: "/charges", description: "Encounter charges" },
-    { label: "Reports", icon: BarChart3, path: "/reports", description: "Analytics & dashboards" },
-    { label: "Odoo ERP", icon: Building2, path: "/odoo", description: "ERP integration" },
-    { label: "Administration", icon: Building2, path: "/admin", description: "System settings" },
-    { label: "Patient Portal", icon: UserPlus, path: "/portal", description: "Patient self-service" },
+    { label: "Patient Queue", icon: Users, path: "/queue", color: "bg-primary" },
+    { label: "Bed Management", icon: Bed, path: "/beds", color: "bg-secondary" },
+    { label: "New Registration", icon: UserPlus, path: "/registration", color: "bg-success" },
+    { label: "Appointments", icon: Calendar, path: "/appointments", color: "bg-warning" },
   ];
 
   return (
-    <div className="min-h-screen bg-background">
-      {/* Top Navigation Bar */}
-      <header className="sticky top-0 z-50 border-b bg-card shadow-sm">
-        <div className="container mx-auto px-4 py-3 flex items-center justify-between">
-          <div className="flex items-center gap-4">
-            <div className="flex items-center gap-2">
-              <Activity className="h-8 w-8 text-primary" />
-              <div>
-                <h1 className="text-xl font-bold text-primary">Impilo EHR</h1>
-                <p className="text-xs text-muted-foreground">Electronic Health Records</p>
-              </div>
-            </div>
-          </div>
-
-          {/* Patient Search */}
-          <PatientSearch />
-
-          <div className="flex items-center gap-3">
-            {/* Voice Commands */}
-            <VoiceCommandButton onCommand={(cmd, action) => console.log(action, cmd)} />
-
-            {/* Handoff Notifications */}
-            <HandoffNotifications />
-
-            {/* General Notifications */}
-            <Button variant="ghost" size="icon" className="relative">
-              <Bell className="h-5 w-5" />
-              <span className="absolute -top-1 -right-1 h-4 w-4 bg-red-500 text-white text-xs rounded-full flex items-center justify-center">
-                3
-              </span>
-            </Button>
-
-            {/* User Menu */}
-            <div className="flex items-center gap-3">
-              <Avatar className="h-9 w-9">
-                <AvatarImage src={profile?.avatar_url || ""} />
-                <AvatarFallback className="bg-primary text-primary-foreground text-sm">
-                  {profile?.display_name?.split(" ").map(n => n[0]).join("").slice(0, 2) || "U"}
-                </AvatarFallback>
-              </Avatar>
-              <div className="hidden md:block">
-                <p className="text-sm font-medium">{profile?.display_name}</p>
-                <p className="text-xs text-muted-foreground capitalize">{profile?.role}</p>
-              </div>
-              <Button variant="ghost" size="icon" onClick={() => navigate("/profile")}>
-                <Settings className="h-4 w-4" />
-              </Button>
-              <Button variant="ghost" size="icon" onClick={handleSignOut}>
-                <LogOut className="h-4 w-4" />
-              </Button>
-            </div>
-          </div>
-        </div>
-      </header>
-
-      <main className="container mx-auto px-4 py-6">
+    <AppLayout>
+      <div className="p-6">
         {/* Welcome Section */}
         <div className="mb-6">
           <h2 className="text-2xl font-bold">
@@ -169,8 +73,8 @@ const Dashboard = () => {
         <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-6">
           <Card>
             <CardContent className="p-4 flex items-center gap-3">
-              <div className="p-2 bg-blue-100 rounded-lg">
-                <Users className="h-5 w-5 text-blue-600" />
+              <div className="p-2 bg-primary/10 rounded-lg">
+                <Users className="h-5 w-5 text-primary" />
               </div>
               <div>
                 {loading ? (
@@ -184,8 +88,8 @@ const Dashboard = () => {
           </Card>
           <Card>
             <CardContent className="p-4 flex items-center gap-3">
-              <div className="p-2 bg-orange-100 rounded-lg">
-                <ClipboardList className="h-5 w-5 text-orange-600" />
+              <div className="p-2 bg-warning/10 rounded-lg">
+                <ClipboardList className="h-5 w-5 text-warning" />
               </div>
               <div>
                 {loading ? (
@@ -199,8 +103,8 @@ const Dashboard = () => {
           </Card>
           <Card>
             <CardContent className="p-4 flex items-center gap-3">
-              <div className="p-2 bg-red-100 rounded-lg">
-                <AlertCircle className="h-5 w-5 text-red-600" />
+              <div className="p-2 bg-critical/10 rounded-lg">
+                <AlertCircle className="h-5 w-5 text-critical" />
               </div>
               <div>
                 {loading ? (
@@ -214,8 +118,8 @@ const Dashboard = () => {
           </Card>
           <Card>
             <CardContent className="p-4 flex items-center gap-3">
-              <div className="p-2 bg-green-100 rounded-lg">
-                <CheckCircle2 className="h-5 w-5 text-green-600" />
+              <div className="p-2 bg-success/10 rounded-lg">
+                <CheckCircle2 className="h-5 w-5 text-success" />
               </div>
               <div>
                 {loading ? (
@@ -239,14 +143,14 @@ const Dashboard = () => {
               onClick={() => navigate(action.path)}
             >
               <div className={`p-2 rounded-lg ${action.color}`}>
-                <action.icon className="h-5 w-5 text-white" />
+                <action.icon className="h-5 w-5 text-primary-foreground" />
               </div>
               <span className="text-sm font-medium">{action.label}</span>
             </Button>
           ))}
         </div>
 
-        <div className="grid lg:grid-cols-4 gap-6">
+        <div className="grid lg:grid-cols-3 gap-6">
           {/* Main Worklist Area */}
           <div className="lg:col-span-2">
             <Card>
@@ -345,86 +249,14 @@ const Dashboard = () => {
             </Card>
           </div>
 
-          {/* Medication Dashboard */}
-          <div className="lg:col-span-1 space-y-6">
+          {/* Right Sidebar - Medications & Alerts */}
+          <div className="space-y-6">
             <MedicationDueAlerts />
             <NurseMedDashboard />
           </div>
-
-          {/* Right Sidebar */}
-          <div className="space-y-6">
-            {/* Notifications - using live alerts */}
-            <Card>
-              <CardHeader className="pb-3">
-                <CardTitle className="text-lg flex items-center gap-2">
-                  <Bell className="h-4 w-4" />
-                  Recent Alerts
-                </CardTitle>
-              </CardHeader>
-              <CardContent>
-                <ScrollArea className="h-[200px]">
-                  <div className="space-y-3">
-                    {stats.criticalAlerts > 0 ? (
-                      <div className="p-3 rounded-lg border-l-4 border-l-red-500 bg-red-50">
-                        <p className="text-sm">{stats.criticalAlerts} critical alert(s) require attention</p>
-                        <p className="text-xs text-muted-foreground mt-1">Check clinical alerts</p>
-                      </div>
-                    ) : null}
-                    {stats.pendingTasks > 0 ? (
-                      <div className="p-3 rounded-lg border-l-4 border-l-blue-500 bg-blue-50">
-                        <p className="text-sm">{stats.pendingTasks} pending task(s)</p>
-                        <p className="text-xs text-muted-foreground mt-1">Review your worklist</p>
-                      </div>
-                    ) : null}
-                    {stats.completedToday > 0 ? (
-                      <div className="p-3 rounded-lg border-l-4 border-l-green-500 bg-green-50">
-                        <p className="text-sm">{stats.completedToday} task(s) completed today</p>
-                        <p className="text-xs text-muted-foreground mt-1">Great progress!</p>
-                      </div>
-                    ) : null}
-                    {stats.criticalAlerts === 0 && stats.pendingTasks === 0 && stats.completedToday === 0 && (
-                      <div className="text-center py-4 text-muted-foreground">
-                        <Bell className="w-8 h-8 mx-auto mb-2 opacity-50" />
-                        <p className="text-sm">No recent alerts</p>
-                      </div>
-                    )}
-                  </div>
-                </ScrollArea>
-              </CardContent>
-            </Card>
-
-            {/* System Modules */}
-            <Card>
-              <CardHeader className="pb-3">
-                <CardTitle className="text-lg">System Modules</CardTitle>
-                <CardDescription>Quick access to system areas</CardDescription>
-              </CardHeader>
-              <CardContent>
-                <div className="space-y-2">
-                  {systemModules.map((module) => (
-                    <Button
-                      key={module.label}
-                      variant="ghost"
-                      className="w-full justify-start h-auto py-3"
-                      onClick={() => navigate(module.path)}
-                    >
-                      <module.icon className="h-4 w-4 mr-3" />
-                      <div className="text-left">
-                        <p className="font-medium text-sm">{module.label}</p>
-                        <p className="text-xs text-muted-foreground">{module.description}</p>
-                      </div>
-                    </Button>
-                  ))}
-                </div>
-              </CardContent>
-            </Card>
-          </div>
         </div>
-      </main>
-      
-      {/* Push Notification Prompt */}
-      <PushNotificationPrompt />
-    </div>
+      </div>
+    </AppLayout>
   );
 };
 

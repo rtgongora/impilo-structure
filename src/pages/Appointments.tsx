@@ -1,7 +1,5 @@
 import { useState, useEffect } from "react";
-import { useNavigate } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
-import { useAuth } from "@/contexts/AuthContext";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
@@ -11,23 +9,17 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Badge } from "@/components/ui/badge";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Calendar } from "@/components/ui/calendar";
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { toast } from "sonner";
+import { AppLayout } from "@/components/layout/AppLayout";
 import { 
   CalendarDays, 
   Plus, 
   Clock, 
-  User, 
-  Building2, 
   ChevronLeft, 
   ChevronRight,
   Video,
   Stethoscope,
-  Activity,
-  Settings,
-  LogOut,
   Loader2,
   Search,
 } from "lucide-react";
@@ -91,8 +83,6 @@ const TIME_SLOTS = [
 ];
 
 const Appointments = () => {
-  const { profile, signOut } = useAuth();
-  const navigate = useNavigate();
   const [appointments, setAppointments] = useState<Appointment[]>([]);
   const [patients, setPatients] = useState<Patient[]>([]);
   const [loading, setLoading] = useState(true);
@@ -102,7 +92,6 @@ const Appointments = () => {
   const [saving, setSaving] = useState(false);
   const [searchTerm, setSearchTerm] = useState('');
 
-  // Form state
   const [formData, setFormData] = useState({
     patient_id: '',
     appointment_type: 'new',
@@ -126,14 +115,7 @@ const Appointments = () => {
       const weekEnd = addDays(weekStart, 7);
       const { data, error } = await supabase
         .from('appointments')
-        .select(`
-          *,
-          patients (
-            first_name,
-            last_name,
-            mrn
-          )
-        `)
+        .select(`*, patients (first_name, last_name, mrn)`)
         .gte('scheduled_start', weekStart.toISOString())
         .lt('scheduled_start', weekEnd.toISOString())
         .order('scheduled_start', { ascending: true });
@@ -235,13 +217,13 @@ const Appointments = () => {
   };
 
   const statusColors: Record<string, string> = {
-    scheduled: 'bg-blue-500/10 text-blue-700 border-blue-300',
-    confirmed: 'bg-green-500/10 text-green-700 border-green-300',
-    'checked-in': 'bg-purple-500/10 text-purple-700 border-purple-300',
-    'in-progress': 'bg-orange-500/10 text-orange-700 border-orange-300',
-    completed: 'bg-gray-500/10 text-gray-700 border-gray-300',
-    cancelled: 'bg-red-500/10 text-red-700 border-red-300',
-    'no-show': 'bg-red-500/10 text-red-700 border-red-300',
+    scheduled: 'bg-primary/10 text-primary border-primary/30',
+    confirmed: 'bg-success/10 text-success border-success/30',
+    'checked-in': 'bg-secondary/10 text-secondary border-secondary/30',
+    'in-progress': 'bg-warning/10 text-warning border-warning/30',
+    completed: 'bg-muted text-muted-foreground',
+    cancelled: 'bg-critical/10 text-critical border-critical/30',
+    'no-show': 'bg-critical/10 text-critical border-critical/30',
   };
 
   const typeIcons: Record<string, typeof CalendarDays> = {
@@ -257,45 +239,8 @@ const Appointments = () => {
   );
 
   return (
-    <div className="min-h-screen bg-background">
-      {/* Header */}
-      <header className="sticky top-0 z-50 border-b bg-card shadow-sm">
-        <div className="container mx-auto px-4 py-3 flex items-center justify-between">
-          <div className="flex items-center gap-4">
-            <div className="flex items-center gap-2 cursor-pointer" onClick={() => navigate("/")}>
-              <Activity className="h-8 w-8 text-primary" />
-              <div>
-                <h1 className="text-xl font-bold text-primary">Impilo EHR</h1>
-                <p className="text-xs text-muted-foreground">Electronic Health Records</p>
-              </div>
-            </div>
-          </div>
-
-          <div className="hidden md:flex items-center gap-2 text-sm text-muted-foreground">
-            <Building2 className="h-4 w-4" />
-            <span>Central Hospital</span>
-            <span className="mx-2">•</span>
-            <span className="text-foreground font-medium">Appointments</span>
-          </div>
-
-          <div className="flex items-center gap-4">
-            <Avatar className="h-9 w-9">
-              <AvatarImage src={profile?.avatar_url || ""} />
-              <AvatarFallback className="bg-primary text-primary-foreground text-sm">
-                {profile?.display_name?.split(" ").map(n => n[0]).join("").slice(0, 2) || "U"}
-              </AvatarFallback>
-            </Avatar>
-            <Button variant="ghost" size="icon" onClick={() => navigate("/profile")}>
-              <Settings className="h-4 w-4" />
-            </Button>
-            <Button variant="ghost" size="icon" onClick={() => signOut()}>
-              <LogOut className="h-4 w-4" />
-            </Button>
-          </div>
-        </div>
-      </header>
-
-      <main className="container mx-auto px-4 py-6">
+    <AppLayout title="Appointments">
+      <div className="p-6">
         <div className="flex items-center justify-between mb-6">
           <div>
             <h2 className="text-2xl font-bold">Appointments</h2>
@@ -351,9 +296,7 @@ const Appointments = () => {
                   <div>
                     <Label>Type</Label>
                     <Select value={formData.appointment_type} onValueChange={(v) => setFormData(prev => ({ ...prev, appointment_type: v }))}>
-                      <SelectTrigger>
-                        <SelectValue />
-                      </SelectTrigger>
+                      <SelectTrigger><SelectValue /></SelectTrigger>
                       <SelectContent>
                         {APPOINTMENT_TYPES.map(type => (
                           <SelectItem key={type.value} value={type.value}>{type.label}</SelectItem>
@@ -364,9 +307,7 @@ const Appointments = () => {
                   <div>
                     <Label>Priority</Label>
                     <Select value={formData.priority} onValueChange={(v) => setFormData(prev => ({ ...prev, priority: v }))}>
-                      <SelectTrigger>
-                        <SelectValue />
-                      </SelectTrigger>
+                      <SelectTrigger><SelectValue /></SelectTrigger>
                       <SelectContent>
                         <SelectItem value="urgent">Urgent</SelectItem>
                         <SelectItem value="high">High</SelectItem>
@@ -380,18 +321,12 @@ const Appointments = () => {
                 <div className="grid grid-cols-3 gap-4">
                   <div>
                     <Label>Date</Label>
-                    <Input
-                      type="date"
-                      value={formData.scheduled_date}
-                      onChange={(e) => setFormData(prev => ({ ...prev, scheduled_date: e.target.value }))}
-                    />
+                    <Input type="date" value={formData.scheduled_date} onChange={(e) => setFormData(prev => ({ ...prev, scheduled_date: e.target.value }))} />
                   </div>
                   <div>
                     <Label>Time</Label>
                     <Select value={formData.scheduled_time} onValueChange={(v) => setFormData(prev => ({ ...prev, scheduled_time: v }))}>
-                      <SelectTrigger>
-                        <SelectValue />
-                      </SelectTrigger>
+                      <SelectTrigger><SelectValue /></SelectTrigger>
                       <SelectContent>
                         {TIME_SLOTS.map(time => (
                           <SelectItem key={time} value={time}>{time}</SelectItem>
@@ -402,9 +337,7 @@ const Appointments = () => {
                   <div>
                     <Label>Duration</Label>
                     <Select value={formData.duration} onValueChange={(v) => setFormData(prev => ({ ...prev, duration: v }))}>
-                      <SelectTrigger>
-                        <SelectValue />
-                      </SelectTrigger>
+                      <SelectTrigger><SelectValue /></SelectTrigger>
                       <SelectContent>
                         <SelectItem value="15">15 min</SelectItem>
                         <SelectItem value="30">30 min</SelectItem>
@@ -420,9 +353,7 @@ const Appointments = () => {
                   <div>
                     <Label>Department</Label>
                     <Select value={formData.department} onValueChange={(v) => setFormData(prev => ({ ...prev, department: v }))}>
-                      <SelectTrigger>
-                        <SelectValue placeholder="Select..." />
-                      </SelectTrigger>
+                      <SelectTrigger><SelectValue placeholder="Select..." /></SelectTrigger>
                       <SelectContent>
                         {DEPARTMENTS.map(dept => (
                           <SelectItem key={dept} value={dept}>{dept}</SelectItem>
@@ -432,37 +363,19 @@ const Appointments = () => {
                   </div>
                   <div>
                     <Label>Room</Label>
-                    <Input
-                      value={formData.room}
-                      onChange={(e) => setFormData(prev => ({ ...prev, room: e.target.value }))}
-                      placeholder="e.g., Room 101"
-                    />
+                    <Input value={formData.room} onChange={(e) => setFormData(prev => ({ ...prev, room: e.target.value }))} placeholder="e.g., Room 101" />
                   </div>
                 </div>
 
                 <div>
                   <Label>Reason</Label>
-                  <Textarea
-                    value={formData.reason}
-                    onChange={(e) => setFormData(prev => ({ ...prev, reason: e.target.value }))}
-                    placeholder="Reason for appointment..."
-                    rows={2}
-                  />
+                  <Textarea value={formData.reason} onChange={(e) => setFormData(prev => ({ ...prev, reason: e.target.value }))} placeholder="Reason for appointment..." rows={2} />
                 </div>
 
                 <div className="flex justify-end gap-2 pt-2">
-                  <Button type="button" variant="outline" onClick={() => setDialogOpen(false)}>
-                    Cancel
-                  </Button>
+                  <Button type="button" variant="outline" onClick={() => setDialogOpen(false)}>Cancel</Button>
                   <Button type="submit" disabled={saving}>
-                    {saving ? (
-                      <>
-                        <Loader2 className="h-4 w-4 mr-2 animate-spin" />
-                        Scheduling...
-                      </>
-                    ) : (
-                      'Schedule'
-                    )}
+                    {saving ? <><Loader2 className="h-4 w-4 mr-2 animate-spin" />Scheduling...</> : 'Schedule'}
                   </Button>
                 </div>
               </form>
@@ -473,51 +386,45 @@ const Appointments = () => {
         {/* Week Navigation */}
         <div className="flex items-center justify-between mb-4">
           <Button variant="outline" size="sm" onClick={() => setWeekStart(addDays(weekStart, -7))}>
-            <ChevronLeft className="h-4 w-4 mr-1" />
-            Previous Week
+            <ChevronLeft className="h-4 w-4 mr-1" /> Previous Week
           </Button>
-          <span className="font-medium">
+          <h3 className="font-medium">
             {format(weekStart, 'MMM d')} - {format(addDays(weekStart, 6), 'MMM d, yyyy')}
-          </span>
+          </h3>
           <Button variant="outline" size="sm" onClick={() => setWeekStart(addDays(weekStart, 7))}>
-            Next Week
-            <ChevronRight className="h-4 w-4 ml-1" />
+            Next Week <ChevronRight className="h-4 w-4 ml-1" />
           </Button>
         </div>
 
-        {/* Week View */}
-        <div className="grid grid-cols-7 gap-2">
-          {getWeekDays().map((day) => {
-            const dayAppointments = getDayAppointments(day);
-            const isToday = isSameDay(day, new Date());
+        {/* Week Grid */}
+        <div className="grid grid-cols-7 gap-4">
+          {getWeekDays().map((date) => {
+            const dayAppointments = getDayAppointments(date);
+            const isToday = isSameDay(date, new Date());
             
             return (
-              <Card key={day.toISOString()} className={isToday ? 'border-primary' : ''}>
-                <CardHeader className="pb-2">
-                  <div className={`text-center ${isToday ? 'text-primary font-bold' : ''}`}>
-                    <p className="text-xs text-muted-foreground">{format(day, 'EEE')}</p>
-                    <p className="text-lg">{format(day, 'd')}</p>
-                  </div>
+              <Card key={date.toISOString()} className={`${isToday ? 'ring-2 ring-primary' : ''}`}>
+                <CardHeader className="p-3 pb-2">
+                  <CardTitle className={`text-sm ${isToday ? 'text-primary' : ''}`}>
+                    {format(date, 'EEE d')}
+                  </CardTitle>
                 </CardHeader>
                 <CardContent className="p-2">
                   <ScrollArea className="h-[300px]">
-                    <div className="space-y-1">
+                    <div className="space-y-2">
                       {dayAppointments.length === 0 ? (
                         <p className="text-xs text-muted-foreground text-center py-4">No appointments</p>
                       ) : (
                         dayAppointments.map((apt) => {
-                          const IconComponent = typeIcons[apt.appointment_type] || typeIcons.default;
+                          const TypeIcon = typeIcons[apt.appointment_type] || typeIcons.default;
                           return (
                             <div
                               key={apt.id}
-                              className="p-2 border rounded text-xs cursor-pointer hover:bg-muted/50"
-                              onClick={() => setSelectedDate(parseISO(apt.scheduled_start))}
+                              className={`p-2 rounded-lg border text-xs ${statusColors[apt.status] || ''}`}
                             >
                               <div className="flex items-center gap-1 mb-1">
                                 <Clock className="h-3 w-3" />
-                                <span className="font-medium">
-                                  {format(parseISO(apt.scheduled_start), 'HH:mm')}
-                                </span>
+                                <span className="font-medium">{format(parseISO(apt.scheduled_start), 'HH:mm')}</span>
                               </div>
                               {apt.patients && (
                                 <p className="font-medium truncate">
@@ -525,10 +432,10 @@ const Appointments = () => {
                                 </p>
                               )}
                               <div className="flex items-center gap-1 mt-1">
-                                <IconComponent className="h-3 w-3" />
-                                <span className="truncate">{apt.appointment_type}</span>
+                                <TypeIcon className="h-3 w-3" />
+                                <span className="capitalize">{apt.appointment_type}</span>
                               </div>
-                              <Badge className={`${statusColors[apt.status]} mt-1 text-[10px]`}>
+                              <Badge variant="outline" className="mt-1 text-[10px]">
                                 {apt.status}
                               </Badge>
                             </div>
@@ -543,68 +450,71 @@ const Appointments = () => {
           })}
         </div>
 
-        {/* Today's Schedule Detail */}
-        <Card className="mt-6">
-          <CardHeader>
-            <CardTitle>Today's Schedule</CardTitle>
-          </CardHeader>
-          <CardContent>
-            <div className="space-y-3">
-              {getDayAppointments(new Date()).length === 0 ? (
-                <p className="text-muted-foreground text-center py-8">No appointments scheduled for today</p>
-              ) : (
-                getDayAppointments(new Date()).map((apt) => (
-                  <div key={apt.id} className="flex items-center justify-between p-4 border rounded-lg">
-                    <div className="flex items-center gap-4">
-                      <div className="text-center">
-                        <p className="text-lg font-bold">{format(parseISO(apt.scheduled_start), 'HH:mm')}</p>
-                        <p className="text-xs text-muted-foreground">{format(parseISO(apt.scheduled_end), 'HH:mm')}</p>
+        {/* Today's Sidebar */}
+        <div className="mt-6 grid lg:grid-cols-4 gap-6">
+          <Card className="lg:col-span-1">
+            <CardHeader>
+              <CardTitle className="text-base">Quick View</CardTitle>
+            </CardHeader>
+            <CardContent>
+              <Calendar
+                mode="single"
+                selected={selectedDate}
+                onSelect={(date) => date && setSelectedDate(date)}
+                className="rounded-md border"
+              />
+            </CardContent>
+          </Card>
+
+          <Card className="lg:col-span-3">
+            <CardHeader>
+              <CardTitle className="text-base">
+                Appointments for {format(selectedDate, 'MMMM d, yyyy')}
+              </CardTitle>
+            </CardHeader>
+            <CardContent>
+              <ScrollArea className="h-[200px]">
+                {appointments.filter(apt => isSameDay(parseISO(apt.scheduled_start), selectedDate)).length === 0 ? (
+                  <p className="text-muted-foreground text-center py-8">No appointments for this date</p>
+                ) : (
+                  <div className="space-y-2">
+                    {appointments.filter(apt => isSameDay(parseISO(apt.scheduled_start), selectedDate)).map((apt) => (
+                      <div key={apt.id} className="flex items-center justify-between p-3 rounded-lg border">
+                        <div className="flex items-center gap-3">
+                          <div className="text-center">
+                            <p className="text-sm font-medium">{format(parseISO(apt.scheduled_start), 'HH:mm')}</p>
+                            <p className="text-xs text-muted-foreground">{format(parseISO(apt.scheduled_end), 'HH:mm')}</p>
+                          </div>
+                          <div>
+                            <p className="font-medium">
+                              {apt.patients ? `${apt.patients.first_name} ${apt.patients.last_name}` : 'Walk-in'}
+                            </p>
+                            <p className="text-sm text-muted-foreground capitalize">{apt.appointment_type}</p>
+                          </div>
+                        </div>
+                        <div className="flex items-center gap-2">
+                          <Badge className={statusColors[apt.status]}>{apt.status}</Badge>
+                          {apt.status === 'scheduled' && (
+                            <Button size="sm" variant="outline" onClick={() => updateAppointmentStatus(apt.id, 'confirmed')}>
+                              Confirm
+                            </Button>
+                          )}
+                          {apt.status === 'confirmed' && (
+                            <Button size="sm" onClick={() => updateAppointmentStatus(apt.id, 'checked-in')}>
+                              Check In
+                            </Button>
+                          )}
+                        </div>
                       </div>
-                      <div>
-                        {apt.patients ? (
-                          <p className="font-medium">{apt.patients.first_name} {apt.patients.last_name}</p>
-                        ) : (
-                          <p className="font-medium text-muted-foreground">Walk-in</p>
-                        )}
-                        <p className="text-sm text-muted-foreground">
-                          {apt.appointment_type} • {apt.department || 'General'}
-                        </p>
-                        {apt.reason && (
-                          <p className="text-sm text-muted-foreground">{apt.reason}</p>
-                        )}
-                      </div>
-                    </div>
-                    <div className="flex items-center gap-2">
-                      <Badge className={statusColors[apt.status]}>{apt.status}</Badge>
-                      {apt.status === 'scheduled' && (
-                        <>
-                          <Button size="sm" variant="outline" onClick={() => updateAppointmentStatus(apt.id, 'checked-in')}>
-                            Check In
-                          </Button>
-                          <Button size="sm" variant="ghost" className="text-red-600" onClick={() => updateAppointmentStatus(apt.id, 'cancelled')}>
-                            Cancel
-                          </Button>
-                        </>
-                      )}
-                      {apt.status === 'checked-in' && (
-                        <Button size="sm" onClick={() => updateAppointmentStatus(apt.id, 'in-progress')}>
-                          Start
-                        </Button>
-                      )}
-                      {apt.status === 'in-progress' && (
-                        <Button size="sm" onClick={() => updateAppointmentStatus(apt.id, 'completed')}>
-                          Complete
-                        </Button>
-                      )}
-                    </div>
+                    ))}
                   </div>
-                ))
-              )}
-            </div>
-          </CardContent>
-        </Card>
-      </main>
-    </div>
+                )}
+              </ScrollArea>
+            </CardContent>
+          </Card>
+        </div>
+      </div>
+    </AppLayout>
   );
 };
 
