@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useCallback } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -7,6 +7,9 @@ import { ScrollArea } from "@/components/ui/scroll-area";
 import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Slider } from "@/components/ui/slider";
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
+import { Label } from "@/components/ui/label";
+import { toast } from "sonner";
 import {
   Search,
   ZoomIn,
@@ -38,7 +41,26 @@ import {
   Info,
   Settings,
   Eye,
-  EyeOff
+  EyeOff,
+  Crosshair,
+  Target,
+  Type,
+  Trash2,
+  Undo,
+  Redo,
+  Save,
+  History,
+  Bookmark,
+  BookmarkCheck,
+  MousePointer,
+  PenTool,
+  ArrowUpRight,
+  Triangle,
+  Heart,
+  Brain,
+  Bone,
+  Wind,
+  Droplet
 } from "lucide-react";
 
 // Mock DICOM studies
@@ -104,6 +126,28 @@ const mockSeries = [
   { id: "SER004", name: "3D Reconstruction", images: 32, thickness: "1mm" },
 ];
 
+// Window/Level Presets
+const windowPresets = [
+  { name: "Default", window: 400, level: 40 },
+  { name: "Lung", window: 1500, level: -600 },
+  { name: "Bone", window: 2500, level: 480 },
+  { name: "Soft Tissue", window: 400, level: 40 },
+  { name: "Brain", window: 80, level: 40 },
+  { name: "Liver", window: 150, level: 30 },
+  { name: "Abdomen", window: 350, level: 50 },
+  { name: "Spine", window: 300, level: 30 },
+];
+
+// Annotation types
+interface Annotation {
+  id: string;
+  type: "line" | "circle" | "rectangle" | "arrow" | "text" | "angle";
+  points: { x: number; y: number }[];
+  label?: string;
+  measurement?: string;
+  color: string;
+}
+
 export function PACSViewer() {
   const [selectedStudy, setSelectedStudy] = useState(mockStudies[0]);
   const [selectedSeries, setSelectedSeries] = useState(mockSeries[0]);
@@ -112,11 +156,28 @@ export function PACSViewer() {
   const [brightness, setBrightness] = useState(50);
   const [contrast, setContrast] = useState(50);
   const [isPlaying, setIsPlaying] = useState(false);
-  const [viewMode, setViewMode] = useState<"1x1" | "2x2" | "1x2">("1x1");
+  const [viewMode, setViewMode] = useState<"1x1" | "2x2" | "1x2" | "mpr">("1x1");
   const [activeTool, setActiveTool] = useState<string>("pan");
   const [showAnnotations, setShowAnnotations] = useState(true);
   const [searchQuery, setSearchQuery] = useState("");
   const [modalityFilter, setModalityFilter] = useState<string>("all");
+  
+  // Enhanced state
+  const [rotation, setRotation] = useState(0);
+  const [flipH, setFlipH] = useState(false);
+  const [flipV, setFlipV] = useState(false);
+  const [windowPreset, setWindowPreset] = useState("Default");
+  const [annotations, setAnnotations] = useState<Annotation[]>([
+    { id: "1", type: "line", points: [{ x: 100, y: 150 }, { x: 200, y: 180 }], measurement: "45.2 mm", color: "#00ff00" },
+    { id: "2", type: "circle", points: [{ x: 300, y: 200 }], measurement: "Area: 12.4 cm²", color: "#ffff00" },
+    { id: "3", type: "text", points: [{ x: 150, y: 280 }], label: "Nodule suspected", color: "#ff6600" },
+  ]);
+  const [selectedAnnotation, setSelectedAnnotation] = useState<string | null>(null);
+  const [isKeyImageMarked, setIsKeyImageMarked] = useState(false);
+  const [showMeasurements, setShowMeasurements] = useState(true);
+  const [invertColors, setInvertColors] = useState(false);
+  const [crosshairs, setCrosshairs] = useState(false);
+  const [mprPlane, setMprPlane] = useState<"axial" | "coronal" | "sagittal">("axial");
 
   const getModalityBadgeColor = (modality: string) => {
     switch (modality) {
@@ -129,14 +190,59 @@ export function PACSViewer() {
   };
 
   const tools = [
+    { id: "select", icon: MousePointer, label: "Select" },
     { id: "pan", icon: Move, label: "Pan" },
     { id: "zoom", icon: ZoomIn, label: "Zoom" },
     { id: "window", icon: SunMedium, label: "Window/Level" },
-    { id: "measure", icon: Ruler, label: "Measure" },
+    { id: "crosshairs", icon: Crosshair, label: "Crosshairs" },
+  ];
+
+  const measureTools = [
+    { id: "measure", icon: Ruler, label: "Length" },
+    { id: "angle", icon: Triangle, label: "Angle" },
     { id: "circle", icon: Circle, label: "Circle ROI" },
     { id: "rectangle", icon: Square, label: "Rectangle ROI" },
-    { id: "annotate", icon: Pencil, label: "Annotate" },
+    { id: "arrow", icon: ArrowUpRight, label: "Arrow" },
+    { id: "annotate", icon: Type, label: "Text Annotation" },
   ];
+
+  const handleRotateLeft = () => setRotation((prev) => (prev - 90) % 360);
+  const handleRotateRight = () => setRotation((prev) => (prev + 90) % 360);
+  const handleFlipH = () => setFlipH((prev) => !prev);
+  const handleFlipV = () => setFlipV((prev) => !prev);
+  const handleReset = () => {
+    setZoom(100);
+    setBrightness(50);
+    setContrast(50);
+    setRotation(0);
+    setFlipH(false);
+    setFlipV(false);
+    setInvertColors(false);
+  };
+
+  const handleWindowPreset = (preset: string) => {
+    setWindowPreset(preset);
+    const p = windowPresets.find(wp => wp.name === preset);
+    if (p) {
+      setBrightness(50 + (p.level / 20));
+      setContrast(50 + (p.window / 100));
+    }
+    toast.success(`Applied ${preset} preset`);
+  };
+
+  const handleDeleteAnnotation = (id: string) => {
+    setAnnotations(prev => prev.filter(a => a.id !== id));
+    toast.success("Annotation deleted");
+  };
+
+  const handleMarkKeyImage = () => {
+    setIsKeyImageMarked(!isKeyImageMarked);
+    toast.success(isKeyImageMarked ? "Key image unmarked" : "Marked as key image");
+  };
+
+  const handleSaveAnnotations = () => {
+    toast.success("Annotations saved successfully");
+  };
 
   const filteredStudies = mockStudies.filter(study => {
     const matchesSearch = study.patientName.toLowerCase().includes(searchQuery.toLowerCase()) ||

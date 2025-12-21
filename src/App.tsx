@@ -26,6 +26,8 @@ import Portal from "./pages/Portal";
 import PACS from "./pages/PACS";
 import LIMS from "./pages/LIMS";
 import Install from "./pages/Install";
+import Odoo from "./pages/Odoo";
+import Reports from "./pages/Reports";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -132,6 +134,16 @@ const App = () => (
             } />
             <Route path="/portal" element={<Portal />} />
             <Route path="/install" element={<Install />} />
+            <Route path="/odoo" element={
+              <ProtectedRoute>
+                <Odoo />
+              </ProtectedRoute>
+            } />
+            <Route path="/reports" element={
+              <ProtectedRoute>
+                <Reports />
+              </ProtectedRoute>
+            } />
             {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
             <Route path="*" element={<NotFound />} />
           </Routes>
