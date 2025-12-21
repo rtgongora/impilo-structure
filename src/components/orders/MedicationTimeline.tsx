@@ -85,7 +85,16 @@ export function MedicationTimeline({ patientId, encounterId }: MedicationTimelin
 
       if (ordersError) throw ordersError;
 
-      // Fetch latest administrations for each medication
+      // Fetch scheduled times for today
+      const today = new Date().toISOString().split('T')[0];
+      const { data: scheduledTimes, error: scheduleError } = await supabase
+        .from("medication_schedule_times")
+        .select("*")
+        .in("medication_order_id", (orders || []).map(o => o.id))
+        .eq("scheduled_date", today)
+        .order("scheduled_time", { ascending: true });
+
+      // Fetch latest administrations for each medication (fallback)
       const { data: administrations, error: adminError } = await supabase
         .from("medication_administrations")
         .select("*")
@@ -100,19 +109,28 @@ export function MedicationTimeline({ patientId, encounterId }: MedicationTimelin
       const scheduledMeds: ScheduledMedication[] = (orders || []).map((order) => {
         const intervalHours = frequencyToHours[order.frequency] || 8;
         
-        // Find the latest administration for this medication
-        const lastAdmin = (administrations || []).find(
-          (a) => a.medication_order_id === order.id
-        );
-
+        // Check for scheduled times first
+        const orderSchedule = (scheduledTimes || []).find(s => s.medication_order_id === order.id && s.status === 'scheduled');
+        
         let nextDue: Date;
-        if (lastAdmin) {
-          nextDue = new Date(new Date(lastAdmin.administered_at).getTime() + intervalHours * 60 * 60 * 1000);
+        if (orderSchedule) {
+          // Use actual scheduled time
+          const [hours, minutes] = orderSchedule.scheduled_time.split(':').map(Number);
+          nextDue = new Date();
+          nextDue.setHours(hours, minutes, 0, 0);
         } else {
-          // If never administered, due from start date
-          nextDue = new Date(order.start_date);
-          if (nextDue < now) {
-            nextDue = now; // Overdue
+          // Fallback to calculated time based on last administration
+          const lastAdmin = (administrations || []).find(
+            (a) => a.medication_order_id === order.id
+          );
+
+          if (lastAdmin) {
+            nextDue = new Date(new Date(lastAdmin.administered_at).getTime() + intervalHours * 60 * 60 * 1000);
+          } else {
+            nextDue = new Date(order.start_date);
+            if (nextDue < now) {
+              nextDue = now;
+            }
           }
         }
 
