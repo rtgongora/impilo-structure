@@ -28,7 +28,9 @@ import {
   BarChart3,
   Building2,
   Syringe,
-  DollarSign
+  DollarSign,
+  ShoppingCart,
+  ArrowRightLeft
 } from "lucide-react";
 
 // Mock worklist data - will be replaced with real data
@@ -91,6 +93,8 @@ const Dashboard = () => {
 
   const systemModules = [
     { label: "Clinical EHR", icon: Stethoscope, path: "/encounter", description: "Patient encounters & documentation" },
+    { label: "Order Entry", icon: ShoppingCart, path: "/orders", description: "Clinical orders & prescriptions" },
+    { label: "Shift Handoff", icon: ArrowRightLeft, path: "/handoff", description: "Shift handoff reports" },
     { label: "Appointments", icon: Calendar, path: "/appointments", description: "Schedule & manage appointments" },
     { label: "Patients", icon: Users, path: "/patients", description: "Patient registry & records" },
     { label: "Pharmacy", icon: Syringe, path: "/pharmacy", description: "Medication dispensing" },
