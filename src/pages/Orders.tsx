@@ -5,9 +5,11 @@ import { PatientOrdersView } from "@/components/orders/PatientOrdersView";
 import { MedicationAdministration } from "@/components/orders/MedicationAdministration";
 import { MedicationTimeline } from "@/components/orders/MedicationTimeline";
 import { MedicationReconciliation } from "@/components/orders/MedicationReconciliation";
+import { MARTimelineView } from "@/components/orders/MARTimelineView";
+import { EscalatingMedicationAlerts } from "@/components/alerts/EscalatingMedicationAlerts";
 import { Button } from "@/components/ui/button";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { ArrowLeft, ShoppingCart, ClipboardList, Syringe, Timer, FileText } from "lucide-react";
+import { ArrowLeft, ShoppingCart, ClipboardList, Syringe, Timer, FileText, LayoutGrid, AlertTriangle } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 
 interface SelectedPatient {
@@ -46,7 +48,7 @@ const Orders = () => {
           {/* Main Content */}
           <div className="lg:col-span-3">
             <Tabs value={activeTab} onValueChange={setActiveTab}>
-              <TabsList className="mb-4">
+              <TabsList className="mb-4 flex-wrap h-auto gap-1">
                 <TabsTrigger value="new">
                   <ShoppingCart className="h-4 w-4 mr-2" />
                   New Orders
@@ -66,6 +68,14 @@ const Orders = () => {
                 <TabsTrigger value="reconcile" disabled={!selectedPatient}>
                   <FileText className="h-4 w-4 mr-2" />
                   Reconciliation
+                </TabsTrigger>
+                <TabsTrigger value="mar">
+                  <LayoutGrid className="h-4 w-4 mr-2" />
+                  MAR View
+                </TabsTrigger>
+                <TabsTrigger value="critical">
+                  <AlertTriangle className="h-4 w-4 mr-2" />
+                  Critical Alerts
                 </TabsTrigger>
               </TabsList>
 
@@ -129,6 +139,14 @@ const Orders = () => {
                     <p className="text-sm">Medication reconciliation requires an active encounter</p>
                   </div>
                 )}
+              </TabsContent>
+
+              <TabsContent value="mar">
+                <MARTimelineView />
+              </TabsContent>
+
+              <TabsContent value="critical">
+                <EscalatingMedicationAlerts />
               </TabsContent>
             </Tabs>
           </div>
