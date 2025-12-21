@@ -12,6 +12,8 @@ import { ArrowLeft, User, Briefcase, Building, Phone, FileText, Save, Loader2, C
 import { z } from 'zod';
 import { AvatarUpload } from '@/components/profile/AvatarUpload';
 import { UserSessions } from '@/components/profile/UserSessions';
+import { PasswordChange } from '@/components/profile/PasswordChange';
+import { LoginHistory } from '@/components/profile/LoginHistory';
 import { TwoFactorSetup } from '@/components/auth/TwoFactorSetup';
 import { EmailVerificationStatus } from '@/components/auth/EmailVerificationStatus';
 
@@ -177,8 +179,14 @@ const ProfileSettings = () => {
           onStatusChange={check2FAStatus}
         />
 
+        {/* Password Change */}
+        <PasswordChange />
+
         {/* Active Sessions */}
         <UserSessions />
+
+        {/* Login History */}
+        <LoginHistory />
 
         {/* Account Info Card */}
         <Card>
