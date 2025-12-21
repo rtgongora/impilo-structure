@@ -8,3 +8,9 @@ verify_jwt = true
 
 [functions.cleanup-sessions]
 verify_jwt = false
+
+[functions.track-login-attempt]
+verify_jwt = false
+
+[functions.send-security-notification]
+verify_jwt = true

@@ -6,6 +6,7 @@ import { usePresence } from '@/hooks/usePresence';
 import { supabase } from '@/integrations/supabase/client';
 import SessionsManagement from '@/components/admin/SessionsManagement';
 import SystemSettings from '@/components/admin/SystemSettings';
+import SecurityEvents from '@/components/admin/SecurityEvents';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
@@ -567,6 +568,10 @@ const AdminDashboard = () => {
               <History className="w-4 h-4" />
               Audit Log
             </TabsTrigger>
+            <TabsTrigger value="security" className="flex items-center gap-2">
+              <ShieldAlert className="w-4 h-4" />
+              Security
+            </TabsTrigger>
             <TabsTrigger value="settings" className="flex items-center gap-2">
               <Settings className="w-4 h-4" />
               Settings
@@ -876,6 +881,10 @@ const AdminDashboard = () => {
                 )}
               </CardContent>
             </Card>
+          </TabsContent>
+
+          <TabsContent value="security">
+            <SecurityEvents />
           </TabsContent>
 
           <TabsContent value="settings">

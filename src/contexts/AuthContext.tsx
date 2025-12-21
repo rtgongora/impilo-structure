@@ -202,10 +202,26 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   };
 
   const signIn = async (email: string, password: string) => {
+    // Track login attempt
+    const { data: lockCheck } = await supabase.functions.invoke('track-login-attempt', {
+      body: { email, success: false, userAgent: navigator.userAgent }
+    });
+    
+    if (lockCheck?.locked) {
+      return { error: new Error(lockCheck.message || 'Account is locked') };
+    }
+
     const { error } = await supabase.auth.signInWithPassword({
       email,
       password
     });
+    
+    // Track successful login
+    if (!error) {
+      supabase.functions.invoke('track-login-attempt', {
+        body: { email, success: true, userAgent: navigator.userAgent }
+      }).catch(console.error);
+    }
     
     return { error };
   };
