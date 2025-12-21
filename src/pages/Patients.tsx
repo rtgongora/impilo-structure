@@ -1,48 +1,18 @@
 import { useState, useEffect } from "react";
-import { useNavigate } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
-import { useAuth } from "@/contexts/AuthContext";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { 
-  Dialog,
-  DialogContent,
-  DialogDescription,
-  DialogHeader,
-  DialogTitle,
-  DialogTrigger,
-} from "@/components/ui/dialog";
-import { 
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from "@/components/ui/table";
-import { 
-  Search, 
-  Plus, 
-  Users, 
-  Activity,
-  ArrowLeft,
-  Phone,
-  Mail,
-  Calendar,
-  MapPin,
-  AlertCircle,
-  UserPlus,
-  Filter,
-  Download,
-  MoreHorizontal
-} from "lucide-react";
+import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
+import { Search, Users, Activity, Phone, Mail, Calendar, MapPin, AlertCircle, UserPlus, Filter, Download, MoreHorizontal } from "lucide-react";
 import { toast } from "sonner";
 import { PatientRegistrationForm } from "@/components/patients/PatientRegistrationForm";
 import { PatientProfile } from "@/components/patients/PatientProfile";
+import { AppLayout } from "@/components/layout/AppLayout";
 
 interface Patient {
   id: string;
@@ -61,8 +31,6 @@ interface Patient {
 }
 
 const Patients = () => {
-  const navigate = useNavigate();
-  const { user } = useAuth();
   const [patients, setPatients] = useState<Patient[]>([]);
   const [loading, setLoading] = useState(true);
   const [searchQuery, setSearchQuery] = useState("");
@@ -131,53 +99,14 @@ const Patients = () => {
   }
 
   return (
-    <div className="min-h-screen bg-background">
-      {/* Header */}
-      <header className="sticky top-0 z-50 border-b bg-card shadow-sm">
-        <div className="container mx-auto px-4 py-3 flex items-center justify-between">
-          <div className="flex items-center gap-4">
-            <Button variant="ghost" size="icon" onClick={() => navigate("/")}>
-              <ArrowLeft className="h-5 w-5" />
-            </Button>
-            <div className="flex items-center gap-2">
-              <Users className="h-6 w-6 text-primary" />
-              <div>
-                <h1 className="text-xl font-bold">Patient Management</h1>
-                <p className="text-xs text-muted-foreground">Search, register, and manage patients</p>
-              </div>
-            </div>
-          </div>
-
-          <Dialog open={isRegisterOpen} onOpenChange={setIsRegisterOpen}>
-            <DialogTrigger asChild>
-              <Button>
-                <UserPlus className="h-4 w-4 mr-2" />
-                Register Patient
-              </Button>
-            </DialogTrigger>
-            <DialogContent className="max-w-4xl max-h-[90vh] overflow-y-auto">
-              <DialogHeader>
-                <DialogTitle>Register New Patient</DialogTitle>
-                <DialogDescription>
-                  Enter the patient's demographic and contact information
-                </DialogDescription>
-              </DialogHeader>
-              <PatientRegistrationForm 
-                onSuccess={handlePatientRegistered}
-                onCancel={() => setIsRegisterOpen(false)}
-              />
-            </DialogContent>
-          </Dialog>
-        </div>
-      </header>
-
-      <main className="container mx-auto px-4 py-6">
+    <AppLayout title="Patient Management">
+      <div className="p-6">
         {/* Stats Cards */}
         <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-6">
           <Card>
             <CardContent className="p-4 flex items-center gap-3">
-              <div className="p-2 bg-blue-100 rounded-lg">
-                <Users className="h-5 w-5 text-blue-600" />
+              <div className="p-2 bg-primary/10 rounded-lg">
+                <Users className="h-5 w-5 text-primary" />
               </div>
               <div>
                 <p className="text-2xl font-bold">{patients.length}</p>
@@ -187,8 +116,8 @@ const Patients = () => {
           </Card>
           <Card>
             <CardContent className="p-4 flex items-center gap-3">
-              <div className="p-2 bg-green-100 rounded-lg">
-                <Activity className="h-5 w-5 text-green-600" />
+              <div className="p-2 bg-success/10 rounded-lg">
+                <Activity className="h-5 w-5 text-success" />
               </div>
               <div>
                 <p className="text-2xl font-bold">{patients.filter(p => p.is_active).length}</p>
@@ -198,8 +127,8 @@ const Patients = () => {
           </Card>
           <Card>
             <CardContent className="p-4 flex items-center gap-3">
-              <div className="p-2 bg-orange-100 rounded-lg">
-                <Calendar className="h-5 w-5 text-orange-600" />
+              <div className="p-2 bg-warning/10 rounded-lg">
+                <Calendar className="h-5 w-5 text-warning" />
               </div>
               <div>
                 <p className="text-2xl font-bold">
@@ -215,8 +144,8 @@ const Patients = () => {
           </Card>
           <Card>
             <CardContent className="p-4 flex items-center gap-3">
-              <div className="p-2 bg-red-100 rounded-lg">
-                <AlertCircle className="h-5 w-5 text-red-600" />
+              <div className="p-2 bg-critical/10 rounded-lg">
+                <AlertCircle className="h-5 w-5 text-critical" />
               </div>
               <div>
                 <p className="text-2xl font-bold">
@@ -234,20 +163,23 @@ const Patients = () => {
             <div className="flex flex-col md:flex-row gap-4">
               <div className="relative flex-1">
                 <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-                <Input
-                  placeholder="Search by name, MRN, or phone..."
-                  value={searchQuery}
-                  onChange={(e) => setSearchQuery(e.target.value)}
-                  className="pl-10"
-                />
+                <Input placeholder="Search by name, MRN, or phone..." value={searchQuery} onChange={(e) => setSearchQuery(e.target.value)} className="pl-10" />
               </div>
               <div className="flex gap-2">
-                <Button variant="outline" size="icon">
-                  <Filter className="h-4 w-4" />
-                </Button>
-                <Button variant="outline" size="icon">
-                  <Download className="h-4 w-4" />
-                </Button>
+                <Button variant="outline" size="icon"><Filter className="h-4 w-4" /></Button>
+                <Button variant="outline" size="icon"><Download className="h-4 w-4" /></Button>
+                <Dialog open={isRegisterOpen} onOpenChange={setIsRegisterOpen}>
+                  <DialogTrigger asChild>
+                    <Button><UserPlus className="h-4 w-4 mr-2" />Register Patient</Button>
+                  </DialogTrigger>
+                  <DialogContent className="max-w-4xl max-h-[90vh] overflow-y-auto">
+                    <DialogHeader>
+                      <DialogTitle>Register New Patient</DialogTitle>
+                      <DialogDescription>Enter the patient's demographic and contact information</DialogDescription>
+                    </DialogHeader>
+                    <PatientRegistrationForm onSuccess={handlePatientRegistered} onCancel={() => setIsRegisterOpen(false)} />
+                  </DialogContent>
+                </Dialog>
               </div>
             </div>
           </CardContent>
@@ -292,21 +224,15 @@ const Patients = () => {
                   </TableHeader>
                   <TableBody>
                     {filteredPatients.map((patient) => (
-                      <TableRow 
-                        key={patient.id}
-                        className="cursor-pointer hover:bg-accent"
-                        onClick={() => setSelectedPatient(patient)}
-                      >
+                      <TableRow key={patient.id} className="cursor-pointer hover:bg-accent" onClick={() => setSelectedPatient(patient)}>
                         <TableCell className="font-mono text-sm">{patient.mrn}</TableCell>
                         <TableCell>
                           <div>
-                            <p className="font-medium">
-                              {patient.first_name} {patient.middle_name ? patient.middle_name + " " : ""}{patient.last_name}
-                            </p>
+                            <p className="font-medium">{patient.first_name} {patient.middle_name ? patient.middle_name + " " : ""}{patient.last_name}</p>
                             {patient.allergies && patient.allergies.length > 0 && (
                               <div className="flex items-center gap-1 mt-1">
-                                <AlertCircle className="h-3 w-3 text-red-500" />
-                                <span className="text-xs text-red-500">Allergies</span>
+                                <AlertCircle className="h-3 w-3 text-critical" />
+                                <span className="text-xs text-critical">Allergies</span>
                               </div>
                             )}
                           </div>
@@ -346,9 +272,7 @@ const Patients = () => {
                           </Badge>
                         </TableCell>
                         <TableCell>
-                          <Button variant="ghost" size="icon">
-                            <MoreHorizontal className="h-4 w-4" />
-                          </Button>
+                          <Button variant="ghost" size="icon"><MoreHorizontal className="h-4 w-4" /></Button>
                         </TableCell>
                       </TableRow>
                     ))}
@@ -358,8 +282,8 @@ const Patients = () => {
             )}
           </CardContent>
         </Card>
-      </main>
-    </div>
+      </div>
+    </AppLayout>
   );
 };
 

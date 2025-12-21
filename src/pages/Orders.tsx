@@ -7,10 +7,9 @@ import { MedicationTimeline } from "@/components/orders/MedicationTimeline";
 import { MedicationReconciliation } from "@/components/orders/MedicationReconciliation";
 import { MARTimelineView } from "@/components/orders/MARTimelineView";
 import { EscalatingMedicationAlerts } from "@/components/alerts/EscalatingMedicationAlerts";
-import { Button } from "@/components/ui/button";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { ArrowLeft, ShoppingCart, ClipboardList, Syringe, Timer, FileText, LayoutGrid, AlertTriangle } from "lucide-react";
-import { useNavigate } from "react-router-dom";
+import { ShoppingCart, ClipboardList, Syringe, Timer, FileText, LayoutGrid, AlertTriangle } from "lucide-react";
+import { AppLayout } from "@/components/layout/AppLayout";
 
 interface SelectedPatient {
   id: string;
@@ -21,21 +20,12 @@ interface SelectedPatient {
 }
 
 const Orders = () => {
-  const navigate = useNavigate();
   const [selectedPatient, setSelectedPatient] = useState<SelectedPatient | null>(null);
   const [activeTab, setActiveTab] = useState("new");
 
   return (
-    <div className="min-h-screen bg-background">
-      <header className="sticky top-0 z-50 border-b bg-card shadow-sm">
-        <div className="container mx-auto px-4 py-3 flex items-center gap-4">
-          <Button variant="ghost" size="icon" onClick={() => navigate(-1)}>
-            <ArrowLeft className="h-5 w-5" />
-          </Button>
-          <h1 className="text-xl font-bold">Order Entry System</h1>
-        </div>
-      </header>
-      <main className="container mx-auto p-6">
+    <AppLayout title="Order Entry System">
+      <div className="p-6">
         <div className="grid lg:grid-cols-4 gap-6">
           {/* Patient Selector Sidebar */}
           <div className="lg:col-span-1">
@@ -151,8 +141,8 @@ const Orders = () => {
             </Tabs>
           </div>
         </div>
-      </main>
-    </div>
+      </div>
+    </AppLayout>
   );
 };
 
