@@ -13,7 +13,8 @@ import {
   RefreshCw,
   Loader2,
   Clock,
-  Globe
+  Globe,
+  MapPin
 } from 'lucide-react';
 import { format, formatDistanceToNow } from 'date-fns';
 import {
@@ -35,6 +36,7 @@ interface UserSession {
   ip_address: string | null;
   user_agent: string | null;
   device_info: string | null;
+  location: string | null;
   started_at: string;
   last_activity_at: string;
   ended_at: string | null;
@@ -239,7 +241,13 @@ const SessionsManagement: React.FC<SessionsManagementProps> = ({ users }) => {
                                 {getBrowserName(session.user_agent)}
                               </Badge>
                             </div>
-                            <div className="flex items-center gap-3 text-xs text-muted-foreground mt-1">
+                            <div className="flex items-center gap-3 text-xs text-muted-foreground mt-1 flex-wrap">
+                              {session.location && (
+                                <span className="flex items-center gap-1">
+                                  <MapPin className="w-3 h-3" />
+                                  {session.location}
+                                </span>
+                              )}
                               <span className="flex items-center gap-1">
                                 <Clock className="w-3 h-3" />
                                 Started {formatDistanceToNow(new Date(session.started_at), { addSuffix: true })}
