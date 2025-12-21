@@ -82,8 +82,8 @@ const Dashboard = () => {
   };
 
   const quickActions = [
-    { label: "Patient Queue", icon: Users, path: "/", action: "queue", color: "bg-blue-500" },
-    { label: "Bed Management", icon: Bed, path: "/", action: "beds", color: "bg-purple-500" },
+    { label: "Patient Queue", icon: Users, path: "/queue", action: "queue", color: "bg-blue-500" },
+    { label: "Bed Management", icon: Bed, path: "/beds", action: "beds", color: "bg-purple-500" },
     { label: "New Registration", icon: UserPlus, path: "/registration", color: "bg-green-500" },
     { label: "My Schedule", icon: Calendar, path: "#", color: "bg-orange-500" },
   ];
