@@ -31,69 +31,27 @@ import {
   DollarSign,
   Activity,
   Clock,
-  FileText,
   Download,
   RefreshCw,
-  Filter,
   ChevronUp,
   ChevronDown,
   Stethoscope,
   Syringe,
   Building2,
-  HeartPulse
+  HeartPulse,
+  Loader2
 } from "lucide-react";
+import {
+  usePatientStats,
+  useBedOccupancy,
+  useAppointmentStats,
+  useRevenueStats,
+  useEncounterTrends,
+  useDiagnosisStats,
+  DateRange
+} from "@/hooks/useReportingData";
 
-// Mock data for charts
-const patientVisitsData = [
-  { month: "Jan", outpatient: 1420, inpatient: 320, emergency: 180 },
-  { month: "Feb", outpatient: 1380, inpatient: 290, emergency: 210 },
-  { month: "Mar", outpatient: 1650, inpatient: 340, emergency: 190 },
-  { month: "Apr", outpatient: 1520, inpatient: 310, emergency: 220 },
-  { month: "May", outpatient: 1780, inpatient: 380, emergency: 175 },
-  { month: "Jun", outpatient: 1620, inpatient: 350, emergency: 195 },
-  { month: "Jul", outpatient: 1890, inpatient: 410, emergency: 230 },
-  { month: "Aug", outpatient: 1750, inpatient: 390, emergency: 215 },
-  { month: "Sep", outpatient: 1680, inpatient: 360, emergency: 200 },
-  { month: "Oct", outpatient: 1920, inpatient: 420, emergency: 245 },
-  { month: "Nov", outpatient: 1850, inpatient: 400, emergency: 225 },
-  { month: "Dec", outpatient: 1560, inpatient: 340, emergency: 180 },
-];
-
-const revenueData = [
-  { month: "Jan", revenue: 245000, collections: 198000, outstanding: 47000 },
-  { month: "Feb", revenue: 238000, collections: 210000, outstanding: 75000 },
-  { month: "Mar", revenue: 289000, collections: 245000, outstanding: 119000 },
-  { month: "Apr", revenue: 265000, collections: 230000, outstanding: 154000 },
-  { month: "May", revenue: 312000, collections: 280000, outstanding: 186000 },
-  { month: "Jun", revenue: 298000, collections: 265000, outstanding: 219000 },
-];
-
-const departmentData = [
-  { name: "General Medicine", value: 35, color: "#3B82F6" },
-  { name: "Surgery", value: 20, color: "#10B981" },
-  { name: "Pediatrics", value: 15, color: "#F59E0B" },
-  { name: "Obstetrics", value: 12, color: "#EC4899" },
-  { name: "Emergency", value: 10, color: "#EF4444" },
-  { name: "Others", value: 8, color: "#6B7280" },
-];
-
-const bedOccupancyData = [
-  { ward: "General Ward", total: 40, occupied: 32, available: 8 },
-  { ward: "ICU", total: 12, occupied: 10, available: 2 },
-  { ward: "Maternity", total: 20, occupied: 14, available: 6 },
-  { ward: "Pediatric", total: 15, occupied: 9, available: 6 },
-  { ward: "Surgery", total: 25, occupied: 20, available: 5 },
-];
-
-const diagnosisData = [
-  { name: "Malaria", count: 456, trend: "down", change: -12 },
-  { name: "Hypertension", count: 389, trend: "up", change: 8 },
-  { name: "Diabetes", count: 312, trend: "up", change: 15 },
-  { name: "Respiratory Infections", count: 287, trend: "down", change: -5 },
-  { name: "Trauma", count: 234, trend: "stable", change: 2 },
-  { name: "GI Disorders", count: 198, trend: "up", change: 10 },
-];
-
+// Fallback mock data for charts when database is empty
 const waitTimeData = [
   { hour: "8AM", avg: 15 },
   { hour: "9AM", avg: 25 },
@@ -107,9 +65,28 @@ const waitTimeData = [
   { hour: "5PM", avg: 18 },
 ];
 
+const departmentData = [
+  { name: "General Medicine", value: 35, color: "#3B82F6" },
+  { name: "Surgery", value: 20, color: "#10B981" },
+  { name: "Pediatrics", value: 15, color: "#F59E0B" },
+  { name: "Obstetrics", value: 12, color: "#EC4899" },
+  { name: "Emergency", value: 10, color: "#EF4444" },
+  { name: "Others", value: 8, color: "#6B7280" },
+];
+
 export function ReportingDashboard() {
-  const [dateRange, setDateRange] = useState("month");
+  const [dateRange, setDateRange] = useState<DateRange>("month");
   const [isRefreshing, setIsRefreshing] = useState(false);
+
+  // Fetch live data from database
+  const { data: patientStats, isLoading: loadingPatients, refetch: refetchPatients } = usePatientStats(dateRange);
+  const { data: bedOccupancy, isLoading: loadingBeds, refetch: refetchBeds } = useBedOccupancy();
+  const { data: appointmentStats, refetch: refetchAppointments } = useAppointmentStats(dateRange);
+  const { data: revenueStats, refetch: refetchRevenue } = useRevenueStats(dateRange);
+  const { data: encounterTrends, refetch: refetchTrends } = useEncounterTrends();
+  const { data: diagnosisStats, refetch: refetchDiagnosis } = useDiagnosisStats();
+
+  const isLoading = loadingPatients || loadingBeds;
 
   const handleRefresh = async () => {
     setIsRefreshing(true);
@@ -183,7 +160,7 @@ export function ReportingDashboard() {
             </div>
           </div>
           <div className="flex items-center gap-3">
-            <Select value={dateRange} onValueChange={setDateRange}>
+            <Select value={dateRange} onValueChange={(v) => setDateRange(v as DateRange)}>
               <SelectTrigger className="w-40">
                 <SelectValue />
               </SelectTrigger>
@@ -254,7 +231,7 @@ export function ReportingDashboard() {
                 </CardHeader>
                 <CardContent>
                   <ResponsiveContainer width="100%" height={300}>
-                    <AreaChart data={patientVisitsData}>
+                    <AreaChart data={encounterTrends || []}>
                       <CartesianGrid strokeDasharray="3 3" />
                       <XAxis dataKey="month" />
                       <YAxis />
@@ -305,7 +282,7 @@ export function ReportingDashboard() {
               </CardHeader>
               <CardContent>
                 <ResponsiveContainer width="100%" height={250}>
-                  <BarChart data={bedOccupancyData} layout="vertical">
+                  <BarChart data={bedOccupancy || []} layout="vertical">
                     <CartesianGrid strokeDasharray="3 3" />
                     <XAxis type="number" />
                     <YAxis dataKey="ward" type="category" width={100} />
@@ -330,7 +307,7 @@ export function ReportingDashboard() {
                 </CardHeader>
                 <CardContent>
                   <div className="space-y-3">
-                    {diagnosisData.map((diagnosis, index) => (
+                    {(diagnosisStats || []).map((diagnosis, index) => (
                       <div key={diagnosis.name} className="flex items-center justify-between">
                         <div className="flex items-center gap-3">
                           <span className="text-sm font-medium text-muted-foreground w-6">{index + 1}</span>
@@ -418,7 +395,7 @@ export function ReportingDashboard() {
               </CardHeader>
               <CardContent>
                 <ResponsiveContainer width="100%" height={350}>
-                  <BarChart data={revenueData}>
+                  <BarChart data={revenueStats?.monthlyData || []}>
                     <CartesianGrid strokeDasharray="3 3" />
                     <XAxis dataKey="month" />
                     <YAxis tickFormatter={(value) => `$${value / 1000}K`} />

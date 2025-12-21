@@ -221,7 +221,7 @@ export function useDiagnosisStats() {
       }, {} as Record<string, number>);
 
       return Object.entries(diagnosisCounts)
-        .map(([name, count]) => ({ name, count, trend: "stable" as const, change: 0 }))
+        .map(([name, count]) => ({ name, count, trend: "stable" as "up" | "down" | "stable", change: 0 }))
         .sort((a, b) => b.count - a.count)
         .slice(0, 6);
     },
