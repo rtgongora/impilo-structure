@@ -4,9 +4,10 @@ import { PatientSelector } from "@/components/orders/PatientSelector";
 import { PatientOrdersView } from "@/components/orders/PatientOrdersView";
 import { MedicationAdministration } from "@/components/orders/MedicationAdministration";
 import { MedicationTimeline } from "@/components/orders/MedicationTimeline";
+import { MedicationReconciliation } from "@/components/orders/MedicationReconciliation";
 import { Button } from "@/components/ui/button";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { ArrowLeft, ShoppingCart, ClipboardList, Syringe, Timer } from "lucide-react";
+import { ArrowLeft, ShoppingCart, ClipboardList, Syringe, Timer, FileText } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 
 interface SelectedPatient {
@@ -62,6 +63,10 @@ const Orders = () => {
                   <Timer className="h-4 w-4 mr-2" />
                   Med Timeline
                 </TabsTrigger>
+                <TabsTrigger value="reconcile" disabled={!selectedPatient}>
+                  <FileText className="h-4 w-4 mr-2" />
+                  Reconciliation
+                </TabsTrigger>
               </TabsList>
 
               <TabsContent value="new">
@@ -105,6 +110,23 @@ const Orders = () => {
                     <Timer className="h-12 w-12 mx-auto mb-3 opacity-50" />
                     <p>No active encounter for this patient</p>
                     <p className="text-sm">Medication timeline requires an active encounter</p>
+                  </div>
+                )}
+              </TabsContent>
+
+              <TabsContent value="reconcile">
+                {selectedPatient && selectedPatient.encounterId && (
+                  <MedicationReconciliation
+                    patientId={selectedPatient.id}
+                    encounterId={selectedPatient.encounterId}
+                    transitionType="admission"
+                  />
+                )}
+                {selectedPatient && !selectedPatient.encounterId && (
+                  <div className="text-center py-8 text-muted-foreground">
+                    <FileText className="h-12 w-12 mx-auto mb-3 opacity-50" />
+                    <p>No active encounter for this patient</p>
+                    <p className="text-sm">Medication reconciliation requires an active encounter</p>
                   </div>
                 )}
               </TabsContent>

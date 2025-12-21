@@ -133,7 +133,10 @@ const Dashboard = () => {
           {/* Patient Search */}
           <PatientSearch />
 
-          <div className="flex items-center gap-4">
+          <div className="flex items-center gap-3">
+            {/* Voice Commands */}
+            <VoiceCommandButton onCommand={(cmd, action) => console.log(action, cmd)} />
+
             {/* Handoff Notifications */}
             <HandoffNotifications />
 
@@ -391,6 +394,9 @@ const Dashboard = () => {
           </div>
         </div>
       </main>
+      
+      {/* Push Notification Prompt */}
+      <PushNotificationPrompt />
     </div>
   );
 };
