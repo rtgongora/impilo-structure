@@ -2,10 +2,12 @@ import { TopBarAction, TOP_BAR_ACTIONS } from "@/types/ehr";
 import { useEHR } from "@/contexts/EHRContext";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { X, Boxes, Route, Package, Receipt, Plus } from "lucide-react";
+import { X, Boxes, Route, Package, Receipt, Plus, ClipboardList, ShoppingCart } from "lucide-react";
 import { QueueManagement } from "./queue/QueueManagement";
 import { BedManagement } from "./beds/BedManagement";
 import { OrderSetsSystem } from "./orders/OrderSetsSystem";
+import { ShiftHandoffReport } from "@/components/handoff/ShiftHandoffReport";
+import { OrderEntrySystem } from "@/components/orders/OrderEntrySystem";
 
 interface TopBarPanelProps {
   action: TopBarAction;
@@ -49,6 +51,10 @@ export function TopBarPanel({ action }: TopBarPanelProps) {
         return <BedManagement />;
       case "ordersets":
         return <OrderSetsSystem />;
+      case "orderentry":
+        return <OrderEntrySystem />;
+      case "handoff":
+        return <ShiftHandoffReport />;
       case "workspaces":
         return (
           <div className="grid grid-cols-3 gap-4">
