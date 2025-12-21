@@ -22,6 +22,7 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { Badge } from "@/components/ui/badge";
 import { CriticalEventButton } from "@/components/ehr/CriticalEventButton";
+import { CDSAlertBadge } from "@/components/ehr/ClinicalDecisionSupport";
 
 const iconMap: Record<string, React.ComponentType<{ className?: string }>> = {
   Boxes,
@@ -87,8 +88,11 @@ export function TopBar() {
         )}
       </div>
 
-      {/* Right: Critical Event & User */}
-      <div className="flex items-center gap-3">
+      {/* Right: Critical Event, CDS & User */}
+      <div className="flex items-center gap-2">
+        {/* Clinical Decision Support */}
+        <CDSAlertBadge />
+
         {/* Critical Event Button - Always Visible */}
         <CriticalEventButton />
 
