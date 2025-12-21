@@ -1,38 +1,45 @@
 import { useState, useEffect } from "react";
-import { Plus, RefreshCw, Volume2, Filter } from "lucide-react";
+import { useNavigate } from "react-router-dom";
+import { Plus, RefreshCw, Filter, Building2, Stethoscope, Video, Calendar, Users, Bed } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Badge } from "@/components/ui/badge";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { QueuePatientCard, type QueuePatient } from "./QueuePatientCard";
+import { Input } from "@/components/ui/input";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { QueuePatientCard, type QueuePatient, type VisitType } from "./QueuePatientCard";
 import { AddPatientDialog } from "./AddPatientDialog";
 import { QueueStats } from "./QueueStats";
 
-// Mock data generator
-const generateTicketNumber = (type: 'opd' | 'casualty') => {
-  const prefix = type === 'opd' ? 'OPD' : 'CAS';
-  const num = Math.floor(Math.random() * 900) + 100;
-  return `${prefix}-${num}`;
-};
-
+// Mock data with enhanced types
 const mockPatients: QueuePatient[] = [
-  { id: '1', name: 'John Mwangi', age: 45, gender: 'M', chiefComplaint: 'Chest pain, shortness of breath', triageLevel: 'red', arrivalTime: new Date(Date.now() - 5 * 60000), ticketNumber: 'CAS-101', status: 'waiting' },
-  { id: '2', name: 'Grace Wanjiku', age: 32, gender: 'F', chiefComplaint: 'Severe abdominal pain', triageLevel: 'orange', arrivalTime: new Date(Date.now() - 15 * 60000), ticketNumber: 'CAS-102', status: 'waiting' },
-  { id: '3', name: 'Peter Ochieng', age: 28, gender: 'M', chiefComplaint: 'Road traffic accident - leg injury', triageLevel: 'yellow', arrivalTime: new Date(Date.now() - 25 * 60000), ticketNumber: 'CAS-103', status: 'in-consultation' },
-  { id: '4', name: 'Mary Akinyi', age: 55, gender: 'F', chiefComplaint: 'Follow-up for diabetes', triageLevel: 'green', arrivalTime: new Date(Date.now() - 45 * 60000), ticketNumber: 'OPD-201', status: 'waiting' },
-  { id: '5', name: 'James Kamau', age: 67, gender: 'M', chiefComplaint: 'Chronic cough, 2 weeks', triageLevel: 'green', arrivalTime: new Date(Date.now() - 60 * 60000), ticketNumber: 'OPD-202', status: 'waiting' },
-  { id: '6', name: 'Susan Njeri', age: 24, gender: 'F', chiefComplaint: 'Skin rash', triageLevel: 'blue', arrivalTime: new Date(Date.now() - 90 * 60000), ticketNumber: 'OPD-203', status: 'waiting' },
-  { id: '7', name: 'David Kipchoge', age: 38, gender: 'M', chiefComplaint: 'Headache and fever', triageLevel: 'yellow', arrivalTime: new Date(Date.now() - 35 * 60000), ticketNumber: 'CAS-104', status: 'called' },
+  { id: '1', name: 'John Mwangi', mrn: 'MRN-2024-001', age: 45, gender: 'M', chiefComplaint: 'Chest pain, shortness of breath', triageLevel: 'red', arrivalTime: new Date(Date.now() - 5 * 60000), ticketNumber: 'CAS-101', status: 'waiting', visitType: 'in-person' },
+  { id: '2', name: 'Grace Wanjiku', mrn: 'MRN-2024-002', age: 32, gender: 'F', chiefComplaint: 'Severe abdominal pain', triageLevel: 'orange', arrivalTime: new Date(Date.now() - 15 * 60000), ticketNumber: 'CAS-102', status: 'waiting', visitType: 'in-person' },
+  { id: '3', name: 'Peter Ochieng', mrn: 'MRN-2024-003', age: 28, gender: 'M', chiefComplaint: 'Road traffic accident - leg injury', triageLevel: 'yellow', arrivalTime: new Date(Date.now() - 25 * 60000), ticketNumber: 'CAS-103', status: 'in-consultation', visitType: 'in-person', provider: 'Mwangi', ward: 'Casualty', bed: 'Bed 3' },
+  { id: '4', name: 'Mary Akinyi', mrn: 'MRN-2024-004', age: 55, gender: 'F', chiefComplaint: 'Follow-up for diabetes', triageLevel: 'green', arrivalTime: new Date(Date.now() - 45 * 60000), ticketNumber: 'OPD-201', status: 'waiting', visitType: 'virtual', appointmentTime: '10:30 AM' },
+  { id: '5', name: 'James Kamau', mrn: 'MRN-2024-005', age: 67, gender: 'M', chiefComplaint: 'Chronic cough, 2 weeks', triageLevel: 'green', arrivalTime: new Date(Date.now() - 60 * 60000), ticketNumber: 'OPD-202', status: 'waiting', visitType: 'appointment', appointmentTime: '11:00 AM' },
+  { id: '6', name: 'Susan Njeri', mrn: 'MRN-2024-006', age: 24, gender: 'F', chiefComplaint: 'Skin rash', triageLevel: 'blue', arrivalTime: new Date(Date.now() - 90 * 60000), ticketNumber: 'OPD-203', status: 'waiting', visitType: 'in-person' },
+  { id: '7', name: 'David Kipchoge', mrn: 'MRN-2024-007', age: 38, gender: 'M', chiefComplaint: 'Headache and fever', triageLevel: 'yellow', arrivalTime: new Date(Date.now() - 35 * 60000), ticketNumber: 'CAS-104', status: 'called', visitType: 'in-person' },
+  { id: '8', name: 'Anne Wambui', mrn: 'MRN-2024-008', age: 42, gender: 'F', chiefComplaint: 'Cardiology consult - CHF management', triageLevel: 'yellow', arrivalTime: new Date(Date.now() - 120 * 60000), ticketNumber: 'CON-001', status: 'waiting', visitType: 'consultation', ward: 'Ward 3A', bed: 'Bed 12' },
+  { id: '9', name: 'Joseph Otieno', mrn: 'MRN-2024-009', age: 58, gender: 'M', chiefComplaint: 'Endocrinology referral - Thyroid nodule', triageLevel: 'green', arrivalTime: new Date(Date.now() - 180 * 60000), ticketNumber: 'REF-001', status: 'waiting', visitType: 'referral' },
+  { id: '10', name: 'Faith Muthoni', mrn: 'MRN-2024-010', age: 35, gender: 'F', chiefComplaint: 'Antenatal checkup', triageLevel: 'green', arrivalTime: new Date(Date.now() - 30 * 60000), ticketNumber: 'OPD-204', status: 'completed', visitType: 'appointment', provider: 'Kamau' },
 ];
 
 const triagePriority = { red: 1, orange: 2, yellow: 3, green: 4, blue: 5 };
 
-export function QueueManagement() {
+interface QueueManagementProps {
+  workspace?: 'my-queue' | 'ward' | 'department' | 'all';
+  wardFilter?: string;
+}
+
+export function QueueManagement({ workspace = 'my-queue', wardFilter }: QueueManagementProps) {
+  const navigate = useNavigate();
   const [patients, setPatients] = useState<QueuePatient[]>(mockPatients);
-  const [activeTab, setActiveTab] = useState<'casualty' | 'opd'>('casualty');
+  const [activeTab, setActiveTab] = useState<string>('all');
   const [addDialogOpen, setAddDialogOpen] = useState(false);
   const [filterTriage, setFilterTriage] = useState<string>('all');
+  const [searchTerm, setSearchTerm] = useState('');
   const [, setTick] = useState(0);
 
   // Update wait times every minute
@@ -42,11 +49,14 @@ export function QueueManagement() {
   }, []);
 
   const handleAddPatient = (patientData: Omit<QueuePatient, 'id' | 'arrivalTime' | 'ticketNumber' | 'status'>) => {
+    const prefix = patientData.visitType === 'consultation' ? 'CON' : 
+                   patientData.visitType === 'referral' ? 'REF' :
+                   patientData.visitType === 'virtual' ? 'VIR' : 'OPD';
     const newPatient: QueuePatient = {
       ...patientData,
       id: Date.now().toString(),
       arrivalTime: new Date(),
-      ticketNumber: generateTicketNumber(activeTab),
+      ticketNumber: `${prefix}-${Math.floor(Math.random() * 900) + 100}`,
       status: 'waiting',
     };
     setPatients(prev => [...prev, newPatient]);
@@ -54,16 +64,10 @@ export function QueueManagement() {
 
   const handleCallPatient = (id: string) => {
     setPatients(prev => prev.map(p => 
-      p.id === id ? { ...p, status: 'called' as const } : p
+      p.id === id ? { ...p, status: 'in-consultation' as const } : p
     ));
-    // Simulate voice announcement
-    const patient = patients.find(p => p.id === id);
-    if (patient) {
-      const utterance = new SpeechSynthesisUtterance(
-        `Ticket number ${patient.ticketNumber}. ${patient.name}, please proceed to consultation.`
-      );
-      speechSynthesis.speak(utterance);
-    }
+    // Navigate to encounter
+    navigate(`/encounter/${id}`);
   };
 
   const handleCompletePatient = (id: string) => {
@@ -72,177 +76,193 @@ export function QueueManagement() {
     ));
   };
 
-  const filteredPatients = patients
-    .filter(p => {
-      const isCasualty = p.ticketNumber.startsWith('CAS');
-      if (activeTab === 'casualty' && !isCasualty) return false;
-      if (activeTab === 'opd' && isCasualty) return false;
-      if (filterTriage !== 'all' && p.triageLevel !== filterTriage) return false;
-      return true;
-    })
-    .sort((a, b) => {
-      // Sort by status (waiting first), then triage priority, then arrival time
-      if (a.status === 'completed' && b.status !== 'completed') return 1;
-      if (a.status !== 'completed' && b.status === 'completed') return -1;
-      if (a.status === 'waiting' && b.status !== 'waiting') return -1;
-      if (a.status !== 'waiting' && b.status === 'waiting') return 1;
-      const priorityDiff = triagePriority[a.triageLevel] - triagePriority[b.triageLevel];
-      if (priorityDiff !== 0) return priorityDiff;
-      return a.arrivalTime.getTime() - b.arrivalTime.getTime();
-    });
+  const handleOpenChart = (id: string) => {
+    navigate(`/encounter/${id}?view=chart`);
+  };
 
-  const waitingPatients = filteredPatients.filter(p => p.status === 'waiting');
-  const activePatients = filteredPatients.filter(p => p.status === 'called' || p.status === 'in-consultation');
-  const completedPatients = filteredPatients.filter(p => p.status === 'completed');
+  // Filter patients based on search and filters
+  const getFilteredPatients = (visitTypeFilter?: VisitType | 'consults') => {
+    return patients
+      .filter(p => {
+        // Search filter
+        if (searchTerm) {
+          const term = searchTerm.toLowerCase();
+          if (!p.name.toLowerCase().includes(term) && 
+              !p.mrn?.toLowerCase().includes(term) &&
+              !p.ticketNumber.toLowerCase().includes(term)) {
+            return false;
+          }
+        }
+        // Triage filter
+        if (filterTriage !== 'all' && p.triageLevel !== filterTriage) return false;
+        // Visit type filter
+        if (visitTypeFilter === 'consults') {
+          return p.visitType === 'consultation' || p.visitType === 'referral';
+        }
+        if (visitTypeFilter && p.visitType !== visitTypeFilter) return false;
+        return true;
+      })
+      .sort((a, b) => {
+        // Sort: waiting first, then by triage priority, then by arrival time
+        if (a.status === 'completed' && b.status !== 'completed') return 1;
+        if (a.status !== 'completed' && b.status === 'completed') return -1;
+        if (a.status === 'waiting' && b.status !== 'waiting') return -1;
+        if (a.status !== 'waiting' && b.status === 'waiting') return 1;
+        const priorityDiff = triagePriority[a.triageLevel] - triagePriority[b.triageLevel];
+        if (priorityDiff !== 0) return priorityDiff;
+        return a.arrivalTime.getTime() - b.arrivalTime.getTime();
+      });
+  };
+
+  const tabCounts = {
+    all: patients.filter(p => p.status === 'waiting').length,
+    inPerson: patients.filter(p => p.visitType === 'in-person' && p.status === 'waiting').length,
+    virtual: patients.filter(p => p.visitType === 'virtual' && p.status === 'waiting').length,
+    appointments: patients.filter(p => p.visitType === 'appointment' && p.status === 'waiting').length,
+    attended: patients.filter(p => p.status === 'completed' || p.status === 'discharged').length,
+  };
+
+  const renderPatientList = (filteredPatients: QueuePatient[]) => (
+    <ScrollArea className="h-[500px]">
+      <div className="space-y-2 pr-4">
+        {filteredPatients.map(patient => (
+          <QueuePatientCard
+            key={patient.id}
+            patient={patient}
+            onCall={handleCallPatient}
+            onComplete={handleCompletePatient}
+            onOpenChart={handleOpenChart}
+          />
+        ))}
+        {filteredPatients.length === 0 && (
+          <div className="text-center py-12 text-muted-foreground">
+            <Users className="h-12 w-12 mx-auto mb-3 opacity-30" />
+            <p>No patients in this queue</p>
+          </div>
+        )}
+      </div>
+    </ScrollArea>
+  );
 
   return (
-    <div className="h-full flex flex-col bg-background">
-      <div className="border-b p-4">
-        <div className="flex items-center justify-between mb-4">
-          <div>
-            <h1 className="text-xl font-bold">Queue Management</h1>
-            <p className="text-sm text-muted-foreground">Patient queuing with triage prioritization</p>
-          </div>
-          <div className="flex items-center gap-2">
-            <Button variant="outline" size="sm" onClick={() => setTick(t => t + 1)}>
-              <RefreshCw className="h-4 w-4 mr-1" />
-              Refresh
-            </Button>
-            <Button size="sm" onClick={() => setAddDialogOpen(true)}>
-              <Plus className="h-4 w-4 mr-1" />
-              Add Patient
-            </Button>
-          </div>
-        </div>
+    <div className="space-y-4">
+      {/* Stats Overview */}
+      <QueueStats patients={patients} />
 
-        <Tabs value={activeTab} onValueChange={(v) => setActiveTab(v as 'casualty' | 'opd')}>
-          <div className="flex items-center justify-between">
-            <TabsList>
-              <TabsTrigger value="casualty" className="gap-2">
-                Casualty
-                <Badge variant="secondary" className="ml-1">
-                  {patients.filter(p => p.ticketNumber.startsWith('CAS') && p.status === 'waiting').length}
+      {/* Main Queue Card */}
+      <Card>
+        <CardHeader className="pb-3">
+          <div className="flex items-center justify-between flex-wrap gap-3">
+            <div className="flex items-center gap-3">
+              <CardTitle className="text-lg">Patient Queue</CardTitle>
+              {workspace === 'ward' && wardFilter && (
+                <Badge variant="outline" className="flex items-center gap-1">
+                  <Building2 className="h-3 w-3" />
+                  {wardFilter}
                 </Badge>
+              )}
+            </div>
+            <div className="flex items-center gap-2">
+              <Button variant="ghost" size="sm" onClick={() => setTick(t => t + 1)}>
+                <RefreshCw className="h-4 w-4" />
+              </Button>
+              <Button size="sm" onClick={() => setAddDialogOpen(true)}>
+                <Plus className="h-4 w-4 mr-1" />
+                Add Patient
+              </Button>
+            </div>
+          </div>
+
+          {/* Filters */}
+          <div className="flex items-center gap-3 mt-4 flex-wrap">
+            <Input
+              placeholder="Search patients..."
+              value={searchTerm}
+              onChange={(e) => setSearchTerm(e.target.value)}
+              className="max-w-xs"
+            />
+            <Select value={filterTriage} onValueChange={setFilterTriage}>
+              <SelectTrigger className="w-[160px]">
+                <Filter className="h-4 w-4 mr-2" />
+                <SelectValue placeholder="Filter urgency" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="all">All Urgency</SelectItem>
+                <SelectItem value="red">Immediate</SelectItem>
+                <SelectItem value="orange">Emergency</SelectItem>
+                <SelectItem value="yellow">Urgent</SelectItem>
+                <SelectItem value="green">Standard</SelectItem>
+                <SelectItem value="blue">Routine</SelectItem>
+              </SelectContent>
+            </Select>
+          </div>
+        </CardHeader>
+
+        <CardContent>
+          <Tabs value={activeTab} onValueChange={setActiveTab}>
+            <TabsList className="flex flex-wrap h-auto gap-1">
+              <TabsTrigger value="all" className="flex items-center gap-1">
+                <Users className="h-3 w-3" />
+                All ({tabCounts.all})
               </TabsTrigger>
-              <TabsTrigger value="opd" className="gap-2">
-                OPD
-                <Badge variant="secondary" className="ml-1">
-                  {patients.filter(p => p.ticketNumber.startsWith('OPD') && p.status === 'waiting').length}
-                </Badge>
+              <TabsTrigger value="in-person">
+                In Person ({tabCounts.inPerson})
+              </TabsTrigger>
+              <TabsTrigger value="virtual" className="flex items-center gap-1">
+                <Video className="h-3 w-3" />
+                Virtual ({tabCounts.virtual})
+              </TabsTrigger>
+              <TabsTrigger value="appointments" className="flex items-center gap-1">
+                <Calendar className="h-3 w-3" />
+                Appointments ({tabCounts.appointments})
+              </TabsTrigger>
+              <TabsTrigger value="attended">
+                Attended ({tabCounts.attended})
               </TabsTrigger>
             </TabsList>
-            <div className="flex items-center gap-2">
-              <Filter className="h-4 w-4 text-muted-foreground" />
-              <Select value={filterTriage} onValueChange={setFilterTriage}>
-                <SelectTrigger className="w-[140px] h-8">
-                  <SelectValue placeholder="Filter triage" />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="all">All Levels</SelectItem>
-                  <SelectItem value="red">Immediate</SelectItem>
-                  <SelectItem value="orange">Very Urgent</SelectItem>
-                  <SelectItem value="yellow">Urgent</SelectItem>
-                  <SelectItem value="green">Standard</SelectItem>
-                  <SelectItem value="blue">Non-Urgent</SelectItem>
-                </SelectContent>
-              </Select>
-            </div>
-          </div>
 
-          <TabsContent value="casualty" className="mt-4">
-            <QueueStats patients={patients.filter(p => p.ticketNumber.startsWith('CAS'))} />
-          </TabsContent>
-          <TabsContent value="opd" className="mt-4">
-            <QueueStats patients={patients.filter(p => p.ticketNumber.startsWith('OPD'))} />
-          </TabsContent>
-        </Tabs>
-      </div>
-
-      <div className="flex-1 overflow-hidden">
-        <div className="grid grid-cols-1 lg:grid-cols-3 h-full divide-x">
-          {/* Waiting Queue */}
-          <div className="flex flex-col h-full">
-            <div className="p-3 border-b bg-muted/30">
-              <h2 className="font-semibold flex items-center gap-2">
-                <span className="w-2 h-2 rounded-full bg-blue-500" />
-                Waiting ({waitingPatients.length})
-              </h2>
+            <div className="mt-4">
+              <TabsContent value="all" className="mt-0">
+                {renderPatientList(getFilteredPatients())}
+              </TabsContent>
+              <TabsContent value="in-person" className="mt-0">
+                {renderPatientList(getFilteredPatients('in-person'))}
+              </TabsContent>
+              <TabsContent value="virtual" className="mt-0">
+                {renderPatientList(getFilteredPatients('virtual'))}
+              </TabsContent>
+              <TabsContent value="appointments" className="mt-0">
+                {renderPatientList(getFilteredPatients('appointment'))}
+              </TabsContent>
+              <TabsContent value="attended" className="mt-0">
+                {renderPatientList(patients.filter(p => p.status === 'completed' || p.status === 'discharged'))}
+              </TabsContent>
             </div>
-            <ScrollArea className="flex-1">
-              <div className="p-3 space-y-2">
-                {waitingPatients.map(patient => (
-                  <QueuePatientCard
-                    key={patient.id}
-                    patient={patient}
-                    onCall={handleCallPatient}
-                    onComplete={handleCompletePatient}
-                  />
-                ))}
-                {waitingPatients.length === 0 && (
-                  <p className="text-center text-muted-foreground py-8">No patients waiting</p>
-                )}
-              </div>
-            </ScrollArea>
-          </div>
+          </Tabs>
+        </CardContent>
+      </Card>
 
-          {/* Active/In Consultation */}
-          <div className="flex flex-col h-full">
-            <div className="p-3 border-b bg-muted/30">
-              <h2 className="font-semibold flex items-center gap-2">
-                <span className="w-2 h-2 rounded-full bg-green-500 animate-pulse" />
-                In Progress ({activePatients.length})
-              </h2>
-            </div>
-            <ScrollArea className="flex-1">
-              <div className="p-3 space-y-2">
-                {activePatients.map(patient => (
-                  <QueuePatientCard
-                    key={patient.id}
-                    patient={patient}
-                    onCall={handleCallPatient}
-                    onComplete={handleCompletePatient}
-                  />
-                ))}
-                {activePatients.length === 0 && (
-                  <p className="text-center text-muted-foreground py-8">No active consultations</p>
-                )}
-              </div>
-            </ScrollArea>
-          </div>
-
-          {/* Completed */}
-          <div className="flex flex-col h-full">
-            <div className="p-3 border-b bg-muted/30">
-              <h2 className="font-semibold flex items-center gap-2">
-                <span className="w-2 h-2 rounded-full bg-gray-400" />
-                Completed ({completedPatients.length})
-              </h2>
-            </div>
-            <ScrollArea className="flex-1">
-              <div className="p-3 space-y-2">
-                {completedPatients.map(patient => (
-                  <QueuePatientCard
-                    key={patient.id}
-                    patient={patient}
-                    onCall={handleCallPatient}
-                    onComplete={handleCompletePatient}
-                    showActions={false}
-                  />
-                ))}
-                {completedPatients.length === 0 && (
-                  <p className="text-center text-muted-foreground py-8">No completed consultations</p>
-                )}
-              </div>
-            </ScrollArea>
-          </div>
-        </div>
-      </div>
+      {/* Consults & Referrals Section */}
+      <Card>
+        <CardHeader className="pb-3">
+          <CardTitle className="text-lg flex items-center gap-2">
+            <Stethoscope className="h-5 w-5" />
+            Consults & Referrals
+            <Badge variant="secondary">
+              {patients.filter(p => (p.visitType === 'consultation' || p.visitType === 'referral') && p.status === 'waiting').length}
+            </Badge>
+          </CardTitle>
+        </CardHeader>
+        <CardContent>
+          {renderPatientList(getFilteredPatients('consults'))}
+        </CardContent>
+      </Card>
 
       <AddPatientDialog
         open={addDialogOpen}
         onOpenChange={setAddDialogOpen}
         onAdd={handleAddPatient}
-        queueType={activeTab}
+        queueType="opd"
       />
     </div>
   );
