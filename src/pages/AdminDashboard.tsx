@@ -45,11 +45,16 @@ import {
   History,
   Clock,
   ArrowRight,
-  Download
+  Download,
+  CalendarIcon,
+  X
 } from 'lucide-react';
-import { format } from 'date-fns';
+import { format, startOfDay, endOfDay, isWithinInterval } from 'date-fns';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { ScrollArea } from '@/components/ui/scroll-area';
+import { Calendar } from '@/components/ui/calendar';
+import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
+import { cn } from '@/lib/utils';
 
 interface UserProfile {
   id: string;
@@ -95,6 +100,10 @@ const AdminDashboard = () => {
   const [editingUser, setEditingUser] = useState<UserProfile | null>(null);
   const [editRole, setEditRole] = useState<string>('');
   const [isSaving, setIsSaving] = useState(false);
+  
+  // Date range filter for audit logs
+  const [dateFrom, setDateFrom] = useState<Date | undefined>(undefined);
+  const [dateTo, setDateTo] = useState<Date | undefined>(undefined);
 
   const canManageUsers = hasPermission('manage_users') || isRole('admin');
 
@@ -246,14 +255,29 @@ const AdminDashboard = () => {
     }
   };
 
+  // Filter audit logs by date range
+  const filteredAuditLogs = auditLogs.filter(log => {
+    const logDate = new Date(log.created_at);
+    if (dateFrom && dateTo) {
+      return isWithinInterval(logDate, { start: startOfDay(dateFrom), end: endOfDay(dateTo) });
+    }
+    if (dateFrom) {
+      return logDate >= startOfDay(dateFrom);
+    }
+    if (dateTo) {
+      return logDate <= endOfDay(dateTo);
+    }
+    return true;
+  });
+
   const exportAuditLogsCSV = () => {
-    if (auditLogs.length === 0) {
+    if (filteredAuditLogs.length === 0) {
       toast.error('No audit logs to export');
       return;
     }
 
     const headers = ['Date', 'Time', 'Performed By', 'Target User', 'Previous Role', 'New Role', 'Action'];
-    const rows = auditLogs.map(log => [
+    const rows = filteredAuditLogs.map(log => [
       format(new Date(log.created_at), 'yyyy-MM-dd'),
       format(new Date(log.created_at), 'HH:mm:ss'),
       log.performer_name || 'Unknown',
@@ -272,13 +296,21 @@ const AdminDashboard = () => {
     const url = URL.createObjectURL(blob);
     const link = document.createElement('a');
     link.setAttribute('href', url);
-    link.setAttribute('download', `audit-logs-${format(new Date(), 'yyyy-MM-dd')}.csv`);
+    const dateRange = dateFrom || dateTo 
+      ? `-${dateFrom ? format(dateFrom, 'yyyyMMdd') : 'start'}-to-${dateTo ? format(dateTo, 'yyyyMMdd') : 'end'}`
+      : '';
+    link.setAttribute('download', `audit-logs${dateRange}-${format(new Date(), 'yyyy-MM-dd')}.csv`);
     document.body.appendChild(link);
     link.click();
     document.body.removeChild(link);
     URL.revokeObjectURL(url);
 
-    toast.success('Audit logs exported successfully');
+    toast.success(`Exported ${filteredAuditLogs.length} audit log entries`);
+  };
+
+  const clearDateFilters = () => {
+    setDateFrom(undefined);
+    setDateTo(undefined);
   };
 
   const filteredUsers = users.filter(u => {
@@ -508,9 +540,9 @@ const AdminDashboard = () => {
                     </CardDescription>
                   </div>
                   <div className="flex items-center gap-2">
-                    <Button variant="outline" size="sm" onClick={exportAuditLogsCSV} disabled={auditLogs.length === 0}>
+                    <Button variant="outline" size="sm" onClick={exportAuditLogsCSV} disabled={filteredAuditLogs.length === 0}>
                       <Download className="w-4 h-4 mr-2" />
-                      Export CSV
+                      Export CSV {filteredAuditLogs.length > 0 && `(${filteredAuditLogs.length})`}
                     </Button>
                     <Button variant="outline" size="sm" onClick={fetchAuditLogs} disabled={logsLoading}>
                       <RefreshCw className={`w-4 h-4 mr-2 ${logsLoading ? 'animate-spin' : ''}`} />
@@ -518,22 +550,82 @@ const AdminDashboard = () => {
                     </Button>
                   </div>
                 </div>
+                
+                {/* Date Range Filters */}
+                <div className="flex items-center gap-3 mt-4 flex-wrap">
+                  <span className="text-sm text-muted-foreground">Filter by date:</span>
+                  <Popover>
+                    <PopoverTrigger asChild>
+                      <Button
+                        variant="outline"
+                        size="sm"
+                        className={cn(
+                          "w-[140px] justify-start text-left font-normal",
+                          !dateFrom && "text-muted-foreground"
+                        )}
+                      >
+                        <CalendarIcon className="mr-2 h-4 w-4" />
+                        {dateFrom ? format(dateFrom, "dd MMM yyyy") : "From"}
+                      </Button>
+                    </PopoverTrigger>
+                    <PopoverContent className="w-auto p-0" align="start">
+                      <Calendar
+                        mode="single"
+                        selected={dateFrom}
+                        onSelect={setDateFrom}
+                        initialFocus
+                        className={cn("p-3 pointer-events-auto")}
+                      />
+                    </PopoverContent>
+                  </Popover>
+                  <span className="text-muted-foreground">→</span>
+                  <Popover>
+                    <PopoverTrigger asChild>
+                      <Button
+                        variant="outline"
+                        size="sm"
+                        className={cn(
+                          "w-[140px] justify-start text-left font-normal",
+                          !dateTo && "text-muted-foreground"
+                        )}
+                      >
+                        <CalendarIcon className="mr-2 h-4 w-4" />
+                        {dateTo ? format(dateTo, "dd MMM yyyy") : "To"}
+                      </Button>
+                    </PopoverTrigger>
+                    <PopoverContent className="w-auto p-0" align="start">
+                      <Calendar
+                        mode="single"
+                        selected={dateTo}
+                        onSelect={setDateTo}
+                        initialFocus
+                        className={cn("p-3 pointer-events-auto")}
+                      />
+                    </PopoverContent>
+                  </Popover>
+                  {(dateFrom || dateTo) && (
+                    <Button variant="ghost" size="sm" onClick={clearDateFilters}>
+                      <X className="w-4 h-4 mr-1" />
+                      Clear
+                    </Button>
+                  )}
+                </div>
               </CardHeader>
               <CardContent>
                 {logsLoading ? (
                   <div className="flex items-center justify-center py-12">
                     <Loader2 className="w-8 h-8 animate-spin text-primary" />
                   </div>
-                ) : auditLogs.length === 0 ? (
+                ) : filteredAuditLogs.length === 0 ? (
                   <div className="text-center py-12 text-muted-foreground">
                     <History className="w-12 h-12 mx-auto mb-4 opacity-50" />
-                    <p>No audit logs yet</p>
-                    <p className="text-sm">Role changes will appear here</p>
+                    <p>{auditLogs.length === 0 ? 'No audit logs yet' : 'No logs match your date filter'}</p>
+                    <p className="text-sm">{auditLogs.length === 0 ? 'Role changes will appear here' : 'Try adjusting the date range'}</p>
                   </div>
                 ) : (
                   <ScrollArea className="h-[500px]">
                     <div className="space-y-3">
-                      {auditLogs.map((log) => (
+                      {filteredAuditLogs.map((log) => (
                         <div
                           key={log.id}
                           className="flex items-start gap-4 p-4 rounded-lg border bg-card hover:bg-muted/50 transition-colors"
