@@ -11,7 +11,9 @@ import { toast } from 'sonner';
 import { ArrowLeft, User, Briefcase, Building, Phone, FileText, Save, Loader2, Camera, Shield } from 'lucide-react';
 import { z } from 'zod';
 import { AvatarUpload } from '@/components/profile/AvatarUpload';
+import { UserSessions } from '@/components/profile/UserSessions';
 import { TwoFactorSetup } from '@/components/auth/TwoFactorSetup';
+import { EmailVerificationStatus } from '@/components/auth/EmailVerificationStatus';
 
 const profileSchema = z.object({
   display_name: z.string().trim().min(1, 'Name is required').max(100, 'Name must be less than 100 characters'),
@@ -163,11 +165,20 @@ const ProfileSettings = () => {
           </CardContent>
         </Card>
 
+        {/* Email Verification Status */}
+        <EmailVerificationStatus 
+          email={user?.email || ''} 
+          isVerified={user?.email_confirmed_at !== null}
+        />
+
         {/* Two-Factor Authentication Card */}
         <TwoFactorSetup 
           isEnabled={twoFactorEnabled} 
           onStatusChange={check2FAStatus}
         />
+
+        {/* Active Sessions */}
+        <UserSessions />
 
         {/* Account Info Card */}
         <Card>
