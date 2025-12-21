@@ -25,7 +25,9 @@ import {
   Stethoscope,
   Package,
   BarChart3,
-  Building2
+  Building2,
+  Syringe,
+  DollarSign
 } from "lucide-react";
 
 // Mock worklist data - will be replaced with real data
@@ -88,7 +90,10 @@ const Dashboard = () => {
 
   const systemModules = [
     { label: "Clinical EHR", icon: Stethoscope, path: "/encounter", description: "Patient encounters & documentation" },
-    { label: "Stock Management", icon: Package, path: "#", description: "Inventory & supplies" },
+    { label: "Patients", icon: Users, path: "/patients", description: "Patient registry & records" },
+    { label: "Stock Management", icon: Package, path: "/stock", description: "Inventory & supplies" },
+    { label: "Consumables", icon: Syringe, path: "/consumables", description: "Track consumable usage" },
+    { label: "Charges & Billing", icon: DollarSign, path: "/charges", description: "Encounter charges" },
     { label: "Reports", icon: BarChart3, path: "#", description: "Analytics & dashboards" },
     { label: "Administration", icon: Building2, path: "/admin", description: "System settings" },
   ];
