@@ -855,6 +855,50 @@ export type Database = {
           },
         ]
       }
+      medication_schedule_times: {
+        Row: {
+          administered_at: string | null
+          created_at: string
+          id: string
+          medication_order_id: string
+          notes: string | null
+          scheduled_date: string
+          scheduled_time: string
+          status: string
+          updated_at: string
+        }
+        Insert: {
+          administered_at?: string | null
+          created_at?: string
+          id?: string
+          medication_order_id: string
+          notes?: string | null
+          scheduled_date?: string
+          scheduled_time: string
+          status?: string
+          updated_at?: string
+        }
+        Update: {
+          administered_at?: string | null
+          created_at?: string
+          id?: string
+          medication_order_id?: string
+          notes?: string | null
+          scheduled_date?: string
+          scheduled_time?: string
+          status?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "medication_schedule_times_medication_order_id_fkey"
+            columns: ["medication_order_id"]
+            isOneToOne: false
+            referencedRelation: "medication_orders"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       patients: {
         Row: {
           address_line1: string | null
