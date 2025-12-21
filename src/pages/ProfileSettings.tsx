@@ -8,8 +8,9 @@ import { Label } from '@/components/ui/label';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { toast } from 'sonner';
-import { ArrowLeft, User, Briefcase, Building, Phone, FileText, Save, Loader2 } from 'lucide-react';
+import { ArrowLeft, User, Briefcase, Building, Phone, FileText, Save, Loader2, Camera } from 'lucide-react';
 import { z } from 'zod';
+import { AvatarUpload } from '@/components/profile/AvatarUpload';
 
 const profileSchema = z.object({
   display_name: z.string().trim().min(1, 'Name is required').max(100, 'Name must be less than 100 characters'),
@@ -123,6 +124,22 @@ const ProfileSettings = () => {
             <p className="text-muted-foreground">Manage your account information</p>
           </div>
         </div>
+
+        {/* Avatar Card */}
+        <Card>
+          <CardHeader>
+            <CardTitle className="flex items-center gap-2">
+              <Camera className="w-5 h-5" />
+              Profile Photo
+            </CardTitle>
+            <CardDescription>
+              Upload a photo to personalize your profile
+            </CardDescription>
+          </CardHeader>
+          <CardContent>
+            <AvatarUpload />
+          </CardContent>
+        </Card>
 
         {/* Account Info Card */}
         <Card>
