@@ -35,9 +35,7 @@ export type TopBarAction =
   | "charges" 
   | "queue" 
   | "beds" 
-  | "ordersets" 
   | "handoff" 
-  | "orderentry"
   | "pharmacy"
   | "theatre"
   | "payments";
@@ -51,8 +49,6 @@ export interface TopBarActionConfig {
 export const TOP_BAR_ACTIONS: TopBarActionConfig[] = [
   { id: "queue", label: "Queue", icon: "Users" },
   { id: "beds", label: "Beds", icon: "Bed" },
-  { id: "ordersets", label: "Order Sets", icon: "ClipboardList" },
-  { id: "orderentry", label: "Order Entry", icon: "ShoppingCart" },
   { id: "pharmacy", label: "Pharmacy", icon: "Pill" },
   { id: "theatre", label: "Theatre Booking", icon: "Calendar" },
   { id: "payments", label: "Payments", icon: "CreditCard" },
