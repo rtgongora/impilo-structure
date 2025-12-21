@@ -1,5 +1,5 @@
-import { Bell, Settings, LogOut, Search } from "lucide-react";
-import { useNavigate } from "react-router-dom";
+import { Bell, Settings, LogOut, Search, ArrowLeft, X } from "lucide-react";
+import { useNavigate, useLocation } from "react-router-dom";
 import { useAuth } from "@/contexts/AuthContext";
 import { Button } from "@/components/ui/button";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
@@ -22,6 +22,9 @@ interface AppHeaderProps {
 export function AppHeader({ title }: AppHeaderProps) {
   const { profile, signOut } = useAuth();
   const navigate = useNavigate();
+  const location = useLocation();
+
+  const isHomePage = location.pathname === "/" || location.pathname === "/dashboard";
 
   const handleSignOut = async () => {
     await signOut();
@@ -39,8 +42,31 @@ export function AppHeader({ title }: AppHeaderProps) {
 
   return (
     <header className="h-14 bg-card border-b flex items-center justify-between px-4 shrink-0">
-      {/* Left: Title */}
-      <div className="flex items-center gap-4">
+      {/* Left: Back/Exit & Title */}
+      <div className="flex items-center gap-2">
+        {!isHomePage && (
+          <>
+            <Button
+              variant="ghost"
+              size="sm"
+              onClick={() => navigate(-1)}
+              className="text-muted-foreground hover:text-foreground"
+            >
+              <ArrowLeft className="w-4 h-4 mr-1" />
+              Back
+            </Button>
+            <Button
+              variant="ghost"
+              size="sm"
+              onClick={() => navigate("/dashboard")}
+              className="text-muted-foreground hover:text-foreground"
+            >
+              <X className="w-4 h-4 mr-1" />
+              Exit
+            </Button>
+            <div className="h-5 w-px bg-border mx-2" />
+          </>
+        )}
         {title && <h1 className="text-lg font-semibold">{title}</h1>}
       </div>
 
