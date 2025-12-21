@@ -2,9 +2,10 @@ import { useState } from "react";
 import { OrderEntrySystem } from "@/components/orders/OrderEntrySystem";
 import { PatientSelector } from "@/components/orders/PatientSelector";
 import { PatientOrdersView } from "@/components/orders/PatientOrdersView";
+import { MedicationAdministration } from "@/components/orders/MedicationAdministration";
 import { Button } from "@/components/ui/button";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { ArrowLeft, ShoppingCart, ClipboardList } from "lucide-react";
+import { ArrowLeft, ShoppingCart, ClipboardList, Syringe } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 
 interface SelectedPatient {
@@ -12,6 +13,7 @@ interface SelectedPatient {
   first_name: string;
   last_name: string;
   mrn: string;
+  encounterId?: string;
 }
 
 const Orders = () => {
@@ -51,6 +53,10 @@ const Orders = () => {
                   <ClipboardList className="h-4 w-4 mr-2" />
                   View Orders
                 </TabsTrigger>
+                <TabsTrigger value="administer" disabled={!selectedPatient}>
+                  <Syringe className="h-4 w-4 mr-2" />
+                  Administer Meds
+                </TabsTrigger>
               </TabsList>
 
               <TabsContent value="new">
@@ -63,6 +69,22 @@ const Orders = () => {
               <TabsContent value="view">
                 {selectedPatient && (
                   <PatientOrdersView patientId={selectedPatient.id} />
+                )}
+              </TabsContent>
+
+              <TabsContent value="administer">
+                {selectedPatient && selectedPatient.encounterId && (
+                  <MedicationAdministration
+                    patientId={selectedPatient.id}
+                    encounterId={selectedPatient.encounterId}
+                  />
+                )}
+                {selectedPatient && !selectedPatient.encounterId && (
+                  <div className="text-center py-8 text-muted-foreground">
+                    <Syringe className="h-12 w-12 mx-auto mb-3 opacity-50" />
+                    <p>No active encounter for this patient</p>
+                    <p className="text-sm">Medication administration requires an active encounter</p>
+                  </div>
                 )}
               </TabsContent>
             </Tabs>
