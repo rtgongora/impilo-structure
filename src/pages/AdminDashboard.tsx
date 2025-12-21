@@ -198,7 +198,26 @@ const AdminDashboard = () => {
         },
       });
 
-      toast.success(`Updated ${editingUser.display_name}'s role to ${editRole}`);
+      // Get current user's profile name for the notification
+      const currentUserProfile = users.find(u => u.user_id === user.id);
+      const changedByName = currentUserProfile?.display_name || 'An administrator';
+
+      // Send email notification
+      try {
+        await supabase.functions.invoke('send-role-notification', {
+          body: {
+            userId: editingUser.user_id,
+            oldRole: oldRole,
+            newRole: editRole,
+            changedByName: changedByName,
+          },
+        });
+        toast.success(`Updated ${editingUser.display_name}'s role to ${editRole}. Notification sent.`);
+      } catch (emailError) {
+        console.error('Failed to send notification:', emailError);
+        toast.success(`Updated ${editingUser.display_name}'s role to ${editRole}`);
+      }
+
       setUsers(prev => 
         prev.map(u => u.id === editingUser.id ? { ...u, role: editRole as any } : u)
       );
