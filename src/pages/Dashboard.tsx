@@ -93,11 +93,17 @@ const Dashboard = () => {
     { label: "Clinical EHR", icon: Stethoscope, path: "/encounter", description: "Patient encounters & documentation" },
     { label: "Appointments", icon: Calendar, path: "/appointments", description: "Schedule & manage appointments" },
     { label: "Patients", icon: Users, path: "/patients", description: "Patient registry & records" },
+    { label: "Pharmacy", icon: Syringe, path: "/pharmacy", description: "Medication dispensing" },
+    { label: "Theatre Booking", icon: Building2, path: "/theatre", description: "Surgical scheduling" },
+    { label: "Payments", icon: DollarSign, path: "/payments", description: "Billing & payments" },
+    { label: "PACS Imaging", icon: FileText, path: "/pacs", description: "Medical imaging viewer" },
+    { label: "Laboratory", icon: Activity, path: "/lims", description: "Lab results & orders" },
     { label: "Stock Management", icon: Package, path: "/stock", description: "Inventory & supplies" },
     { label: "Consumables", icon: Syringe, path: "/consumables", description: "Track consumable usage" },
     { label: "Charges & Billing", icon: DollarSign, path: "/charges", description: "Encounter charges" },
     { label: "Reports", icon: BarChart3, path: "#", description: "Analytics & dashboards" },
     { label: "Administration", icon: Building2, path: "/admin", description: "System settings" },
+    { label: "Patient Portal", icon: UserPlus, path: "/portal", description: "Patient self-service" },
   ];
 
   return (
