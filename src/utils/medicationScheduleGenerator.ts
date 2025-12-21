@@ -1,5 +1,5 @@
 import { supabase } from "@/integrations/supabase/client";
-import { addDays, format, parse, setHours, setMinutes } from "date-fns";
+import { addDays, format, setHours, setMinutes, parseISO, isAfter } from "date-fns";
 
 interface ScheduleConfig {
   medicationOrderId: string;
@@ -83,6 +83,110 @@ export async function generateMedicationSchedule(config: ScheduleConfig): Promis
   }
 }
 
+/**
+ * Extend existing medication schedules by adding more days
+ */
+export async function extendMedicationSchedule(
+  medicationOrderId: string,
+  frequency: string,
+  additionalDays: number
+): Promise<void> {
+  // Skip PRN medications
+  if (frequency === 'As needed (PRN)') {
+    return;
+  }
+
+  // Get the last scheduled date for this medication
+  const { data: lastSchedule, error: fetchError } = await supabase
+    .from('medication_schedule_times')
+    .select('scheduled_date')
+    .eq('medication_order_id', medicationOrderId)
+    .order('scheduled_date', { ascending: false })
+    .limit(1)
+    .maybeSingle();
+
+  if (fetchError) {
+    console.error('Failed to fetch last schedule:', fetchError);
+    throw fetchError;
+  }
+
+  // Start from day after last scheduled date, or today if no schedules exist
+  const startDate = lastSchedule 
+    ? addDays(parseISO(lastSchedule.scheduled_date), 1)
+    : new Date();
+
+  await generateMedicationSchedule({
+    medicationOrderId,
+    frequency,
+    startDate,
+    durationDays: additionalDays,
+  });
+}
+
+/**
+ * Regenerate all future schedules for a medication order (useful when frequency changes)
+ */
+export async function regenerateMedicationSchedule(
+  medicationOrderId: string,
+  frequency: string,
+  durationDays: number
+): Promise<void> {
+  const today = format(new Date(), 'yyyy-MM-dd');
+
+  // Delete all future scheduled (not given/missed) doses
+  const { error: deleteError } = await supabase
+    .from('medication_schedule_times')
+    .delete()
+    .eq('medication_order_id', medicationOrderId)
+    .eq('status', 'scheduled')
+    .gte('scheduled_date', today);
+
+  if (deleteError) {
+    console.error('Failed to delete existing schedules:', deleteError);
+    throw deleteError;
+  }
+
+  // Generate new schedules starting from today
+  await generateMedicationSchedule({
+    medicationOrderId,
+    frequency,
+    startDate: new Date(),
+    durationDays,
+  });
+}
+
+/**
+ * Renew a medication order by extending schedules
+ */
+export async function renewMedicationOrder(
+  orderId: string,
+  newDurationDays: number
+): Promise<void> {
+  // Get the order details
+  const { data: order, error: orderError } = await supabase
+    .from('medication_orders')
+    .select('frequency, duration')
+    .eq('id', orderId)
+    .maybeSingle();
+
+  if (orderError || !order) {
+    throw new Error('Failed to fetch medication order');
+  }
+
+  // Update the order end date
+  const newEndDate = addDays(new Date(), newDurationDays);
+  await supabase
+    .from('medication_orders')
+    .update({
+      end_date: newEndDate.toISOString(),
+      duration: `${newDurationDays} days`,
+    })
+    .eq('id', orderId);
+
+  // Extend schedules
+  await extendMedicationSchedule(orderId, order.frequency, newDurationDays);
+}
+
 export function getNextScheduledTime(frequency: string): Date | null {
   const times = FREQUENCY_SCHEDULES[frequency];
   if (!times || times.length === 0) return null;
@@ -126,3 +230,5 @@ export function parseDuration(duration: string | null): number {
       return 7;
   }
 }
+
+export { FREQUENCY_SCHEDULES };
