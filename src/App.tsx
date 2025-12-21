@@ -9,6 +9,7 @@ import Index from "./pages/Index";
 import Registration from "./pages/Registration";
 import Auth from "./pages/Auth";
 import ResetPassword from "./pages/ResetPassword";
+import ProfileSettings from "./pages/ProfileSettings";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -31,6 +32,11 @@ const App = () => (
             <Route path="/registration" element={
               <ProtectedRoute>
                 <Registration />
+              </ProtectedRoute>
+            } />
+            <Route path="/profile" element={
+              <ProtectedRoute>
+                <ProfileSettings />
               </ProtectedRoute>
             } />
             {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
