@@ -57,6 +57,7 @@ export type Database = {
           department: string | null
           display_name: string
           id: string
+          last_active_at: string | null
           license_number: string | null
           phone: string | null
           role: Database["public"]["Enums"]["clinical_role"]
@@ -70,6 +71,7 @@ export type Database = {
           department?: string | null
           display_name: string
           id?: string
+          last_active_at?: string | null
           license_number?: string | null
           phone?: string | null
           role?: Database["public"]["Enums"]["clinical_role"]
@@ -83,6 +85,7 @@ export type Database = {
           department?: string | null
           display_name?: string
           id?: string
+          last_active_at?: string | null
           license_number?: string | null
           phone?: string | null
           role?: Database["public"]["Enums"]["clinical_role"]
