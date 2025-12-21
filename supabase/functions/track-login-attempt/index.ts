@@ -6,6 +6,36 @@ const corsHeaders = {
   "Access-Control-Allow-Headers": "authorization, x-client-info, apikey, content-type",
 };
 
+// Check if IP matches a single IP or CIDR range
+function ipMatchesEntry(clientIp: string, entryIp: string, isRange: boolean): boolean {
+  if (!isRange) {
+    return clientIp === entryIp;
+  }
+
+  // Parse CIDR notation
+  const [rangeIp, prefixLength] = entryIp.split('/');
+  if (!prefixLength) return clientIp === entryIp;
+
+  const prefix = parseInt(prefixLength, 10);
+  
+  // Convert IPs to binary for comparison
+  const clientParts = clientIp.split('.').map(Number);
+  const rangeParts = rangeIp.split('.').map(Number);
+  
+  if (clientParts.length !== 4 || rangeParts.length !== 4) {
+    return false;
+  }
+
+  // Convert to 32-bit integers
+  const clientInt = (clientParts[0] << 24) | (clientParts[1] << 16) | (clientParts[2] << 8) | clientParts[3];
+  const rangeInt = (rangeParts[0] << 24) | (rangeParts[1] << 16) | (rangeParts[2] << 8) | rangeParts[3];
+  
+  // Create mask
+  const mask = prefix === 0 ? 0 : (~0 << (32 - prefix)) >>> 0;
+  
+  return (clientInt & mask) === (rangeInt & mask);
+}
+
 serve(async (req) => {
   if (req.method === "OPTIONS") {
     return new Response(null, { headers: corsHeaders });
@@ -29,6 +59,52 @@ serve(async (req) => {
       Deno.env.get("SUPABASE_URL") ?? "",
       Deno.env.get("SUPABASE_SERVICE_ROLE_KEY") ?? ""
     );
+
+    // Check IP whitelist setting
+    const { data: whitelistSetting } = await supabaseClient
+      .from("system_settings")
+      .select("value")
+      .eq("key", "ip_whitelist_enabled")
+      .maybeSingle();
+
+    const isWhitelistEnabled = whitelistSetting?.value === "true";
+
+    if (isWhitelistEnabled && clientIp !== "unknown") {
+      // Fetch all enabled whitelist entries
+      const { data: whitelistEntries } = await supabaseClient
+        .from("ip_whitelist")
+        .select("ip_address, is_range")
+        .eq("is_enabled", true);
+
+      if (whitelistEntries && whitelistEntries.length > 0) {
+        const isAllowed = whitelistEntries.some(entry => 
+          ipMatchesEntry(clientIp, entry.ip_address, entry.is_range)
+        );
+
+        if (!isAllowed) {
+          // Log security event for blocked IP
+          await supabaseClient.from("security_events").insert({
+            event_type: "ip_blocked",
+            severity: "warning",
+            email: email.toLowerCase(),
+            ip_address: clientIp,
+            user_agent: userAgent,
+            details: { message: "Login attempt from non-whitelisted IP address" }
+          });
+
+          console.log(`Blocked login attempt from non-whitelisted IP: ${clientIp}`);
+
+          return new Response(
+            JSON.stringify({ 
+              blocked: true,
+              reason: "ip_not_whitelisted",
+              message: "Access denied. Your IP address is not authorized to access this system."
+            }),
+            { status: 403, headers: { ...corsHeaders, "Content-Type": "application/json" } }
+          );
+        }
+      }
+    }
 
     // Record the login attempt
     await supabaseClient.from("login_attempts").insert({
