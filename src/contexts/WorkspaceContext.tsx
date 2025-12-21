@@ -1,12 +1,48 @@
 import React, { createContext, useContext, useState, ReactNode } from "react";
 
 export type WorkspaceView = "personal" | "department" | "team";
+export type CareSetting = "inpatient" | "outpatient" | "emergency" | "all";
+
+// Department to care setting mapping
+const DEPARTMENT_CARE_SETTINGS: Record<string, CareSetting> = {
+  // Inpatient departments
+  "Medical Ward": "inpatient",
+  "Surgical Ward": "inpatient",
+  "ICU": "inpatient",
+  "Pediatrics Ward": "inpatient",
+  "Maternity Ward": "inpatient",
+  "Oncology Ward": "inpatient",
+  // Outpatient departments
+  "General OPD": "outpatient",
+  "Dermatology": "outpatient",
+  "ENT": "outpatient",
+  "Ophthalmology": "outpatient",
+  "Dental": "outpatient",
+  "Cardiology Clinic": "outpatient",
+  // Emergency
+  "Emergency": "emergency",
+  "Casualty": "emergency",
+  "Trauma": "emergency",
+  // Mixed/All
+  "Pharmacy": "all",
+  "Laboratory": "all",
+  "Radiology": "all",
+};
+
+export function getCareSetting(department: string): CareSetting {
+  return DEPARTMENT_CARE_SETTINGS[department] || "all";
+}
 
 interface WorkspaceContextType {
   currentView: WorkspaceView;
   setCurrentView: (view: WorkspaceView) => void;
   currentDepartment: string;
   setCurrentDepartment: (dept: string) => void;
+  careSetting: CareSetting;
+  setCareSetting: (setting: CareSetting) => void;
+  isInpatientContext: boolean;
+  isOutpatientContext: boolean;
+  isEmergencyContext: boolean;
 }
 
 const WorkspaceContext = createContext<WorkspaceContextType | undefined>(undefined);
@@ -22,13 +58,31 @@ export function useWorkspace() {
 export function WorkspaceProvider({ children }: { children: ReactNode }) {
   const [currentView, setCurrentView] = useState<WorkspaceView>("personal");
   const [currentDepartment, setCurrentDepartment] = useState("Emergency");
+  const [careSetting, setCareSetting] = useState<CareSetting>(() => 
+    getCareSetting("Emergency")
+  );
+
+  // Update care setting when department changes
+  const handleSetDepartment = (dept: string) => {
+    setCurrentDepartment(dept);
+    setCareSetting(getCareSetting(dept));
+  };
+
+  const isInpatientContext = careSetting === "inpatient" || careSetting === "all";
+  const isOutpatientContext = careSetting === "outpatient" || careSetting === "all";
+  const isEmergencyContext = careSetting === "emergency" || careSetting === "all";
 
   return (
     <WorkspaceContext.Provider value={{ 
       currentView, 
       setCurrentView, 
       currentDepartment, 
-      setCurrentDepartment 
+      setCurrentDepartment: handleSetDepartment,
+      careSetting,
+      setCareSetting,
+      isInpatientContext,
+      isOutpatientContext,
+      isEmergencyContext,
     }}>
       {children}
     </WorkspaceContext.Provider>

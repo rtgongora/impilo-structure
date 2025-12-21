@@ -5,6 +5,7 @@ import { Card } from "@/components/ui/card";
 import { cn } from "@/lib/utils";
 
 export type VisitType = 'in-person' | 'virtual' | 'appointment' | 'consultation' | 'referral';
+export type CareContext = 'inpatient' | 'outpatient' | 'emergency';
 
 export interface QueuePatient {
   id: string;
@@ -22,6 +23,7 @@ export interface QueuePatient {
   provider?: string;
   ward?: string;
   bed?: string;
+  careContext?: CareContext;
 }
 
 interface QueuePatientCardProps {
