@@ -139,7 +139,6 @@ export function TeleconsultSession({ referral, onSubmitResponse, onClose }: Tele
     toggleMute,
     toggleVideo,
   } = useWebRTC({
-    participantId: "dr-consultant-001", // Would come from auth context in production
     referralId: referral.id,
   });
 

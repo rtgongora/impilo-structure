@@ -1,4 +1,3 @@
-import { motion } from "framer-motion";
 import { useEHR } from "@/contexts/EHRContext";
 import { TOP_BAR_ACTIONS } from "@/types/ehr";
 import {
@@ -7,26 +6,17 @@ import {
   Package,
   Receipt,
   AlertTriangle,
-  User,
   Users,
   Bed,
   ClipboardList,
-  LogOut,
-  Settings,
   Bell,
   UserPlus,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuSeparator,
-  DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu";
 import { Badge } from "@/components/ui/badge";
 import { CriticalEventButton } from "@/components/ehr/CriticalEventButton";
 import { CDSAlertBadge } from "@/components/ehr/ClinicalDecisionSupport";
+import { UserMenu } from "@/components/auth/UserMenu";
 import { Link } from "react-router-dom";
 
 const iconMap: Record<string, React.ComponentType<{ className?: string }>> = {
@@ -131,35 +121,7 @@ export function TopBar() {
         </Button>
 
         {/* User Menu */}
-        <DropdownMenu>
-          <DropdownMenuTrigger asChild>
-            <Button
-              variant="ghost"
-              size="sm"
-              className="text-topbar-muted hover:text-topbar-foreground hover:bg-topbar-foreground/10 gap-2"
-            >
-              <div className="w-7 h-7 rounded-full bg-primary/80 flex items-center justify-center">
-                <User className="w-4 h-4 text-primary-foreground" />
-              </div>
-              <span className="text-sm">Dr. Mwangi</span>
-            </Button>
-          </DropdownMenuTrigger>
-          <DropdownMenuContent align="end" className="w-48">
-            <DropdownMenuItem>
-              <User className="w-4 h-4 mr-2" />
-              Profile
-            </DropdownMenuItem>
-            <DropdownMenuItem>
-              <Settings className="w-4 h-4 mr-2" />
-              Settings
-            </DropdownMenuItem>
-            <DropdownMenuSeparator />
-            <DropdownMenuItem className="text-destructive">
-              <LogOut className="w-4 h-4 mr-2" />
-              Sign Out
-            </DropdownMenuItem>
-          </DropdownMenuContent>
-        </DropdownMenu>
+        <UserMenu />
       </div>
     </header>
   );
