@@ -1,11 +1,14 @@
 import { EHRProvider } from "@/contexts/EHRContext";
+import { ProviderContextProvider } from "@/contexts/ProviderContext";
 import { EHRLayout } from "@/components/layout/EHRLayout";
 
 const Index = () => {
   return (
-    <EHRProvider>
-      <EHRLayout />
-    </EHRProvider>
+    <ProviderContextProvider>
+      <EHRProvider>
+        <EHRLayout />
+      </EHRProvider>
+    </ProviderContextProvider>
   );
 };
 
