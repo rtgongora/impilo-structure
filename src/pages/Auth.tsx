@@ -53,6 +53,31 @@ const Auth = () => {
     }
   }, [user, navigate]);
 
+  const getDeviceFingerprint = () => {
+    return btoa(navigator.userAgent + navigator.language + screen.width + screen.height);
+  };
+
+  const checkTrustedDevice = async (userId: string): Promise<boolean> => {
+    const fingerprint = getDeviceFingerprint();
+    const { data } = await supabase
+      .from('trusted_devices')
+      .select('id, expires_at')
+      .eq('user_id', userId)
+      .eq('device_fingerprint', fingerprint)
+      .eq('is_active', true)
+      .single();
+
+    if (data && new Date(data.expires_at) > new Date()) {
+      // Update last_used_at
+      await supabase
+        .from('trusted_devices')
+        .update({ last_used_at: new Date().toISOString() })
+        .eq('id', data.id);
+      return true;
+    }
+    return false;
+  };
+
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
     
@@ -74,27 +99,37 @@ const Auth = () => {
       if (error.message.includes('Invalid login credentials')) {
         toast.error('Invalid email or password');
       } else if (error.message.includes('2FA_REQUIRED')) {
-        // User has 2FA enabled, show verification screen
         setPendingTwoFactorEmail(loginEmail);
         setView('2fa-verify');
       } else {
         toast.error(error.message);
       }
     } else {
-      // Check if 2FA is enabled for this user
-      const { data: profile } = await supabase
-        .from('profiles')
-        .select('totp_enabled')
-        .eq('user_id', (await supabase.auth.getUser()).data.user?.id)
-        .single();
+      const { data: { user } } = await supabase.auth.getUser();
       
-      if (profile?.totp_enabled) {
-        // Need to verify 2FA
-        setPendingTwoFactorEmail(loginEmail);
-        setView('2fa-verify');
-      } else {
-        toast.success('Welcome back!');
-        navigate('/');
+      if (user) {
+        // Check if 2FA is enabled
+        const { data: profile } = await supabase
+          .from('profiles')
+          .select('totp_enabled')
+          .eq('user_id', user.id)
+          .single();
+        
+        if (profile?.totp_enabled) {
+          // Check if this is a trusted device
+          const isTrusted = await checkTrustedDevice(user.id);
+          
+          if (isTrusted) {
+            toast.success('Welcome back! (Trusted device)');
+            navigate('/');
+          } else {
+            setPendingTwoFactorEmail(loginEmail);
+            setView('2fa-verify');
+          }
+        } else {
+          toast.success('Welcome back!');
+          navigate('/');
+        }
       }
     }
     
@@ -103,17 +138,16 @@ const Auth = () => {
 
   const handleTwoFactorVerified = async (trustDevice?: boolean) => {
     if (trustDevice) {
-      // Store trusted device
       try {
         const { data: { user } } = await supabase.auth.getUser();
         if (user) {
-          const deviceFingerprint = btoa(navigator.userAgent + navigator.language + screen.width + screen.height);
+          const deviceFingerprint = getDeviceFingerprint();
           await supabase.from('trusted_devices').insert({
             user_id: user.id,
             device_fingerprint: deviceFingerprint,
             device_name: getDeviceName(),
             user_agent: navigator.userAgent,
-            ip_address: null // Will be set by server if needed
+            ip_address: null
           });
         }
       } catch (error) {
