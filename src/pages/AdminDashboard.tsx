@@ -5,6 +5,7 @@ import { usePermissions } from '@/hooks/usePermissions';
 import { usePresence } from '@/hooks/usePresence';
 import { supabase } from '@/integrations/supabase/client';
 import SessionsManagement from '@/components/admin/SessionsManagement';
+import SystemSettings from '@/components/admin/SystemSettings';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
@@ -50,7 +51,8 @@ import {
   Download,
   CalendarIcon,
   X,
-  Globe
+  Globe,
+  Settings
 } from 'lucide-react';
 import { format, startOfDay, endOfDay, isWithinInterval } from 'date-fns';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
@@ -565,6 +567,10 @@ const AdminDashboard = () => {
               <History className="w-4 h-4" />
               Audit Log
             </TabsTrigger>
+            <TabsTrigger value="settings" className="flex items-center gap-2">
+              <Settings className="w-4 h-4" />
+              Settings
+            </TabsTrigger>
           </TabsList>
 
           <TabsContent value="users">
@@ -870,6 +876,10 @@ const AdminDashboard = () => {
                 )}
               </CardContent>
             </Card>
+          </TabsContent>
+
+          <TabsContent value="settings">
+            <SystemSettings />
           </TabsContent>
         </Tabs>
 
