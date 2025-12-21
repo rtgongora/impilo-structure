@@ -41,6 +41,96 @@ export type Database = {
         }
         Relationships: []
       }
+      appointments: {
+        Row: {
+          actual_end: string | null
+          actual_start: string | null
+          appointment_type: string
+          created_at: string
+          created_by: string | null
+          department: string | null
+          encounter_id: string | null
+          id: string
+          is_recurring: boolean | null
+          location: string | null
+          notes: string | null
+          patient_id: string | null
+          priority: string | null
+          provider_id: string | null
+          reason: string | null
+          recurrence_pattern: Json | null
+          reminder_sent: boolean | null
+          room: string | null
+          scheduled_end: string
+          scheduled_start: string
+          status: string
+          updated_at: string
+        }
+        Insert: {
+          actual_end?: string | null
+          actual_start?: string | null
+          appointment_type: string
+          created_at?: string
+          created_by?: string | null
+          department?: string | null
+          encounter_id?: string | null
+          id?: string
+          is_recurring?: boolean | null
+          location?: string | null
+          notes?: string | null
+          patient_id?: string | null
+          priority?: string | null
+          provider_id?: string | null
+          reason?: string | null
+          recurrence_pattern?: Json | null
+          reminder_sent?: boolean | null
+          room?: string | null
+          scheduled_end: string
+          scheduled_start: string
+          status?: string
+          updated_at?: string
+        }
+        Update: {
+          actual_end?: string | null
+          actual_start?: string | null
+          appointment_type?: string
+          created_at?: string
+          created_by?: string | null
+          department?: string | null
+          encounter_id?: string | null
+          id?: string
+          is_recurring?: boolean | null
+          location?: string | null
+          notes?: string | null
+          patient_id?: string | null
+          priority?: string | null
+          provider_id?: string | null
+          reason?: string | null
+          recurrence_pattern?: Json | null
+          reminder_sent?: boolean | null
+          room?: string | null
+          scheduled_end?: string
+          scheduled_start?: string
+          status?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "appointments_encounter_id_fkey"
+            columns: ["encounter_id"]
+            isOneToOne: false
+            referencedRelation: "encounters"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "appointments_patient_id_fkey"
+            columns: ["patient_id"]
+            isOneToOne: false
+            referencedRelation: "patients"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       audit_logs: {
         Row: {
           action: string
@@ -126,6 +216,65 @@ export type Database = {
             columns: ["stock_item_id"]
             isOneToOne: false
             referencedRelation: "stock_items"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      clinical_notes: {
+        Row: {
+          assessment: string | null
+          author_id: string | null
+          content: string | null
+          created_at: string
+          encounter_id: string
+          id: string
+          is_signed: boolean | null
+          note_type: string
+          objective: string | null
+          plan: string | null
+          signed_at: string | null
+          signed_by: string | null
+          subjective: string | null
+          updated_at: string
+        }
+        Insert: {
+          assessment?: string | null
+          author_id?: string | null
+          content?: string | null
+          created_at?: string
+          encounter_id: string
+          id?: string
+          is_signed?: boolean | null
+          note_type?: string
+          objective?: string | null
+          plan?: string | null
+          signed_at?: string | null
+          signed_by?: string | null
+          subjective?: string | null
+          updated_at?: string
+        }
+        Update: {
+          assessment?: string | null
+          author_id?: string | null
+          content?: string | null
+          created_at?: string
+          encounter_id?: string
+          id?: string
+          is_signed?: boolean | null
+          note_type?: string
+          objective?: string | null
+          plan?: string | null
+          signed_at?: string | null
+          signed_by?: string | null
+          subjective?: string | null
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "clinical_notes_encounter_id_fkey"
+            columns: ["encounter_id"]
+            isOneToOne: false
+            referencedRelation: "encounters"
             referencedColumns: ["id"]
           },
         ]
@@ -401,6 +550,153 @@ export type Database = {
         }
         Relationships: []
       }
+      medication_administrations: {
+        Row: {
+          administered_at: string
+          administered_by: string | null
+          created_at: string
+          dosage_given: string
+          encounter_id: string
+          id: string
+          medication_order_id: string
+          notes: string | null
+          reason_not_given: string | null
+          route_used: string
+          status: string
+        }
+        Insert: {
+          administered_at?: string
+          administered_by?: string | null
+          created_at?: string
+          dosage_given: string
+          encounter_id: string
+          id?: string
+          medication_order_id: string
+          notes?: string | null
+          reason_not_given?: string | null
+          route_used: string
+          status?: string
+        }
+        Update: {
+          administered_at?: string
+          administered_by?: string | null
+          created_at?: string
+          dosage_given?: string
+          encounter_id?: string
+          id?: string
+          medication_order_id?: string
+          notes?: string | null
+          reason_not_given?: string | null
+          route_used?: string
+          status?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "medication_administrations_encounter_id_fkey"
+            columns: ["encounter_id"]
+            isOneToOne: false
+            referencedRelation: "encounters"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "medication_administrations_medication_order_id_fkey"
+            columns: ["medication_order_id"]
+            isOneToOne: false
+            referencedRelation: "medication_orders"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      medication_orders: {
+        Row: {
+          created_at: string
+          dosage: string
+          dosage_unit: string
+          duration: string | null
+          encounter_id: string
+          end_date: string | null
+          frequency: string
+          generic_name: string | null
+          id: string
+          indication: string | null
+          instructions: string | null
+          is_prn: boolean | null
+          medication_name: string
+          ordered_by: string | null
+          patient_id: string
+          prn_reason: string | null
+          route: string
+          start_date: string
+          status: string
+          updated_at: string
+          verified_at: string | null
+          verified_by: string | null
+        }
+        Insert: {
+          created_at?: string
+          dosage: string
+          dosage_unit: string
+          duration?: string | null
+          encounter_id: string
+          end_date?: string | null
+          frequency: string
+          generic_name?: string | null
+          id?: string
+          indication?: string | null
+          instructions?: string | null
+          is_prn?: boolean | null
+          medication_name: string
+          ordered_by?: string | null
+          patient_id: string
+          prn_reason?: string | null
+          route: string
+          start_date?: string
+          status?: string
+          updated_at?: string
+          verified_at?: string | null
+          verified_by?: string | null
+        }
+        Update: {
+          created_at?: string
+          dosage?: string
+          dosage_unit?: string
+          duration?: string | null
+          encounter_id?: string
+          end_date?: string | null
+          frequency?: string
+          generic_name?: string | null
+          id?: string
+          indication?: string | null
+          instructions?: string | null
+          is_prn?: boolean | null
+          medication_name?: string
+          ordered_by?: string | null
+          patient_id?: string
+          prn_reason?: string | null
+          route?: string
+          start_date?: string
+          status?: string
+          updated_at?: string
+          verified_at?: string | null
+          verified_by?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "medication_orders_encounter_id_fkey"
+            columns: ["encounter_id"]
+            isOneToOne: false
+            referencedRelation: "encounters"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "medication_orders_patient_id_fkey"
+            columns: ["patient_id"]
+            isOneToOne: false
+            referencedRelation: "patients"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       patients: {
         Row: {
           address_line1: string | null
@@ -560,6 +856,84 @@ export type Database = {
           totp_secret?: string | null
           updated_at?: string
           user_id?: string
+        }
+        Relationships: []
+      }
+      provider_schedules: {
+        Row: {
+          created_at: string
+          day_of_week: number
+          department: string | null
+          effective_from: string
+          effective_to: string | null
+          end_time: string
+          id: string
+          is_available: boolean | null
+          location: string | null
+          max_appointments: number | null
+          provider_id: string
+          slot_duration_minutes: number | null
+          start_time: string
+        }
+        Insert: {
+          created_at?: string
+          day_of_week: number
+          department?: string | null
+          effective_from?: string
+          effective_to?: string | null
+          end_time: string
+          id?: string
+          is_available?: boolean | null
+          location?: string | null
+          max_appointments?: number | null
+          provider_id: string
+          slot_duration_minutes?: number | null
+          start_time: string
+        }
+        Update: {
+          created_at?: string
+          day_of_week?: number
+          department?: string | null
+          effective_from?: string
+          effective_to?: string | null
+          end_time?: string
+          id?: string
+          is_available?: boolean | null
+          location?: string | null
+          max_appointments?: number | null
+          provider_id?: string
+          slot_duration_minutes?: number | null
+          start_time?: string
+        }
+        Relationships: []
+      }
+      provider_time_off: {
+        Row: {
+          created_at: string
+          end_date: string
+          id: string
+          provider_id: string
+          reason: string | null
+          start_date: string
+          status: string | null
+        }
+        Insert: {
+          created_at?: string
+          end_date: string
+          id?: string
+          provider_id: string
+          reason?: string | null
+          start_date: string
+          status?: string | null
+        }
+        Update: {
+          created_at?: string
+          end_date?: string
+          id?: string
+          provider_id?: string
+          reason?: string | null
+          start_date?: string
+          status?: string | null
         }
         Relationships: []
       }
@@ -1099,6 +1473,80 @@ export type Database = {
           user_id?: string
         }
         Relationships: []
+      }
+      vital_signs: {
+        Row: {
+          blood_glucose: number | null
+          blood_pressure_diastolic: number | null
+          blood_pressure_systolic: number | null
+          created_at: string
+          encounter_id: string
+          height: number | null
+          height_unit: string | null
+          id: string
+          notes: string | null
+          oxygen_saturation: number | null
+          pain_score: number | null
+          pulse_rate: number | null
+          recorded_at: string
+          recorded_by: string | null
+          respiratory_rate: number | null
+          temperature: number | null
+          temperature_unit: string | null
+          weight: number | null
+          weight_unit: string | null
+        }
+        Insert: {
+          blood_glucose?: number | null
+          blood_pressure_diastolic?: number | null
+          blood_pressure_systolic?: number | null
+          created_at?: string
+          encounter_id: string
+          height?: number | null
+          height_unit?: string | null
+          id?: string
+          notes?: string | null
+          oxygen_saturation?: number | null
+          pain_score?: number | null
+          pulse_rate?: number | null
+          recorded_at?: string
+          recorded_by?: string | null
+          respiratory_rate?: number | null
+          temperature?: number | null
+          temperature_unit?: string | null
+          weight?: number | null
+          weight_unit?: string | null
+        }
+        Update: {
+          blood_glucose?: number | null
+          blood_pressure_diastolic?: number | null
+          blood_pressure_systolic?: number | null
+          created_at?: string
+          encounter_id?: string
+          height?: number | null
+          height_unit?: string | null
+          id?: string
+          notes?: string | null
+          oxygen_saturation?: number | null
+          pain_score?: number | null
+          pulse_rate?: number | null
+          recorded_at?: string
+          recorded_by?: string | null
+          respiratory_rate?: number | null
+          temperature?: number | null
+          temperature_unit?: string | null
+          weight?: number | null
+          weight_unit?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "vital_signs_encounter_id_fkey"
+            columns: ["encounter_id"]
+            isOneToOne: false
+            referencedRelation: "encounters"
+            referencedColumns: ["id"]
+          },
+        ]
       }
     }
     Views: {

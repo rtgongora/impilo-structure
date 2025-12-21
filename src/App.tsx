@@ -18,6 +18,7 @@ import ProfileSettings from "./pages/ProfileSettings";
 import AdminDashboard from "./pages/AdminDashboard";
 import Queue from "./pages/Queue";
 import Beds from "./pages/Beds";
+import Appointments from "./pages/Appointments";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -55,6 +56,11 @@ const App = () => (
             <Route path="/beds" element={
               <ProtectedRoute>
                 <Beds />
+              </ProtectedRoute>
+            } />
+            <Route path="/appointments" element={
+              <ProtectedRoute>
+                <Appointments />
               </ProtectedRoute>
             } />
             <Route path="/patients" element={
