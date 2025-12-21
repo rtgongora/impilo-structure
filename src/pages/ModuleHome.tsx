@@ -26,6 +26,7 @@ import {
   LogOut,
   User,
   ChevronRight,
+  HelpCircle,
 } from "lucide-react";
 
 interface ModuleItem {
@@ -106,6 +107,14 @@ const moduleCategories: ModuleCategory[] = [
       { id: "reports", label: "Reports & Analytics", description: "Dashboards & insights", icon: BarChart3, path: "/reports", color: "bg-violet-500" },
       { id: "odoo", label: "Odoo ERP", description: "ERP integration", icon: Building2, path: "/odoo", color: "bg-gray-600", roles: ["admin"] },
       { id: "admin", label: "System Admin", description: "Users, security & settings", icon: Settings, path: "/admin", color: "bg-gray-700", roles: ["admin"] },
+    ],
+  },
+  {
+    id: "support",
+    title: "Help & Support",
+    description: "FAQs, user guides, and system documentation",
+    modules: [
+      { id: "help", label: "Help Desk", description: "FAQs, guides & documentation", icon: HelpCircle, path: "/help", color: "bg-teal-500" },
     ],
   },
 ];
