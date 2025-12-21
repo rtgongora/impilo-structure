@@ -10,6 +10,11 @@ import { LabourDeliveryWorkspace } from "./workspaces/LabourDeliveryWorkspace";
 import { ResuscitationWorkspace } from "./workspaces/ResuscitationWorkspace";
 import { MinorProcedureWorkspace } from "./workspaces/MinorProcedureWorkspace";
 import { BurnsWorkspace } from "./workspaces/BurnsWorkspace";
+import { ChemotherapyWorkspace } from "./workspaces/ChemotherapyWorkspace";
+import { RadiotherapyWorkspace } from "./workspaces/RadiotherapyWorkspace";
+import { DialysisWorkspace } from "./workspaces/DialysisWorkspace";
+import { PhysiotherapyWorkspace } from "./workspaces/PhysiotherapyWorkspace";
+import { PsychotherapyWorkspace } from "./workspaces/PsychotherapyWorkspace";
 
 interface WorkspaceViewProps {
   workspace: WorkspaceData;
@@ -52,6 +57,16 @@ export function WorkspaceView({ workspace }: WorkspaceViewProps) {
       case "burns":
       case "burns care":
         return <BurnsWorkspace />;
+      case "chemotherapy":
+        return <ChemotherapyWorkspace />;
+      case "radiotherapy":
+        return <RadiotherapyWorkspace />;
+      case "dialysis":
+        return <DialysisWorkspace />;
+      case "physiotherapy":
+        return <PhysiotherapyWorkspace />;
+      case "psychotherapy":
+        return <PsychotherapyWorkspace />;
       default:
         return (
           <div className="p-6 text-center text-muted-foreground">
