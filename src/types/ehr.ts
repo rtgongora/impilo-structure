@@ -28,7 +28,7 @@ export const ENCOUNTER_MENU_ITEMS: EncounterMenuItemConfig[] = [
   { id: "outcome", label: "Visit Outcome", description: "Encounter disposition", icon: "CheckCircle" },
 ];
 
-export type TopBarAction = "workspaces" | "pathways" | "consumables" | "charges";
+export type TopBarAction = "workspaces" | "pathways" | "consumables" | "charges" | "queue";
 
 export interface TopBarActionConfig {
   id: TopBarAction;
@@ -37,6 +37,7 @@ export interface TopBarActionConfig {
 }
 
 export const TOP_BAR_ACTIONS: TopBarActionConfig[] = [
+  { id: "queue", label: "Queue", icon: "Users" },
   { id: "workspaces", label: "Workspaces", icon: "Boxes" },
   { id: "pathways", label: "Care Pathways", icon: "Route" },
   { id: "consumables", label: "Consumables", icon: "Package" },
