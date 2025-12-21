@@ -52,6 +52,8 @@ import {
   Minus,
   ChevronRight,
   ShieldAlert,
+  ShoppingCart,
+  ClipboardList,
 } from "lucide-react";
 import { format } from "date-fns";
 import { MOCK_ORDERS, MOCK_LAB_RESULTS } from "@/data/mockClinicalData";
@@ -59,6 +61,8 @@ import type { OrderStatus, OrderPriority } from "@/types/clinical";
 import { usePermissions } from "@/hooks/usePermissions";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { MedicationOrders } from "@/components/clinical/MedicationOrders";
+import { OrderEntrySystem } from "@/components/orders/OrderEntrySystem";
+import { OrderSetsSystem } from "@/components/ehr/orders/OrderSetsSystem";
 
 const statusIcons: Record<OrderStatus, React.ReactNode> = {
   draft: <FileText className="w-4 h-4 text-muted-foreground" />,
@@ -779,11 +783,19 @@ export function OrdersSection() {
   const { encounterId } = useParams<{ encounterId?: string }>();
 
   return (
-    <Tabs defaultValue="orders" className="space-y-4">
+    <Tabs defaultValue="order-entry" className="space-y-4">
       <TabsList className="flex-wrap">
+        <TabsTrigger value="order-entry" className="flex items-center gap-2">
+          <ShoppingCart className="w-4 h-4" />
+          Order Entry
+        </TabsTrigger>
+        <TabsTrigger value="order-sets" className="flex items-center gap-2">
+          <ClipboardList className="w-4 h-4" />
+          Order Sets
+        </TabsTrigger>
         <TabsTrigger value="orders" className="flex items-center gap-2">
           <FileText className="w-4 h-4" />
-          Orders
+          Active Orders
         </TabsTrigger>
         <TabsTrigger value="medications" className="flex items-center gap-2">
           <Pill className="w-4 h-4" />
@@ -798,6 +810,22 @@ export function OrdersSection() {
           Procedures
         </TabsTrigger>
       </TabsList>
+
+      <TabsContent value="order-entry">
+        {encounterId ? (
+          <OrderEntrySystem patientId="" encounterId={encounterId} />
+        ) : (
+          <Card>
+            <CardContent className="p-6 text-center text-muted-foreground">
+              Select a patient encounter to place orders
+            </CardContent>
+          </Card>
+        )}
+      </TabsContent>
+
+      <TabsContent value="order-sets">
+        <OrderSetsSystem />
+      </TabsContent>
 
       <TabsContent value="orders">
         <OrdersPanel canOrder={canOrderLabs} />
