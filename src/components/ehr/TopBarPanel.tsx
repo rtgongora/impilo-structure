@@ -11,9 +11,15 @@ interface TopBarPanelProps {
 const WORKSPACES = [
   { id: "theatre", name: "Theatre", description: "Surgical procedures" },
   { id: "labour", name: "Labour & Delivery", description: "Obstetric care" },
+  { id: "trauma", name: "Trauma", description: "Trauma resuscitation" },
+  { id: "resuscitation", name: "Resuscitation", description: "Code Blue / Rapid Response" },
+  { id: "burns", name: "Burns Care", description: "Burns management" },
+  { id: "procedure", name: "Minor Procedure", description: "Minor procedures" },
+  { id: "chemotherapy", name: "Chemotherapy", description: "Cancer treatment cycles" },
+  { id: "radiotherapy", name: "Radiotherapy", description: "Radiation therapy" },
   { id: "dialysis", name: "Dialysis", description: "Renal replacement therapy" },
-  { id: "chemotherapy", name: "Chemotherapy", description: "Oncology treatment" },
-  { id: "procedure", name: "Procedure Room", description: "Minor procedures" },
+  { id: "physiotherapy", name: "Physiotherapy", description: "Physical rehabilitation" },
+  { id: "psychotherapy", name: "Psychotherapy", description: "Mental health therapy" },
 ];
 
 const CARE_PATHWAYS = [
