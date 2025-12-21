@@ -2,95 +2,186 @@
 @tailwind components;
 @tailwind utilities;
 
-/* Definition of the design system. All colors, gradients, fonts, etc should be defined here. 
-All colors MUST be HSL.
+/* Impilo EHR Design System
+   Clinical/Medical Interface - Professional, Clean, High-Contrast
+   All colors in HSL
 */
+
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap');
 
 @layer base {
   :root {
-    --background: 0 0% 100%;
-    --foreground: 222.2 84% 4.9%;
+    /* Core Clinical Palette - Trust Blues */
+    --background: 210 20% 98%;
+    --foreground: 215 25% 15%;
 
     --card: 0 0% 100%;
-    --card-foreground: 222.2 84% 4.9%;
+    --card-foreground: 215 25% 15%;
 
     --popover: 0 0% 100%;
-    --popover-foreground: 222.2 84% 4.9%;
+    --popover-foreground: 215 25% 15%;
 
-    --primary: 222.2 47.4% 11.2%;
-    --primary-foreground: 210 40% 98%;
+    /* Primary - Clinical Blue */
+    --primary: 210 80% 45%;
+    --primary-foreground: 0 0% 100%;
+    --primary-hover: 210 80% 38%;
+    --primary-muted: 210 60% 92%;
 
-    --secondary: 210 40% 96.1%;
-    --secondary-foreground: 222.2 47.4% 11.2%;
+    /* Secondary - Soft Gray-Blue */
+    --secondary: 210 15% 92%;
+    --secondary-foreground: 215 25% 25%;
 
-    --muted: 210 40% 96.1%;
-    --muted-foreground: 215.4 16.3% 46.9%;
+    /* Muted */
+    --muted: 210 15% 95%;
+    --muted-foreground: 215 15% 50%;
 
-    --accent: 210 40% 96.1%;
-    --accent-foreground: 222.2 47.4% 11.2%;
+    /* Accent - Teal for active states */
+    --accent: 180 60% 45%;
+    --accent-foreground: 0 0% 100%;
 
+    /* Critical/Emergency - High-visibility Red */
+    --critical: 0 85% 50%;
+    --critical-foreground: 0 0% 100%;
+    --critical-muted: 0 80% 95%;
+    --critical-hover: 0 85% 42%;
+
+    /* Success - Clinical Green */
+    --success: 145 65% 40%;
+    --success-foreground: 0 0% 100%;
+    --success-muted: 145 50% 92%;
+
+    /* Warning - Amber */
+    --warning: 38 92% 50%;
+    --warning-foreground: 38 92% 15%;
+    --warning-muted: 38 80% 92%;
+
+    /* Destructive */
     --destructive: 0 84.2% 60.2%;
     --destructive-foreground: 210 40% 98%;
 
-    --border: 214.3 31.8% 91.4%;
-    --input: 214.3 31.8% 91.4%;
-    --ring: 222.2 84% 4.9%;
+    /* Borders & Inputs */
+    --border: 210 20% 88%;
+    --input: 210 20% 88%;
+    --ring: 210 80% 45%;
 
     --radius: 0.5rem;
 
-    --sidebar-background: 0 0% 98%;
+    /* Sidebar/Nav */
+    --sidebar-background: 0 0% 100%;
+    --sidebar-foreground: 215 25% 25%;
+    --sidebar-primary: 210 80% 45%;
+    --sidebar-primary-foreground: 0 0% 100%;
+    --sidebar-accent: 210 60% 95%;
+    --sidebar-accent-foreground: 210 80% 35%;
+    --sidebar-border: 210 20% 90%;
+    --sidebar-ring: 210 80% 45%;
 
-    --sidebar-foreground: 240 5.3% 26.1%;
+    /* Encounter Menu */
+    --encounter-bg: 0 0% 100%;
+    --encounter-item: 210 15% 97%;
+    --encounter-item-hover: 210 40% 94%;
+    --encounter-item-active: 210 80% 45%;
+    --encounter-item-active-bg: 210 80% 95%;
 
-    --sidebar-primary: 240 5.9% 10%;
+    /* Top Bar */
+    --topbar-bg: 215 25% 15%;
+    --topbar-foreground: 0 0% 98%;
+    --topbar-muted: 215 20% 70%;
 
-    --sidebar-primary-foreground: 0 0% 98%;
+    /* Workspace */
+    --workspace-bg: 0 0% 100%;
+    --workspace-header: 210 20% 97%;
+    --workspace-section: 210 15% 98%;
 
-    --sidebar-accent: 240 4.8% 95.9%;
+    /* Critical Event Workspace Override */
+    --critical-workspace-bg: 0 0% 100%;
+    --critical-workspace-header: 0 85% 50%;
+    --critical-border: 0 85% 60%;
 
-    --sidebar-accent-foreground: 240 5.9% 10%;
+    /* Status Indicators */
+    --status-active: 145 65% 40%;
+    --status-pending: 38 92% 50%;
+    --status-inactive: 210 15% 70%;
 
-    --sidebar-border: 220 13% 91%;
-
-    --sidebar-ring: 217.2 91.2% 59.8%;
+    /* Typography */
+    --font-sans: 'Inter', system-ui, sans-serif;
+    --font-mono: 'JetBrains Mono', monospace;
   }
 
   .dark {
-    --background: 222.2 84% 4.9%;
-    --foreground: 210 40% 98%;
+    --background: 215 30% 10%;
+    --foreground: 210 20% 95%;
 
-    --card: 222.2 84% 4.9%;
-    --card-foreground: 210 40% 98%;
+    --card: 215 28% 14%;
+    --card-foreground: 210 20% 95%;
 
-    --popover: 222.2 84% 4.9%;
-    --popover-foreground: 210 40% 98%;
+    --popover: 215 28% 14%;
+    --popover-foreground: 210 20% 95%;
 
-    --primary: 210 40% 98%;
-    --primary-foreground: 222.2 47.4% 11.2%;
+    --primary: 210 80% 55%;
+    --primary-foreground: 0 0% 100%;
+    --primary-hover: 210 80% 48%;
+    --primary-muted: 210 40% 20%;
 
-    --secondary: 217.2 32.6% 17.5%;
-    --secondary-foreground: 210 40% 98%;
+    --secondary: 215 25% 22%;
+    --secondary-foreground: 210 20% 90%;
 
-    --muted: 217.2 32.6% 17.5%;
-    --muted-foreground: 215 20.2% 65.1%;
+    --muted: 215 25% 18%;
+    --muted-foreground: 215 15% 60%;
 
-    --accent: 217.2 32.6% 17.5%;
-    --accent-foreground: 210 40% 98%;
+    --accent: 180 60% 50%;
+    --accent-foreground: 0 0% 100%;
 
-    --destructive: 0 62.8% 30.6%;
+    --critical: 0 85% 55%;
+    --critical-foreground: 0 0% 100%;
+    --critical-muted: 0 50% 20%;
+    --critical-hover: 0 85% 48%;
+
+    --success: 145 65% 45%;
+    --success-foreground: 0 0% 100%;
+    --success-muted: 145 30% 18%;
+
+    --warning: 38 92% 55%;
+    --warning-foreground: 0 0% 10%;
+    --warning-muted: 38 50% 20%;
+
+    --destructive: 0 62.8% 50%;
     --destructive-foreground: 210 40% 98%;
 
-    --border: 217.2 32.6% 17.5%;
-    --input: 217.2 32.6% 17.5%;
-    --ring: 212.7 26.8% 83.9%;
-    --sidebar-background: 240 5.9% 10%;
-    --sidebar-foreground: 240 4.8% 95.9%;
-    --sidebar-primary: 224.3 76.3% 48%;
+    --border: 215 25% 22%;
+    --input: 215 25% 22%;
+    --ring: 210 80% 55%;
+
+    --sidebar-background: 215 28% 12%;
+    --sidebar-foreground: 210 20% 90%;
+    --sidebar-primary: 210 80% 55%;
     --sidebar-primary-foreground: 0 0% 100%;
-    --sidebar-accent: 240 3.7% 15.9%;
-    --sidebar-accent-foreground: 240 4.8% 95.9%;
-    --sidebar-border: 240 3.7% 15.9%;
-    --sidebar-ring: 217.2 91.2% 59.8%;
+    --sidebar-accent: 215 25% 18%;
+    --sidebar-accent-foreground: 210 80% 60%;
+    --sidebar-border: 215 25% 20%;
+    --sidebar-ring: 210 80% 55%;
+
+    --encounter-bg: 215 28% 12%;
+    --encounter-item: 215 25% 16%;
+    --encounter-item-hover: 215 30% 20%;
+    --encounter-item-active: 210 80% 55%;
+    --encounter-item-active-bg: 210 50% 18%;
+
+    --topbar-bg: 215 30% 8%;
+    --topbar-foreground: 0 0% 98%;
+    --topbar-muted: 215 15% 55%;
+
+    --workspace-bg: 215 28% 14%;
+    --workspace-header: 215 25% 18%;
+    --workspace-section: 215 28% 16%;
+
+    --critical-workspace-bg: 215 28% 12%;
+    --critical-workspace-header: 0 85% 45%;
+    --critical-border: 0 85% 50%;
+
+    --status-active: 145 65% 45%;
+    --status-pending: 38 92% 55%;
+    --status-inactive: 215 15% 50%;
   }
 }
 
@@ -99,7 +190,71 @@ All colors MUST be HSL.
     @apply border-border;
   }
 
+  html {
+    font-family: var(--font-sans);
+  }
+
   body {
-    @apply bg-background text-foreground;
+    @apply bg-background text-foreground antialiased;
+    font-feature-settings: "cv02", "cv03", "cv04", "cv11";
+  }
+
+  /* Scrollbar Styling */
+  ::-webkit-scrollbar {
+    width: 8px;
+    height: 8px;
+  }
+
+  ::-webkit-scrollbar-track {
+    @apply bg-muted;
+  }
+
+  ::-webkit-scrollbar-thumb {
+    @apply bg-muted-foreground/30 rounded-full;
+  }
+
+  ::-webkit-scrollbar-thumb:hover {
+    @apply bg-muted-foreground/50;
+  }
+}
+
+@layer components {
+  /* Critical Event Pulse Animation */
+  .critical-pulse {
+    animation: critical-pulse 1.5s ease-in-out infinite;
+  }
+
+  @keyframes critical-pulse {
+    0%, 100% {
+      box-shadow: 0 0 0 0 hsl(var(--critical) / 0.5);
+    }
+    50% {
+      box-shadow: 0 0 0 8px hsl(var(--critical) / 0);
+    }
+  }
+
+  /* Critical Event Workspace Override Mode */
+  .critical-mode {
+    animation: critical-border-flash 2s ease-in-out infinite;
+  }
+
+  @keyframes critical-border-flash {
+    0%, 100% {
+      border-color: hsl(var(--critical));
+    }
+    50% {
+      border-color: hsl(var(--critical) / 0.5);
+    }
+  }
+
+  /* Smooth transitions */
+  .transition-clinical {
+    @apply transition-all duration-200 ease-out;
+  }
+
+  /* Elapsed time display */
+  .elapsed-time {
+    font-family: var(--font-mono);
+    font-variant-numeric: tabular-nums;
   }
 }
