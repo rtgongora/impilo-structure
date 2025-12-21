@@ -1,4 +1,3 @@
-import { motion } from "framer-motion";
 import { WorkspaceData } from "@/types/ehr";
 import { useEHR } from "@/contexts/EHRContext";
 import { Button } from "@/components/ui/button";
@@ -8,6 +7,9 @@ import { useEffect, useState } from "react";
 import { TheatreWorkspace } from "./workspaces/TheatreWorkspace";
 import { TraumaWorkspace } from "./workspaces/TraumaWorkspace";
 import { LabourDeliveryWorkspace } from "./workspaces/LabourDeliveryWorkspace";
+import { ResuscitationWorkspace } from "./workspaces/ResuscitationWorkspace";
+import { MinorProcedureWorkspace } from "./workspaces/MinorProcedureWorkspace";
+import { BurnsWorkspace } from "./workspaces/BurnsWorkspace";
 
 interface WorkspaceViewProps {
   workspace: WorkspaceData;
@@ -39,6 +41,17 @@ export function WorkspaceView({ workspace }: WorkspaceViewProps) {
       case "labour & delivery":
       case "labour_delivery":
         return <LabourDeliveryWorkspace />;
+      case "resuscitation":
+      case "code blue":
+      case "code_blue":
+      case "rapid_response":
+        return <ResuscitationWorkspace />;
+      case "minor procedure":
+      case "minor_procedure":
+        return <MinorProcedureWorkspace />;
+      case "burns":
+      case "burns care":
+        return <BurnsWorkspace />;
       default:
         return (
           <div className="p-6 text-center text-muted-foreground">
