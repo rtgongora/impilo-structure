@@ -12,11 +12,12 @@ import { toast } from 'sonner';
 import { Stethoscope, Shield, Users, ArrowLeft, Mail } from 'lucide-react';
 import { z } from 'zod';
 import PasswordValidator from '@/components/auth/PasswordValidator';
+import { TwoFactorVerify } from '@/components/auth/TwoFactorVerify';
 
 const emailSchema = z.string().email('Please enter a valid email address');
 const passwordSchema = z.string().min(6, 'Password must be at least 6 characters');
 
-type AuthView = 'main' | 'forgot-password';
+type AuthView = 'main' | 'forgot-password' | '2fa-verify';
 
 const Auth = () => {
   const navigate = useNavigate();
@@ -26,6 +27,7 @@ const Auth = () => {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [resetEmailSent, setResetEmailSent] = useState(false);
   const [forgotEmail, setForgotEmail] = useState('');
+  const [pendingTwoFactorEmail, setPendingTwoFactorEmail] = useState('');
   
   // Login form state
   const [loginEmail, setLoginEmail] = useState('');
@@ -71,15 +73,44 @@ const Auth = () => {
     if (error) {
       if (error.message.includes('Invalid login credentials')) {
         toast.error('Invalid email or password');
+      } else if (error.message.includes('2FA_REQUIRED')) {
+        // User has 2FA enabled, show verification screen
+        setPendingTwoFactorEmail(loginEmail);
+        setView('2fa-verify');
       } else {
         toast.error(error.message);
       }
     } else {
-      toast.success('Welcome back!');
-      navigate('/');
+      // Check if 2FA is enabled for this user
+      const { data: profile } = await supabase
+        .from('profiles')
+        .select('totp_enabled')
+        .eq('user_id', (await supabase.auth.getUser()).data.user?.id)
+        .single();
+      
+      if (profile?.totp_enabled) {
+        // Need to verify 2FA
+        setPendingTwoFactorEmail(loginEmail);
+        setView('2fa-verify');
+      } else {
+        toast.success('Welcome back!');
+        navigate('/');
+      }
     }
     
     setIsSubmitting(false);
+  };
+
+  const handleTwoFactorVerified = () => {
+    toast.success('Welcome back!');
+    navigate('/');
+  };
+
+  const handleTwoFactorCancel = async () => {
+    // Sign out since user cancelled 2FA
+    await supabase.auth.signOut();
+    setView('main');
+    setPendingTwoFactorEmail('');
   };
 
   const handleForgotPassword = async (e: React.FormEvent) => {
@@ -179,6 +210,18 @@ const Auth = () => {
     return (
       <div className="min-h-screen flex items-center justify-center bg-background">
         <div className="animate-pulse text-muted-foreground">Loading...</div>
+      </div>
+    );
+  }
+
+  if (view === '2fa-verify') {
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-background via-muted to-background p-4">
+        <TwoFactorVerify 
+          email={pendingTwoFactorEmail}
+          onVerified={handleTwoFactorVerified}
+          onCancel={handleTwoFactorCancel}
+        />
       </div>
     );
   }

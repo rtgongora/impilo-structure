@@ -8,9 +8,10 @@ import { Label } from '@/components/ui/label';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { toast } from 'sonner';
-import { ArrowLeft, User, Briefcase, Building, Phone, FileText, Save, Loader2, Camera } from 'lucide-react';
+import { ArrowLeft, User, Briefcase, Building, Phone, FileText, Save, Loader2, Camera, Shield } from 'lucide-react';
 import { z } from 'zod';
 import { AvatarUpload } from '@/components/profile/AvatarUpload';
+import { TwoFactorSetup } from '@/components/auth/TwoFactorSetup';
 
 const profileSchema = z.object({
   display_name: z.string().trim().min(1, 'Name is required').max(100, 'Name must be less than 100 characters'),
@@ -25,6 +26,7 @@ const ProfileSettings = () => {
   const { user, profile, refreshProfile } = useAuth();
   
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [twoFactorEnabled, setTwoFactorEnabled] = useState(false);
   const [formData, setFormData] = useState({
     display_name: '',
     specialty: '',
@@ -32,6 +34,26 @@ const ProfileSettings = () => {
     phone: '',
     license_number: '',
   });
+
+  const check2FAStatus = async () => {
+    if (!user) return;
+    
+    try {
+      const { data, error } = await supabase.functions.invoke('totp-management', {
+        body: { action: 'check' },
+      });
+      
+      if (!error && data) {
+        setTwoFactorEnabled(data.enabled);
+      }
+    } catch (err) {
+      console.error('Error checking 2FA status:', err);
+    }
+  };
+
+  useEffect(() => {
+    check2FAStatus();
+  }, [user]);
 
   useEffect(() => {
     if (profile) {
@@ -140,6 +162,12 @@ const ProfileSettings = () => {
             <AvatarUpload />
           </CardContent>
         </Card>
+
+        {/* Two-Factor Authentication Card */}
+        <TwoFactorSetup 
+          isEnabled={twoFactorEnabled} 
+          onStatusChange={check2FAStatus}
+        />
 
         {/* Account Info Card */}
         <Card>
