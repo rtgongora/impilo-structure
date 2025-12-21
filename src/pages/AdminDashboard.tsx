@@ -9,6 +9,7 @@ import SystemSettings from '@/components/admin/SystemSettings';
 import SecurityEvents from '@/components/admin/SecurityEvents';
 import LockedAccounts from '@/components/admin/LockedAccounts';
 import IpWhitelist from '@/components/admin/IpWhitelist';
+import ForcePasswordReset from '@/components/admin/ForcePasswordReset';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
@@ -887,6 +888,7 @@ const AdminDashboard = () => {
 
           <TabsContent value="security" className="space-y-6">
             <IpWhitelist />
+            <ForcePasswordReset />
             <LockedAccounts />
             <SecurityEvents />
           </TabsContent>
