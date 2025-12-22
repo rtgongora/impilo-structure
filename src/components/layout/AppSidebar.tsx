@@ -24,6 +24,7 @@ import {
   CalendarDays,
   Megaphone,
   LayoutGrid,
+  Fingerprint,
 } from "lucide-react";
 import { NavLink } from "@/components/NavLink";
 import { useLocation } from "react-router-dom";
@@ -82,6 +83,7 @@ const operationsNavItems: NavItem[] = [
 ];
 
 const systemNavItems: NavItem[] = [
+  { label: "ID Services", icon: Fingerprint, path: "/id-services", description: "ID Generation & Recovery" },
   { label: "Reports", icon: BarChart3, path: "/reports", description: "Analytics" },
   { label: "Registration", icon: UserPlus, path: "/registration", description: "Patient registration" },
   { label: "Help Desk", icon: HelpCircle, path: "/help", description: "FAQs & guides" },
