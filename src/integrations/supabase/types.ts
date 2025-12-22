@@ -420,6 +420,100 @@ export type Database = {
           },
         ]
       }
+      campaign_donations: {
+        Row: {
+          amount: number
+          campaign_id: string
+          created_at: string
+          currency: string
+          donor_id: string | null
+          donor_name: string | null
+          id: string
+          is_anonymous: boolean | null
+          message: string | null
+          payment_method: string | null
+          payment_reference: string | null
+          payment_status: string
+        }
+        Insert: {
+          amount: number
+          campaign_id: string
+          created_at?: string
+          currency?: string
+          donor_id?: string | null
+          donor_name?: string | null
+          id?: string
+          is_anonymous?: boolean | null
+          message?: string | null
+          payment_method?: string | null
+          payment_reference?: string | null
+          payment_status?: string
+        }
+        Update: {
+          amount?: number
+          campaign_id?: string
+          created_at?: string
+          currency?: string
+          donor_id?: string | null
+          donor_name?: string | null
+          id?: string
+          is_anonymous?: boolean | null
+          message?: string | null
+          payment_method?: string | null
+          payment_reference?: string | null
+          payment_status?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "campaign_donations_campaign_id_fkey"
+            columns: ["campaign_id"]
+            isOneToOne: false
+            referencedRelation: "crowdfunding_campaigns"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      campaign_updates: {
+        Row: {
+          author_id: string
+          campaign_id: string
+          content: string
+          created_at: string
+          id: string
+          media_urls: string[] | null
+          title: string
+          update_type: string
+        }
+        Insert: {
+          author_id: string
+          campaign_id: string
+          content: string
+          created_at?: string
+          id?: string
+          media_urls?: string[] | null
+          title: string
+          update_type?: string
+        }
+        Update: {
+          author_id?: string
+          campaign_id?: string
+          content?: string
+          created_at?: string
+          id?: string
+          media_urls?: string[] | null
+          title?: string
+          update_type?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "campaign_updates_campaign_id_fkey"
+            columns: ["campaign_id"]
+            isOneToOne: false
+            referencedRelation: "crowdfunding_campaigns"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       care_plan_items: {
         Row: {
           care_plan_id: string
@@ -968,6 +1062,145 @@ export type Database = {
           },
         ]
       }
+      communities: {
+        Row: {
+          avatar_url: string | null
+          category: string
+          cover_image_url: string | null
+          created_at: string
+          created_by: string
+          description: string | null
+          id: string
+          is_verified: boolean | null
+          member_count: number | null
+          name: string
+          post_count: number | null
+          privacy: string
+          rules: Json | null
+          slug: string
+          tags: string[] | null
+          updated_at: string
+        }
+        Insert: {
+          avatar_url?: string | null
+          category?: string
+          cover_image_url?: string | null
+          created_at?: string
+          created_by: string
+          description?: string | null
+          id?: string
+          is_verified?: boolean | null
+          member_count?: number | null
+          name: string
+          post_count?: number | null
+          privacy?: string
+          rules?: Json | null
+          slug: string
+          tags?: string[] | null
+          updated_at?: string
+        }
+        Update: {
+          avatar_url?: string | null
+          category?: string
+          cover_image_url?: string | null
+          created_at?: string
+          created_by?: string
+          description?: string | null
+          id?: string
+          is_verified?: boolean | null
+          member_count?: number | null
+          name?: string
+          post_count?: number | null
+          privacy?: string
+          rules?: Json | null
+          slug?: string
+          tags?: string[] | null
+          updated_at?: string
+        }
+        Relationships: []
+      }
+      community_invites: {
+        Row: {
+          community_id: string
+          created_at: string
+          email: string | null
+          expires_at: string | null
+          id: string
+          invite_code: string | null
+          invited_by: string
+          invited_user_id: string | null
+          status: string
+        }
+        Insert: {
+          community_id: string
+          created_at?: string
+          email?: string | null
+          expires_at?: string | null
+          id?: string
+          invite_code?: string | null
+          invited_by: string
+          invited_user_id?: string | null
+          status?: string
+        }
+        Update: {
+          community_id?: string
+          created_at?: string
+          email?: string | null
+          expires_at?: string | null
+          id?: string
+          invite_code?: string | null
+          invited_by?: string
+          invited_user_id?: string | null
+          status?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "community_invites_community_id_fkey"
+            columns: ["community_id"]
+            isOneToOne: false
+            referencedRelation: "communities"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      community_members: {
+        Row: {
+          community_id: string
+          id: string
+          is_banned: boolean | null
+          is_muted: boolean | null
+          joined_at: string
+          role: string
+          user_id: string
+        }
+        Insert: {
+          community_id: string
+          id?: string
+          is_banned?: boolean | null
+          is_muted?: boolean | null
+          joined_at?: string
+          role?: string
+          user_id: string
+        }
+        Update: {
+          community_id?: string
+          id?: string
+          is_banned?: boolean | null
+          is_muted?: boolean | null
+          joined_at?: string
+          role?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "community_members_community_id_fkey"
+            columns: ["community_id"]
+            isOneToOne: false
+            referencedRelation: "communities"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       consumable_usage: {
         Row: {
           administered_at: string
@@ -1119,6 +1352,93 @@ export type Database = {
             referencedColumns: ["id"]
           },
         ]
+      }
+      crowdfunding_campaigns: {
+        Row: {
+          beneficiary_id: string | null
+          category: string
+          cover_image_url: string | null
+          created_at: string
+          currency: string
+          description: string
+          documents: Json | null
+          donor_count: number | null
+          end_date: string | null
+          goal_amount: number
+          hospital_facility_id: string | null
+          id: string
+          is_featured: boolean | null
+          is_urgent: boolean | null
+          is_verified: boolean | null
+          location: string | null
+          medical_condition: string | null
+          organizer_id: string
+          raised_amount: number | null
+          slug: string
+          status: string
+          story: string | null
+          tags: string[] | null
+          title: string
+          updated_at: string
+          updates: Json | null
+        }
+        Insert: {
+          beneficiary_id?: string | null
+          category?: string
+          cover_image_url?: string | null
+          created_at?: string
+          currency?: string
+          description: string
+          documents?: Json | null
+          donor_count?: number | null
+          end_date?: string | null
+          goal_amount: number
+          hospital_facility_id?: string | null
+          id?: string
+          is_featured?: boolean | null
+          is_urgent?: boolean | null
+          is_verified?: boolean | null
+          location?: string | null
+          medical_condition?: string | null
+          organizer_id: string
+          raised_amount?: number | null
+          slug: string
+          status?: string
+          story?: string | null
+          tags?: string[] | null
+          title: string
+          updated_at?: string
+          updates?: Json | null
+        }
+        Update: {
+          beneficiary_id?: string | null
+          category?: string
+          cover_image_url?: string | null
+          created_at?: string
+          currency?: string
+          description?: string
+          documents?: Json | null
+          donor_count?: number | null
+          end_date?: string | null
+          goal_amount?: number
+          hospital_facility_id?: string | null
+          id?: string
+          is_featured?: boolean | null
+          is_urgent?: boolean | null
+          is_verified?: boolean | null
+          location?: string | null
+          medical_condition?: string | null
+          organizer_id?: string
+          raised_amount?: number | null
+          slug?: string
+          status?: string
+          story?: string | null
+          tags?: string[] | null
+          title?: string
+          updated_at?: string
+          updates?: Json | null
+        }
+        Relationships: []
       }
       encounter_charges: {
         Row: {
@@ -3249,6 +3569,143 @@ export type Database = {
           },
         ]
       }
+      post_comments: {
+        Row: {
+          author_id: string
+          content: string
+          created_at: string
+          id: string
+          likes_count: number | null
+          parent_comment_id: string | null
+          post_id: string
+          updated_at: string
+        }
+        Insert: {
+          author_id: string
+          content: string
+          created_at?: string
+          id?: string
+          likes_count?: number | null
+          parent_comment_id?: string | null
+          post_id: string
+          updated_at?: string
+        }
+        Update: {
+          author_id?: string
+          content?: string
+          created_at?: string
+          id?: string
+          likes_count?: number | null
+          parent_comment_id?: string | null
+          post_id?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "post_comments_parent_comment_id_fkey"
+            columns: ["parent_comment_id"]
+            isOneToOne: false
+            referencedRelation: "post_comments"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "post_comments_post_id_fkey"
+            columns: ["post_id"]
+            isOneToOne: false
+            referencedRelation: "posts"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      post_reactions: {
+        Row: {
+          created_at: string
+          id: string
+          post_id: string
+          reaction_type: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          post_id: string
+          reaction_type?: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          post_id?: string
+          reaction_type?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "post_reactions_post_id_fkey"
+            columns: ["post_id"]
+            isOneToOne: false
+            referencedRelation: "posts"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      posts: {
+        Row: {
+          author_id: string
+          comments_count: number | null
+          community_id: string | null
+          content: string | null
+          created_at: string
+          health_data: Json | null
+          id: string
+          is_featured: boolean | null
+          is_pinned: boolean | null
+          likes_count: number | null
+          media_types: string[] | null
+          media_urls: string[] | null
+          post_type: string
+          shares_count: number | null
+          updated_at: string
+          visibility: string
+        }
+        Insert: {
+          author_id: string
+          comments_count?: number | null
+          community_id?: string | null
+          content?: string | null
+          created_at?: string
+          health_data?: Json | null
+          id?: string
+          is_featured?: boolean | null
+          is_pinned?: boolean | null
+          likes_count?: number | null
+          media_types?: string[] | null
+          media_urls?: string[] | null
+          post_type?: string
+          shares_count?: number | null
+          updated_at?: string
+          visibility?: string
+        }
+        Update: {
+          author_id?: string
+          comments_count?: number | null
+          community_id?: string | null
+          content?: string | null
+          created_at?: string
+          health_data?: Json | null
+          id?: string
+          is_featured?: boolean | null
+          is_pinned?: boolean | null
+          likes_count?: number | null
+          media_types?: string[] | null
+          media_urls?: string[] | null
+          post_type?: string
+          shares_count?: number | null
+          updated_at?: string
+          visibility?: string
+        }
+        Relationships: []
+      }
       prescription_items: {
         Row: {
           batch_number: string | null
@@ -5225,6 +5682,27 @@ export type Database = {
           last_used_at?: string
           user_agent?: string | null
           user_id?: string
+        }
+        Relationships: []
+      }
+      user_follows: {
+        Row: {
+          created_at: string
+          follower_id: string
+          following_id: string
+          id: string
+        }
+        Insert: {
+          created_at?: string
+          follower_id: string
+          following_id: string
+          id?: string
+        }
+        Update: {
+          created_at?: string
+          follower_id?: string
+          following_id?: string
+          id?: string
         }
         Relationships: []
       }

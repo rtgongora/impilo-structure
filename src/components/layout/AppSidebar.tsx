@@ -51,6 +51,7 @@ const priorityNavItems: NavItem[] = [
   { label: "Dashboard", icon: Home, path: "/", description: "Overview & worklist" },
   { label: "My Worklist", icon: ClipboardList, path: "/queue", description: "Your assigned work" },
   { label: "Communication", icon: MessageSquare, path: "/communication", description: "Messages, pages & calls" },
+  { label: "Social Hub", icon: Users, path: "/social", description: "Timeline, communities & crowdfunding" },
 ];
 
 // Role-specific primary items
