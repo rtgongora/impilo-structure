@@ -125,7 +125,7 @@ const faqs: FAQ[] = [
 const userGuides: UserGuide[] = [
   {
     id: "1",
-    title: "Getting Started with Impilo EHR",
+    title: "Getting Started with Impilo",
     description: "Learn the basics of navigating the system, logging in, and finding your way around.",
     category: "Basics",
     type: "video",
@@ -250,7 +250,7 @@ export default function HelpDesk() {
         {/* Header */}
         <div className="text-center mb-8">
           <h1 className="text-3xl font-bold mb-2">Help Center</h1>
-          <p className="text-muted-foreground">Find answers, guides, and documentation for Impilo EHR</p>
+          <p className="text-muted-foreground">Find answers, guides, and documentation for Impilo</p>
         </div>
 
         {/* Search */}

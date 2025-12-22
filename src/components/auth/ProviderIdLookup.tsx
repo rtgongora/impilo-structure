@@ -118,7 +118,7 @@ export const ProviderIdLookup: React.FC<ProviderIdLookupProps> = ({
         </div>
         <div>
           <CardTitle className="text-2xl font-bold text-foreground">
-            Impilo EHR
+            Impilo Digital Health Platform
           </CardTitle>
           <CardDescription className="text-muted-foreground">
             {step === 'facility' && 'Select your health facility'}

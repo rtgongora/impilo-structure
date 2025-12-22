@@ -5,7 +5,6 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { 
-  Activity,
   Users,
   Bed,
   Calendar,
@@ -28,6 +27,7 @@ import {
   ChevronRight,
   HelpCircle,
 } from "lucide-react";
+import impiloLogo from "@/assets/impilo-logo.png";
 
 interface ModuleItem {
   id: string;
@@ -153,13 +153,7 @@ export default function ModuleHome() {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex items-center justify-between h-16">
             <div className="flex items-center gap-3">
-              <div className="w-10 h-10 rounded-xl bg-primary flex items-center justify-center">
-                <Activity className="h-6 w-6 text-primary-foreground" />
-              </div>
-              <div>
-                <h1 className="text-lg font-bold">Impilo EHR</h1>
-                <p className="text-xs text-muted-foreground">Healthcare System</p>
-              </div>
+              <img src={impiloLogo} alt="Impilo" className="h-10 w-auto" />
             </div>
 
             <div className="flex items-center gap-4">
