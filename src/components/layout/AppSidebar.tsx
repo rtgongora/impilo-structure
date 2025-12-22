@@ -1,6 +1,5 @@
 import { useState } from "react";
 import {
-  Activity,
   Users,
   Bed,
   Calendar,
@@ -20,7 +19,6 @@ import {
   Home,
   FlaskConical,
   Receipt,
-  User,
   ClipboardList,
   HelpCircle,
 } from "lucide-react";
@@ -33,6 +31,7 @@ import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip
 import { WorkspaceSelector } from "./WorkspaceSelector";
 import { useWorkspace } from "@/contexts/WorkspaceContext";
 import { useAuth } from "@/contexts/AuthContext";
+import impiloLogo from "@/assets/impilo-logo.png";
 
 interface NavItem {
   label: string;
@@ -170,19 +169,11 @@ export function AppSidebar() {
       <div className="h-14 flex items-center justify-between px-3 border-b border-sidebar-border">
         {!collapsed && (
           <div className="flex items-center gap-2">
-            <div className="w-8 h-8 rounded-lg bg-primary flex items-center justify-center">
-              <Activity className="h-5 w-5 text-primary-foreground" />
-            </div>
-            <div>
-              <h1 className="text-sm font-bold text-sidebar-foreground">Impilo EHR</h1>
-              <p className="text-[10px] text-sidebar-foreground/60">Healthcare System</p>
-            </div>
+            <img src={impiloLogo} alt="Impilo" className="h-8 w-auto" />
           </div>
         )}
         {collapsed && (
-          <div className="w-8 h-8 rounded-lg bg-primary flex items-center justify-center mx-auto">
-            <Activity className="h-5 w-5 text-primary-foreground" />
-          </div>
+          <img src={impiloLogo} alt="Impilo" className="h-6 w-auto mx-auto" />
         )}
       </div>
 
