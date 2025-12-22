@@ -1397,6 +1397,57 @@ export type Database = {
         }
         Relationships: []
       }
+      manufacturers: {
+        Row: {
+          address: string | null
+          contact_email: string | null
+          contact_phone: string | null
+          country: string | null
+          created_at: string | null
+          created_by: string | null
+          id: string
+          is_verified: boolean | null
+          logo_url: string | null
+          name: string
+          registration_number: string | null
+          status: Database["public"]["Enums"]["approval_status"] | null
+          updated_at: string | null
+          website: string | null
+        }
+        Insert: {
+          address?: string | null
+          contact_email?: string | null
+          contact_phone?: string | null
+          country?: string | null
+          created_at?: string | null
+          created_by?: string | null
+          id?: string
+          is_verified?: boolean | null
+          logo_url?: string | null
+          name: string
+          registration_number?: string | null
+          status?: Database["public"]["Enums"]["approval_status"] | null
+          updated_at?: string | null
+          website?: string | null
+        }
+        Update: {
+          address?: string | null
+          contact_email?: string | null
+          contact_phone?: string | null
+          country?: string | null
+          created_at?: string | null
+          created_by?: string | null
+          id?: string
+          is_verified?: boolean | null
+          logo_url?: string | null
+          name?: string
+          registration_number?: string | null
+          status?: Database["public"]["Enums"]["approval_status"] | null
+          updated_at?: string | null
+          website?: string | null
+        }
+        Relationships: []
+      }
       medication_administrations: {
         Row: {
           administered_at: string
@@ -2328,6 +2379,224 @@ export type Database = {
             columns: ["patient_id"]
             isOneToOne: false
             referencedRelation: "patients"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      product_categories: {
+        Row: {
+          category_type:
+            | Database["public"]["Enums"]["product_category_type"]
+            | null
+          created_at: string | null
+          description: string | null
+          display_order: number | null
+          icon: string | null
+          id: string
+          is_active: boolean | null
+          is_controlled: boolean | null
+          name: string
+          parent_id: string | null
+          requires_prescription: boolean | null
+          slug: string
+        }
+        Insert: {
+          category_type?:
+            | Database["public"]["Enums"]["product_category_type"]
+            | null
+          created_at?: string | null
+          description?: string | null
+          display_order?: number | null
+          icon?: string | null
+          id?: string
+          is_active?: boolean | null
+          is_controlled?: boolean | null
+          name: string
+          parent_id?: string | null
+          requires_prescription?: boolean | null
+          slug: string
+        }
+        Update: {
+          category_type?:
+            | Database["public"]["Enums"]["product_category_type"]
+            | null
+          created_at?: string | null
+          description?: string | null
+          display_order?: number | null
+          icon?: string | null
+          id?: string
+          is_active?: boolean | null
+          is_controlled?: boolean | null
+          name?: string
+          parent_id?: string | null
+          requires_prescription?: boolean | null
+          slug?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "product_categories_parent_id_fkey"
+            columns: ["parent_id"]
+            isOneToOne: false
+            referencedRelation: "product_categories"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      product_reviews: {
+        Row: {
+          created_at: string | null
+          id: string
+          is_approved: boolean | null
+          is_verified_purchase: boolean | null
+          product_id: string
+          rating: number
+          review_text: string | null
+          title: string | null
+          user_id: string
+          vendor_id: string | null
+        }
+        Insert: {
+          created_at?: string | null
+          id?: string
+          is_approved?: boolean | null
+          is_verified_purchase?: boolean | null
+          product_id: string
+          rating: number
+          review_text?: string | null
+          title?: string | null
+          user_id: string
+          vendor_id?: string | null
+        }
+        Update: {
+          created_at?: string | null
+          id?: string
+          is_approved?: boolean | null
+          is_verified_purchase?: boolean | null
+          product_id?: string
+          rating?: number
+          review_text?: string | null
+          title?: string | null
+          user_id?: string
+          vendor_id?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "product_reviews_product_id_fkey"
+            columns: ["product_id"]
+            isOneToOne: false
+            referencedRelation: "products"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "product_reviews_vendor_id_fkey"
+            columns: ["vendor_id"]
+            isOneToOne: false
+            referencedRelation: "vendors"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      products: {
+        Row: {
+          active_ingredients: string[] | null
+          additional_images: string[] | null
+          barcode: string | null
+          category_id: string | null
+          created_at: string | null
+          created_by: string | null
+          dea_schedule: string | null
+          description: string | null
+          dosage_form: string | null
+          generic_name: string | null
+          id: string
+          image_url: string | null
+          is_active: boolean | null
+          is_controlled: boolean | null
+          manufacturer_id: string | null
+          name: string
+          pack_size: number | null
+          requires_prescription: boolean | null
+          route_of_administration: string | null
+          shelf_life_months: number | null
+          sku: string | null
+          specifications: Json | null
+          status: Database["public"]["Enums"]["approval_status"] | null
+          storage_requirements: string | null
+          strength: string | null
+          unit_of_measure: string | null
+          updated_at: string | null
+        }
+        Insert: {
+          active_ingredients?: string[] | null
+          additional_images?: string[] | null
+          barcode?: string | null
+          category_id?: string | null
+          created_at?: string | null
+          created_by?: string | null
+          dea_schedule?: string | null
+          description?: string | null
+          dosage_form?: string | null
+          generic_name?: string | null
+          id?: string
+          image_url?: string | null
+          is_active?: boolean | null
+          is_controlled?: boolean | null
+          manufacturer_id?: string | null
+          name: string
+          pack_size?: number | null
+          requires_prescription?: boolean | null
+          route_of_administration?: string | null
+          shelf_life_months?: number | null
+          sku?: string | null
+          specifications?: Json | null
+          status?: Database["public"]["Enums"]["approval_status"] | null
+          storage_requirements?: string | null
+          strength?: string | null
+          unit_of_measure?: string | null
+          updated_at?: string | null
+        }
+        Update: {
+          active_ingredients?: string[] | null
+          additional_images?: string[] | null
+          barcode?: string | null
+          category_id?: string | null
+          created_at?: string | null
+          created_by?: string | null
+          dea_schedule?: string | null
+          description?: string | null
+          dosage_form?: string | null
+          generic_name?: string | null
+          id?: string
+          image_url?: string | null
+          is_active?: boolean | null
+          is_controlled?: boolean | null
+          manufacturer_id?: string | null
+          name?: string
+          pack_size?: number | null
+          requires_prescription?: boolean | null
+          route_of_administration?: string | null
+          shelf_life_months?: number | null
+          sku?: string | null
+          specifications?: Json | null
+          status?: Database["public"]["Enums"]["approval_status"] | null
+          storage_requirements?: string | null
+          strength?: string | null
+          unit_of_measure?: string | null
+          updated_at?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "products_category_id_fkey"
+            columns: ["category_id"]
+            isOneToOne: false
+            referencedRelation: "product_categories"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "products_manufacturer_id_fkey"
+            columns: ["manufacturer_id"]
+            isOneToOne: false
+            referencedRelation: "manufacturers"
             referencedColumns: ["id"]
           },
         ]
@@ -3702,6 +3971,186 @@ export type Database = {
         }
         Relationships: []
       }
+      vendor_products: {
+        Row: {
+          batch_number: string | null
+          created_at: string | null
+          currency: string | null
+          discount_percent: number | null
+          expiry_date: string | null
+          id: string
+          is_available: boolean | null
+          is_featured: boolean | null
+          last_restocked_at: string | null
+          lead_time_days: number | null
+          max_stock_level: number | null
+          min_stock_level: number | null
+          notes: string | null
+          product_id: string
+          sku: string | null
+          stock_quantity: number | null
+          unit_price: number
+          updated_at: string | null
+          vendor_id: string
+          wholesale_min_quantity: number | null
+          wholesale_price: number | null
+        }
+        Insert: {
+          batch_number?: string | null
+          created_at?: string | null
+          currency?: string | null
+          discount_percent?: number | null
+          expiry_date?: string | null
+          id?: string
+          is_available?: boolean | null
+          is_featured?: boolean | null
+          last_restocked_at?: string | null
+          lead_time_days?: number | null
+          max_stock_level?: number | null
+          min_stock_level?: number | null
+          notes?: string | null
+          product_id: string
+          sku?: string | null
+          stock_quantity?: number | null
+          unit_price?: number
+          updated_at?: string | null
+          vendor_id: string
+          wholesale_min_quantity?: number | null
+          wholesale_price?: number | null
+        }
+        Update: {
+          batch_number?: string | null
+          created_at?: string | null
+          currency?: string | null
+          discount_percent?: number | null
+          expiry_date?: string | null
+          id?: string
+          is_available?: boolean | null
+          is_featured?: boolean | null
+          last_restocked_at?: string | null
+          lead_time_days?: number | null
+          max_stock_level?: number | null
+          min_stock_level?: number | null
+          notes?: string | null
+          product_id?: string
+          sku?: string | null
+          stock_quantity?: number | null
+          unit_price?: number
+          updated_at?: string | null
+          vendor_id?: string
+          wholesale_min_quantity?: number | null
+          wholesale_price?: number | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "vendor_products_product_id_fkey"
+            columns: ["product_id"]
+            isOneToOne: false
+            referencedRelation: "products"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "vendor_products_vendor_id_fkey"
+            columns: ["vendor_id"]
+            isOneToOne: false
+            referencedRelation: "vendors"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      vendors: {
+        Row: {
+          address_line1: string | null
+          address_line2: string | null
+          city: string | null
+          contact_email: string | null
+          contact_phone: string | null
+          country: string | null
+          created_at: string | null
+          created_by: string | null
+          delivery_available: boolean | null
+          delivery_radius_km: number | null
+          id: string
+          is_verified: boolean | null
+          latitude: number | null
+          license_expiry: string | null
+          license_number: string | null
+          logo_url: string | null
+          longitude: number | null
+          name: string
+          operating_hours: Json | null
+          postal_code: string | null
+          province: string | null
+          rating: number | null
+          registration_number: string | null
+          status: Database["public"]["Enums"]["approval_status"] | null
+          total_reviews: number | null
+          updated_at: string | null
+          vendor_type: string
+          website: string | null
+        }
+        Insert: {
+          address_line1?: string | null
+          address_line2?: string | null
+          city?: string | null
+          contact_email?: string | null
+          contact_phone?: string | null
+          country?: string | null
+          created_at?: string | null
+          created_by?: string | null
+          delivery_available?: boolean | null
+          delivery_radius_km?: number | null
+          id?: string
+          is_verified?: boolean | null
+          latitude?: number | null
+          license_expiry?: string | null
+          license_number?: string | null
+          logo_url?: string | null
+          longitude?: number | null
+          name: string
+          operating_hours?: Json | null
+          postal_code?: string | null
+          province?: string | null
+          rating?: number | null
+          registration_number?: string | null
+          status?: Database["public"]["Enums"]["approval_status"] | null
+          total_reviews?: number | null
+          updated_at?: string | null
+          vendor_type?: string
+          website?: string | null
+        }
+        Update: {
+          address_line1?: string | null
+          address_line2?: string | null
+          city?: string | null
+          contact_email?: string | null
+          contact_phone?: string | null
+          country?: string | null
+          created_at?: string | null
+          created_by?: string | null
+          delivery_available?: boolean | null
+          delivery_radius_km?: number | null
+          id?: string
+          is_verified?: boolean | null
+          latitude?: number | null
+          license_expiry?: string | null
+          license_number?: string | null
+          logo_url?: string | null
+          longitude?: number | null
+          name?: string
+          operating_hours?: Json | null
+          postal_code?: string | null
+          province?: string | null
+          rating?: number | null
+          registration_number?: string | null
+          status?: Database["public"]["Enums"]["approval_status"] | null
+          total_reviews?: number | null
+          updated_at?: string | null
+          vendor_type?: string
+          website?: string | null
+        }
+        Relationships: []
+      }
       vital_signs: {
         Row: {
           blood_glucose: number | null
@@ -3799,7 +4248,18 @@ export type Database = {
     }
     Enums: {
       app_role: "admin" | "moderator" | "user"
+      approval_status: "pending" | "approved" | "suspended" | "rejected"
       clinical_role: "doctor" | "nurse" | "specialist" | "patient" | "admin"
+      product_category_type:
+        | "pharmaceutical"
+        | "medical_device"
+        | "laboratory"
+        | "consumable"
+        | "equipment"
+        | "ppe"
+        | "diagnostic"
+        | "nutritional"
+        | "other"
     }
     CompositeTypes: {
       [_ in never]: never
@@ -3928,7 +4388,19 @@ export const Constants = {
   public: {
     Enums: {
       app_role: ["admin", "moderator", "user"],
+      approval_status: ["pending", "approved", "suspended", "rejected"],
       clinical_role: ["doctor", "nurse", "specialist", "patient", "admin"],
+      product_category_type: [
+        "pharmaceutical",
+        "medical_device",
+        "laboratory",
+        "consumable",
+        "equipment",
+        "ppe",
+        "diagnostic",
+        "nutritional",
+        "other",
+      ],
     },
   },
 } as const

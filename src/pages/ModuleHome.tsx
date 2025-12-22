@@ -28,6 +28,9 @@ import {
   HelpCircle,
   Pill,
   ClipboardCheck,
+  Store,
+  BookOpen,
+  Database,
 } from "lucide-react";
 import impiloLogo from "@/assets/impilo-logo.png";
 
@@ -86,6 +89,15 @@ const moduleCategories: ModuleCategory[] = [
     ],
   },
   {
+    id: "marketplace",
+    title: "Health Products & Marketplace",
+    description: "Browse products, compare vendors, and order supplies",
+    modules: [
+      { id: "catalogue", label: "Health Products Catalogue", description: "Browse approved health products", icon: BookOpen, path: "/catalogue", color: "bg-blue-600" },
+      { id: "marketplace", label: "Health Marketplace", description: "Compare prices & order from vendors", icon: Store, path: "/marketplace", color: "bg-green-600" },
+    ],
+  },
+  {
     id: "finance",
     title: "Finance & Billing",
     description: "Payments, charges, and financial operations",
@@ -101,6 +113,17 @@ const moduleCategories: ModuleCategory[] = [
     modules: [
       { id: "stock", label: "Stock Management", description: "Inventory & reordering", icon: Package, path: "/stock", color: "bg-orange-600" },
       { id: "consumables", label: "Consumables", description: "Usage & administration", icon: Syringe, path: "/consumables", color: "bg-red-500" },
+    ],
+  },
+  {
+    id: "registries",
+    title: "HIE Registries",
+    description: "Health information exchange registries and services",
+    modules: [
+      { id: "patients-registry", label: "Client Registry", description: "Master patient index (MPI)", icon: Users, path: "/patients", color: "bg-blue-500" },
+      { id: "facilities", label: "Facility Registry", description: "GOFR health facilities", icon: Building2, path: "/admin", color: "bg-purple-500", roles: ["admin"] },
+      { id: "providers", label: "Provider Registry", description: "iHRIS healthcare workers", icon: Stethoscope, path: "/admin", color: "bg-teal-500", roles: ["admin"] },
+      { id: "product-registry", label: "Product Registry", description: "Manage products & vendors", icon: Database, path: "/admin/product-registry", color: "bg-indigo-500", roles: ["admin"] },
     ],
   },
   {

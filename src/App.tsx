@@ -34,6 +34,9 @@ import Orders from "./pages/Orders";
 import Handoff from "./pages/Handoff";
 import HelpDesk from "./pages/HelpDesk";
 import NotFound from "./pages/NotFound";
+import ProductCatalogue from "./pages/ProductCatalogue";
+import HealthMarketplace from "./pages/HealthMarketplace";
+import ProductManagement from "./pages/admin/ProductManagement";
 
 const queryClient = new QueryClient();
 
@@ -168,6 +171,13 @@ const App = () => (
             <Route path="/help" element={
               <ProtectedRoute>
                 <HelpDesk />
+              </ProtectedRoute>
+            } />
+            <Route path="/catalogue" element={<ProductCatalogue />} />
+            <Route path="/marketplace" element={<HealthMarketplace />} />
+            <Route path="/admin/product-registry" element={
+              <ProtectedRoute>
+                <ProductManagement />
               </ProtectedRoute>
             } />
             {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
