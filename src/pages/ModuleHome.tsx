@@ -183,6 +183,7 @@ const socialNavItems = [
 ];
 
 function SocialHubLayout() {
+  const navigate = useNavigate();
   const [activeSection, setActiveSection] = useState<SocialSection>('timeline');
 
   const renderSocialContent = () => {
@@ -254,6 +255,28 @@ function SocialHubLayout() {
               </div>
             </div>
             <HealthDocumentScanner variant="button" className="w-full bg-purple-500 hover:bg-purple-600 text-white" />
+          </CardContent>
+        </Card>
+
+        {/* Health Marketplace */}
+        <Card className="mt-4 bg-gradient-to-br from-green-500/5 to-emerald-500/5 border-green-200/50">
+          <CardContent className="p-4">
+            <div className="flex items-center gap-3 mb-3">
+              <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-green-500 to-emerald-600 flex items-center justify-center">
+                <Store className="h-4 w-4 text-white" />
+              </div>
+              <div>
+                <p className="text-sm font-medium">Marketplace</p>
+                <p className="text-xs text-muted-foreground">Shop health products</p>
+              </div>
+            </div>
+            <Button 
+              variant="outline" 
+              className="w-full border-green-500/30 hover:bg-green-500 hover:text-white"
+              onClick={() => navigate("/marketplace")}
+            >
+              Browse Products
+            </Button>
           </CardContent>
         </Card>
       </div>
@@ -650,6 +673,37 @@ export default function ModuleHome() {
                     </div>
                   </div>
                   <HealthDocumentScanner variant="button" className="bg-primary hover:bg-primary/90 text-primary-foreground" />
+                </div>
+              </div>
+
+              {/* Health Marketplace Quick Access */}
+              <div className="bg-gradient-to-r from-green-500/10 via-emerald-500/10 to-teal-500/10 rounded-xl p-6 border border-green-200/50">
+                <div className="flex items-center justify-between flex-wrap gap-4">
+                  <div className="flex items-center gap-4">
+                    <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-green-500 to-emerald-600 flex items-center justify-center">
+                      <Store className="h-6 w-6 text-white" />
+                    </div>
+                    <div>
+                      <h4 className="font-semibold">Health Marketplace</h4>
+                      <p className="text-sm text-muted-foreground">Browse health products, compare prices & order from trusted vendors</p>
+                    </div>
+                  </div>
+                  <div className="flex gap-2">
+                    <Button 
+                      variant="outline"
+                      onClick={() => navigate("/catalogue")}
+                    >
+                      <BookOpen className="h-4 w-4 mr-2" />
+                      Browse Catalogue
+                    </Button>
+                    <Button 
+                      className="bg-green-500 hover:bg-green-600 text-white"
+                      onClick={() => navigate("/marketplace")}
+                    >
+                      <Store className="h-4 w-4 mr-2" />
+                      Open Marketplace
+                    </Button>
+                  </div>
                 </div>
               </div>
 
