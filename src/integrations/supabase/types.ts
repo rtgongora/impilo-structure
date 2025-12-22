@@ -1580,6 +1580,75 @@ export type Database = {
           },
         ]
       }
+      id_generation_logs: {
+        Row: {
+          created_at: string
+          created_by: string | null
+          entity_type: string
+          entropy_source: string | null
+          generated_id: string
+          generation_method: string
+          id: string
+          id_format: string
+          linked_entity_id: string | null
+          metadata: Json | null
+        }
+        Insert: {
+          created_at?: string
+          created_by?: string | null
+          entity_type: string
+          entropy_source?: string | null
+          generated_id: string
+          generation_method?: string
+          id?: string
+          id_format: string
+          linked_entity_id?: string | null
+          metadata?: Json | null
+        }
+        Update: {
+          created_at?: string
+          created_by?: string | null
+          entity_type?: string
+          entropy_source?: string | null
+          generated_id?: string
+          generation_method?: string
+          id?: string
+          id_format?: string
+          linked_entity_id?: string | null
+          metadata?: Json | null
+        }
+        Relationships: []
+      }
+      id_sequence_counters: {
+        Row: {
+          counter_type: string
+          created_at: string
+          current_value: number
+          id: string
+          last_reset_at: string | null
+          prefix: string | null
+          updated_at: string
+        }
+        Insert: {
+          counter_type: string
+          created_at?: string
+          current_value?: number
+          id?: string
+          last_reset_at?: string | null
+          prefix?: string | null
+          updated_at?: string
+        }
+        Update: {
+          counter_type?: string
+          created_at?: string
+          current_value?: number
+          id?: string
+          last_reset_at?: string | null
+          prefix?: string | null
+          updated_at?: string
+        }
+        Relationships: []
+      }
       insurance_claims: {
         Row: {
           approved_amount: number | null
@@ -2642,11 +2711,16 @@ export type Database = {
           biometric_facial_hash: string | null
           biometric_fingerprint_hash: string | null
           biometric_iris_hash: string | null
+          client_registry_id: string | null
           created_at: string | null
           id: string
+          id_generated_at: string | null
+          id_generation_method: string | null
+          id_version: number | null
           impilo_id: string
           mosip_uin: string | null
           patient_id: string | null
+          shr_id: string | null
           updated_at: string | null
           verified_at: string | null
         }
@@ -2655,11 +2729,16 @@ export type Database = {
           biometric_facial_hash?: string | null
           biometric_fingerprint_hash?: string | null
           biometric_iris_hash?: string | null
+          client_registry_id?: string | null
           created_at?: string | null
           id?: string
+          id_generated_at?: string | null
+          id_generation_method?: string | null
+          id_version?: number | null
           impilo_id: string
           mosip_uin?: string | null
           patient_id?: string | null
+          shr_id?: string | null
           updated_at?: string | null
           verified_at?: string | null
         }
@@ -2668,11 +2747,16 @@ export type Database = {
           biometric_facial_hash?: string | null
           biometric_fingerprint_hash?: string | null
           biometric_iris_hash?: string | null
+          client_registry_id?: string | null
           created_at?: string | null
           id?: string
+          id_generated_at?: string | null
+          id_generation_method?: string | null
+          id_version?: number | null
           impilo_id?: string
           mosip_uin?: string | null
           patient_id?: string | null
+          shr_id?: string | null
           updated_at?: string | null
           verified_at?: string | null
         }
@@ -5265,15 +5349,37 @@ export type Database = {
     }
     Functions: {
       generate_claim_number: { Args: never; Returns: string }
+      generate_client_registry_id: { Args: never; Returns: string }
       generate_encounter_number: { Args: never; Returns: string }
+      generate_facility_registry_id: {
+        Args: { p_province_code?: string }
+        Returns: string
+      }
       generate_fulfillment_number: { Args: never; Returns: string }
+      generate_impilo_id: {
+        Args: never
+        Returns: {
+          client_registry_id: string
+          impilo_id: string
+          shr_id: string
+        }[]
+      }
       generate_lab_order_number: { Args: never; Returns: string }
       generate_mrn: { Args: never; Returns: string }
       generate_prescription_number: { Args: never; Returns: string }
+      generate_provider_registry_id: {
+        Args: { p_province_code?: string }
+        Returns: string
+      }
       generate_referral_number: { Args: never; Returns: string }
+      generate_shr_id: { Args: never; Returns: string }
       generate_specimen_id: { Args: never; Returns: string }
       generate_theatre_booking_number: { Args: never; Returns: string }
       generate_transaction_number: { Args: never; Returns: string }
+      get_next_id_sequence: {
+        Args: { p_counter_type: string }
+        Returns: number
+      }
       has_role: {
         Args: {
           _role: Database["public"]["Enums"]["app_role"]
