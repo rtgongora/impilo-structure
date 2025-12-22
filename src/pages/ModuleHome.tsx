@@ -124,6 +124,17 @@ export default function ModuleHome() {
   const navigate = useNavigate();
   const userRole = profile?.role || "nurse";
 
+  const getDisplayTitle = () => {
+    const role = profile?.role;
+    const name = profile?.display_name || "User";
+    if (role === "doctor" || role === "specialist") {
+      return `Dr ${name}`;
+    } else if (role === "nurse") {
+      return `Nurse ${name}`;
+    }
+    return name;
+  };
+
   const getVisibleModules = (modules: ModuleItem[]) => {
     return modules.filter((module) => {
       if (!module.roles) return true;
@@ -174,7 +185,7 @@ export default function ModuleHome() {
         {/* Welcome */}
         <div className="mb-8">
           <h2 className="text-2xl sm:text-3xl font-bold">
-            Welcome back, {profile?.display_name?.split(" ")[0]}
+            Welcome back, {getDisplayTitle()}
           </h2>
           <p className="text-muted-foreground mt-1">
             Select a module to get started with your work today.
