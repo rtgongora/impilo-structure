@@ -279,6 +279,28 @@ function SocialHubLayout() {
             </Button>
           </CardContent>
         </Card>
+
+        {/* Communication Hub */}
+        <Card className="mt-4 bg-gradient-to-br from-indigo-500/5 to-blue-500/5 border-indigo-200/50">
+          <CardContent className="p-4">
+            <div className="flex items-center gap-3 mb-3">
+              <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-indigo-500 to-blue-600 flex items-center justify-center">
+                <MessageSquare className="h-4 w-4 text-white" />
+              </div>
+              <div>
+                <p className="text-sm font-medium">Communication</p>
+                <p className="text-xs text-muted-foreground">Messages & calls</p>
+              </div>
+            </div>
+            <Button 
+              variant="outline" 
+              className="w-full border-indigo-500/30 hover:bg-indigo-500 hover:text-white"
+              onClick={() => navigate("/communication")}
+            >
+              Open Hub
+            </Button>
+          </CardContent>
+        </Card>
       </div>
 
       {/* Main Content Area */}
@@ -660,6 +682,35 @@ export default function ModuleHome() {
                 </Button>
               </div>
 
+              {/* Communication Hub for Portal */}
+              <div className="bg-gradient-to-r from-indigo-500/10 via-blue-500/10 to-cyan-500/10 rounded-xl p-6 border border-indigo-200/50">
+                <div className="flex items-center justify-between flex-wrap gap-4">
+                  <div className="flex items-center gap-4">
+                    <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-indigo-500 to-blue-600 flex items-center justify-center">
+                      <MessageSquare className="h-6 w-6 text-white" />
+                    </div>
+                    <div>
+                      <h4 className="font-semibold">Communication Hub</h4>
+                      <p className="text-sm text-muted-foreground">Messages, pages & calls with your care team</p>
+                    </div>
+                  </div>
+                  <div className="flex gap-2 flex-wrap">
+                    <Button variant="outline" size="sm" onClick={() => navigate("/communication?tab=messages")}>
+                      <MessageSquare className="h-4 w-4 mr-1" />
+                      Messages
+                    </Button>
+                    <Button variant="outline" size="sm" onClick={() => navigate("/communication?tab=pages")}>
+                      <Bell className="h-4 w-4 mr-1" />
+                      Pages
+                    </Button>
+                    <Button className="bg-indigo-500 hover:bg-indigo-600 text-white" size="sm" onClick={() => navigate("/communication")}>
+                      <Phone className="h-4 w-4 mr-1" />
+                      Open Hub
+                    </Button>
+                  </div>
+                </div>
+              </div>
+
               {/* Document Scanner for Portal */}
               <div className="bg-gradient-to-r from-blue-500/10 via-cyan-500/10 to-teal-500/10 rounded-xl p-6 border border-blue-200/50">
                 <div className="flex items-center justify-between">
@@ -673,6 +724,31 @@ export default function ModuleHome() {
                     </div>
                   </div>
                   <HealthDocumentScanner variant="button" className="bg-primary hover:bg-primary/90 text-primary-foreground" />
+                </div>
+              </div>
+
+              {/* E-Prescriptions & E-Orders Quick Access */}
+              <div className="bg-gradient-to-r from-emerald-500/10 via-green-500/10 to-teal-500/10 rounded-xl p-6 border border-emerald-200/50">
+                <div className="flex items-center justify-between flex-wrap gap-4">
+                  <div className="flex items-center gap-4">
+                    <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-emerald-500 to-green-600 flex items-center justify-center">
+                      <Pill className="h-6 w-6 text-white" />
+                    </div>
+                    <div>
+                      <h4 className="font-semibold">Prescriptions & Orders</h4>
+                      <p className="text-sm text-muted-foreground">View your prescriptions, request refills & track orders</p>
+                    </div>
+                  </div>
+                  <div className="flex gap-2 flex-wrap">
+                    <Button variant="outline" onClick={() => navigate("/pharmacy")}>
+                      <Pill className="h-4 w-4 mr-2" />
+                      My Prescriptions
+                    </Button>
+                    <Button className="bg-emerald-500 hover:bg-emerald-600 text-white" onClick={() => navigate("/orders")}>
+                      <ClipboardCheck className="h-4 w-4 mr-2" />
+                      My Orders
+                    </Button>
+                  </div>
                 </div>
               </div>
 
