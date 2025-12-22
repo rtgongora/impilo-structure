@@ -6,6 +6,7 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { HealthDocumentScanner } from "@/components/documents/HealthDocumentScanner";
 import { 
   Users,
   Bed,
@@ -43,6 +44,7 @@ import {
   Video,
   CreditCard,
   Shield,
+  ScanLine,
 } from "lucide-react";
 import impiloLogo from "@/assets/impilo-logo.png";
 
@@ -319,6 +321,33 @@ export default function ModuleHome() {
               </div>
             </div>
 
+            {/* Document Scanner */}
+            <div className="mb-8">
+              <div className="flex items-center justify-between mb-4">
+                <div className="flex items-center gap-2">
+                  <Badge variant="secondary" className="px-3 py-1 bg-gradient-to-r from-primary/10 to-blue-500/10">
+                    <ScanLine className="h-3 w-3 mr-1" />
+                    Document Scanner
+                  </Badge>
+                  <p className="hidden sm:block text-sm text-muted-foreground">Scan prescriptions, lab results & more</p>
+                </div>
+              </div>
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                <HealthDocumentScanner variant="card" />
+                <Card className="bg-gradient-to-br from-muted/50 to-muted/30 border-dashed">
+                  <CardContent className="pt-6 flex flex-col items-center gap-3 text-center">
+                    <div className="w-14 h-14 rounded-xl bg-muted flex items-center justify-center">
+                      <FileText className="h-7 w-7 text-muted-foreground" />
+                    </div>
+                    <div>
+                      <p className="font-medium text-muted-foreground">Recent Scans</p>
+                      <p className="text-xs text-muted-foreground">No documents scanned yet</p>
+                    </div>
+                  </CardContent>
+                </Card>
+              </div>
+            </div>
+
             {/* Quick Access */}
             <div className="mb-8">
               <div className="flex items-center gap-2 mb-4">
@@ -452,6 +481,22 @@ export default function ModuleHome() {
                   Open My Health Portal
                   <ChevronRight className="h-5 w-5 ml-2" />
                 </Button>
+              </div>
+
+              {/* Document Scanner for Portal */}
+              <div className="bg-gradient-to-r from-blue-500/10 via-cyan-500/10 to-teal-500/10 rounded-xl p-6 border border-blue-200/50">
+                <div className="flex items-center justify-between">
+                  <div className="flex items-center gap-4">
+                    <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-primary to-blue-600 flex items-center justify-center">
+                      <ScanLine className="h-6 w-6 text-white" />
+                    </div>
+                    <div>
+                      <h4 className="font-semibold">Scan Health Documents</h4>
+                      <p className="text-sm text-muted-foreground">Upload prescriptions, lab results, insurance cards & more</p>
+                    </div>
+                  </div>
+                  <HealthDocumentScanner variant="button" className="bg-primary hover:bg-primary/90 text-primary-foreground" />
+                </div>
               </div>
 
               {/* Portal Features Grid */}
@@ -589,6 +634,22 @@ export default function ModuleHome() {
                   Open Social Hub
                   <ChevronRight className="h-5 w-5 ml-2" />
                 </Button>
+              </div>
+
+              {/* Document Scanner for Social */}
+              <div className="bg-gradient-to-r from-purple-500/10 via-pink-500/10 to-rose-500/10 rounded-xl p-6 border border-purple-200/50">
+                <div className="flex items-center justify-between flex-wrap gap-4">
+                  <div className="flex items-center gap-4">
+                    <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-purple-500 to-pink-600 flex items-center justify-center">
+                      <ScanLine className="h-6 w-6 text-white" />
+                    </div>
+                    <div>
+                      <h4 className="font-semibold">Share Health Documents</h4>
+                      <p className="text-sm text-muted-foreground">Scan & share documents with your community or care team</p>
+                    </div>
+                  </div>
+                  <HealthDocumentScanner variant="button" className="bg-purple-500 hover:bg-purple-600 text-white" />
+                </div>
               </div>
 
               {/* Social Features Grid */}
