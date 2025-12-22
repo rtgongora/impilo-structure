@@ -58,6 +58,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
 import { cn } from "@/lib/utils";
 import { format, addDays, subDays, isSameDay, setHours, setMinutes } from "date-fns";
+import { DrugUnitsSelect } from "@/components/shared/DrugUnitsSelect";
 
 // Types
 type MedicationRoute = "PO" | "IV" | "IM" | "SC" | "SL" | "PR" | "TOP" | "INH" | "NG";
@@ -432,12 +433,13 @@ function AdministrationDialog({
   onSubmit: (status: AdministrationStatus, data: { dose?: string; notes?: string; reason?: string }) => void;
 }) {
   const [status, setStatus] = useState<AdministrationStatus>("given");
-  const [dose, setDose] = useState(medication ? `${medication.dose} ${medication.unit}` : "");
+  const [doseAmount, setDoseAmount] = useState(medication?.dose || "");
+  const [doseUnit, setDoseUnit] = useState(medication?.unit || "mg");
   const [notes, setNotes] = useState("");
   const [reason, setReason] = useState("");
 
   const handleSubmit = () => {
-    onSubmit(status, { dose, notes, reason });
+    onSubmit(status, { dose: `${doseAmount} ${doseUnit}`, notes, reason });
     setNotes("");
     setReason("");
     onClose();
@@ -492,11 +494,19 @@ function AdministrationDialog({
           {/* Dose */}
           <div className="space-y-2">
             <Label>Dose</Label>
-            <Input
-              value={dose}
-              onChange={(e) => setDose(e.target.value)}
-              placeholder="Enter dose"
-            />
+            <div className="flex gap-2">
+              <Input
+                value={doseAmount}
+                onChange={(e) => setDoseAmount(e.target.value)}
+                placeholder="Enter amount"
+                className="flex-1"
+              />
+              <DrugUnitsSelect
+                value={doseUnit}
+                onValueChange={setDoseUnit}
+                className="w-28"
+              />
+            </div>
           </div>
 
           {/* Status */}
