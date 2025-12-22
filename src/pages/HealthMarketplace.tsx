@@ -10,6 +10,8 @@ import { Badge } from "@/components/ui/badge";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { VendorRatingDisplay } from "@/components/marketplace/VendorRating";
+import { PackageDeals } from "@/components/marketplace/PackageDeals";
 import {
   Search,
   Filter,
@@ -25,6 +27,7 @@ import {
   ChevronRight,
   Lock,
   AlertCircle,
+  Sparkles,
 } from "lucide-react";
 
 interface VendorProduct {
@@ -227,6 +230,11 @@ export default function HealthMarketplace() {
               <SelectItem value="rating">Vendor Rating</SelectItem>
             </SelectContent>
           </Select>
+        </div>
+
+        {/* Package Deals Section */}
+        <div className="mb-8">
+          <PackageDeals />
         </div>
 
         {/* Tabs */}
