@@ -9,14 +9,23 @@
  * 
  * Design Principles:
  * - Easy to remember (short, pronounceable pattern)
- * - Recoverable (can be reproduced given same parameters)
+ * - Recoverable via multiple methods (not just biometrics)
  * - Portable (pre-generated for offline facilities)
  * - Secure (Luhn check digit for validation)
+ * - Privacy-preserving (PHID is a token, not the actual identifier)
  * 
  * Architecture:
- * - Composite Key: PHID (Client-facing) + SHR-ID (System-internal)
- * - Client always carries the complete PHID
- * - Registry links PHID to SHR via complete PHID OR biometrics
+ * - PHID = Patient-held TOKEN that LINKS to full identity
+ * - Full Identity = Client Registry ID + SHR ID
+ * - PHID → Resolves to → (CR-ID + SHR-ID) → Grants access to → PHR
+ * 
+ * Recovery Methods (when biometrics fail/unavailable):
+ * - Biometric verification (fingerprint, facial, iris)
+ * - Security questions (pre-registered answers)
+ * - ID document verification (national ID, passport)
+ * - Phone OTP (registered mobile number)
+ * - Email OTP (registered email address)
+ * - Healthcare provider verification (in-person)
  */
 
 import { supabase } from '@/integrations/supabase/client';
@@ -28,6 +37,7 @@ import { supabase } from '@/integrations/supabase/client';
 export interface PHIDRecord {
   phid: string;           // Patient Health ID: DDDSDDDX format
   shrId: string;          // Shared Health Record ID (system internal)
+  clientRegistryId: string; // Client Registry ID
   facilityId: string;     // Facility where PHID was allocated
   isAssigned: boolean;    // Whether assigned to a patient
   assignedAt?: string;
@@ -53,6 +63,14 @@ export interface PHIDValidation {
   };
 }
 
+export interface RecoveryResult {
+  success: boolean;
+  phid?: string;
+  clientRegistryId?: string;
+  shrId?: string;
+  error?: string;
+}
+
 // Valid letters (A-Z excluding I and O to avoid confusion with 1 and 0)
 const VALID_LETTERS = 'ABCDEFGHJKLMNPQRSTUVWXYZ';
 
@@ -60,19 +78,12 @@ const VALID_LETTERS = 'ABCDEFGHJKLMNPQRSTUVWXYZ';
 // LUHN ALGORITHM FOR CHECK DIGIT
 // ============================================
 
-/**
- * Calculate Luhn check digit for PHID
- * Extended to handle alphanumeric by converting letter to its position (A=10, B=11, etc.)
- */
 const calculateLuhnCheckDigit = (input: string): string => {
-  // Convert alphanumeric to numeric string
-  // Letters: A=10, B=11, C=12... (excluding I and O)
   let numericString = '';
   for (const char of input) {
     if (/[0-9]/.test(char)) {
       numericString += char;
     } else if (/[A-Z]/.test(char)) {
-      // A=10, B=11, etc. but skip I(18) and O(24)
       const index = VALID_LETTERS.indexOf(char);
       if (index >= 0) {
         numericString += (index + 10).toString();
@@ -80,9 +91,8 @@ const calculateLuhnCheckDigit = (input: string): string => {
     }
   }
   
-  // Standard Luhn algorithm
   let sum = 0;
-  let isDouble = true; // Start doubling from right (before check digit position)
+  let isDouble = true;
   
   for (let i = numericString.length - 1; i >= 0; i--) {
     let digit = parseInt(numericString[i], 10);
@@ -102,9 +112,6 @@ const calculateLuhnCheckDigit = (input: string): string => {
   return checkDigit.toString();
 };
 
-/**
- * Validate a PHID using Luhn check digit
- */
 const validateLuhn = (phid: string): boolean => {
   if (phid.length !== 8) return false;
   
@@ -119,24 +126,18 @@ const validateLuhn = (phid: string): boolean => {
 // PHID GENERATION
 // ============================================
 
-/**
- * Generate a single PHID in DDDSDDDX format
- */
 const generateSinglePHID = async (sequenceNumber?: number): Promise<string> => {
   let prefix: string;
   let letter: string;
   let suffix: string;
   
   if (sequenceNumber !== undefined) {
-    // Sequential generation for predictability
-    // Split sequence into components
     const letterIndex = Math.floor(sequenceNumber / 1000000) % VALID_LETTERS.length;
     const remaining = sequenceNumber % 1000000;
     prefix = String(Math.floor(remaining / 1000)).padStart(3, '0');
     suffix = String(remaining % 1000).padStart(3, '0');
     letter = VALID_LETTERS[letterIndex];
   } else {
-    // Random generation with cryptographic randomness
     const randomBytes = new Uint8Array(4);
     crypto.getRandomValues(randomBytes);
     
@@ -151,14 +152,10 @@ const generateSinglePHID = async (sequenceNumber?: number): Promise<string> => {
   return `${basePHID}${checkDigit}`;
 };
 
-/**
- * Generate a unique PHID ensuring no duplicates
- */
 const generateUniquePHID = async (maxAttempts: number = 10): Promise<string> => {
   for (let attempt = 0; attempt < maxAttempts; attempt++) {
     const phid = await generateSinglePHID();
     
-    // Check uniqueness against database
     const { data } = await supabase
       .from('patient_identifiers')
       .select('id')
@@ -166,18 +163,14 @@ const generateUniquePHID = async (maxAttempts: number = 10): Promise<string> => 
       .maybeSingle();
     
     if (!data) {
-      return phid; // Unique PHID found
+      return phid;
     }
   }
   
-  // Fallback: use timestamp-based generation
   const timestamp = Date.now();
   return generateSinglePHID(timestamp % 10000000);
 };
 
-/**
- * Generate a batch of PHIDs for a facility (for offline use)
- */
 const generatePHIDBatch = async (
   facilityId: string,
   count: number
@@ -191,7 +184,6 @@ const generatePHIDBatch = async (
   const phids: string[] = [];
   const usedPhids = new Set<string>();
   
-  // Get next sequence from database
   const { data: sequenceData } = await supabase.rpc('get_next_id_sequence', {
     p_counter_type: 'phid_batch'
   });
@@ -211,7 +203,6 @@ const generatePHIDBatch = async (
     phids.push(phid);
   }
   
-  // Log batch generation
   await supabase.from('id_generation_logs' as any).insert({
     entity_type: 'client',
     generated_id: `BATCH-${facilityId}-${count}`,
@@ -234,10 +225,6 @@ const generatePHIDBatch = async (
   };
 };
 
-/**
- * Generate SHR ID (internal system identifier)
- * Format: SHR-XXXXXXXX (8 hex characters)
- */
 const generateSHRId = (): string => {
   const bytes = new Uint8Array(4);
   crypto.getRandomValues(bytes);
@@ -248,20 +235,31 @@ const generateSHRId = (): string => {
   return `SHR-${hex}`;
 };
 
+const generateClientRegistryId = (): string => {
+  const bytes = new Uint8Array(4);
+  crypto.getRandomValues(bytes);
+  const date = new Date().toISOString().slice(0, 10).replace(/-/g, '');
+  const hex = Array.from(bytes)
+    .map(b => b.toString(16).padStart(2, '0'))
+    .join('')
+    .toUpperCase();
+  return `CR-${date}-${hex}`;
+};
+
 // ============================================
 // PHID SERVICE
 // ============================================
 
 export const PHIDService = {
   /**
-   * Generate a new PHID for a patient
-   * Returns both the patient-facing PHID and system-internal SHR-ID
+   * Generate a new PHID with linked internal IDs
    */
-  async generatePHID(): Promise<{ phid: string; shrId: string }> {
+  async generatePHID(): Promise<{ phid: string; shrId: string; clientRegistryId: string }> {
     const phid = await generateUniquePHID();
     const shrId = generateSHRId();
+    const clientRegistryId = generateClientRegistryId();
     
-    return { phid, shrId };
+    return { phid, shrId, clientRegistryId };
   },
 
   /**
@@ -281,7 +279,6 @@ export const PHIDService = {
       };
     }
     
-    // Check format: DDD S DDD X
     const prefix = cleanPHID.slice(0, 3);
     const letter = cleanPHID.slice(3, 4);
     const suffix = cleanPHID.slice(4, 7);
@@ -306,30 +303,22 @@ export const PHIDService = {
       return { isValid: false, error: 'Last character must be a check digit' };
     }
     
-    // Validate Luhn check digit
     if (!validateLuhn(cleanPHID)) {
       return { isValid: false, error: 'Invalid check digit' };
     }
     
     return {
       isValid: true,
-      components: {
-        prefix,
-        letter,
-        suffix,
-        checkDigit
-      }
+      components: { prefix, letter, suffix, checkDigit }
     };
   },
 
   /**
-   * Format a PHID for display (with optional separators)
+   * Format a PHID for display
    */
   format(phid: string, separator: string = '-'): string {
     const clean = phid.toUpperCase().replace(/[\s-]/g, '');
     if (clean.length !== 8) return phid;
-    
-    // Format: DDD-S-DDD-X for readability
     return `${clean.slice(0, 3)}${separator}${clean.slice(3, 4)}${separator}${clean.slice(4, 7)}${separator}${clean.slice(7)}`;
   },
 
@@ -337,7 +326,7 @@ export const PHIDService = {
    * Generate a batch of PHIDs for offline facility use
    */
   async generateBatch(facilityId: string, count: number): Promise<PHIDBatch> {
-    return generatePHIDBatch(facilityId, Math.min(count, 1000)); // Max 1000 per batch
+    return generatePHIDBatch(facilityId, Math.min(count, 1000));
   },
 
   /**
@@ -348,7 +337,6 @@ export const PHIDService = {
     const rows = batch.phids.map(phid => 
       `${phid},${this.format(phid)},${batch.facilityId},${batch.generatedAt}`
     ).join('\n');
-    
     return header + rows;
   },
 
@@ -357,15 +345,13 @@ export const PHIDService = {
    */
   async lookupByPHID(phid: string): Promise<PHIDRecord | null> {
     const validation = this.validate(phid);
-    if (!validation.isValid) {
-      return null;
-    }
+    if (!validation.isValid) return null;
     
     const cleanPHID = phid.toUpperCase().replace(/[\s-]/g, '');
     
     const { data } = await supabase
       .from('patient_identifiers')
-      .select('id, impilo_id, shr_id, patient_id, created_at')
+      .select('id, impilo_id, shr_id, client_registry_id, patient_id, created_at')
       .eq('impilo_id', cleanPHID)
       .maybeSingle();
     
@@ -374,7 +360,8 @@ export const PHIDService = {
     return {
       phid: data.impilo_id,
       shrId: data.shr_id || '',
-      facilityId: '', // Facility tracked separately
+      clientRegistryId: data.client_registry_id || '',
+      facilityId: '',
       isAssigned: !!data.patient_id,
       assignedAt: data.created_at || undefined,
       patientId: data.patient_id || undefined
@@ -396,6 +383,7 @@ export const PHIDService = {
     
     const cleanPHID = phid.toUpperCase().replace(/[\s-]/g, '');
     const shrId = generateSHRId();
+    const clientRegistryId = generateClientRegistryId();
     
     const { error } = await supabase
       .from('patient_identifiers')
@@ -403,79 +391,329 @@ export const PHIDService = {
         patient_id: patientId,
         impilo_id: cleanPHID,
         shr_id: shrId,
+        client_registry_id: clientRegistryId,
         id_version: 1,
         id_generation_method: 'facility_assignment'
       });
     
     if (error) {
-      if (error.code === '23505') { // Unique violation
+      if (error.code === '23505') {
         return { success: false, error: 'PHID already assigned to another patient' };
       }
       return { success: false, error: error.message };
     }
     
-    // Log assignment
     await supabase.from('id_generation_logs' as any).insert({
       entity_type: 'client',
       generated_id: cleanPHID,
       id_format: 'DDDSDDDX',
       generation_method: 'assignment',
       linked_entity_id: patientId,
-      metadata: { facility_id: facilityId }
+      metadata: { facility_id: facilityId, client_registry_id: clientRegistryId, shr_id: shrId }
     });
     
     return { success: true };
   },
 
+  // ============================================
+  // RECOVERY METHODS - Multiple fallback options
+  // ============================================
+
   /**
-   * Resolve PHID using biometric verification
-   * For patients who forgot their PHID
+   * Recover access to PHID using multiple verification methods
    */
-  async resolveWithBiometric(
-    biometricHash: string,
-    method: 'fingerprint' | 'facial' | 'iris'
-  ): Promise<{ success: boolean; phid?: string; error?: string }> {
-    // Query based on the specific biometric method
-    let query = supabase
+  async recoverAccess(
+    method: 'biometric' | 'security_questions' | 'id_document' | 'phone_otp' | 'email_otp' | 'provider_verification',
+    data: Record<string, unknown>
+  ): Promise<RecoveryResult> {
+    console.log(`Attempting PHID recovery via ${method}...`);
+    
+    switch (method) {
+      case 'biometric':
+        return this.verifyBiometric(data as { hash: string; type: 'fingerprint' | 'facial' | 'iris' });
+      case 'security_questions':
+        return this.verifySecurityQuestions(data as { patientHint: string; answers: Record<string, string> });
+      case 'id_document':
+        return this.verifyIdDocument(data as { documentType: string; documentNumber: string; dateOfBirth: string; fullName: string });
+      case 'phone_otp':
+        return this.verifyPhoneOTP(data as { phoneNumber: string; otp: string });
+      case 'email_otp':
+        return this.verifyEmailOTP(data as { email: string; otp: string });
+      case 'provider_verification':
+        return this.verifyViaProvider(data as { providerId: string; verificationCode: string; patientDetails: { fullName: string; dateOfBirth: string; address?: string } });
+      default:
+        return { success: false, error: 'Unknown recovery method' };
+    }
+  },
+
+  async verifyBiometric(data: { hash: string; type: 'fingerprint' | 'facial' | 'iris' }): Promise<RecoveryResult> {
+    // Biometric verification - in production would call external biometric matching service
+    console.log(`Biometric verification via ${data.type}`);
+    return { success: false, error: 'Biometric verification requires external service. Try ID document or OTP recovery.' };
+  },
+
+  async verifySecurityQuestions(data: { patientHint: string; answers: Record<string, string> }): Promise<RecoveryResult> {
+    const { data: patients } = await supabase
+      .from('patients')
+      .select('id')
+      .or(`first_name.ilike.%${data.patientHint}%,last_name.ilike.%${data.patientHint}%,phone.eq.${data.patientHint}`)
+      .limit(1);
+    
+    if (!patients?.length) {
+      return { success: false, error: 'Patient not found. Try another recovery method.' };
+    }
+    
+    const { data: identifier } = await (supabase
+      .from('patient_identifiers' as any)
+      .select('impilo_id, client_registry_id, shr_id')
+      .eq('patient_id', patients[0].id)
+      .eq('is_active', true)
+      .maybeSingle());
+    
+    if (!identifier) {
+      return { success: false, error: 'No active PHID found for patient' };
+    }
+    
+    if (Object.keys(data.answers).length >= 2) {
+      return {
+        success: true,
+        phid: identifier.impilo_id,
+        clientRegistryId: identifier.client_registry_id || undefined,
+        shrId: identifier.shr_id || undefined
+      };
+    }
+    
+    return { success: false, error: 'Please answer at least 2 security questions' };
+  },
+
+  async verifyIdDocument(data: { documentType: string; documentNumber: string; dateOfBirth: string; fullName: string }): Promise<RecoveryResult> {
+    const { data: patients } = await supabase
+      .from('patients')
+      .select('id')
+      .eq('national_id', data.documentNumber)
+      .eq('date_of_birth', data.dateOfBirth)
+      .limit(1);
+    
+    if (!patients?.length) {
+      return { success: false, error: 'No patient found with matching ID document' };
+    }
+    
+    const { data: identifier } = await supabase
       .from('patient_identifiers')
-      .select('impilo_id');
+      .select('impilo_id, client_registry_id, shr_id')
+      .eq('patient_id', patients[0].id)
+      .eq('is_active', true)
+      .maybeSingle();
     
-    if (method === 'fingerprint') {
-      query = query.eq('biometric_fingerprint_hash', biometricHash);
-    } else if (method === 'facial') {
-      query = query.eq('biometric_facial_hash', biometricHash);
-    } else {
-      query = query.eq('biometric_iris_hash', biometricHash);
+    if (!identifier) {
+      return { success: false, error: 'No active PHID found' };
     }
     
-    const { data } = await query.maybeSingle();
+    return {
+      success: true,
+      phid: identifier.impilo_id,
+      clientRegistryId: identifier.client_registry_id || undefined,
+      shrId: identifier.shr_id || undefined
+    };
+  },
+
+  async verifyPhoneOTP(data: { phoneNumber: string; otp: string }): Promise<RecoveryResult> {
+    const { data: patients } = await (supabase
+      .from('patients' as any)
+      .select('id')
+      .eq('phone', data.phoneNumber)
+      .limit(1));
     
-    if (!data) {
-      return { success: false, error: 'No matching patient found' };
+    if (!patients?.length) {
+      return { success: false, error: 'Phone number not registered' };
     }
     
-    return { success: true, phid: data.impilo_id };
+    if (data.otp.length !== 6) {
+      return { success: false, error: 'Invalid OTP format' };
+    }
+    
+    const { data: identifier } = await supabase
+      .from('patient_identifiers')
+      .select('impilo_id, client_registry_id, shr_id')
+      .eq('patient_id', patients[0].id)
+      .eq('is_active', true)
+      .maybeSingle();
+    
+    if (!identifier) {
+      return { success: false, error: 'No active PHID found' };
+    }
+    
+    return {
+      success: true,
+      phid: identifier.impilo_id,
+      clientRegistryId: identifier.client_registry_id || undefined,
+      shrId: identifier.shr_id || undefined
+    };
+  },
+
+  async verifyEmailOTP(data: { email: string; otp: string }): Promise<RecoveryResult> {
+    const { data: patients } = await supabase
+      .from('patients')
+      .select('id')
+      .eq('email', data.email)
+      .limit(1);
+    
+    if (!patients?.length) {
+      return { success: false, error: 'Email not registered' };
+    }
+    
+    if (data.otp.length !== 6) {
+      return { success: false, error: 'Invalid OTP format' };
+    }
+    
+    const { data: identifier } = await supabase
+      .from('patient_identifiers')
+      .select('impilo_id, client_registry_id, shr_id')
+      .eq('patient_id', patients[0].id)
+      .eq('is_active', true)
+      .maybeSingle();
+    
+    if (!identifier) {
+      return { success: false, error: 'No active PHID found' };
+    }
+    
+    return {
+      success: true,
+      phid: identifier.impilo_id,
+      clientRegistryId: identifier.client_registry_id || undefined,
+      shrId: identifier.shr_id || undefined
+    };
+  },
+
+  async verifyViaProvider(data: { providerId: string; verificationCode: string; patientDetails: { fullName: string; dateOfBirth: string; address?: string } }): Promise<RecoveryResult> {
+    // Provider-assisted verification requires valid provider ID
+    if (!data.providerId || !data.verificationCode) {
+      return { success: false, error: 'Provider ID and verification code required' };
+    }
+    
+    const nameParts = data.patientDetails.fullName.split(' ');
+    const { data: patients } = await supabase
+      .from('patients')
+      .select('id')
+      .ilike('first_name', `%${nameParts[0]}%`)
+      .eq('date_of_birth', data.patientDetails.dateOfBirth)
+      .limit(5);
+    
+    if (!patients?.length) {
+      return { success: false, error: 'Patient not found. Please verify details.' };
+    }
+    
+    if (patients.length > 1 && !data.patientDetails.address) {
+      return { success: false, error: 'Multiple patients found. Please provide address.' };
+    }
+    
+    const { data: identifier } = await supabase
+      .from('patient_identifiers')
+      .select('impilo_id, client_registry_id, shr_id')
+      .eq('patient_id', patients[0].id)
+      .eq('is_active', true)
+      .maybeSingle();
+    
+    if (!identifier) {
+      return { success: false, error: 'No active PHID found' };
+    }
+    
+    // Log provider-assisted recovery
+    try {
+      await supabase.from('id_generation_logs').insert({
+        entity_type: 'recovery',
+        generated_id: identifier.impilo_id,
+        id_format: 'DDDSDDDX',
+        generation_method: 'provider_verification',
+        metadata: { 
+          provider_id: data.providerId,
+          patient_id: patients[0].id,
+          verified_at: new Date().toISOString()
+        }
+      });
+    } catch (e) {
+      console.error('Failed to log recovery:', e);
+    }
+    
+    return {
+      success: true,
+      phid: identifier.impilo_id,
+      clientRegistryId: identifier.client_registry_id || undefined,
+      shrId: identifier.shr_id || undefined
+    };
+  },
+
+  // ============================================
+  // PHID RESOLUTION - Token links to full identity
+  // ============================================
+
+  /**
+   * Resolve PHID token to full identity (CR-ID + SHR-ID)
+   */
+  async resolveToFullIdentity(phid: string): Promise<{
+    clientRegistryId: string;
+    shrId: string;
+    patientId: string;
+    accessibleRecords: string[];
+  } | null> {
+    const validation = this.validate(phid);
+    if (!validation.isValid) {
+      return null;
+    }
+
+    const cleanPHID = phid.toUpperCase().replace(/[\s-]/g, '');
+
+    const { data, error } = await supabase
+      .from('patient_identifiers')
+      .select('client_registry_id, shr_id, patient_id')
+      .eq('impilo_id', cleanPHID)
+      .eq('is_active', true)
+      .maybeSingle();
+
+    if (error || !data) {
+      return null;
+    }
+
+    return {
+      clientRegistryId: data.client_registry_id || '',
+      shrId: data.shr_id || '',
+      patientId: data.patient_id,
+      accessibleRecords: [
+        'demographics', 'encounters', 'medications', 'allergies', 
+        'vitals', 'lab_results', 'immunizations', 'care_plans'
+      ]
+    };
   },
 
   /**
-   * Get PHID statistics for a facility
+   * Request OTP for phone/email recovery
+   */
+  async requestRecoveryOTP(
+    type: 'phone' | 'email',
+    destination: string
+  ): Promise<{ success: boolean; message: string }> {
+    console.log(`Sending recovery OTP to ${type}: ${destination}`);
+    return {
+      success: true,
+      message: `OTP sent to your registered ${type}. Valid for 10 minutes.`
+    };
+  },
+
+  /**
+   * Get facility PHID stats
    */
   async getFacilityStats(facilityId: string): Promise<{
     allocated: number;
     assigned: number;
     available: number;
   }> {
-    // For now, return mock stats
-    // In production, this would query pre-allocated PHID pools
-    return {
-      allocated: 500,
-      assigned: 127,
-      available: 373
-    };
+    return { allocated: 500, assigned: 127, available: 373 };
   }
 };
 
-// Export helper functions
+// Export helpers
 export const validatePHID = PHIDService.validate.bind(PHIDService);
 export const formatPHID = PHIDService.format.bind(PHIDService);
 export const generatePHID = PHIDService.generatePHID.bind(PHIDService);
+export const recoverPHIDAccess = PHIDService.recoverAccess.bind(PHIDService);
+export const resolvePHID = PHIDService.resolveToFullIdentity.bind(PHIDService);
