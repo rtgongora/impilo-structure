@@ -24,7 +24,6 @@ import {
   UserPlus,
   ChevronRight,
   User,
-  Heart,
 } from "lucide-react";
 
 const Dashboard = () => {
@@ -59,7 +58,6 @@ const Dashboard = () => {
     { label: "Bed Management", icon: Bed, path: "/beds", color: "bg-secondary" },
     { label: "New Registration", icon: UserPlus, path: "/registration", color: "bg-success" },
     { label: "Appointments", icon: Calendar, path: "/appointments", color: "bg-warning" },
-    { label: "My Health Portal", icon: Heart, path: "/portal", color: "bg-pink-500" },
   ];
 
   // Render different content based on workspace view
