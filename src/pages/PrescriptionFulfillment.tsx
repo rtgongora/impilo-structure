@@ -2,6 +2,7 @@ import { useState } from "react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/contexts/AuthContext";
+import { useFulfillmentActions } from "@/hooks/useFulfillmentActions";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -11,6 +12,8 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Separator } from "@/components/ui/separator";
+import { Label } from "@/components/ui/label";
+import { Checkbox } from "@/components/ui/checkbox";
 import { useToast } from "@/hooks/use-toast";
 import { useNavigate } from "react-router-dom";
 import {
@@ -32,6 +35,9 @@ import {
   ChevronRight,
   Gavel,
   Award,
+  Plus,
+  Sparkles,
+  Loader2,
 } from "lucide-react";
 import { format, formatDistanceToNow, addHours } from "date-fns";
 
@@ -114,6 +120,17 @@ export default function PrescriptionFulfillment() {
   const [searchTerm, setSearchTerm] = useState("");
   const [selectedRequest, setSelectedRequest] = useState<FulfillmentRequest | null>(null);
   const [bidDialogOpen, setBidDialogOpen] = useState(false);
+  const [convertDialogOpen, setConvertDialogOpen] = useState(false);
+  const [selectedPrescriptionId, setSelectedPrescriptionId] = useState<string>("");
+  
+  // Fulfillment actions hook
+  const { 
+    convertPrescriptionToFulfillment, 
+    submitForBidding, 
+    generateDemoBids, 
+    converting, 
+    generatingBids 
+  } = useFulfillmentActions();
 
   // Fetch fulfillment requests
   const { data: requests = [], isLoading } = useQuery({
@@ -139,6 +156,33 @@ export default function PrescriptionFulfillment() {
       const { data, error } = await query.limit(50);
       if (error) throw error;
       return data as FulfillmentRequest[];
+    },
+  });
+
+  // Fetch active prescriptions for conversion dialog
+  const { data: prescriptions = [] } = useQuery({
+    queryKey: ["active-prescriptions"],
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from("prescriptions")
+        .select(`
+          id,
+          prescription_number,
+          patient_id,
+          encounter_id,
+          patient:patients(first_name, last_name, mrn)
+        `)
+        .in("status", ["active", "pending"])
+        .order("prescribed_at", { ascending: false })
+        .limit(50);
+      if (error) throw error;
+      return data as {
+        id: string;
+        prescription_number: string;
+        patient_id: string;
+        encounter_id: string | null;
+        patient: { first_name: string; last_name: string; mrn: string } | null;
+      }[];
     },
   });
 
@@ -263,6 +307,12 @@ export default function PrescriptionFulfillment() {
                 <h1 className="text-lg font-semibold">Prescription Fulfillment</h1>
                 <p className="text-xs text-muted-foreground">Manage e-prescription bidding & fulfillment</p>
               </div>
+            </div>
+            <div className="flex items-center gap-2">
+              <Button onClick={() => setConvertDialogOpen(true)}>
+                <Plus className="h-4 w-4 mr-2" />
+                New Request
+              </Button>
             </div>
           </div>
         </div>
@@ -441,30 +491,74 @@ export default function PrescriptionFulfillment() {
                         
                         <div className="flex items-center gap-2">
                           {request.status === "draft" && (
-                            <Button
-                              size="sm"
-                              onClick={(e) => {
-                                e.stopPropagation();
-                                submitForBiddingMutation.mutate(request.id);
-                              }}
-                            >
-                              <Send className="h-4 w-4 mr-2" />
-                              Submit for Bidding
-                            </Button>
+                            <>
+                              <Button
+                                size="sm"
+                                variant="outline"
+                                disabled={generatingBids}
+                                onClick={async (e) => {
+                                  e.stopPropagation();
+                                  const success = await generateDemoBids(request.id);
+                                  if (success) {
+                                    queryClient.invalidateQueries({ queryKey: ["fulfillment-requests"] });
+                                  }
+                                }}
+                              >
+                                {generatingBids ? (
+                                  <Loader2 className="h-4 w-4 mr-2 animate-spin" />
+                                ) : (
+                                  <Sparkles className="h-4 w-4 mr-2" />
+                                )}
+                                Generate Bids
+                              </Button>
+                              <Button
+                                size="sm"
+                                onClick={async (e) => {
+                                  e.stopPropagation();
+                                  const success = await submitForBidding(request.id);
+                                  if (success) {
+                                    queryClient.invalidateQueries({ queryKey: ["fulfillment-requests"] });
+                                  }
+                                }}
+                              >
+                                <Send className="h-4 w-4 mr-2" />
+                                Open Bidding
+                              </Button>
+                            </>
                           )}
                           {request.status === "bidding" && (
-                            <Button
-                              size="sm"
-                              variant="outline"
-                              onClick={(e) => {
-                                e.stopPropagation();
-                                setSelectedRequest(request);
-                                setBidDialogOpen(true);
-                              }}
-                            >
-                              <Gavel className="h-4 w-4 mr-2" />
-                              View Bids
-                            </Button>
+                            <>
+                              <Button
+                                size="sm"
+                                variant="outline"
+                                disabled={generatingBids}
+                                onClick={async (e) => {
+                                  e.stopPropagation();
+                                  const success = await generateDemoBids(request.id);
+                                  if (success) {
+                                    queryClient.invalidateQueries({ queryKey: ["vendor-bids", request.id] });
+                                  }
+                                }}
+                              >
+                                {generatingBids ? (
+                                  <Loader2 className="h-4 w-4 mr-2 animate-spin" />
+                                ) : (
+                                  <Sparkles className="h-4 w-4 mr-2" />
+                                )}
+                                Add Demo Bids
+                              </Button>
+                              <Button
+                                size="sm"
+                                onClick={(e) => {
+                                  e.stopPropagation();
+                                  setSelectedRequest(request);
+                                  setBidDialogOpen(true);
+                                }}
+                              >
+                                <Gavel className="h-4 w-4 mr-2" />
+                                View Bids
+                              </Button>
+                            </>
                           )}
                           <ChevronRight className="h-5 w-5 text-muted-foreground" />
                         </div>
@@ -613,6 +707,89 @@ export default function PrescriptionFulfillment() {
             <DialogFooter>
               <Button variant="outline" onClick={() => setBidDialogOpen(false)}>
                 Close
+              </Button>
+            </DialogFooter>
+          </DialogContent>
+        </Dialog>
+
+        {/* Convert Prescription Dialog */}
+        <Dialog open={convertDialogOpen} onOpenChange={setConvertDialogOpen}>
+          <DialogContent className="max-w-lg">
+            <DialogHeader>
+              <DialogTitle>Convert Prescription to Fulfillment Request</DialogTitle>
+              <DialogDescription>
+                Select an active prescription to create a fulfillment request for vendor bidding.
+              </DialogDescription>
+            </DialogHeader>
+
+            <div className="space-y-4 py-4">
+              <div className="space-y-2">
+                <Label>Select Prescription</Label>
+                <Select value={selectedPrescriptionId} onValueChange={setSelectedPrescriptionId}>
+                  <SelectTrigger>
+                    <SelectValue placeholder="Choose a prescription..." />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {prescriptions.map((rx) => (
+                      <SelectItem key={rx.id} value={rx.id}>
+                        <div className="flex flex-col">
+                          <span className="font-mono">{rx.prescription_number}</span>
+                          {rx.patient && (
+                            <span className="text-xs text-muted-foreground">
+                              {rx.patient.first_name} {rx.patient.last_name} ({rx.patient.mrn})
+                            </span>
+                          )}
+                        </div>
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              </div>
+
+              {prescriptions.length === 0 && (
+                <div className="text-center py-4 text-muted-foreground">
+                  <FileText className="h-8 w-8 mx-auto mb-2" />
+                  <p>No active prescriptions found.</p>
+                  <p className="text-sm">Create a prescription in the Pharmacy module first.</p>
+                </div>
+              )}
+            </div>
+
+            <DialogFooter>
+              <Button variant="outline" onClick={() => setConvertDialogOpen(false)}>
+                Cancel
+              </Button>
+              <Button
+                disabled={!selectedPrescriptionId || converting}
+                onClick={async () => {
+                  const prescription = prescriptions.find(p => p.id === selectedPrescriptionId);
+                  if (!prescription) return;
+                  
+                  const result = await convertPrescriptionToFulfillment({
+                    prescriptionId: prescription.id,
+                    patientId: prescription.patient_id,
+                    encounterId: prescription.encounter_id || undefined,
+                    priority: "routine",
+                  });
+                  
+                  if (result) {
+                    setConvertDialogOpen(false);
+                    setSelectedPrescriptionId("");
+                    queryClient.invalidateQueries({ queryKey: ["fulfillment-requests"] });
+                  }
+                }}
+              >
+                {converting ? (
+                  <>
+                    <Loader2 className="h-4 w-4 mr-2 animate-spin" />
+                    Converting...
+                  </>
+                ) : (
+                  <>
+                    <Send className="h-4 w-4 mr-2" />
+                    Create Request
+                  </>
+                )}
               </Button>
             </DialogFooter>
           </DialogContent>
