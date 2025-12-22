@@ -41,6 +41,140 @@ export type Database = {
         }
         Relationships: []
       }
+      announcement_acknowledgments: {
+        Row: {
+          acknowledged_at: string
+          announcement_id: string
+          id: string
+          user_id: string
+        }
+        Insert: {
+          acknowledged_at?: string
+          announcement_id: string
+          id?: string
+          user_id: string
+        }
+        Update: {
+          acknowledged_at?: string
+          announcement_id?: string
+          id?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
+      announcements: {
+        Row: {
+          attachments: Json | null
+          category: string | null
+          content: string
+          created_at: string
+          expires_at: string | null
+          id: string
+          is_pinned: boolean | null
+          priority: string | null
+          published_at: string | null
+          published_by: string | null
+          requires_acknowledgment: boolean | null
+          target_departments: string[] | null
+          target_roles: string[] | null
+          title: string
+          updated_at: string
+        }
+        Insert: {
+          attachments?: Json | null
+          category?: string | null
+          content: string
+          created_at?: string
+          expires_at?: string | null
+          id?: string
+          is_pinned?: boolean | null
+          priority?: string | null
+          published_at?: string | null
+          published_by?: string | null
+          requires_acknowledgment?: boolean | null
+          target_departments?: string[] | null
+          target_roles?: string[] | null
+          title: string
+          updated_at?: string
+        }
+        Update: {
+          attachments?: Json | null
+          category?: string | null
+          content?: string
+          created_at?: string
+          expires_at?: string | null
+          id?: string
+          is_pinned?: boolean | null
+          priority?: string | null
+          published_at?: string | null
+          published_by?: string | null
+          requires_acknowledgment?: boolean | null
+          target_departments?: string[] | null
+          target_roles?: string[] | null
+          title?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
+      appointment_waitlist: {
+        Row: {
+          appointment_type: string
+          created_at: string
+          id: string
+          notes: string | null
+          notified_at: string | null
+          patient_id: string | null
+          preferred_date_from: string | null
+          preferred_date_to: string | null
+          preferred_time_from: string | null
+          preferred_time_to: string | null
+          priority: string | null
+          provider_id: string | null
+          status: string | null
+          updated_at: string
+        }
+        Insert: {
+          appointment_type: string
+          created_at?: string
+          id?: string
+          notes?: string | null
+          notified_at?: string | null
+          patient_id?: string | null
+          preferred_date_from?: string | null
+          preferred_date_to?: string | null
+          preferred_time_from?: string | null
+          preferred_time_to?: string | null
+          priority?: string | null
+          provider_id?: string | null
+          status?: string | null
+          updated_at?: string
+        }
+        Update: {
+          appointment_type?: string
+          created_at?: string
+          id?: string
+          notes?: string | null
+          notified_at?: string | null
+          patient_id?: string | null
+          preferred_date_from?: string | null
+          preferred_date_to?: string | null
+          preferred_time_from?: string | null
+          preferred_time_to?: string | null
+          priority?: string | null
+          provider_id?: string | null
+          status?: string | null
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "appointment_waitlist_patient_id_fkey"
+            columns: ["patient_id"]
+            isOneToOne: false
+            referencedRelation: "patients"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       appointments: {
         Row: {
           actual_end: string | null
@@ -959,6 +1093,48 @@ export type Database = {
           },
         ]
       }
+      equipment_reservations: {
+        Row: {
+          created_at: string
+          equipment_id: string | null
+          equipment_name: string
+          id: string
+          notes: string | null
+          reference_id: string
+          reserved_by: string | null
+          reserved_for: string
+          reserved_from: string
+          reserved_until: string
+          status: string | null
+        }
+        Insert: {
+          created_at?: string
+          equipment_id?: string | null
+          equipment_name: string
+          id?: string
+          notes?: string | null
+          reference_id: string
+          reserved_by?: string | null
+          reserved_for: string
+          reserved_from: string
+          reserved_until: string
+          status?: string | null
+        }
+        Update: {
+          created_at?: string
+          equipment_id?: string | null
+          equipment_name?: string
+          id?: string
+          notes?: string | null
+          reference_id?: string
+          reserved_by?: string | null
+          reserved_for?: string
+          reserved_from?: string
+          reserved_until?: string
+          status?: string | null
+        }
+        Relationships: []
+      }
       facilities: {
         Row: {
           address_line1: string | null
@@ -1640,6 +1816,63 @@ export type Database = {
           },
         ]
       }
+      leave_requests: {
+        Row: {
+          approved_at: string | null
+          approved_by: string | null
+          attachments: Json | null
+          created_at: string
+          end_date: string
+          half_day_end: boolean | null
+          half_day_start: boolean | null
+          id: string
+          leave_type: string
+          reason: string | null
+          rejection_reason: string | null
+          staff_id: string
+          staff_name: string
+          start_date: string
+          status: string | null
+          updated_at: string
+        }
+        Insert: {
+          approved_at?: string | null
+          approved_by?: string | null
+          attachments?: Json | null
+          created_at?: string
+          end_date: string
+          half_day_end?: boolean | null
+          half_day_start?: boolean | null
+          id?: string
+          leave_type: string
+          reason?: string | null
+          rejection_reason?: string | null
+          staff_id: string
+          staff_name: string
+          start_date: string
+          status?: string | null
+          updated_at?: string
+        }
+        Update: {
+          approved_at?: string | null
+          approved_by?: string | null
+          attachments?: Json | null
+          created_at?: string
+          end_date?: string
+          half_day_end?: boolean | null
+          half_day_start?: boolean | null
+          id?: string
+          leave_type?: string
+          reason?: string | null
+          rejection_reason?: string | null
+          staff_id?: string
+          staff_name?: string
+          start_date?: string
+          status?: string | null
+          updated_at?: string
+        }
+        Relationships: []
+      }
       login_attempts: {
         Row: {
           created_at: string
@@ -2116,6 +2349,99 @@ export type Database = {
           value_quantity?: number | null
           value_string?: string | null
           value_unit?: string | null
+        }
+        Relationships: []
+      }
+      on_call_schedules: {
+        Row: {
+          backup_staff_id: string | null
+          backup_staff_name: string | null
+          contact_number: string | null
+          created_at: string
+          created_by: string | null
+          department: string
+          end_time: string
+          id: string
+          notes: string | null
+          schedule_date: string
+          specialty: string | null
+          staff_id: string
+          staff_name: string
+          start_time: string
+        }
+        Insert: {
+          backup_staff_id?: string | null
+          backup_staff_name?: string | null
+          contact_number?: string | null
+          created_at?: string
+          created_by?: string | null
+          department: string
+          end_time?: string
+          id?: string
+          notes?: string | null
+          schedule_date: string
+          specialty?: string | null
+          staff_id: string
+          staff_name: string
+          start_time?: string
+        }
+        Update: {
+          backup_staff_id?: string | null
+          backup_staff_name?: string | null
+          contact_number?: string | null
+          created_at?: string
+          created_by?: string | null
+          department?: string
+          end_time?: string
+          id?: string
+          notes?: string | null
+          schedule_date?: string
+          specialty?: string | null
+          staff_id?: string
+          staff_name?: string
+          start_time?: string
+        }
+        Relationships: []
+      }
+      operating_rooms: {
+        Row: {
+          capacity: number | null
+          created_at: string
+          equipment: string[] | null
+          id: string
+          is_active: boolean | null
+          location: string | null
+          name: string
+          notes: string | null
+          room_number: string
+          room_type: string | null
+          updated_at: string
+        }
+        Insert: {
+          capacity?: number | null
+          created_at?: string
+          equipment?: string[] | null
+          id?: string
+          is_active?: boolean | null
+          location?: string | null
+          name: string
+          notes?: string | null
+          room_number: string
+          room_type?: string | null
+          updated_at?: string
+        }
+        Update: {
+          capacity?: number | null
+          created_at?: string
+          equipment?: string[] | null
+          id?: string
+          is_active?: boolean | null
+          location?: string | null
+          name?: string
+          notes?: string | null
+          room_number?: string
+          room_type?: string | null
+          updated_at?: string
         }
         Relationships: []
       }
@@ -3260,6 +3586,96 @@ export type Database = {
           },
         ]
       }
+      room_bookings: {
+        Row: {
+          attendees: string[] | null
+          booked_by: string | null
+          booked_by_name: string | null
+          created_at: string
+          end_time: string
+          equipment_needed: string[] | null
+          id: string
+          notes: string | null
+          purpose: string
+          recurring_pattern: Json | null
+          room_id: string | null
+          room_name: string
+          start_time: string
+          status: string | null
+          updated_at: string
+        }
+        Insert: {
+          attendees?: string[] | null
+          booked_by?: string | null
+          booked_by_name?: string | null
+          created_at?: string
+          end_time: string
+          equipment_needed?: string[] | null
+          id?: string
+          notes?: string | null
+          purpose: string
+          recurring_pattern?: Json | null
+          room_id?: string | null
+          room_name: string
+          start_time: string
+          status?: string | null
+          updated_at?: string
+        }
+        Update: {
+          attendees?: string[] | null
+          booked_by?: string | null
+          booked_by_name?: string | null
+          created_at?: string
+          end_time?: string
+          equipment_needed?: string[] | null
+          id?: string
+          notes?: string | null
+          purpose?: string
+          recurring_pattern?: Json | null
+          room_id?: string | null
+          room_name?: string
+          start_time?: string
+          status?: string | null
+          updated_at?: string
+        }
+        Relationships: []
+      }
+      schedule_exceptions: {
+        Row: {
+          created_at: string
+          created_by: string | null
+          end_time: string | null
+          exception_date: string
+          id: string
+          is_available: boolean | null
+          provider_id: string | null
+          reason: string | null
+          start_time: string | null
+        }
+        Insert: {
+          created_at?: string
+          created_by?: string | null
+          end_time?: string | null
+          exception_date: string
+          id?: string
+          is_available?: boolean | null
+          provider_id?: string | null
+          reason?: string | null
+          start_time?: string | null
+        }
+        Update: {
+          created_at?: string
+          created_by?: string | null
+          end_time?: string | null
+          exception_date?: string
+          id?: string
+          is_available?: boolean | null
+          provider_id?: string | null
+          reason?: string | null
+          start_time?: string | null
+        }
+        Relationships: []
+      }
       security_events: {
         Row: {
           created_at: string
@@ -3565,6 +3981,60 @@ export type Database = {
             referencedColumns: ["id"]
           },
         ]
+      }
+      staff_shifts: {
+        Row: {
+          created_at: string
+          created_by: string | null
+          department: string | null
+          end_time: string
+          id: string
+          location: string | null
+          notes: string | null
+          role: string | null
+          shift_date: string
+          shift_type: string
+          staff_id: string
+          staff_name: string
+          start_time: string
+          status: string | null
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          created_by?: string | null
+          department?: string | null
+          end_time: string
+          id?: string
+          location?: string | null
+          notes?: string | null
+          role?: string | null
+          shift_date: string
+          shift_type: string
+          staff_id: string
+          staff_name: string
+          start_time: string
+          status?: string | null
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          created_by?: string | null
+          department?: string | null
+          end_time?: string
+          id?: string
+          location?: string | null
+          notes?: string | null
+          role?: string | null
+          shift_date?: string
+          shift_type?: string
+          staff_id?: string
+          staff_name?: string
+          start_time?: string
+          status?: string | null
+          updated_at?: string
+        }
+        Relationships: []
       }
       stock_categories: {
         Row: {
@@ -4252,6 +4722,42 @@ export type Database = {
           },
         ]
       }
+      theatre_team_assignments: {
+        Row: {
+          booking_id: string
+          confirmed: boolean | null
+          created_at: string
+          id: string
+          is_primary: boolean | null
+          notes: string | null
+          role: string
+          staff_id: string | null
+          staff_name: string
+        }
+        Insert: {
+          booking_id: string
+          confirmed?: boolean | null
+          created_at?: string
+          id?: string
+          is_primary?: boolean | null
+          notes?: string | null
+          role: string
+          staff_id?: string | null
+          staff_name: string
+        }
+        Update: {
+          booking_id?: string
+          confirmed?: boolean | null
+          created_at?: string
+          id?: string
+          is_primary?: boolean | null
+          notes?: string | null
+          role?: string
+          staff_id?: string | null
+          staff_name?: string
+        }
+        Relationships: []
+      }
       trusted_devices: {
         Row: {
           created_at: string
@@ -4766,6 +5272,7 @@ export type Database = {
       generate_prescription_number: { Args: never; Returns: string }
       generate_referral_number: { Args: never; Returns: string }
       generate_specimen_id: { Args: never; Returns: string }
+      generate_theatre_booking_number: { Args: never; Returns: string }
       generate_transaction_number: { Args: never; Returns: string }
       has_role: {
         Args: {
