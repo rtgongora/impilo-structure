@@ -21,6 +21,9 @@ import {
   Receipt,
   ClipboardList,
   HelpCircle,
+  CalendarDays,
+  Megaphone,
+  LayoutGrid,
 } from "lucide-react";
 import { NavLink } from "@/components/NavLink";
 import { useLocation } from "react-router-dom";
@@ -61,6 +64,13 @@ const ordersNavItems: NavItem[] = [
   { label: "Laboratory", icon: FlaskConical, path: "/lims", description: "Lab results" },
   { label: "PACS Imaging", icon: FileText, path: "/pacs", description: "Medical imaging" },
   { label: "Shift Handoff", icon: ArrowRightLeft, path: "/handoff", description: "Handoff reports", roles: ["doctor", "nurse"] },
+];
+
+const schedulingNavItems: NavItem[] = [
+  { label: "Appointments", icon: CalendarDays, path: "/scheduling", description: "Clinic scheduling" },
+  { label: "Theatre Booking", icon: Building2, path: "/scheduling/theatre", description: "OR scheduling" },
+  { label: "Noticeboard", icon: Megaphone, path: "/scheduling/noticeboard", description: "Announcements" },
+  { label: "Resources", icon: LayoutGrid, path: "/scheduling/resources", description: "Room & equipment" },
 ];
 
 const operationsNavItems: NavItem[] = [
@@ -196,6 +206,9 @@ export function AppSidebar() {
         
         {/* Orders section */}
         <NavSection title="Orders & Results" items={ordersNavItems} collapsed={collapsed} userRole={userRole} />
+        
+        {/* Scheduling section */}
+        <NavSection title="Scheduling" items={schedulingNavItems} collapsed={collapsed} userRole={userRole} />
         
         {/* Operations section */}
         <NavSection title="Operations" items={operationsNavItems} collapsed={collapsed} userRole={userRole} />
