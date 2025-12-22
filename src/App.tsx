@@ -39,6 +39,10 @@ import HealthMarketplace from "./pages/HealthMarketplace";
 import ProductManagement from "./pages/admin/ProductManagement";
 import PrescriptionFulfillment from "./pages/PrescriptionFulfillment";
 import VendorPortal from "./pages/VendorPortal";
+import AppointmentScheduling from "./pages/scheduling/AppointmentScheduling";
+import TheatreScheduling from "./pages/scheduling/TheatreScheduling";
+import ProviderNoticeboard from "./pages/scheduling/ProviderNoticeboard";
+import ResourceCalendar from "./pages/scheduling/ResourceCalendar";
 
 const queryClient = new QueryClient();
 
@@ -190,6 +194,26 @@ const App = () => (
             <Route path="/vendor-portal" element={
               <ProtectedRoute>
                 <VendorPortal />
+              </ProtectedRoute>
+            } />
+            <Route path="/scheduling" element={
+              <ProtectedRoute>
+                <AppointmentScheduling />
+              </ProtectedRoute>
+            } />
+            <Route path="/scheduling/theatre" element={
+              <ProtectedRoute>
+                <TheatreScheduling />
+              </ProtectedRoute>
+            } />
+            <Route path="/scheduling/noticeboard" element={
+              <ProtectedRoute>
+                <ProviderNoticeboard />
+              </ProtectedRoute>
+            } />
+            <Route path="/scheduling/resources" element={
+              <ProtectedRoute>
+                <ResourceCalendar />
               </ProtectedRoute>
             } />
             {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
