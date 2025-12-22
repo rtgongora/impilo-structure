@@ -1062,6 +1062,127 @@ export type Database = {
           },
         ]
       }
+      club_members: {
+        Row: {
+          club_id: string
+          id: string
+          is_banned: boolean | null
+          is_muted: boolean | null
+          joined_at: string
+          role: string
+          user_id: string
+        }
+        Insert: {
+          club_id: string
+          id?: string
+          is_banned?: boolean | null
+          is_muted?: boolean | null
+          joined_at?: string
+          role?: string
+          user_id: string
+        }
+        Update: {
+          club_id?: string
+          id?: string
+          is_banned?: boolean | null
+          is_muted?: boolean | null
+          joined_at?: string
+          role?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "club_members_club_id_fkey"
+            columns: ["club_id"]
+            isOneToOne: false
+            referencedRelation: "clubs"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      clubs: {
+        Row: {
+          activity_count: number | null
+          avatar_url: string | null
+          category: string
+          club_type: string
+          cover_image_url: string | null
+          created_at: string
+          created_by: string
+          description: string | null
+          has_challenges: boolean | null
+          has_events: boolean | null
+          has_leaderboard: boolean | null
+          id: string
+          is_active: boolean | null
+          is_verified: boolean | null
+          member_count: number | null
+          name: string
+          organizer_page_id: string | null
+          privacy: string
+          rules: Json | null
+          slug: string
+          tags: string[] | null
+          updated_at: string
+        }
+        Insert: {
+          activity_count?: number | null
+          avatar_url?: string | null
+          category?: string
+          club_type?: string
+          cover_image_url?: string | null
+          created_at?: string
+          created_by: string
+          description?: string | null
+          has_challenges?: boolean | null
+          has_events?: boolean | null
+          has_leaderboard?: boolean | null
+          id?: string
+          is_active?: boolean | null
+          is_verified?: boolean | null
+          member_count?: number | null
+          name: string
+          organizer_page_id?: string | null
+          privacy?: string
+          rules?: Json | null
+          slug: string
+          tags?: string[] | null
+          updated_at?: string
+        }
+        Update: {
+          activity_count?: number | null
+          avatar_url?: string | null
+          category?: string
+          club_type?: string
+          cover_image_url?: string | null
+          created_at?: string
+          created_by?: string
+          description?: string | null
+          has_challenges?: boolean | null
+          has_events?: boolean | null
+          has_leaderboard?: boolean | null
+          id?: string
+          is_active?: boolean | null
+          is_verified?: boolean | null
+          member_count?: number | null
+          name?: string
+          organizer_page_id?: string | null
+          privacy?: string
+          rules?: Json | null
+          slug?: string
+          tags?: string[] | null
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "clubs_organizer_page_id_fkey"
+            columns: ["organizer_page_id"]
+            isOneToOne: false
+            referencedRelation: "professional_pages"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       communities: {
         Row: {
           avatar_url: string | null
@@ -3252,6 +3373,76 @@ export type Database = {
         }
         Relationships: []
       }
+      page_followers: {
+        Row: {
+          followed_at: string
+          id: string
+          page_id: string
+          user_id: string
+        }
+        Insert: {
+          followed_at?: string
+          id?: string
+          page_id: string
+          user_id: string
+        }
+        Update: {
+          followed_at?: string
+          id?: string
+          page_id?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "page_followers_page_id_fkey"
+            columns: ["page_id"]
+            isOneToOne: false
+            referencedRelation: "professional_pages"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      page_reviews: {
+        Row: {
+          created_at: string
+          id: string
+          is_verified_visit: boolean | null
+          page_id: string
+          rating: number
+          review_text: string | null
+          reviewer_id: string
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          is_verified_visit?: boolean | null
+          page_id: string
+          rating: number
+          review_text?: string | null
+          reviewer_id: string
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          is_verified_visit?: boolean | null
+          page_id?: string
+          rating?: number
+          review_text?: string | null
+          reviewer_id?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "page_reviews_page_id_fkey"
+            columns: ["page_id"]
+            isOneToOne: false
+            referencedRelation: "professional_pages"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       patient_counseling: {
         Row: {
           comprehension_verified: boolean | null
@@ -3652,6 +3843,7 @@ export type Database = {
       posts: {
         Row: {
           author_id: string
+          club_id: string | null
           comments_count: number | null
           community_id: string | null
           content: string | null
@@ -3663,6 +3855,7 @@ export type Database = {
           likes_count: number | null
           media_types: string[] | null
           media_urls: string[] | null
+          page_id: string | null
           post_type: string
           shares_count: number | null
           updated_at: string
@@ -3670,6 +3863,7 @@ export type Database = {
         }
         Insert: {
           author_id: string
+          club_id?: string | null
           comments_count?: number | null
           community_id?: string | null
           content?: string | null
@@ -3681,6 +3875,7 @@ export type Database = {
           likes_count?: number | null
           media_types?: string[] | null
           media_urls?: string[] | null
+          page_id?: string | null
           post_type?: string
           shares_count?: number | null
           updated_at?: string
@@ -3688,6 +3883,7 @@ export type Database = {
         }
         Update: {
           author_id?: string
+          club_id?: string | null
           comments_count?: number | null
           community_id?: string | null
           content?: string | null
@@ -3699,12 +3895,28 @@ export type Database = {
           likes_count?: number | null
           media_types?: string[] | null
           media_urls?: string[] | null
+          page_id?: string | null
           post_type?: string
           shares_count?: number | null
           updated_at?: string
           visibility?: string
         }
-        Relationships: []
+        Relationships: [
+          {
+            foreignKeyName: "posts_club_id_fkey"
+            columns: ["club_id"]
+            isOneToOne: false
+            referencedRelation: "clubs"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "posts_page_id_fkey"
+            columns: ["page_id"]
+            isOneToOne: false
+            referencedRelation: "professional_pages"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       prescription_items: {
         Row: {
@@ -4155,6 +4367,105 @@ export type Database = {
             referencedColumns: ["id"]
           },
         ]
+      }
+      professional_pages: {
+        Row: {
+          address: string | null
+          average_rating: number | null
+          bio: string | null
+          business_category: string | null
+          can_post: boolean | null
+          can_sell: boolean | null
+          city: string | null
+          contact_email: string | null
+          contact_phone: string | null
+          country: string | null
+          cover_image_url: string | null
+          created_at: string
+          credentials: string[] | null
+          follower_count: number | null
+          id: string
+          is_active: boolean | null
+          is_verified_provider: boolean | null
+          license_number: string | null
+          logo_url: string | null
+          name: string
+          operating_hours: Json | null
+          owner_id: string
+          page_type: string
+          review_count: number | null
+          services: string[] | null
+          slug: string
+          specialties: string[] | null
+          updated_at: string
+          verification_date: string | null
+          website: string | null
+        }
+        Insert: {
+          address?: string | null
+          average_rating?: number | null
+          bio?: string | null
+          business_category?: string | null
+          can_post?: boolean | null
+          can_sell?: boolean | null
+          city?: string | null
+          contact_email?: string | null
+          contact_phone?: string | null
+          country?: string | null
+          cover_image_url?: string | null
+          created_at?: string
+          credentials?: string[] | null
+          follower_count?: number | null
+          id?: string
+          is_active?: boolean | null
+          is_verified_provider?: boolean | null
+          license_number?: string | null
+          logo_url?: string | null
+          name: string
+          operating_hours?: Json | null
+          owner_id: string
+          page_type?: string
+          review_count?: number | null
+          services?: string[] | null
+          slug: string
+          specialties?: string[] | null
+          updated_at?: string
+          verification_date?: string | null
+          website?: string | null
+        }
+        Update: {
+          address?: string | null
+          average_rating?: number | null
+          bio?: string | null
+          business_category?: string | null
+          can_post?: boolean | null
+          can_sell?: boolean | null
+          city?: string | null
+          contact_email?: string | null
+          contact_phone?: string | null
+          country?: string | null
+          cover_image_url?: string | null
+          created_at?: string
+          credentials?: string[] | null
+          follower_count?: number | null
+          id?: string
+          is_active?: boolean | null
+          is_verified_provider?: boolean | null
+          license_number?: string | null
+          logo_url?: string | null
+          name?: string
+          operating_hours?: Json | null
+          owner_id?: string
+          page_type?: string
+          review_count?: number | null
+          services?: string[] | null
+          slug?: string
+          specialties?: string[] | null
+          updated_at?: string
+          verification_date?: string | null
+          website?: string | null
+        }
+        Relationships: []
       }
       profiles: {
         Row: {

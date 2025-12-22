@@ -53,9 +53,11 @@ interface Post {
 
 interface TimelineFeedProps {
   communityId?: string;
+  clubId?: string;
+  pageId?: string;
 }
 
-export function TimelineFeed({ communityId }: TimelineFeedProps) {
+export function TimelineFeed({ communityId, clubId, pageId }: TimelineFeedProps) {
   const { user, profile } = useAuth();
   const { toast } = useToast();
   const [posts, setPosts] = useState<Post[]>([]);
@@ -80,7 +82,7 @@ export function TimelineFeed({ communityId }: TimelineFeedProps) {
     return () => {
       supabase.removeChannel(channel);
     };
-  }, [communityId]);
+  }, [communityId, clubId, pageId]);
 
   const fetchPosts = async () => {
     try {
@@ -92,6 +94,10 @@ export function TimelineFeed({ communityId }: TimelineFeedProps) {
 
       if (communityId) {
         query = query.eq('community_id', communityId);
+      } else if (clubId) {
+        query = query.eq('club_id', clubId);
+      } else if (pageId) {
+        query = query.eq('page_id', pageId);
       }
 
       const { data, error } = await query;
