@@ -1,4 +1,4 @@
-import { Bell, Settings, LogOut, Search, ArrowLeft, X } from "lucide-react";
+import { Bell, Settings, LogOut, Search, ArrowLeft, Home } from "lucide-react";
 import { useNavigate, useLocation } from "react-router-dom";
 import { useAuth } from "@/contexts/AuthContext";
 import { Button } from "@/components/ui/button";
@@ -24,7 +24,8 @@ export function AppHeader({ title }: AppHeaderProps) {
   const navigate = useNavigate();
   const location = useLocation();
 
-  const isHomePage = location.pathname === "/" || location.pathname === "/dashboard";
+  const isHomePage = location.pathname === "/";
+  const isDashboard = location.pathname === "/dashboard";
 
   const handleSignOut = async () => {
     await signOut();
@@ -42,32 +43,40 @@ export function AppHeader({ title }: AppHeaderProps) {
 
   return (
     <header className="h-14 bg-card border-b flex items-center justify-between px-4 shrink-0">
-      {/* Left: Back/Exit & Title */}
+      {/* Left: Home Button & Navigation */}
       <div className="flex items-center gap-2">
+        {/* Always show Home button (except on home page) */}
         {!isHomePage && (
+          <Button
+            variant="default"
+            size="sm"
+            onClick={() => navigate("/")}
+            className="gap-1"
+          >
+            <Home className="w-4 h-4" />
+            <span className="hidden sm:inline">Home</span>
+          </Button>
+        )}
+        
+        {/* Back button for deeper navigation (not on home or dashboard) */}
+        {!isHomePage && !isDashboard && (
+          <Button
+            variant="ghost"
+            size="sm"
+            onClick={() => navigate(-1)}
+            className="text-muted-foreground hover:text-foreground"
+          >
+            <ArrowLeft className="w-4 h-4 mr-1" />
+            <span className="hidden sm:inline">Back</span>
+          </Button>
+        )}
+        
+        {title && (
           <>
-            <Button
-              variant="ghost"
-              size="sm"
-              onClick={() => navigate(-1)}
-              className="text-muted-foreground hover:text-foreground"
-            >
-              <ArrowLeft className="w-4 h-4 mr-1" />
-              Back
-            </Button>
-            <Button
-              variant="ghost"
-              size="sm"
-              onClick={() => navigate("/")}
-              className="text-muted-foreground hover:text-foreground"
-            >
-              <X className="w-4 h-4 mr-1" />
-              Exit
-            </Button>
-            <div className="h-5 w-px bg-border mx-2" />
+            <div className="h-5 w-px bg-border mx-2 hidden sm:block" />
+            <h1 className="text-lg font-semibold">{title}</h1>
           </>
         )}
-        {title && <h1 className="text-lg font-semibold">{title}</h1>}
       </div>
 
       {/* Center: Patient Search */}
