@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { useNavigate } from "react-router-dom";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -26,7 +27,9 @@ import {
   ChevronRight,
   AlertCircle,
   CheckCircle2,
-  RefreshCw
+  RefreshCw,
+  Home,
+  ArrowLeft
 } from "lucide-react";
 
 interface Appointment {
@@ -200,6 +203,7 @@ const HEALTH_METRICS = [
 export function PatientPortal() {
   const [notifications, setNotifications] = useState<Notification[]>(MOCK_NOTIFICATIONS);
   const [activeTab, setActiveTab] = useState("dashboard");
+  const navigate = useNavigate();
 
   const unreadCount = notifications.filter(n => !n.read).length;
 
@@ -244,6 +248,17 @@ export function PatientPortal() {
       <header className="border-b bg-card sticky top-0 z-50">
         <div className="container mx-auto px-4 py-4 flex items-center justify-between">
           <div className="flex items-center gap-4">
+            {/* Home/Back Navigation */}
+            <Button 
+              variant="ghost" 
+              size="sm" 
+              onClick={() => navigate("/")}
+              className="text-muted-foreground hover:text-foreground"
+            >
+              <Home className="h-4 w-4 mr-1" />
+              Home
+            </Button>
+            <div className="h-6 w-px bg-border" />
             <div className="h-10 w-10 rounded-full bg-primary flex items-center justify-center">
               <Heart className="h-5 w-5 text-primary-foreground" />
             </div>
