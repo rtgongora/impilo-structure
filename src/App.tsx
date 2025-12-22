@@ -45,6 +45,7 @@ import ProviderNoticeboard from "./pages/scheduling/ProviderNoticeboard";
 import ResourceCalendar from "./pages/scheduling/ResourceCalendar";
 import IdServices from "./pages/IdServices";
 import Communication from "./pages/Communication";
+import Social from "./pages/Social";
 const queryClient = new QueryClient();
 
 const App = () => (
@@ -225,6 +226,11 @@ const App = () => (
             <Route path="/communication" element={
               <ProtectedRoute>
                 <Communication />
+              </ProtectedRoute>
+            } />
+            <Route path="/social" element={
+              <ProtectedRoute>
+                <Social />
               </ProtectedRoute>
             } />
             {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
