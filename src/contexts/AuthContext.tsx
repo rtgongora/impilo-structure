@@ -77,18 +77,44 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
 
   const createSession = async (userId: string, accessToken: string) => {
     const deviceInfo = getDeviceInfo();
-    const { data: sessionData, error } = await supabase.from('user_sessions').insert({
-      user_id: userId,
-      session_token: accessToken.substring(0, 50),
-      user_agent: navigator.userAgent,
-      device_info: deviceInfo,
-      is_active: true,
-    }).select('id').single();
+    const sessionToken = accessToken.substring(0, 50);
+    
+    // First try to update existing session, if not found then insert
+    const { data: existingSession } = await supabase
+      .from('user_sessions')
+      .select('id')
+      .eq('session_token', sessionToken)
+      .maybeSingle();
+    
+    let sessionId: string | null = null;
+    
+    if (existingSession) {
+      // Update existing session
+      await supabase.from('user_sessions').update({
+        is_active: true,
+        last_activity_at: new Date().toISOString(),
+        ended_at: null
+      }).eq('id', existingSession.id);
+      sessionId = existingSession.id;
+    } else {
+      // Insert new session
+      const { data: sessionData, error } = await supabase.from('user_sessions').insert({
+        user_id: userId,
+        session_token: sessionToken,
+        user_agent: navigator.userAgent,
+        device_info: deviceInfo,
+        is_active: true,
+      }).select('id').maybeSingle();
+      
+      if (!error && sessionData) {
+        sessionId = sessionData.id;
+      }
+    }
     
     // Call edge function to geolocate and update session
-    if (sessionData?.id) {
+    if (sessionId) {
       supabase.functions.invoke('geolocate-ip', {
-        body: { sessionId: sessionData.id }
+        body: { sessionId }
       }).catch(err => console.log('Geolocation update:', err));
     }
   };
