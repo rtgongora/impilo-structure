@@ -4659,6 +4659,72 @@ export type Database = {
         }
         Relationships: []
       }
+      providers: {
+        Row: {
+          biometric_enrolled: boolean | null
+          biometric_facial_hash: string | null
+          biometric_fingerprint_hash: string | null
+          biometric_iris_hash: string | null
+          created_at: string | null
+          department: string | null
+          email: string | null
+          facility_gofr_id: string | null
+          full_name: string
+          id: string
+          ihris_id: string
+          is_active: boolean | null
+          license_number: string | null
+          phone: string | null
+          role: string | null
+          specialty: string | null
+          status: string | null
+          updated_at: string | null
+          user_id: string | null
+        }
+        Insert: {
+          biometric_enrolled?: boolean | null
+          biometric_facial_hash?: string | null
+          biometric_fingerprint_hash?: string | null
+          biometric_iris_hash?: string | null
+          created_at?: string | null
+          department?: string | null
+          email?: string | null
+          facility_gofr_id?: string | null
+          full_name: string
+          id?: string
+          ihris_id: string
+          is_active?: boolean | null
+          license_number?: string | null
+          phone?: string | null
+          role?: string | null
+          specialty?: string | null
+          status?: string | null
+          updated_at?: string | null
+          user_id?: string | null
+        }
+        Update: {
+          biometric_enrolled?: boolean | null
+          biometric_facial_hash?: string | null
+          biometric_fingerprint_hash?: string | null
+          biometric_iris_hash?: string | null
+          created_at?: string | null
+          department?: string | null
+          email?: string | null
+          facility_gofr_id?: string | null
+          full_name?: string
+          id?: string
+          ihris_id?: string
+          is_active?: boolean | null
+          license_number?: string | null
+          phone?: string | null
+          role?: string | null
+          specialty?: string | null
+          status?: string | null
+          updated_at?: string | null
+          user_id?: string | null
+        }
+        Relationships: []
+      }
       push_subscriptions: {
         Row: {
           auth: string
