@@ -6619,6 +6619,10 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
+      can_access_patient: {
+        Args: { _patient_id: string; _user_id: string }
+        Returns: boolean
+      }
       generate_claim_number: { Args: never; Returns: string }
       generate_client_registry_id: { Args: never; Returns: string }
       generate_encounter_number: { Args: never; Returns: string }
