@@ -21,6 +21,7 @@ import {
   Thermometer,
   TestTube,
   Clock,
+  ClipboardList,
 } from "lucide-react";
 import { format } from "date-fns";
 import { MOCK_TRIAGE, MOCK_HISTORY, MOCK_VITALS } from "@/data/mockClinicalData";
@@ -28,6 +29,9 @@ import type { TriageCategory } from "@/types/clinical";
 import { VitalsRecorder } from "@/components/clinical/VitalsRecorder";
 import { LabResultsSystem } from "@/components/lab/LabResultsSystem";
 import { PatientTimeline } from "@/components/timeline/PatientTimeline";
+import { ClerkingTemplateSelector } from "@/components/ehr/clerking/ClerkingTemplateSelector";
+import { ClerkingFormEditor } from "@/components/ehr/clerking/ClerkingFormEditor";
+import { CLERKING_TEMPLATES, type CadreLevel, type ClerkingTemplate } from "@/data/clerkingTemplates";
 import { useParams } from "react-router-dom";
 
 const triageColors: Record<TriageCategory, { bg: string; border: string; text: string; label: string }> = {
@@ -396,12 +400,54 @@ function ExaminationPanel() {
   );
 }
 
+function ClerkingPanel() {
+  const { encounterId } = useParams<{ encounterId?: string }>();
+  const [selectedTemplate, setSelectedTemplate] = useState<ClerkingTemplate | null>(null);
+  const [selectedCadre, setSelectedCadre] = useState<CadreLevel>("intern");
+
+  const handleTemplateSelect = (template: ClerkingTemplate, cadre: CadreLevel) => {
+    setSelectedTemplate(template);
+    setSelectedCadre(cadre);
+  };
+
+  const handleFormSave = (data: Record<string, string>) => {
+    console.log("Saving clerking form:", data);
+    // Save to database
+  };
+
+  const handleFormSign = (data: Record<string, string>) => {
+    console.log("Signing clerking form:", data);
+    // Sign and finalize
+  };
+
+  if (!selectedTemplate) {
+    return <ClerkingTemplateSelector onSelect={handleTemplateSelect} />;
+  }
+
+  return (
+    <div className="space-y-4">
+      <div className="flex items-center justify-between">
+        <Button variant="ghost" onClick={() => setSelectedTemplate(null)}>
+          ← Back to Templates
+        </Button>
+      </div>
+      <ClerkingFormEditor
+        template={selectedTemplate}
+        cadreLevel={selectedCadre}
+        encounterId={encounterId}
+        onSave={handleFormSave}
+        onSign={handleFormSign}
+      />
+    </div>
+  );
+}
+
 export function AssessmentSection() {
   const { encounterId } = useParams<{ encounterId?: string }>();
 
   return (
     <Tabs defaultValue="triage" className="space-y-4">
-      <TabsList className="grid w-full grid-cols-6">
+      <TabsList className="grid w-full grid-cols-7">
         <TabsTrigger value="triage" className="flex items-center gap-2">
           <AlertTriangle className="w-4 h-4" />
           Triage
@@ -409,6 +455,10 @@ export function AssessmentSection() {
         <TabsTrigger value="record-vitals" className="flex items-center gap-2">
           <Thermometer className="w-4 h-4" />
           Vitals
+        </TabsTrigger>
+        <TabsTrigger value="clerking" className="flex items-center gap-2">
+          <ClipboardList className="w-4 h-4" />
+          Clerking
         </TabsTrigger>
         <TabsTrigger value="history" className="flex items-center gap-2">
           <FileText className="w-4 h-4" />
@@ -442,6 +492,10 @@ export function AssessmentSection() {
             </CardContent>
           </Card>
         )}
+      </TabsContent>
+
+      <TabsContent value="clerking">
+        <ClerkingPanel />
       </TabsContent>
 
       <TabsContent value="history">

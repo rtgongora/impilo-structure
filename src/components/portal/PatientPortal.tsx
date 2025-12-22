@@ -29,8 +29,10 @@ import {
   CheckCircle2,
   RefreshCw,
   Home,
-  ArrowLeft
+  ArrowLeft,
+  AlertTriangle
 } from "lucide-react";
+import { EmergencySOS } from "./EmergencySOS";
 
 interface Appointment {
   id: string;
@@ -293,6 +295,10 @@ export function PatientPortal() {
             <TabsTrigger value="records">Health Records</TabsTrigger>
             <TabsTrigger value="prescriptions">Prescriptions</TabsTrigger>
             <TabsTrigger value="wallet">Health Wallet</TabsTrigger>
+            <TabsTrigger value="emergency" className="text-destructive">
+              <AlertTriangle className="w-4 h-4 mr-1" />
+              Emergency
+            </TabsTrigger>
             <TabsTrigger value="notifications">
               Notifications
               {unreadCount > 0 && (
@@ -641,6 +647,11 @@ export function PatientPortal() {
                 </Card>
               ))}
             </div>
+          </TabsContent>
+
+          {/* Emergency SOS Tab */}
+          <TabsContent value="emergency">
+            <EmergencySOS />
           </TabsContent>
 
           {/* Health Wallet Tab */}
