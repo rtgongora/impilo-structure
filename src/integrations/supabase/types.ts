@@ -1134,6 +1134,219 @@ export type Database = {
         }
         Relationships: []
       }
+      fulfillment_request_items: {
+        Row: {
+          created_at: string | null
+          id: string
+          notes: string | null
+          prescription_item_id: string | null
+          product_id: string | null
+          product_name: string
+          quantity: number
+          request_id: string
+          unit_of_measure: string | null
+        }
+        Insert: {
+          created_at?: string | null
+          id?: string
+          notes?: string | null
+          prescription_item_id?: string | null
+          product_id?: string | null
+          product_name: string
+          quantity?: number
+          request_id: string
+          unit_of_measure?: string | null
+        }
+        Update: {
+          created_at?: string | null
+          id?: string
+          notes?: string | null
+          prescription_item_id?: string | null
+          product_id?: string | null
+          product_name?: string
+          quantity?: number
+          request_id?: string
+          unit_of_measure?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "fulfillment_request_items_prescription_item_id_fkey"
+            columns: ["prescription_item_id"]
+            isOneToOne: false
+            referencedRelation: "prescription_items"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "fulfillment_request_items_product_id_fkey"
+            columns: ["product_id"]
+            isOneToOne: false
+            referencedRelation: "products"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "fulfillment_request_items_request_id_fkey"
+            columns: ["request_id"]
+            isOneToOne: false
+            referencedRelation: "fulfillment_requests"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      fulfillment_requests: {
+        Row: {
+          awarded_at: string | null
+          awarded_vendor_id: string | null
+          bidding_deadline: string | null
+          created_at: string | null
+          delivery_address: string | null
+          delivery_city: string | null
+          delivery_latitude: number | null
+          delivery_longitude: number | null
+          delivery_postal_code: string | null
+          delivery_province: string | null
+          delivery_required: boolean | null
+          encounter_id: string | null
+          id: string
+          notes: string | null
+          patient_id: string | null
+          preferred_vendor_id: string | null
+          prescription_id: string | null
+          priority: string | null
+          request_number: string
+          request_type: string
+          requested_by: string | null
+          status: Database["public"]["Enums"]["fulfillment_status"] | null
+          total_amount: number | null
+          updated_at: string | null
+        }
+        Insert: {
+          awarded_at?: string | null
+          awarded_vendor_id?: string | null
+          bidding_deadline?: string | null
+          created_at?: string | null
+          delivery_address?: string | null
+          delivery_city?: string | null
+          delivery_latitude?: number | null
+          delivery_longitude?: number | null
+          delivery_postal_code?: string | null
+          delivery_province?: string | null
+          delivery_required?: boolean | null
+          encounter_id?: string | null
+          id?: string
+          notes?: string | null
+          patient_id?: string | null
+          preferred_vendor_id?: string | null
+          prescription_id?: string | null
+          priority?: string | null
+          request_number: string
+          request_type?: string
+          requested_by?: string | null
+          status?: Database["public"]["Enums"]["fulfillment_status"] | null
+          total_amount?: number | null
+          updated_at?: string | null
+        }
+        Update: {
+          awarded_at?: string | null
+          awarded_vendor_id?: string | null
+          bidding_deadline?: string | null
+          created_at?: string | null
+          delivery_address?: string | null
+          delivery_city?: string | null
+          delivery_latitude?: number | null
+          delivery_longitude?: number | null
+          delivery_postal_code?: string | null
+          delivery_province?: string | null
+          delivery_required?: boolean | null
+          encounter_id?: string | null
+          id?: string
+          notes?: string | null
+          patient_id?: string | null
+          preferred_vendor_id?: string | null
+          prescription_id?: string | null
+          priority?: string | null
+          request_number?: string
+          request_type?: string
+          requested_by?: string | null
+          status?: Database["public"]["Enums"]["fulfillment_status"] | null
+          total_amount?: number | null
+          updated_at?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "fulfillment_requests_awarded_vendor_id_fkey"
+            columns: ["awarded_vendor_id"]
+            isOneToOne: false
+            referencedRelation: "vendors"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "fulfillment_requests_encounter_id_fkey"
+            columns: ["encounter_id"]
+            isOneToOne: false
+            referencedRelation: "encounters"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "fulfillment_requests_patient_id_fkey"
+            columns: ["patient_id"]
+            isOneToOne: false
+            referencedRelation: "patients"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "fulfillment_requests_preferred_vendor_id_fkey"
+            columns: ["preferred_vendor_id"]
+            isOneToOne: false
+            referencedRelation: "vendors"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "fulfillment_requests_prescription_id_fkey"
+            columns: ["prescription_id"]
+            isOneToOne: false
+            referencedRelation: "prescriptions"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      fulfillment_tracking: {
+        Row: {
+          created_at: string | null
+          id: string
+          location: string | null
+          notes: string | null
+          request_id: string
+          status: Database["public"]["Enums"]["fulfillment_status"]
+          updated_by: string | null
+        }
+        Insert: {
+          created_at?: string | null
+          id?: string
+          location?: string | null
+          notes?: string | null
+          request_id: string
+          status: Database["public"]["Enums"]["fulfillment_status"]
+          updated_by?: string | null
+        }
+        Update: {
+          created_at?: string | null
+          id?: string
+          location?: string | null
+          notes?: string | null
+          request_id?: string
+          status?: Database["public"]["Enums"]["fulfillment_status"]
+          updated_by?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "fulfillment_tracking_request_id_fkey"
+            columns: ["request_id"]
+            isOneToOne: false
+            referencedRelation: "fulfillment_requests"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       insurance_claims: {
         Row: {
           approved_amount: number | null
@@ -3971,6 +4184,81 @@ export type Database = {
         }
         Relationships: []
       }
+      vendor_bids: {
+        Row: {
+          can_fulfill_all: boolean | null
+          created_at: string | null
+          delivery_available: boolean | null
+          delivery_fee: number | null
+          discount_percent: number | null
+          estimated_delivery_time: string | null
+          estimated_ready_time: string | null
+          expires_at: string | null
+          id: string
+          notes: string | null
+          partial_items: Json | null
+          request_id: string
+          status: string | null
+          submitted_at: string | null
+          total_amount: number
+          unit_prices: Json
+          vendor_id: string
+        }
+        Insert: {
+          can_fulfill_all?: boolean | null
+          created_at?: string | null
+          delivery_available?: boolean | null
+          delivery_fee?: number | null
+          discount_percent?: number | null
+          estimated_delivery_time?: string | null
+          estimated_ready_time?: string | null
+          expires_at?: string | null
+          id?: string
+          notes?: string | null
+          partial_items?: Json | null
+          request_id: string
+          status?: string | null
+          submitted_at?: string | null
+          total_amount: number
+          unit_prices: Json
+          vendor_id: string
+        }
+        Update: {
+          can_fulfill_all?: boolean | null
+          created_at?: string | null
+          delivery_available?: boolean | null
+          delivery_fee?: number | null
+          discount_percent?: number | null
+          estimated_delivery_time?: string | null
+          estimated_ready_time?: string | null
+          expires_at?: string | null
+          id?: string
+          notes?: string | null
+          partial_items?: Json | null
+          request_id?: string
+          status?: string | null
+          submitted_at?: string | null
+          total_amount?: number
+          unit_prices?: Json
+          vendor_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "vendor_bids_request_id_fkey"
+            columns: ["request_id"]
+            isOneToOne: false
+            referencedRelation: "fulfillment_requests"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "vendor_bids_vendor_id_fkey"
+            columns: ["vendor_id"]
+            isOneToOne: false
+            referencedRelation: "vendors"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       vendor_products: {
         Row: {
           batch_number: string | null
@@ -4232,6 +4520,7 @@ export type Database = {
     Functions: {
       generate_claim_number: { Args: never; Returns: string }
       generate_encounter_number: { Args: never; Returns: string }
+      generate_fulfillment_number: { Args: never; Returns: string }
       generate_lab_order_number: { Args: never; Returns: string }
       generate_mrn: { Args: never; Returns: string }
       generate_prescription_number: { Args: never; Returns: string }
@@ -4250,6 +4539,19 @@ export type Database = {
       app_role: "admin" | "moderator" | "user"
       approval_status: "pending" | "approved" | "suspended" | "rejected"
       clinical_role: "doctor" | "nurse" | "specialist" | "patient" | "admin"
+      fulfillment_status:
+        | "draft"
+        | "submitted"
+        | "bidding"
+        | "awarded"
+        | "confirmed"
+        | "processing"
+        | "ready"
+        | "dispatched"
+        | "delivered"
+        | "completed"
+        | "cancelled"
+        | "expired"
       product_category_type:
         | "pharmaceutical"
         | "medical_device"
@@ -4390,6 +4692,20 @@ export const Constants = {
       app_role: ["admin", "moderator", "user"],
       approval_status: ["pending", "approved", "suspended", "rejected"],
       clinical_role: ["doctor", "nurse", "specialist", "patient", "admin"],
+      fulfillment_status: [
+        "draft",
+        "submitted",
+        "bidding",
+        "awarded",
+        "confirmed",
+        "processing",
+        "ready",
+        "dispatched",
+        "delivered",
+        "completed",
+        "cancelled",
+        "expired",
+      ],
       product_category_type: [
         "pharmaceutical",
         "medical_device",
