@@ -30,6 +30,33 @@
 
 import { supabase } from '@/integrations/supabase/client';
 
+// Helper type for identifier query results
+type IdentifierResult = { impilo_id: string; client_registry_id: string | null; shr_id: string | null };
+
+// Helper function to get identifier by patient ID
+async function getIdentifierByPatientId(patientId: string): Promise<IdentifierResult | null> {
+  const client = supabase as any;
+  const result = await client
+    .from('patient_identifiers')
+    .select('impilo_id, client_registry_id, shr_id')
+    .eq('patient_id', patientId)
+    .eq('is_active', true)
+    .limit(1);
+  
+  return result.data?.[0] as IdentifierResult | null;
+}
+
+// Helper function to get patient by field
+async function getPatientByField(field: string, value: string): Promise<{ id: string } | null> {
+  const client = supabase as any;
+  const result = await client
+    .from('patients')
+    .select('id')
+    .eq(field, value)
+    .limit(1);
+  
+  return result.data?.[0] as { id: string } | null;
+}
 // ============================================
 // TYPES
 // ============================================
@@ -463,16 +490,12 @@ export const PHIDService = {
       return { success: false, error: 'Patient not found. Try another recovery method.' };
     }
     
-    const { data: identifier } = await (supabase
-      .from('patient_identifiers' as any)
-      .select('impilo_id, client_registry_id, shr_id')
-      .eq('patient_id', patients[0].id)
-      .eq('is_active', true)
-      .maybeSingle());
+    const identifier = await getIdentifierByPatientId(patients[0].id);
     
     if (!identifier) {
       return { success: false, error: 'No active PHID found for patient' };
     }
+    
     
     if (Object.keys(data.answers).length >= 2) {
       return {
@@ -487,23 +510,21 @@ export const PHIDService = {
   },
 
   async verifyIdDocument(data: { documentType: string; documentNumber: string; dateOfBirth: string; fullName: string }): Promise<RecoveryResult> {
-    const { data: patients } = await supabase
+    const client = supabase as any;
+    const patientsResult = await client
       .from('patients')
       .select('id')
       .eq('national_id', data.documentNumber)
       .eq('date_of_birth', data.dateOfBirth)
       .limit(1);
     
+    const patients = patientsResult.data as { id: string }[] | null;
+    
     if (!patients?.length) {
       return { success: false, error: 'No patient found with matching ID document' };
     }
     
-    const { data: identifier } = await supabase
-      .from('patient_identifiers')
-      .select('impilo_id, client_registry_id, shr_id')
-      .eq('patient_id', patients[0].id)
-      .eq('is_active', true)
-      .maybeSingle();
+    const identifier = await getIdentifierByPatientId(patients[0].id);
     
     if (!identifier) {
       return { success: false, error: 'No active PHID found' };
@@ -518,13 +539,9 @@ export const PHIDService = {
   },
 
   async verifyPhoneOTP(data: { phoneNumber: string; otp: string }): Promise<RecoveryResult> {
-    const { data: patients } = await (supabase
-      .from('patients' as any)
-      .select('id')
-      .eq('phone', data.phoneNumber)
-      .limit(1));
+    const patient = await getPatientByField('phone', data.phoneNumber);
     
-    if (!patients?.length) {
+    if (!patient) {
       return { success: false, error: 'Phone number not registered' };
     }
     
@@ -532,12 +549,7 @@ export const PHIDService = {
       return { success: false, error: 'Invalid OTP format' };
     }
     
-    const { data: identifier } = await supabase
-      .from('patient_identifiers')
-      .select('impilo_id, client_registry_id, shr_id')
-      .eq('patient_id', patients[0].id)
-      .eq('is_active', true)
-      .maybeSingle();
+    const identifier = await getIdentifierByPatientId(patient.id);
     
     if (!identifier) {
       return { success: false, error: 'No active PHID found' };
@@ -552,13 +564,9 @@ export const PHIDService = {
   },
 
   async verifyEmailOTP(data: { email: string; otp: string }): Promise<RecoveryResult> {
-    const { data: patients } = await supabase
-      .from('patients')
-      .select('id')
-      .eq('email', data.email)
-      .limit(1);
+    const patient = await getPatientByField('email', data.email);
     
-    if (!patients?.length) {
+    if (!patient) {
       return { success: false, error: 'Email not registered' };
     }
     
@@ -566,12 +574,7 @@ export const PHIDService = {
       return { success: false, error: 'Invalid OTP format' };
     }
     
-    const { data: identifier } = await supabase
-      .from('patient_identifiers')
-      .select('impilo_id, client_registry_id, shr_id')
-      .eq('patient_id', patients[0].id)
-      .eq('is_active', true)
-      .maybeSingle();
+    const identifier = await getIdentifierByPatientId(patient.id);
     
     if (!identifier) {
       return { success: false, error: 'No active PHID found' };
@@ -586,18 +589,20 @@ export const PHIDService = {
   },
 
   async verifyViaProvider(data: { providerId: string; verificationCode: string; patientDetails: { fullName: string; dateOfBirth: string; address?: string } }): Promise<RecoveryResult> {
-    // Provider-assisted verification requires valid provider ID
     if (!data.providerId || !data.verificationCode) {
       return { success: false, error: 'Provider ID and verification code required' };
     }
     
     const nameParts = data.patientDetails.fullName.split(' ');
-    const { data: patients } = await supabase
+    const client = supabase as any;
+    const patientsResult = await client
       .from('patients')
       .select('id')
       .ilike('first_name', `%${nameParts[0]}%`)
       .eq('date_of_birth', data.patientDetails.dateOfBirth)
       .limit(5);
+    
+    const patients = patientsResult.data as { id: string }[] | null;
     
     if (!patients?.length) {
       return { success: false, error: 'Patient not found. Please verify details.' };
@@ -607,12 +612,7 @@ export const PHIDService = {
       return { success: false, error: 'Multiple patients found. Please provide address.' };
     }
     
-    const { data: identifier } = await supabase
-      .from('patient_identifiers')
-      .select('impilo_id, client_registry_id, shr_id')
-      .eq('patient_id', patients[0].id)
-      .eq('is_active', true)
-      .maybeSingle();
+    const identifier = await getIdentifierByPatientId(patients[0].id);
     
     if (!identifier) {
       return { success: false, error: 'No active PHID found' };
@@ -620,7 +620,7 @@ export const PHIDService = {
     
     // Log provider-assisted recovery
     try {
-      await supabase.from('id_generation_logs').insert({
+      await client.from('id_generation_logs').insert({
         entity_type: 'recovery',
         generated_id: identifier.impilo_id,
         id_format: 'DDDSDDDX',
@@ -663,14 +663,17 @@ export const PHIDService = {
 
     const cleanPHID = phid.toUpperCase().replace(/[\s-]/g, '');
 
-    const { data, error } = await supabase
+    const client = supabase as any;
+    const result = await client
       .from('patient_identifiers')
       .select('client_registry_id, shr_id, patient_id')
       .eq('impilo_id', cleanPHID)
       .eq('is_active', true)
-      .maybeSingle();
+      .limit(1);
 
-    if (error || !data) {
+    const data = result.data?.[0] as { client_registry_id: string | null; shr_id: string | null; patient_id: string } | null;
+
+    if (!data) {
       return null;
     }
 
