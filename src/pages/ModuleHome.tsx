@@ -7,6 +7,12 @@ import { Badge } from "@/components/ui/badge";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { HealthDocumentScanner } from "@/components/documents/HealthDocumentScanner";
+import { TimelineFeed } from "@/components/social/TimelineFeed";
+import { CommunitiesList } from "@/components/social/CommunitiesList";
+import { ClubsList } from "@/components/social/ClubsList";
+import { ProfessionalPages } from "@/components/social/ProfessionalPages";
+import { CrowdfundingCampaigns } from "@/components/social/CrowdfundingCampaigns";
+import { NewsFeedWidget } from "@/components/social/NewsFeedWidget";
 import { 
   Users,
   Bed,
@@ -45,6 +51,8 @@ import {
   CreditCard,
   Shield,
   ScanLine,
+  Trophy,
+  Megaphone,
 } from "lucide-react";
 import impiloLogo from "@/assets/impilo-logo.png";
 
@@ -163,6 +171,152 @@ const workModuleCategories: ModuleCategory[] = [
     ],
   },
 ];
+
+type SocialSection = 'timeline' | 'communities' | 'clubs' | 'pages' | 'crowdfunding';
+
+const socialNavItems = [
+  { id: 'timeline' as SocialSection, label: 'Timeline', icon: MessageSquare, description: 'Your health feed' },
+  { id: 'communities' as SocialSection, label: 'Communities', icon: Users, description: 'Support groups' },
+  { id: 'clubs' as SocialSection, label: 'Clubs', icon: Trophy, description: 'Wellness & fitness' },
+  { id: 'pages' as SocialSection, label: 'Pages', icon: Building2, description: 'Professionals' },
+  { id: 'crowdfunding' as SocialSection, label: 'Fundraising', icon: Megaphone, description: 'Support causes' },
+];
+
+function SocialHubLayout() {
+  const [activeSection, setActiveSection] = useState<SocialSection>('timeline');
+
+  const renderSocialContent = () => {
+    switch (activeSection) {
+      case 'timeline':
+        return <TimelineFeed />;
+      case 'communities':
+        return <CommunitiesList onSelectCommunity={() => {}} />;
+      case 'clubs':
+        return <ClubsList onSelectClub={() => {}} />;
+      case 'pages':
+        return <ProfessionalPages onSelectPage={() => {}} />;
+      case 'crowdfunding':
+        return <CrowdfundingCampaigns />;
+      default:
+        return <TimelineFeed />;
+    }
+  };
+
+  return (
+    <div className="flex gap-6">
+      {/* Left Sidebar Navigation */}
+      <div className="hidden lg:block w-64 shrink-0">
+        <Card className="sticky top-24">
+          <CardHeader className="pb-3">
+            <div className="flex items-center gap-3">
+              <div className="w-10 h-10 rounded-xl bg-purple-500 flex items-center justify-center">
+                <Users className="h-5 w-5 text-white" />
+              </div>
+              <div>
+                <CardTitle className="text-base">Social Hub</CardTitle>
+                <CardDescription className="text-xs">Connect & share</CardDescription>
+              </div>
+            </div>
+          </CardHeader>
+          <CardContent className="p-2">
+            <nav className="space-y-1">
+              {socialNavItems.map((item) => (
+                <button
+                  key={item.id}
+                  onClick={() => setActiveSection(item.id)}
+                  className={`w-full flex items-center gap-3 px-3 py-2.5 rounded-lg text-left transition-all ${
+                    activeSection === item.id
+                      ? 'bg-purple-500/10 text-purple-600 font-medium'
+                      : 'hover:bg-muted text-muted-foreground hover:text-foreground'
+                  }`}
+                >
+                  <item.icon className={`h-5 w-5 ${activeSection === item.id ? 'text-purple-500' : ''}`} />
+                  <div>
+                    <p className="text-sm">{item.label}</p>
+                    <p className="text-xs text-muted-foreground">{item.description}</p>
+                  </div>
+                </button>
+              ))}
+            </nav>
+          </CardContent>
+        </Card>
+
+        {/* Document Scanner */}
+        <Card className="mt-4 bg-gradient-to-br from-purple-500/5 to-pink-500/5 border-purple-200/50">
+          <CardContent className="p-4">
+            <div className="flex items-center gap-3 mb-3">
+              <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-purple-500 to-pink-600 flex items-center justify-center">
+                <ScanLine className="h-4 w-4 text-white" />
+              </div>
+              <div>
+                <p className="text-sm font-medium">Share Docs</p>
+                <p className="text-xs text-muted-foreground">Scan & share</p>
+              </div>
+            </div>
+            <HealthDocumentScanner variant="button" className="w-full bg-purple-500 hover:bg-purple-600 text-white" />
+          </CardContent>
+        </Card>
+      </div>
+
+      {/* Main Content Area */}
+      <div className="flex-1 min-w-0">
+        {/* Mobile Navigation */}
+        <div className="lg:hidden mb-4">
+          <ScrollArea className="w-full">
+            <div className="flex gap-2 pb-2">
+              {socialNavItems.map((item) => (
+                <Button
+                  key={item.id}
+                  variant={activeSection === item.id ? "default" : "outline"}
+                  size="sm"
+                  onClick={() => setActiveSection(item.id)}
+                  className={activeSection === item.id ? "bg-purple-500 hover:bg-purple-600" : ""}
+                >
+                  <item.icon className="h-4 w-4 mr-1.5" />
+                  {item.label}
+                </Button>
+              ))}
+            </div>
+          </ScrollArea>
+        </div>
+
+        {/* Section Header */}
+        <div className="flex items-center justify-between mb-4">
+          <div className="flex items-center gap-3">
+            {(() => {
+              const currentItem = socialNavItems.find(item => item.id === activeSection);
+              const Icon = currentItem?.icon || MessageSquare;
+              return (
+                <>
+                  <div className="w-10 h-10 rounded-xl bg-purple-500/10 flex items-center justify-center">
+                    <Icon className="h-5 w-5 text-purple-500" />
+                  </div>
+                  <div>
+                    <h3 className="text-lg font-semibold">{currentItem?.label}</h3>
+                    <p className="text-sm text-muted-foreground">{currentItem?.description}</p>
+                  </div>
+                </>
+              );
+            })()}
+          </div>
+          <div className="lg:hidden">
+            <HealthDocumentScanner variant="button" className="bg-purple-500 hover:bg-purple-600 text-white" />
+          </div>
+        </div>
+
+        {/* Content */}
+        {renderSocialContent()}
+      </div>
+
+      {/* Right Sidebar */}
+      <div className="hidden xl:block w-80 shrink-0">
+        <div className="sticky top-24 space-y-4">
+          <NewsFeedWidget />
+        </div>
+      </div>
+    </div>
+  );
+}
 
 export default function ModuleHome() {
   const { profile, signOut } = useAuth();
@@ -614,169 +768,7 @@ export default function ModuleHome() {
 
           {/* Health Social Hub Tab */}
           <TabsContent value="social" className="mt-0">
-            <div className="space-y-8">
-              {/* Hero Section */}
-              <div className="bg-gradient-to-r from-purple-500/10 via-indigo-500/10 to-blue-500/10 rounded-2xl p-8 border border-purple-200/50">
-                <div className="flex items-center gap-4 mb-4">
-                  <div className="w-16 h-16 rounded-2xl bg-purple-500 flex items-center justify-center">
-                    <Users className="h-8 w-8 text-white" />
-                  </div>
-                  <div>
-                    <h3 className="text-2xl font-bold">Health Social Hub</h3>
-                    <p className="text-muted-foreground">Connect, share, and support your health community</p>
-                  </div>
-                </div>
-                <Button 
-                  size="lg" 
-                  className="bg-purple-500 hover:bg-purple-600 text-white"
-                  onClick={() => navigate("/social")}
-                >
-                  Open Social Hub
-                  <ChevronRight className="h-5 w-5 ml-2" />
-                </Button>
-              </div>
-
-              {/* Document Scanner for Social */}
-              <div className="bg-gradient-to-r from-purple-500/10 via-pink-500/10 to-rose-500/10 rounded-xl p-6 border border-purple-200/50">
-                <div className="flex items-center justify-between flex-wrap gap-4">
-                  <div className="flex items-center gap-4">
-                    <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-purple-500 to-pink-600 flex items-center justify-center">
-                      <ScanLine className="h-6 w-6 text-white" />
-                    </div>
-                    <div>
-                      <h4 className="font-semibold">Share Health Documents</h4>
-                      <p className="text-sm text-muted-foreground">Scan & share documents with your community or care team</p>
-                    </div>
-                  </div>
-                  <HealthDocumentScanner variant="button" className="bg-purple-500 hover:bg-purple-600 text-white" />
-                </div>
-              </div>
-
-              {/* Social Features Grid */}
-              <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-4">
-                <Card 
-                  className="cursor-pointer hover:shadow-lg hover:border-purple-500/50 transition-all group"
-                  onClick={() => navigate("/social?tab=feed")}
-                >
-                  <CardContent className="pt-6 text-center">
-                    <div className="w-14 h-14 mx-auto rounded-xl bg-blue-500/10 flex items-center justify-center mb-3">
-                      <MessageSquare className="h-7 w-7 text-blue-500" />
-                    </div>
-                    <CardTitle className="text-base mb-1">Timeline</CardTitle>
-                    <CardDescription className="text-xs">News & updates</CardDescription>
-                  </CardContent>
-                </Card>
-
-                <Card 
-                  className="cursor-pointer hover:shadow-lg hover:border-purple-500/50 transition-all group"
-                  onClick={() => navigate("/social?tab=communities")}
-                >
-                  <CardContent className="pt-6 text-center">
-                    <div className="w-14 h-14 mx-auto rounded-xl bg-purple-500/10 flex items-center justify-center mb-3">
-                      <Users className="h-7 w-7 text-purple-500" />
-                    </div>
-                    <CardTitle className="text-base mb-1">Communities</CardTitle>
-                    <CardDescription className="text-xs">Support groups</CardDescription>
-                  </CardContent>
-                </Card>
-
-                <Card 
-                  className="cursor-pointer hover:shadow-lg hover:border-purple-500/50 transition-all group"
-                  onClick={() => navigate("/social?tab=clubs")}
-                >
-                  <CardContent className="pt-6 text-center">
-                    <div className="w-14 h-14 mx-auto rounded-xl bg-green-500/10 flex items-center justify-center mb-3">
-                      <Heart className="h-7 w-7 text-green-500" />
-                    </div>
-                    <CardTitle className="text-base mb-1">Clubs</CardTitle>
-                    <CardDescription className="text-xs">Wellness & fitness</CardDescription>
-                  </CardContent>
-                </Card>
-
-                <Card 
-                  className="cursor-pointer hover:shadow-lg hover:border-purple-500/50 transition-all group"
-                  onClick={() => navigate("/social?tab=pages")}
-                >
-                  <CardContent className="pt-6 text-center">
-                    <div className="w-14 h-14 mx-auto rounded-xl bg-indigo-500/10 flex items-center justify-center mb-3">
-                      <Building2 className="h-7 w-7 text-indigo-500" />
-                    </div>
-                    <CardTitle className="text-base mb-1">Pages</CardTitle>
-                    <CardDescription className="text-xs">Professionals</CardDescription>
-                  </CardContent>
-                </Card>
-
-                <Card 
-                  className="cursor-pointer hover:shadow-lg hover:border-purple-500/50 transition-all group"
-                  onClick={() => navigate("/social?tab=crowdfunding")}
-                >
-                  <CardContent className="pt-6 text-center">
-                    <div className="w-14 h-14 mx-auto rounded-xl bg-pink-500/10 flex items-center justify-center mb-3">
-                      <Heart className="h-7 w-7 text-pink-500" />
-                    </div>
-                    <CardTitle className="text-base mb-1">Crowdfunding</CardTitle>
-                    <CardDescription className="text-xs">Support causes</CardDescription>
-                  </CardContent>
-                </Card>
-              </div>
-
-              {/* Additional Social Features */}
-              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-                <Card 
-                  className="cursor-pointer hover:shadow-lg hover:border-purple-500/50 transition-all group"
-                  onClick={() => navigate("/social?tab=communities")}
-                >
-                  <CardHeader className="pb-3">
-                    <div className="flex items-start justify-between">
-                      <div className="w-12 h-12 rounded-lg bg-rose-500/10 flex items-center justify-center">
-                        <Shield className="h-6 w-6 text-rose-500" />
-                      </div>
-                      <ChevronRight className="h-4 w-4 text-muted-foreground group-hover:text-purple-500 transition-colors" />
-                    </div>
-                  </CardHeader>
-                  <CardContent>
-                    <CardTitle className="text-base mb-1">Patient Support Groups</CardTitle>
-                    <CardDescription className="text-xs">Connect with others facing similar health challenges</CardDescription>
-                  </CardContent>
-                </Card>
-
-                <Card 
-                  className="cursor-pointer hover:shadow-lg hover:border-purple-500/50 transition-all group"
-                  onClick={() => navigate("/social?tab=clubs")}
-                >
-                  <CardHeader className="pb-3">
-                    <div className="flex items-start justify-between">
-                      <div className="w-12 h-12 rounded-lg bg-orange-500/10 flex items-center justify-center">
-                        <Activity className="h-6 w-6 text-orange-500" />
-                      </div>
-                      <ChevronRight className="h-4 w-4 text-muted-foreground group-hover:text-purple-500 transition-colors" />
-                    </div>
-                  </CardHeader>
-                  <CardContent>
-                    <CardTitle className="text-base mb-1">Wellness Challenges</CardTitle>
-                    <CardDescription className="text-xs">Join fitness and wellness challenges with your community</CardDescription>
-                  </CardContent>
-                </Card>
-
-                <Card 
-                  className="cursor-pointer hover:shadow-lg hover:border-purple-500/50 transition-all group"
-                  onClick={() => navigate("/social?tab=crowdfunding")}
-                >
-                  <CardHeader className="pb-3">
-                    <div className="flex items-start justify-between">
-                      <div className="w-12 h-12 rounded-lg bg-teal-500/10 flex items-center justify-center">
-                        <DollarSign className="h-6 w-6 text-teal-500" />
-                      </div>
-                      <ChevronRight className="h-4 w-4 text-muted-foreground group-hover:text-purple-500 transition-colors" />
-                    </div>
-                  </CardHeader>
-                  <CardContent>
-                    <CardTitle className="text-base mb-1">Medical Fundraising</CardTitle>
-                    <CardDescription className="text-xs">Support medical treatments and healthcare causes</CardDescription>
-                  </CardContent>
-                </Card>
-              </div>
-            </div>
+            <SocialHubLayout />
           </TabsContent>
         </Tabs>
       </main>
