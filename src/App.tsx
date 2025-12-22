@@ -38,6 +38,7 @@ import ProductCatalogue from "./pages/ProductCatalogue";
 import HealthMarketplace from "./pages/HealthMarketplace";
 import ProductManagement from "./pages/admin/ProductManagement";
 import PrescriptionFulfillment from "./pages/PrescriptionFulfillment";
+import VendorPortal from "./pages/VendorPortal";
 
 const queryClient = new QueryClient();
 
@@ -184,6 +185,11 @@ const App = () => (
             <Route path="/fulfillment" element={
               <ProtectedRoute>
                 <PrescriptionFulfillment />
+              </ProtectedRoute>
+            } />
+            <Route path="/vendor-portal" element={
+              <ProtectedRoute>
+                <VendorPortal />
               </ProtectedRoute>
             } />
             {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
