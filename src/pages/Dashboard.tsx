@@ -24,6 +24,9 @@ import {
   UserPlus,
   ChevronRight,
   User,
+  MessageSquare,
+  Phone,
+  Bell,
 } from "lucide-react";
 
 const Dashboard = () => {
@@ -60,6 +63,12 @@ const Dashboard = () => {
     { label: "Appointments", icon: Calendar, path: "/appointments", color: "bg-warning" },
   ];
 
+  const communicationActions = [
+    { label: "Messages", icon: MessageSquare, path: "/communication", tab: "messaging", color: "bg-primary", count: 5 },
+    { label: "Pages", icon: Bell, path: "/communication", tab: "paging", color: "bg-warning", count: 2 },
+    { label: "Voice Call", icon: Phone, path: "/communication", tab: "voice", color: "bg-success", count: 0 },
+  ];
+
   // Render different content based on workspace view
   const renderWorkspaceContent = () => {
     switch (currentView) {
@@ -74,6 +83,44 @@ const Dashboard = () => {
 
   const renderPersonalView = () => (
     <>
+      {/* Communication Hub - Prominent Section */}
+      <Card className="mb-6 border-2 border-primary/20 bg-gradient-to-r from-primary/5 to-transparent">
+        <CardHeader className="pb-3">
+          <div className="flex items-center justify-between">
+            <div className="flex items-center gap-2">
+              <MessageSquare className="h-5 w-5 text-primary" />
+              <CardTitle className="text-lg">Communication Hub</CardTitle>
+            </div>
+            <Button variant="outline" size="sm" onClick={() => navigate("/communication")}>
+              View All
+              <ChevronRight className="h-4 w-4 ml-1" />
+            </Button>
+          </div>
+        </CardHeader>
+        <CardContent>
+          <div className="grid grid-cols-3 gap-4">
+            {communicationActions.map((action) => (
+              <Button
+                key={action.label}
+                variant="outline"
+                className="h-auto py-6 flex flex-col items-center gap-3 hover:bg-accent relative"
+                onClick={() => navigate(`${action.path}?tab=${action.tab}`)}
+              >
+                <div className={`p-3 rounded-full ${action.color}`}>
+                  <action.icon className="h-6 w-6 text-primary-foreground" />
+                </div>
+                <span className="text-sm font-medium">{action.label}</span>
+                {action.count > 0 && (
+                  <Badge className="absolute -top-2 -right-2 bg-destructive text-destructive-foreground">
+                    {action.count}
+                  </Badge>
+                )}
+              </Button>
+            ))}
+          </div>
+        </CardContent>
+      </Card>
+
       {/* Quick Stats */}
       <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-6">
         <Card>
