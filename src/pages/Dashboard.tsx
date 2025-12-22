@@ -64,9 +64,9 @@ const Dashboard = () => {
   ];
 
   const communicationActions = [
-    { label: "Messages", icon: MessageSquare, path: "/communication", tab: "messaging", color: "bg-primary", count: 5 },
-    { label: "Pages", icon: Bell, path: "/communication", tab: "paging", color: "bg-warning", count: 2 },
-    { label: "Voice Call", icon: Phone, path: "/communication", tab: "voice", color: "bg-success", count: 0 },
+    { label: "Messages", icon: MessageSquare, path: "/communication", tab: "messages", color: "bg-primary", count: 5 },
+    { label: "Pages", icon: Bell, path: "/communication", tab: "pages", color: "bg-warning", count: 2 },
+    { label: "Voice Call", icon: Phone, path: "/communication", tab: "calls", color: "bg-success", count: 0 },
   ];
 
   // Render different content based on workspace view
