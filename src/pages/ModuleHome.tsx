@@ -296,6 +296,92 @@ export default function ModuleHome() {
           </div>
         </div>
 
+        {/* Social Hub */}
+        <div className="mb-8">
+          <div className="flex items-center justify-between mb-4">
+            <div className="flex items-center gap-2">
+              <Badge variant="secondary" className="px-3 py-1 bg-pink-500/10 text-pink-600">Social Hub</Badge>
+              <p className="hidden sm:block text-sm text-muted-foreground">Connect, share & support your community</p>
+            </div>
+            <Button variant="outline" size="sm" onClick={() => navigate("/social")}>
+              Open Hub
+              <ChevronRight className="h-4 w-4 ml-1" />
+            </Button>
+          </div>
+
+          <div className="grid grid-cols-2 sm:grid-cols-5 gap-4">
+            <Button
+              variant="outline"
+              className="h-auto p-4 flex flex-col items-center gap-2 hover:bg-accent"
+              onClick={() => navigate("/social?tab=feed")}
+            >
+              <div className="h-10 w-10 rounded-lg bg-blue-500/10 flex items-center justify-center">
+                <MessageSquare className="h-5 w-5 text-blue-500" />
+              </div>
+              <div className="text-center">
+                <p className="font-medium text-sm">Timeline</p>
+                <p className="text-[10px] text-muted-foreground">News & updates</p>
+              </div>
+            </Button>
+
+            <Button
+              variant="outline"
+              className="h-auto p-4 flex flex-col items-center gap-2 hover:bg-accent"
+              onClick={() => navigate("/social?tab=communities")}
+            >
+              <div className="h-10 w-10 rounded-lg bg-purple-500/10 flex items-center justify-center">
+                <Users className="h-5 w-5 text-purple-500" />
+              </div>
+              <div className="text-center">
+                <p className="font-medium text-sm">Communities</p>
+                <p className="text-[10px] text-muted-foreground">Support groups</p>
+              </div>
+            </Button>
+
+            <Button
+              variant="outline"
+              className="h-auto p-4 flex flex-col items-center gap-2 hover:bg-accent"
+              onClick={() => navigate("/social?tab=clubs")}
+            >
+              <div className="h-10 w-10 rounded-lg bg-green-500/10 flex items-center justify-center">
+                <Heart className="h-5 w-5 text-green-500" />
+              </div>
+              <div className="text-center">
+                <p className="font-medium text-sm">Clubs</p>
+                <p className="text-[10px] text-muted-foreground">Wellness & fitness</p>
+              </div>
+            </Button>
+
+            <Button
+              variant="outline"
+              className="h-auto p-4 flex flex-col items-center gap-2 hover:bg-accent"
+              onClick={() => navigate("/social?tab=pages")}
+            >
+              <div className="h-10 w-10 rounded-lg bg-indigo-500/10 flex items-center justify-center">
+                <Building2 className="h-5 w-5 text-indigo-500" />
+              </div>
+              <div className="text-center">
+                <p className="font-medium text-sm">Pages</p>
+                <p className="text-[10px] text-muted-foreground">Professionals</p>
+              </div>
+            </Button>
+
+            <Button
+              variant="outline"
+              className="h-auto p-4 flex flex-col items-center gap-2 hover:bg-accent"
+              onClick={() => navigate("/social?tab=crowdfunding")}
+            >
+              <div className="h-10 w-10 rounded-lg bg-pink-500/10 flex items-center justify-center">
+                <Heart className="h-5 w-5 text-pink-500" />
+              </div>
+              <div className="text-center">
+                <p className="font-medium text-sm">Crowdfunding</p>
+                <p className="text-[10px] text-muted-foreground">Support causes</p>
+              </div>
+            </Button>
+          </div>
+        </div>
+
         {/* Quick Access */}
         <div className="mb-8">
           <div className="flex items-center gap-2 mb-4">
