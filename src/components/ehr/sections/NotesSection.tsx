@@ -6,11 +6,13 @@ import { Textarea } from "@/components/ui/textarea";
 import { 
   Plus, FileEdit, Paperclip, Clock, User, FileText, Stethoscope, 
   Users, ClipboardList, Image, File, Download, Trash2, Eye,
-  ChevronDown, ChevronUp, Calendar, Building2, PenSquare
+  ChevronDown, ChevronUp, Calendar, Building2, PenSquare, ScanLine
 } from "lucide-react";
 import { useState } from "react";
 import { useParams } from "react-router-dom";
 import { SOAPNoteEditor } from "@/components/clinical/SOAPNoteEditor";
+import { ClinicalDocumentScanner, ScannedDocument } from "@/components/documents/ClinicalDocumentScanner";
+import { toast } from "sonner";
 
 const MOCK_SOAP_NOTES = [
   {
@@ -179,6 +181,12 @@ export function NotesSection() {
   const [expandedSoap, setExpandedSoap] = useState<number | null>(1);
   const [expandedRound, setExpandedRound] = useState<number | null>(1);
   const { encounterId } = useParams<{ encounterId?: string }>();
+  const [scannedAttachments, setScannedAttachments] = useState<ScannedDocument[]>([]);
+
+  const handleDocumentScanned = (doc: ScannedDocument) => {
+    setScannedAttachments(prev => [...prev, doc]);
+    toast.success(`${doc.name} added to attachments`);
+  };
 
   return (
     <div className="space-y-6">
@@ -514,10 +522,18 @@ export function NotesSection() {
           <Card>
             <CardHeader className="flex flex-row items-center justify-between pb-3">
               <CardTitle className="text-base">Documents & Attachments</CardTitle>
-              <Button size="sm">
-                <Plus className="w-4 h-4 mr-1" />
-                Upload File
-              </Button>
+              <div className="flex gap-2">
+                <ClinicalDocumentScanner
+                  variant="button"
+                  context="encounter"
+                  onDocumentScanned={handleDocumentScanned}
+                  buttonLabel="Scan"
+                />
+                <Button size="sm" variant="outline">
+                  <Plus className="w-4 h-4 mr-1" />
+                  Upload
+                </Button>
+              </div>
             </CardHeader>
             <CardContent>
               {/* Category Filter */}

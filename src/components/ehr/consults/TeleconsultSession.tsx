@@ -17,7 +17,8 @@ import {
   PhoneOff,
   Maximize2,
   Minimize2,
-  MoreVertical
+  MoreVertical,
+  ScanLine,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -36,6 +37,7 @@ import { toast } from "sonner";
 import { WorklistItem } from "@/contexts/ProviderContext";
 import { VideoCallPanel } from "./VideoCallPanel";
 import { useWebRTC } from "@/hooks/useWebRTC";
+import { ClinicalDocumentScanner, ScannedDocument } from "@/components/documents/ClinicalDocumentScanner";
 
 // Stage 5: Teleconsultation Session
 interface ChatMessage {
@@ -125,6 +127,22 @@ export function TeleconsultSession({ referral, onSubmitResponse, onClose }: Tele
     },
   });
   const [lastSaved, setLastSaved] = useState<Date | null>(null);
+  const [sharedDocuments, setSharedDocuments] = useState<ScannedDocument[]>([]);
+
+  const handleDocumentScanned = (doc: ScannedDocument) => {
+    setSharedDocuments(prev => [...prev, doc]);
+    const docMessage: ChatMessage = {
+      id: Date.now().toString(),
+      sender: "Dr. J. Mwangi",
+      senderRole: "Consultant", 
+      content: `Shared document: ${doc.name}`,
+      timestamp: new Date(),
+      type: "attachment",
+      attachmentUrl: doc.imageData,
+    };
+    setMessages(prev => [...prev, docMessage]);
+    toast.success(`${doc.name} shared`);
+  };
 
   // WebRTC hook for real-time video/audio
   const {
@@ -267,9 +285,12 @@ export function TeleconsultSession({ referral, onSubmitResponse, onClose }: Tele
             {/* Message Input */}
             <div className="p-3 border-t">
               <div className="flex gap-2">
-                <Button variant="outline" size="icon" className="shrink-0">
-                  <Paperclip className="w-4 h-4" />
-                </Button>
+                <ClinicalDocumentScanner
+                  variant="icon"
+                  context="teleconsult"
+                  onDocumentScanned={handleDocumentScanned}
+                  showConfidentialityControls={false}
+                />
                 <Input
                   value={newMessage}
                   onChange={(e) => setNewMessage(e.target.value)}
