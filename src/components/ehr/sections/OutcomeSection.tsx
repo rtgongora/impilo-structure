@@ -13,7 +13,8 @@ import {
   ClipboardList, AlertCircle, UserX, Plus, ChevronRight
 } from "lucide-react";
 import { useState } from "react";
-
+import { PostEncounterNavigation } from "@/components/ehr/PostEncounterNavigation";
+import { toast } from "sonner";
 type DispositionType = "discharge" | "admit" | "transfer" | "refer" | "death" | "lama" | "";
 
 const DISPOSITION_OPTIONS = [
@@ -58,9 +59,19 @@ const FACILITIES = [
 export function OutcomeSection() {
   const [disposition, setDisposition] = useState<DispositionType>("");
   const [checkedItems, setCheckedItems] = useState<Record<string, boolean>>({});
+  const [isCompleted, setIsCompleted] = useState(false);
 
   const toggleCheckItem = (item: string) => {
     setCheckedItems(prev => ({ ...prev, [item]: !prev[item] }));
+  };
+
+  const handleCompleteEncounter = () => {
+    setIsCompleted(true);
+    toast.success("Encounter completed and saved successfully");
+  };
+
+  const handleSaveDraft = () => {
+    toast.success("Draft saved");
   };
 
   const renderDispositionForm = () => {
@@ -130,12 +141,19 @@ export function OutcomeSection() {
       {/* Disposition-specific Forms */}
       {disposition && renderDispositionForm()}
 
+      {/* Post-Encounter Navigation */}
+      <PostEncounterNavigation 
+        isVisible={isCompleted} 
+        patientName="Mary Johnson"
+        onClose={() => setIsCompleted(false)}
+      />
+
       {/* Actions */}
-      {disposition && (
+      {disposition && !isCompleted && (
         <div className="flex justify-end gap-3">
-          <Button variant="outline">Save Draft</Button>
+          <Button variant="outline" onClick={handleSaveDraft}>Save Draft</Button>
           <Button variant="outline">Preview Summary</Button>
-          <Button>
+          <Button onClick={handleCompleteEncounter}>
             <CheckCircle className="w-4 h-4 mr-2" />
             Complete Encounter
           </Button>
