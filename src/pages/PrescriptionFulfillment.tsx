@@ -40,6 +40,7 @@ import {
   Loader2,
 } from "lucide-react";
 import { format, formatDistanceToNow, addHours } from "date-fns";
+import OrderDetailsDialog from "@/components/fulfillment/OrderDetailsDialog";
 
 type FulfillmentStatus = "draft" | "submitted" | "bidding" | "awarded" | "confirmed" | "processing" | "ready" | "dispatched" | "delivered" | "completed" | "cancelled" | "expired";
 
@@ -120,6 +121,8 @@ export default function PrescriptionFulfillment() {
   const [searchTerm, setSearchTerm] = useState("");
   const [selectedRequest, setSelectedRequest] = useState<FulfillmentRequest | null>(null);
   const [bidDialogOpen, setBidDialogOpen] = useState(false);
+  const [orderDetailsOpen, setOrderDetailsOpen] = useState(false);
+  const [selectedOrderId, setSelectedOrderId] = useState<string | null>(null);
   const [convertDialogOpen, setConvertDialogOpen] = useState(false);
   const [selectedPrescriptionId, setSelectedPrescriptionId] = useState<string>("");
   
@@ -434,6 +437,9 @@ export default function PrescriptionFulfillment() {
                       setSelectedRequest(request);
                       if (request.status === "bidding") {
                         setBidDialogOpen(true);
+                      } else if (!["draft", "submitted"].includes(request.status)) {
+                        setSelectedOrderId(request.id);
+                        setOrderDetailsOpen(true);
                       }
                     }}
                   >
@@ -794,6 +800,14 @@ export default function PrescriptionFulfillment() {
             </DialogFooter>
           </DialogContent>
         </Dialog>
+
+        {/* Order Details Dialog */}
+        <OrderDetailsDialog
+          open={orderDetailsOpen}
+          onOpenChange={setOrderDetailsOpen}
+          requestId={selectedOrderId}
+          isVendor={false}
+        />
       </main>
     </div>
   );
