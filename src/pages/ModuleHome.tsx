@@ -362,6 +362,16 @@ export default function ModuleHome() {
               </div>
               <span className="font-medium text-sm">Clinical EHR</span>
             </Button>
+            <Button
+              variant="outline"
+              className="h-auto py-6 flex flex-col items-center gap-3 hover:bg-pink-500 hover:text-white hover:border-pink-500 transition-all group"
+              onClick={() => navigate("/social")}
+            >
+              <div className="w-12 h-12 rounded-xl bg-pink-500/10 group-hover:bg-white/20 flex items-center justify-center transition-colors">
+                <Heart className="h-6 w-6 text-pink-500 group-hover:text-white" />
+              </div>
+              <span className="font-medium text-sm">Social Hub</span>
+            </Button>
           </div>
         </div>
 
