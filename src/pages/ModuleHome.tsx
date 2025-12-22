@@ -31,6 +31,7 @@ import {
   Store,
   BookOpen,
   Database,
+  Heart,
 } from "lucide-react";
 import impiloLogo from "@/assets/impilo-logo.png";
 
@@ -136,6 +137,14 @@ const moduleCategories: ModuleCategory[] = [
       { id: "reports", label: "Reports & Analytics", description: "Dashboards & insights", icon: BarChart3, path: "/reports", color: "bg-violet-500" },
       { id: "odoo", label: "Odoo ERP", description: "ERP integration", icon: Building2, path: "/odoo", color: "bg-gray-600", roles: ["admin"] },
       { id: "admin", label: "System Admin", description: "Users, security & settings", icon: Settings, path: "/admin", color: "bg-gray-700", roles: ["admin"] },
+    ],
+  },
+  {
+    id: "myhealth",
+    title: "My Health",
+    description: "Access your personal health records and portal",
+    modules: [
+      { id: "portal", label: "My Health Portal", description: "Your health records & appointments", icon: Heart, path: "/portal", color: "bg-pink-500" },
     ],
   },
   {
