@@ -46,6 +46,7 @@ import ResourceCalendar from "./pages/scheduling/ResourceCalendar";
 import IdServices from "./pages/IdServices";
 import Communication from "./pages/Communication";
 import Social from "./pages/Social";
+import Kiosk from "./pages/Kiosk";
 const queryClient = new QueryClient();
 
 const App = () => (
@@ -233,6 +234,7 @@ const App = () => (
                 <Social />
               </ProtectedRoute>
             } />
+            <Route path="/kiosk" element={<Kiosk />} />
             {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
             <Route path="*" element={<NotFound />} />
           </Routes>
