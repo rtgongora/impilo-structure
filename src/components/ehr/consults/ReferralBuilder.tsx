@@ -19,7 +19,8 @@ import {
   Plus,
   X,
   Upload,
-  Eye
+  Eye,
+  ScanLine,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -36,6 +37,7 @@ import { useEHR } from "@/contexts/EHRContext";
 import { format } from "date-fns";
 import { cn } from "@/lib/utils";
 import { toast } from "sonner";
+import { ClinicalDocumentScanner, ScannedDocument } from "@/components/documents/ClinicalDocumentScanner";
 
 // Stage 1 & 2: Building the Referral Package
 type ReferralStep = "letter" | "patient-summary" | "visit-summary" | "attachments" | "routing" | "consent";
@@ -400,23 +402,39 @@ export function ReferralBuilder({ onSubmit, onCancel }: ReferralBuilderProps) {
         );
 
       case "attachments":
+        const handleScannedDocument = (doc: ScannedDocument) => {
+          setReferralPackage(prev => ({
+            ...prev,
+            attachments: [...prev.attachments, {
+              id: doc.id,
+              name: doc.name,
+              type: doc.type,
+              size: Math.round(doc.imageData.length / 1024),
+            }]
+          }));
+          toast.success(`${doc.name} attached to referral`);
+        };
+
         return (
           <div className="space-y-4">
-            <div className="border-2 border-dashed border-muted rounded-lg p-8 text-center">
-              <Upload className="w-12 h-12 text-muted-foreground mx-auto mb-4" />
-              <h4 className="font-medium mb-2">Upload Attachments</h4>
-              <p className="text-sm text-muted-foreground mb-4">
-                Drag and drop files here, or click to select. Supports images, PDFs, and documents.
-              </p>
-              <Button variant="outline">
-                <Plus className="w-4 h-4 mr-2" />
-                Select Files
-              </Button>
+            <div className="grid grid-cols-2 gap-4">
+              <ClinicalDocumentScanner
+                variant="inline"
+                context="referral"
+                onDocumentScanned={handleScannedDocument}
+                buttonLabel="Scan Document"
+                showConfidentialityControls={false}
+              />
+              <div className="border-2 border-dashed border-muted rounded-lg p-4 text-center cursor-pointer hover:bg-muted/30 transition-colors">
+                <Upload className="w-8 h-8 text-muted-foreground mx-auto mb-2" />
+                <p className="text-sm font-medium">Upload Files</p>
+                <p className="text-xs text-muted-foreground">PDF, images, docs</p>
+              </div>
             </div>
 
             {referralPackage.attachments.length > 0 && (
               <div className="space-y-2">
-                <Label>Attached Files</Label>
+                <Label>Attached Files ({referralPackage.attachments.length})</Label>
                 {referralPackage.attachments.map((file) => (
                   <div key={file.id} className="flex items-center justify-between p-3 bg-muted/30 rounded-lg">
                     <div className="flex items-center gap-3">

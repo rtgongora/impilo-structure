@@ -22,6 +22,9 @@ import {
   Sparkles,
   Activity,
   Award,
+  ScanLine,
+  Lock,
+  Shield,
 } from "lucide-react";
 import {
   DropdownMenu,
@@ -29,6 +32,7 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
+import { ClinicalDocumentScanner, ScannedDocument } from "@/components/documents/ClinicalDocumentScanner";
 
 interface Post {
   id: string;
@@ -65,6 +69,15 @@ export function TimelineFeed({ communityId, clubId, pageId }: TimelineFeedProps)
   const [newPostContent, setNewPostContent] = useState("");
   const [postType, setPostType] = useState<string>("standard");
   const [submitting, setSubmitting] = useState(false);
+  const [attachedDocuments, setAttachedDocuments] = useState<ScannedDocument[]>([]);
+
+  const handleDocumentScanned = (doc: ScannedDocument) => {
+    setAttachedDocuments(prev => [...prev, doc]);
+  };
+
+  const removeAttachedDoc = (docId: string) => {
+    setAttachedDocuments(prev => prev.filter(d => d.id !== docId));
+  };
 
   useEffect(() => {
     fetchPosts();
@@ -242,6 +255,32 @@ export function TimelineFeed({ communityId, clubId, pageId }: TimelineFeedProps)
                 onChange={(e) => setNewPostContent(e.target.value)}
                 className="min-h-[80px] resize-none"
               />
+              {/* Attached Documents Preview */}
+              {attachedDocuments.length > 0 && (
+                <div className="flex flex-wrap gap-2 mb-3">
+                  {attachedDocuments.map((doc) => (
+                    <div key={doc.id} className="relative group">
+                      <div className="flex items-center gap-2 px-3 py-2 bg-muted rounded-lg">
+                        {doc.isConfidential && <Lock className="h-3 w-3 text-warning" />}
+                        <img src={doc.imageData} alt="" className="h-8 w-8 object-cover rounded" />
+                        <span className="text-xs font-medium max-w-[100px] truncate">{doc.name}</span>
+                        {doc.visibility !== "community" && (
+                          <Shield className="h-3 w-3 text-muted-foreground" />
+                        )}
+                        <Button
+                          variant="ghost"
+                          size="icon"
+                          className="h-5 w-5 opacity-0 group-hover:opacity-100"
+                          onClick={() => removeAttachedDoc(doc.id)}
+                        >
+                          <span className="text-destructive text-xs">×</span>
+                        </Button>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              )}
+
               <div className="flex items-center justify-between">
                 <div className="flex gap-2">
                   <Button variant="ghost" size="sm">
@@ -252,6 +291,12 @@ export function TimelineFeed({ communityId, clubId, pageId }: TimelineFeedProps)
                     <Video className="h-4 w-4 mr-1" />
                     Video
                   </Button>
+                  <ClinicalDocumentScanner
+                    variant="icon"
+                    context="timeline"
+                    onDocumentScanned={handleDocumentScanned}
+                    showConfidentialityControls={true}
+                  />
                   <DropdownMenu>
                     <DropdownMenuTrigger asChild>
                       <Button variant="ghost" size="sm">
