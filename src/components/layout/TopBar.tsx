@@ -15,6 +15,8 @@ import {
   Calendar,
   CreditCard,
   ClipboardCheck,
+  ArrowLeft,
+  Home,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -23,7 +25,7 @@ import { CDSAlertBadge } from "@/components/ehr/ClinicalDecisionSupport";
 import { AIDiagnosticAssistant } from "@/components/ehr/AIDiagnosticAssistant";
 import { AlertBadge } from "@/components/alerts/ClinicalAlerts";
 import { UserMenu } from "@/components/auth/UserMenu";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { PatientSearch } from "@/components/search/PatientSearch";
 import impiloLogo from "@/assets/impilo-logo.png";
 
@@ -44,11 +46,34 @@ const iconMap: Record<string, React.ComponentType<{ className?: string }>> = {
 
 export function TopBar() {
   const { activeTopBarAction, setActiveTopBarAction, isCriticalEventActive, currentEncounter } = useEHR();
+  const navigate = useNavigate();
 
   return (
     <header className="h-14 bg-topbar-bg text-topbar-foreground flex items-center justify-between px-4 border-b border-topbar-bg/20 shadow-sm">
-      {/* Left: Logo & Title */}
+      {/* Left: Back, Home, Logo & Actions */}
       <div className="flex items-center gap-4">
+        {/* Navigation Buttons */}
+        <div className="flex items-center gap-1">
+          <Button
+            variant="ghost"
+            size="sm"
+            className="text-topbar-muted hover:text-topbar-foreground hover:bg-topbar-foreground/10"
+            onClick={() => navigate(-1)}
+          >
+            <ArrowLeft className="w-4 h-4" />
+          </Button>
+          <Button
+            variant="ghost"
+            size="sm"
+            className="text-topbar-muted hover:text-topbar-foreground hover:bg-topbar-foreground/10"
+            asChild
+          >
+            <Link to="/">
+              <Home className="w-4 h-4" />
+            </Link>
+          </Button>
+        </div>
+
         <div className="flex items-center gap-2">
           <img src={impiloLogo} alt="Impilo" className="h-7 w-auto" />
         </div>
