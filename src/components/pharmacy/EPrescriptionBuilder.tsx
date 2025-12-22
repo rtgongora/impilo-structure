@@ -20,6 +20,7 @@ import {
 } from "lucide-react";
 import { toast } from "sonner";
 import { useFormulary, useCreatePrescription, type FormularyItem } from "@/hooks/usePrescriptionData";
+import { DrugUnitsSelect } from "@/components/shared/DrugUnitsSelect";
 
 interface PrescriptionItemForm {
   medication_name: string;
@@ -257,21 +258,11 @@ export function EPrescriptionBuilder({ patientId, patientName, encounterId, onCo
                     placeholder="500"
                     className="w-24"
                   />
-                  <Select
+                  <DrugUnitsSelect
                     value={currentItem.dosage_unit || "mg"}
                     onValueChange={(v) => setCurrentItem({ ...currentItem, dosage_unit: v })}
-                  >
-                    <SelectTrigger className="w-20">
-                      <SelectValue />
-                    </SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="mg">mg</SelectItem>
-                      <SelectItem value="g">g</SelectItem>
-                      <SelectItem value="mcg">mcg</SelectItem>
-                      <SelectItem value="mL">mL</SelectItem>
-                      <SelectItem value="units">units</SelectItem>
-                    </SelectContent>
-                  </Select>
+                    className="w-28"
+                  />
                 </div>
               </div>
               <div>

@@ -40,6 +40,7 @@ import { BarcodeScanner } from "./BarcodeScanner";
 import { SignaturePad } from "./SignaturePad";
 import { DrugInteractionChecker } from "./DrugInteractionChecker";
 import { AllergyCrossCheck } from "./AllergyCrossCheck";
+import { DrugUnitsSelect } from "@/components/shared/DrugUnitsSelect";
 
 interface MedicationOrder {
   id: string;
@@ -357,7 +358,24 @@ export function MedicationAdministration({ patientId, encounterId }: MedicationA
                 <div className="grid grid-cols-2 gap-3">
                   <div className="space-y-2">
                     <Label>Dosage</Label>
-                    <Input value={dosageGiven} onChange={(e) => setDosageGiven(e.target.value)} />
+                    <div className="flex gap-2">
+                      <Input 
+                        value={dosageGiven.split(' ')[0] || ''} 
+                        onChange={(e) => {
+                          const unit = dosageGiven.split(' ')[1] || 'mg';
+                          setDosageGiven(`${e.target.value} ${unit}`);
+                        }} 
+                        className="flex-1"
+                      />
+                      <DrugUnitsSelect
+                        value={dosageGiven.split(' ')[1] || 'mg'}
+                        onValueChange={(v) => {
+                          const amount = dosageGiven.split(' ')[0] || '';
+                          setDosageGiven(`${amount} ${v}`);
+                        }}
+                        className="w-24"
+                      />
+                    </div>
                   </div>
                   <div className="space-y-2">
                     <Label>Route</Label>
