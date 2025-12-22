@@ -720,7 +720,7 @@ export default function ModuleHome() {
             </div>
 
             {/* Module Categories */}
-            <ScrollArea className="h-[calc(100vh-520px)]">
+            <div className="space-y-8 pb-8">
               <div className="space-y-8 pb-8">
                 {workModuleCategories.map((category) => {
                   const visibleModules = getVisibleModules(category.modules);
@@ -758,7 +758,7 @@ export default function ModuleHome() {
                   );
                 })}
               </div>
-            </ScrollArea>
+            </div>
           </TabsContent>
 
           {/* My Personal Health Portal Tab */}
