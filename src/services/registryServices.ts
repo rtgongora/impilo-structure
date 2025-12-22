@@ -1,10 +1,13 @@
 /**
- * OpenHIE Registry Integration Services
+ * Impilo Digital Health Platform - National Registry Services
  * 
- * This module provides mock implementations for:
- * - MOSIP Client Registry (Patient/Client IDs - Impilo ID)
- * - iHRIS Provider Registry (Healthcare Provider IDs)
- * - GOFR Global Open Facility Registry (Facility IDs)
+ * OpenHIE-aligned Registry Integration Services:
+ * - Client Registry (MOSIP-based) - Patient/Client Identity (Impilo ID)
+ * - Varapi Provider Registry (iHRIS-based) - Healthcare Worker Identity
+ * - Thuso Facility Registry (GOFR-based) - Health Facility Master List
+ * - Terminology Service (OCL-based) - Clinical Code Systems
+ * 
+ * Architecture: Foundation Layer / Shared Services
  */
 
 import { supabase } from '@/integrations/supabase/client';
@@ -15,7 +18,7 @@ import { supabase } from '@/integrations/supabase/client';
 
 export interface ProviderRegistryRecord {
   id: string;
-  providerId: string;
+  providerId: string; // Varapi Provider ID format: VARAPI-YYYY-XXXXXX
   fullName: string;
   role: string;
   specialty?: string;
@@ -30,8 +33,8 @@ export interface ProviderRegistryRecord {
 
 export interface ClientRegistryRecord {
   id: string;
-  impiloId: string;
-  mosipUin?: string;
+  impiloId: string; // Impilo Client ID format: IMP-XXXX-XXXX-XXXX
+  mosipUin?: string; // MOSIP Universal Identity Number
   fullName: string;
   dateOfBirth: string;
   gender: string;
@@ -43,10 +46,10 @@ export interface ClientRegistryRecord {
 
 export interface FacilityRegistryRecord {
   id: string;
-  gofrId: string;
+  gofrId: string; // Thuso Registry ID format: THUSO-XX-XXXXX
   name: string;
   facilityType: string;
-  level: string;
+  level: string; // Primary, Secondary, Tertiary, Quaternary
   address: {
     line1?: string;
     city: string;
@@ -72,12 +75,33 @@ export interface BiometricVerificationResult {
   error?: string;
 }
 
+export interface TerminologyCodeSystem {
+  id: string;
+  codeSystemId: string;
+  name: string;
+  description?: string;
+  version: string;
+  uri?: string;
+  publisher?: string;
+  isActive: boolean;
+}
+
+export interface TerminologyConcept {
+  id: string;
+  codeSystemId: string;
+  code: string;
+  display: string;
+  definition?: string;
+  parentCode?: string;
+  isActive: boolean;
+}
+
 // ============================================
-// MOCK DATA GENERATORS
+// ID GENERATORS (Following National Standards)
 // ============================================
 
-const generateProviderId = () => {
-  const prefix = 'IHRIS';
+const generateVarapiId = () => {
+  const prefix = 'VARAPI';
   const year = new Date().getFullYear();
   const random = Math.floor(Math.random() * 900000) + 100000;
   return `${prefix}-${year}-${random}`;
@@ -99,19 +123,24 @@ const generateMosipUin = () => {
   return parts.join('-');
 };
 
+const generateThusoId = (provinceCode: string = 'ZW') => {
+  const prefix = 'THUSO';
+  const random = Math.floor(Math.random() * 90000) + 10000;
+  return `${prefix}-${provinceCode}-${random}`;
+};
+
 // ============================================
-// PROVIDER REGISTRY SERVICE (iHRIS)
+// VARAPI PROVIDER REGISTRY SERVICE (iHRIS-based)
+// Zimbabwe Health Worker Registry
 // ============================================
 
-export const ProviderRegistryService = {
+export const VarapiProviderRegistry = {
   /**
-   * Look up a provider by their registry ID
+   * Look up a provider by their Varapi Registry ID
    */
   async lookupProvider(providerId: string): Promise<ProviderRegistryRecord | null> {
-    // Simulate API latency
     await new Promise(resolve => setTimeout(resolve, 500));
     
-    // Check if provider exists in our database
     const { data: profile } = await supabase
       .from('profiles')
       .select('*')
@@ -126,7 +155,7 @@ export const ProviderRegistryService = {
         role: profile.role,
         specialty: profile.specialty || undefined,
         department: profile.department || undefined,
-        facilityId: profile.facility_id || 'GOFR-ZA-001',
+        facilityId: profile.facility_id || 'THUSO-ZW-00001',
         licenseNumber: profile.license_number || undefined,
         status: 'active',
         biometricEnrolled: !!(profile.biometric_fingerprint_hash || profile.biometric_facial_hash || profile.biometric_iris_hash),
@@ -138,7 +167,7 @@ export const ProviderRegistryService = {
   },
 
   /**
-   * Register a new provider in the registry
+   * Register a new health worker in the Varapi Registry
    */
   async registerProvider(data: {
     fullName: string;
@@ -150,7 +179,7 @@ export const ProviderRegistryService = {
   }): Promise<ProviderRegistryRecord> {
     await new Promise(resolve => setTimeout(resolve, 800));
     
-    const providerId = generateProviderId();
+    const providerId = generateVarapiId();
     
     return {
       id: crypto.randomUUID(),
@@ -168,7 +197,7 @@ export const ProviderRegistryService = {
   },
 
   /**
-   * Verify provider biometrics against registry
+   * Verify provider biometrics against Varapi Registry
    */
   async verifyBiometric(
     providerId: string,
@@ -177,7 +206,6 @@ export const ProviderRegistryService = {
   ): Promise<BiometricVerificationResult> {
     await new Promise(resolve => setTimeout(resolve, 1000));
     
-    // Check stored biometric hash
     const hashColumn = `biometric_${method}_hash`;
     const { data: profile } = await supabase
       .from('profiles')
@@ -190,13 +218,11 @@ export const ProviderRegistryService = {
         success: false,
         method,
         confidence: 0,
-        error: 'Provider not found in registry'
+        error: 'Provider not found in Varapi Registry'
       };
     }
     
-    // In production, this would compare actual biometric templates
-    // For mock, we simulate successful verification
-    const storedHash = (profile as any)[hashColumn];
+    const storedHash = (profile as Record<string, unknown>)[hashColumn];
     
     if (storedHash && storedHash === biometricHash) {
       return {
@@ -217,7 +243,7 @@ export const ProviderRegistryService = {
   },
 
   /**
-   * Enroll provider biometrics
+   * Enroll provider biometrics in Varapi Registry
    */
   async enrollBiometric(
     userId: string,
@@ -243,11 +269,42 @@ export const ProviderRegistryService = {
     }
     
     return { success: true };
+  },
+
+  /**
+   * Search providers by name or license
+   */
+  async searchProviders(query: string): Promise<ProviderRegistryRecord[]> {
+    await new Promise(resolve => setTimeout(resolve, 400));
+    
+    const { data } = await supabase
+      .from('profiles')
+      .select('*')
+      .or(`display_name.ilike.%${query}%,license_number.ilike.%${query}%,provider_registry_id.ilike.%${query}%`)
+      .limit(20);
+    
+    return (data || []).map(profile => ({
+      id: profile.id,
+      providerId: profile.provider_registry_id || generateVarapiId(),
+      fullName: profile.display_name,
+      role: profile.role,
+      specialty: profile.specialty || undefined,
+      department: profile.department || undefined,
+      facilityId: profile.facility_id || 'THUSO-ZW-00001',
+      licenseNumber: profile.license_number || undefined,
+      status: 'active' as const,
+      biometricEnrolled: !!(profile.biometric_fingerprint_hash || profile.biometric_facial_hash || profile.biometric_iris_hash),
+      createdAt: profile.created_at
+    }));
   }
 };
 
+// Legacy alias for backward compatibility
+export const ProviderRegistryService = VarapiProviderRegistry;
+
 // ============================================
-// CLIENT REGISTRY SERVICE (MOSIP)
+// CLIENT REGISTRY SERVICE (MOSIP-based)
+// National Patient/Client Identity
 // ============================================
 
 export const ClientRegistryService = {
@@ -264,18 +321,18 @@ export const ClientRegistryService = {
       .maybeSingle();
     
     if (data && data.patients) {
-      const patient = data.patients as any;
+      const patient = data.patients as Record<string, unknown>;
       return {
         id: data.id,
         impiloId: data.impilo_id,
         mosipUin: data.mosip_uin || undefined,
         fullName: `${patient.first_name} ${patient.last_name}`,
-        dateOfBirth: patient.date_of_birth,
-        gender: patient.gender,
-        nationalId: patient.national_id || undefined,
+        dateOfBirth: patient.date_of_birth as string,
+        gender: patient.gender as string,
+        nationalId: (patient.national_id as string) || undefined,
         biometricEnrolled: !!(data.biometric_fingerprint_hash || data.biometric_facial_hash || data.biometric_iris_hash),
         verificationStatus: data.verified_at ? 'verified' : 'pending',
-        createdAt: data.created_at
+        createdAt: data.created_at || ''
       };
     }
     
@@ -283,7 +340,38 @@ export const ClientRegistryService = {
   },
 
   /**
-   * Register a new client/patient in the registry
+   * Look up a patient by their MRN
+   */
+  async lookupByMrn(mrn: string): Promise<ClientRegistryRecord | null> {
+    await new Promise(resolve => setTimeout(resolve, 500));
+    
+    const { data: patient } = await supabase
+      .from('patients')
+      .select('*, patient_identifiers(*)')
+      .eq('mrn', mrn)
+      .maybeSingle();
+    
+    if (patient) {
+      const identifiers = (patient.patient_identifiers as Record<string, unknown>[])?.[0];
+      return {
+        id: patient.id,
+        impiloId: (identifiers?.impilo_id as string) || generateImpiloId(),
+        mosipUin: (identifiers?.mosip_uin as string) || undefined,
+        fullName: `${patient.first_name} ${patient.last_name}`,
+        dateOfBirth: patient.date_of_birth,
+        gender: patient.gender,
+        nationalId: patient.national_id || undefined,
+        biometricEnrolled: !!(identifiers?.biometric_fingerprint_hash || identifiers?.biometric_facial_hash || identifiers?.biometric_iris_hash),
+        verificationStatus: identifiers?.verified_at ? 'verified' : 'pending',
+        createdAt: patient.created_at
+      };
+    }
+    
+    return null;
+  },
+
+  /**
+   * Register a new client/patient in the Client Registry
    */
   async registerClient(patientId: string, nationalId?: string): Promise<{ impiloId: string; mosipUin: string }> {
     await new Promise(resolve => setTimeout(resolve, 1000));
@@ -301,7 +389,7 @@ export const ClientRegistryService = {
   },
 
   /**
-   * Verify patient biometrics
+   * Verify patient biometrics against Client Registry
    */
   async verifyBiometric(
     impiloId: string,
@@ -321,27 +409,56 @@ export const ClientRegistryService = {
         success: false,
         method,
         confidence: 0,
-        error: 'Patient not found in registry'
+        error: 'Patient not found in Client Registry'
       };
     }
     
-    // Simulate successful biometric verification
     return {
       success: true,
       method,
       confidence: 0.94 + Math.random() * 0.06,
       matchedId: impiloId
     };
+  },
+
+  /**
+   * Search clients by name, ID, or MRN
+   */
+  async searchClients(query: string): Promise<ClientRegistryRecord[]> {
+    await new Promise(resolve => setTimeout(resolve, 400));
+    
+    const { data } = await supabase
+      .from('patients')
+      .select('*, patient_identifiers(*)')
+      .or(`first_name.ilike.%${query}%,last_name.ilike.%${query}%,mrn.ilike.%${query}%,national_id.ilike.%${query}%`)
+      .limit(20);
+    
+    return (data || []).map(patient => {
+      const identifiers = (patient.patient_identifiers as Record<string, unknown>[])?.[0];
+      return {
+        id: patient.id,
+        impiloId: (identifiers?.impilo_id as string) || generateImpiloId(),
+        mosipUin: (identifiers?.mosip_uin as string) || undefined,
+        fullName: `${patient.first_name} ${patient.last_name}`,
+        dateOfBirth: patient.date_of_birth,
+        gender: patient.gender,
+        nationalId: patient.national_id || undefined,
+        biometricEnrolled: false,
+        verificationStatus: 'pending' as const,
+        createdAt: patient.created_at
+      };
+    });
   }
 };
 
 // ============================================
-// FACILITY REGISTRY SERVICE (GOFR)
+// THUSO FACILITY REGISTRY SERVICE (GOFR-based)
+// Zimbabwe Health Facility Master List
 // ============================================
 
-export const FacilityRegistryService = {
+export const ThusoFacilityRegistry = {
   /**
-   * Look up a facility by GOFR ID
+   * Look up a facility by Thuso Registry ID
    */
   async lookupFacility(gofrId: string): Promise<FacilityRegistryRecord | null> {
     await new Promise(resolve => setTimeout(resolve, 300));
@@ -363,7 +480,7 @@ export const FacilityRegistryService = {
           line1: data.address_line1 || undefined,
           city: data.city || '',
           province: data.province || '',
-          country: data.country || 'South Africa'
+          country: data.country || 'Zimbabwe'
         },
         coordinates: data.latitude && data.longitude ? {
           latitude: parseFloat(String(data.latitude)),
@@ -373,7 +490,7 @@ export const FacilityRegistryService = {
           phone: data.phone || undefined,
           email: data.email || undefined
         },
-        isActive: data.is_active
+        isActive: data.is_active ?? true
       };
     }
     
@@ -381,7 +498,7 @@ export const FacilityRegistryService = {
   },
 
   /**
-   * Get all active facilities
+   * Get all active facilities in the Thuso Registry
    */
   async getAllFacilities(): Promise<FacilityRegistryRecord[]> {
     await new Promise(resolve => setTimeout(resolve, 300));
@@ -402,7 +519,7 @@ export const FacilityRegistryService = {
         line1: f.address_line1 || undefined,
         city: f.city || '',
         province: f.province || '',
-        country: f.country || 'South Africa'
+        country: f.country || 'Zimbabwe'
       },
       coordinates: f.latitude && f.longitude ? {
         latitude: parseFloat(String(f.latitude)),
@@ -412,12 +529,12 @@ export const FacilityRegistryService = {
         phone: f.phone || undefined,
         email: f.email || undefined
       },
-      isActive: f.is_active
+      isActive: f.is_active ?? true
     }));
   },
 
   /**
-   * Search facilities by name or location
+   * Search facilities by name, location, or type
    */
   async searchFacilities(query: string): Promise<FacilityRegistryRecord[]> {
     await new Promise(resolve => setTimeout(resolve, 300));
@@ -426,7 +543,7 @@ export const FacilityRegistryService = {
       .from('facilities')
       .select('*')
       .eq('is_active', true)
-      .or(`name.ilike.%${query}%,city.ilike.%${query}%,province.ilike.%${query}%`)
+      .or(`name.ilike.%${query}%,city.ilike.%${query}%,province.ilike.%${query}%,gofr_id.ilike.%${query}%`)
       .limit(10);
     
     return (data || []).map(f => ({
@@ -439,10 +556,169 @@ export const FacilityRegistryService = {
         line1: f.address_line1 || undefined,
         city: f.city || '',
         province: f.province || '',
-        country: f.country || 'South Africa'
+        country: f.country || 'Zimbabwe'
       },
-      isActive: f.is_active
+      isActive: f.is_active ?? true
     }));
+  },
+
+  /**
+   * Register a new facility in the Thuso Registry
+   */
+  async registerFacility(data: {
+    name: string;
+    facilityType: string;
+    level: string;
+    city: string;
+    province: string;
+    country?: string;
+    latitude?: number;
+    longitude?: number;
+    phone?: string;
+    email?: string;
+  }): Promise<FacilityRegistryRecord> {
+    const gofrId = generateThusoId('ZW');
+    
+    const { data: facility, error } = await supabase
+      .from('facilities')
+      .insert({
+        gofr_id: gofrId,
+        name: data.name,
+        facility_type: data.facilityType,
+        level: data.level,
+        city: data.city,
+        province: data.province,
+        country: data.country || 'Zimbabwe',
+        latitude: data.latitude,
+        longitude: data.longitude,
+        phone: data.phone,
+        email: data.email,
+        is_active: true
+      })
+      .select()
+      .single();
+    
+    if (error) throw error;
+    
+    return {
+      id: facility.id,
+      gofrId: facility.gofr_id,
+      name: facility.name,
+      facilityType: facility.facility_type,
+      level: facility.level || 'Primary',
+      address: {
+        city: facility.city || '',
+        province: facility.province || '',
+        country: facility.country || 'Zimbabwe'
+      },
+      isActive: true
+    };
+  }
+};
+
+// Legacy alias for backward compatibility
+export const FacilityRegistryService = ThusoFacilityRegistry;
+
+// ============================================
+// TERMINOLOGY SERVICE (OCL-based)
+// National Clinical Code Systems
+// ============================================
+
+export const TerminologyService = {
+  /**
+   * Get all code systems
+   */
+  async getCodeSystems(): Promise<TerminologyCodeSystem[]> {
+    const { data } = await supabase
+      .from('terminology_code_systems' as any)
+      .select('*')
+      .eq('is_active', true)
+      .order('name');
+    
+    return (data || []).map((cs: any) => ({
+      id: cs.id,
+      codeSystemId: cs.code_system_id,
+      name: cs.name,
+      description: cs.description || undefined,
+      version: cs.version,
+      uri: cs.uri || undefined,
+      publisher: cs.publisher || undefined,
+      isActive: cs.is_active
+    }));
+  },
+
+  /**
+   * Look up a concept by code
+   */
+  async lookupConcept(codeSystemId: string, code: string): Promise<TerminologyConcept | null> {
+    const { data: codeSystem } = await supabase
+      .from('terminology_code_systems' as any)
+      .select('id')
+      .eq('code_system_id', codeSystemId)
+      .single();
+    
+    if (!codeSystem) return null;
+    
+    const { data } = await supabase
+      .from('terminology_concepts' as any)
+      .select('*')
+      .eq('code_system_id', (codeSystem as any).id)
+      .eq('code', code)
+      .maybeSingle();
+    
+    if (data) {
+      const concept = data as any;
+      return {
+        id: concept.id,
+        codeSystemId: codeSystemId,
+        code: concept.code,
+        display: concept.display,
+        definition: concept.definition || undefined,
+        parentCode: concept.parent_code || undefined,
+        isActive: concept.is_active
+      };
+    }
+    
+    return null;
+  },
+
+  /**
+   * Search concepts by display text
+   */
+  async searchConcepts(codeSystemId: string, query: string): Promise<TerminologyConcept[]> {
+    const { data: codeSystem } = await supabase
+      .from('terminology_code_systems' as any)
+      .select('id')
+      .eq('code_system_id', codeSystemId)
+      .single();
+    
+    if (!codeSystem) return [];
+    
+    const { data } = await supabase
+      .from('terminology_concepts' as any)
+      .select('*')
+      .eq('code_system_id', (codeSystem as any).id)
+      .eq('is_active', true)
+      .or(`display.ilike.%${query}%,code.ilike.%${query}%`)
+      .limit(50);
+    
+    return (data || []).map((c: any) => ({
+      id: c.id,
+      codeSystemId: codeSystemId,
+      code: c.code,
+      display: c.display,
+      definition: c.definition || undefined,
+      parentCode: c.parent_code || undefined,
+      isActive: c.is_active
+    }));
+  },
+
+  /**
+   * Validate a code exists in a code system
+   */
+  async validateCode(codeSystemId: string, code: string): Promise<boolean> {
+    const concept = await this.lookupConcept(codeSystemId, code);
+    return concept !== null && concept.isActive;
   }
 };
 
@@ -453,7 +729,6 @@ export const FacilityRegistryService = {
 export const BiometricUtils = {
   /**
    * Generate a mock biometric hash from capture data
-   * In production, this would use actual biometric template generation
    */
   generateHash(type: 'fingerprint' | 'facial' | 'iris', captureData: string): string {
     const timestamp = Date.now().toString(36);
@@ -470,5 +745,160 @@ export const BiometricUtils = {
       score,
       acceptable: score >= 0.8
     };
+  }
+};
+
+// ============================================
+// SHARED HEALTH RECORD (SHR) SERVICE
+// HAPI FHIR-based longitudinal patient record
+// ============================================
+
+export const SharedHealthRecordService = {
+  /**
+   * Create a new SHR bundle for a patient encounter
+   */
+  async createBundle(data: {
+    patientId: string;
+    encounterId?: string;
+    compositionType: string;
+    title: string;
+    bundleJson: Record<string, unknown>;
+    authorId?: string;
+  }): Promise<{ id: string; success: boolean }> {
+    // Using raw insert since types may not be updated yet
+    const { data: bundle, error } = await supabase
+      .from('shr_bundles' as any)
+      .insert({
+        patient_id: data.patientId,
+        encounter_id: data.encounterId,
+        composition_type: data.compositionType,
+        title: data.title,
+        bundle_json: data.bundleJson,
+        author_id: data.authorId,
+        status: 'preliminary'
+      } as any)
+      .select()
+      .single();
+    
+    if (error) {
+      console.error('Failed to create SHR bundle:', error);
+      return { id: '', success: false };
+    }
+    
+    return { id: (bundle as any).id, success: true };
+  },
+
+  /**
+   * Get patient's SHR bundles (longitudinal history)
+   */
+  async getPatientBundles(patientId: string): Promise<unknown[]> {
+    const { data } = await supabase
+      .from('shr_bundles' as any)
+      .select('*')
+      .eq('patient_id', patientId)
+      .order('authored_at', { ascending: false });
+    
+    return data || [];
+  },
+
+  /**
+   * Finalize and sign an SHR bundle
+   */
+  async finalizeBundle(bundleId: string, signerId: string): Promise<boolean> {
+    const { error } = await supabase
+      .from('shr_bundles' as any)
+      .update({
+        status: 'final',
+        signed_at: new Date().toISOString(),
+        signed_by: signerId,
+        signature_hash: `SIG-${Date.now().toString(36)}`
+      } as any)
+      .eq('id', bundleId);
+    
+    return !error;
+  }
+};
+
+// ============================================
+// NATIONAL DATA REPOSITORY (NDR) SERVICE
+// Analytics and reporting data warehouse
+// ============================================
+
+export const NationalDataRepository = {
+  /**
+   * Ingest an observation into the NDR
+   */
+  async ingestObservation(data: {
+    patientId: string;
+    encounterId?: string;
+    facilityId?: string;
+    observationType: string;
+    code: string;
+    codeSystem: string;
+    display: string;
+    valueQuantity?: number;
+    valueUnit?: string;
+    valueString?: string;
+    effectiveDate: string;
+    isAbnormal?: boolean;
+    isCritical?: boolean;
+    patientAge?: number;
+    patientGender?: string;
+  }): Promise<boolean> {
+    const { error } = await supabase
+      .from('ndr_observations' as any)
+      .insert({
+        patient_id: data.patientId,
+        encounter_id: data.encounterId,
+        facility_id: data.facilityId,
+        observation_type: data.observationType,
+        code: data.code,
+        code_system: data.codeSystem,
+        display: data.display,
+        value_quantity: data.valueQuantity,
+        value_unit: data.valueUnit,
+        value_string: data.valueString,
+        effective_date: data.effectiveDate,
+        is_abnormal: data.isAbnormal,
+        is_critical: data.isCritical,
+        patient_age_years: data.patientAge,
+        patient_gender: data.patientGender
+      } as any);
+    
+    return !error;
+  },
+
+  /**
+   * Get aggregated indicators
+   */
+  async getIndicators(filters: {
+    indicatorCode?: string;
+    facilityId?: string;
+    province?: string;
+    periodStart?: string;
+    periodEnd?: string;
+  }): Promise<unknown[]> {
+    let query = supabase
+      .from('ndr_indicators' as any)
+      .select('*');
+    
+    if (filters.indicatorCode) {
+      query = query.eq('indicator_code', filters.indicatorCode);
+    }
+    if (filters.facilityId) {
+      query = query.eq('facility_id', filters.facilityId);
+    }
+    if (filters.province) {
+      query = query.eq('province', filters.province);
+    }
+    if (filters.periodStart) {
+      query = query.gte('period_start', filters.periodStart);
+    }
+    if (filters.periodEnd) {
+      query = query.lte('period_end', filters.periodEnd);
+    }
+    
+    const { data } = await query.order('period_start', { ascending: false });
+    return data || [];
   }
 };

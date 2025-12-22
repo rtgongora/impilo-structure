@@ -1341,6 +1341,210 @@ export type Database = {
           },
         ]
       }
+      ndr_encounters: {
+        Row: {
+          admission_date: string
+          discharge_date: string | null
+          discharge_disposition: string | null
+          encounter_class: string | null
+          encounter_id: string
+          encounter_type: string
+          facility_id: string | null
+          facility_name: string | null
+          facility_province: string | null
+          facility_type: string | null
+          id: string
+          ingested_at: string
+          length_of_stay: number | null
+          patient_age_at_encounter: number | null
+          patient_gender: string | null
+          patient_id: string
+          primary_diagnosis_code: string | null
+          primary_diagnosis_display: string | null
+          procedures_performed: Json | null
+          secondary_diagnoses: Json | null
+          source_system: string | null
+        }
+        Insert: {
+          admission_date: string
+          discharge_date?: string | null
+          discharge_disposition?: string | null
+          encounter_class?: string | null
+          encounter_id: string
+          encounter_type: string
+          facility_id?: string | null
+          facility_name?: string | null
+          facility_province?: string | null
+          facility_type?: string | null
+          id?: string
+          ingested_at?: string
+          length_of_stay?: number | null
+          patient_age_at_encounter?: number | null
+          patient_gender?: string | null
+          patient_id: string
+          primary_diagnosis_code?: string | null
+          primary_diagnosis_display?: string | null
+          procedures_performed?: Json | null
+          secondary_diagnoses?: Json | null
+          source_system?: string | null
+        }
+        Update: {
+          admission_date?: string
+          discharge_date?: string | null
+          discharge_disposition?: string | null
+          encounter_class?: string | null
+          encounter_id?: string
+          encounter_type?: string
+          facility_id?: string | null
+          facility_name?: string | null
+          facility_province?: string | null
+          facility_type?: string | null
+          id?: string
+          ingested_at?: string
+          length_of_stay?: number | null
+          patient_age_at_encounter?: number | null
+          patient_gender?: string | null
+          patient_id?: string
+          primary_diagnosis_code?: string | null
+          primary_diagnosis_display?: string | null
+          procedures_performed?: Json | null
+          secondary_diagnoses?: Json | null
+          source_system?: string | null
+        }
+        Relationships: []
+      }
+      ndr_indicators: {
+        Row: {
+          computed_at: string
+          denominator: number | null
+          district: string | null
+          facility_id: string | null
+          id: string
+          indicator_code: string
+          indicator_name: string
+          numerator: number | null
+          period_end: string
+          period_start: string
+          period_type: string
+          province: string | null
+          unit: string | null
+          value: number
+        }
+        Insert: {
+          computed_at?: string
+          denominator?: number | null
+          district?: string | null
+          facility_id?: string | null
+          id?: string
+          indicator_code: string
+          indicator_name: string
+          numerator?: number | null
+          period_end: string
+          period_start: string
+          period_type: string
+          province?: string | null
+          unit?: string | null
+          value: number
+        }
+        Update: {
+          computed_at?: string
+          denominator?: number | null
+          district?: string | null
+          facility_id?: string | null
+          id?: string
+          indicator_code?: string
+          indicator_name?: string
+          numerator?: number | null
+          period_end?: string
+          period_start?: string
+          period_type?: string
+          province?: string | null
+          unit?: string | null
+          value?: number
+        }
+        Relationships: []
+      }
+      ndr_observations: {
+        Row: {
+          code: string
+          code_system: string
+          display: string
+          effective_date: string
+          effective_datetime: string | null
+          encounter_id: string | null
+          facility_id: string | null
+          id: string
+          ingested_at: string
+          is_abnormal: boolean | null
+          is_critical: boolean | null
+          observation_type: string
+          patient_age_years: number | null
+          patient_district: string | null
+          patient_gender: string | null
+          patient_id: string
+          patient_province: string | null
+          performer_id: string | null
+          source_system: string | null
+          status: string
+          value_coded: string | null
+          value_quantity: number | null
+          value_string: string | null
+          value_unit: string | null
+        }
+        Insert: {
+          code: string
+          code_system: string
+          display: string
+          effective_date: string
+          effective_datetime?: string | null
+          encounter_id?: string | null
+          facility_id?: string | null
+          id?: string
+          ingested_at?: string
+          is_abnormal?: boolean | null
+          is_critical?: boolean | null
+          observation_type: string
+          patient_age_years?: number | null
+          patient_district?: string | null
+          patient_gender?: string | null
+          patient_id: string
+          patient_province?: string | null
+          performer_id?: string | null
+          source_system?: string | null
+          status?: string
+          value_coded?: string | null
+          value_quantity?: number | null
+          value_string?: string | null
+          value_unit?: string | null
+        }
+        Update: {
+          code?: string
+          code_system?: string
+          display?: string
+          effective_date?: string
+          effective_datetime?: string | null
+          encounter_id?: string | null
+          facility_id?: string | null
+          id?: string
+          ingested_at?: string
+          is_abnormal?: boolean | null
+          is_critical?: boolean | null
+          observation_type?: string
+          patient_age_years?: number | null
+          patient_district?: string | null
+          patient_gender?: string | null
+          patient_id?: string
+          patient_province?: string | null
+          performer_id?: string | null
+          source_system?: string | null
+          status?: string
+          value_coded?: string | null
+          value_quantity?: number | null
+          value_string?: string | null
+          value_unit?: string | null
+        }
+        Relationships: []
+      }
       patient_identifiers: {
         Row: {
           biometric_enrolled_at: string | null
@@ -1919,6 +2123,78 @@ export type Database = {
         }
         Relationships: []
       }
+      shr_bundles: {
+        Row: {
+          author_id: string | null
+          authored_at: string
+          bundle_json: Json
+          bundle_type: string
+          composition_type: string
+          created_at: string
+          encounter_id: string | null
+          fhir_version: string | null
+          id: string
+          patient_id: string
+          signature_hash: string | null
+          signed_at: string | null
+          signed_by: string | null
+          status: string
+          title: string
+          updated_at: string
+        }
+        Insert: {
+          author_id?: string | null
+          authored_at?: string
+          bundle_json: Json
+          bundle_type?: string
+          composition_type: string
+          created_at?: string
+          encounter_id?: string | null
+          fhir_version?: string | null
+          id?: string
+          patient_id: string
+          signature_hash?: string | null
+          signed_at?: string | null
+          signed_by?: string | null
+          status?: string
+          title: string
+          updated_at?: string
+        }
+        Update: {
+          author_id?: string | null
+          authored_at?: string
+          bundle_json?: Json
+          bundle_type?: string
+          composition_type?: string
+          created_at?: string
+          encounter_id?: string | null
+          fhir_version?: string | null
+          id?: string
+          patient_id?: string
+          signature_hash?: string | null
+          signed_at?: string | null
+          signed_by?: string | null
+          status?: string
+          title?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "shr_bundles_encounter_id_fkey"
+            columns: ["encounter_id"]
+            isOneToOne: false
+            referencedRelation: "encounters"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "shr_bundles_patient_id_fkey"
+            columns: ["patient_id"]
+            isOneToOne: false
+            referencedRelation: "patients"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       stock_categories: {
         Row: {
           created_at: string
@@ -2320,6 +2596,206 @@ export type Database = {
             referencedColumns: ["id"]
           },
         ]
+      }
+      terminology_code_systems: {
+        Row: {
+          code_system_id: string
+          created_at: string
+          description: string | null
+          id: string
+          is_active: boolean
+          name: string
+          publisher: string | null
+          updated_at: string
+          uri: string | null
+          version: string
+        }
+        Insert: {
+          code_system_id: string
+          created_at?: string
+          description?: string | null
+          id?: string
+          is_active?: boolean
+          name: string
+          publisher?: string | null
+          updated_at?: string
+          uri?: string | null
+          version: string
+        }
+        Update: {
+          code_system_id?: string
+          created_at?: string
+          description?: string | null
+          id?: string
+          is_active?: boolean
+          name?: string
+          publisher?: string | null
+          updated_at?: string
+          uri?: string | null
+          version?: string
+        }
+        Relationships: []
+      }
+      terminology_concept_maps: {
+        Row: {
+          comment: string | null
+          created_at: string
+          equivalence: string
+          id: string
+          source_concept_id: string
+          target_concept_id: string
+        }
+        Insert: {
+          comment?: string | null
+          created_at?: string
+          equivalence?: string
+          id?: string
+          source_concept_id: string
+          target_concept_id: string
+        }
+        Update: {
+          comment?: string | null
+          created_at?: string
+          equivalence?: string
+          id?: string
+          source_concept_id?: string
+          target_concept_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "terminology_concept_maps_source_concept_id_fkey"
+            columns: ["source_concept_id"]
+            isOneToOne: false
+            referencedRelation: "terminology_concepts"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "terminology_concept_maps_target_concept_id_fkey"
+            columns: ["target_concept_id"]
+            isOneToOne: false
+            referencedRelation: "terminology_concepts"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      terminology_concepts: {
+        Row: {
+          code: string
+          code_system_id: string
+          created_at: string
+          definition: string | null
+          display: string
+          id: string
+          is_active: boolean
+          parent_code: string | null
+          properties: Json | null
+        }
+        Insert: {
+          code: string
+          code_system_id: string
+          created_at?: string
+          definition?: string | null
+          display: string
+          id?: string
+          is_active?: boolean
+          parent_code?: string | null
+          properties?: Json | null
+        }
+        Update: {
+          code?: string
+          code_system_id?: string
+          created_at?: string
+          definition?: string | null
+          display?: string
+          id?: string
+          is_active?: boolean
+          parent_code?: string | null
+          properties?: Json | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "terminology_concepts_code_system_id_fkey"
+            columns: ["code_system_id"]
+            isOneToOne: false
+            referencedRelation: "terminology_code_systems"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      terminology_value_set_members: {
+        Row: {
+          concept_id: string
+          created_at: string
+          id: string
+          is_active: boolean
+          value_set_id: string
+        }
+        Insert: {
+          concept_id: string
+          created_at?: string
+          id?: string
+          is_active?: boolean
+          value_set_id: string
+        }
+        Update: {
+          concept_id?: string
+          created_at?: string
+          id?: string
+          is_active?: boolean
+          value_set_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "terminology_value_set_members_concept_id_fkey"
+            columns: ["concept_id"]
+            isOneToOne: false
+            referencedRelation: "terminology_concepts"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "terminology_value_set_members_value_set_id_fkey"
+            columns: ["value_set_id"]
+            isOneToOne: false
+            referencedRelation: "terminology_value_sets"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      terminology_value_sets: {
+        Row: {
+          created_at: string
+          description: string | null
+          id: string
+          name: string
+          purpose: string | null
+          status: string
+          updated_at: string
+          value_set_id: string
+          version: string
+        }
+        Insert: {
+          created_at?: string
+          description?: string | null
+          id?: string
+          name: string
+          purpose?: string | null
+          status?: string
+          updated_at?: string
+          value_set_id: string
+          version?: string
+        }
+        Update: {
+          created_at?: string
+          description?: string | null
+          id?: string
+          name?: string
+          purpose?: string | null
+          status?: string
+          updated_at?: string
+          value_set_id?: string
+          version?: string
+        }
+        Relationships: []
       }
       theatre_bookings: {
         Row: {
