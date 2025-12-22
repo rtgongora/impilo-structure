@@ -6616,7 +6616,39 @@ export type Database = {
       }
     }
     Views: {
-      [_ in never]: never
+      provider_scheduling_info: {
+        Row: {
+          department: string | null
+          facility_gofr_id: string | null
+          full_name: string | null
+          id: string | null
+          is_active: boolean | null
+          role: string | null
+          specialty: string | null
+          status: string | null
+        }
+        Insert: {
+          department?: string | null
+          facility_gofr_id?: string | null
+          full_name?: string | null
+          id?: string | null
+          is_active?: boolean | null
+          role?: string | null
+          specialty?: string | null
+          status?: string | null
+        }
+        Update: {
+          department?: string | null
+          facility_gofr_id?: string | null
+          full_name?: string | null
+          id?: string | null
+          is_active?: boolean | null
+          role?: string | null
+          specialty?: string | null
+          status?: string | null
+        }
+        Relationships: []
+      }
     }
     Functions: {
       can_access_patient: {
