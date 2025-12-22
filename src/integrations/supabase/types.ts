@@ -229,6 +229,63 @@ export type Database = {
           },
         ]
       }
+      bid_notifications: {
+        Row: {
+          created_at: string
+          fulfillment_request_id: string | null
+          id: string
+          is_read: boolean | null
+          message: string
+          metadata: Json | null
+          notification_type: string
+          read_at: string | null
+          title: string
+          user_id: string | null
+          vendor_id: string | null
+        }
+        Insert: {
+          created_at?: string
+          fulfillment_request_id?: string | null
+          id?: string
+          is_read?: boolean | null
+          message: string
+          metadata?: Json | null
+          notification_type: string
+          read_at?: string | null
+          title: string
+          user_id?: string | null
+          vendor_id?: string | null
+        }
+        Update: {
+          created_at?: string
+          fulfillment_request_id?: string | null
+          id?: string
+          is_read?: boolean | null
+          message?: string
+          metadata?: Json | null
+          notification_type?: string
+          read_at?: string | null
+          title?: string
+          user_id?: string | null
+          vendor_id?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "bid_notifications_fulfillment_request_id_fkey"
+            columns: ["fulfillment_request_id"]
+            isOneToOne: false
+            referencedRelation: "fulfillment_requests"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "bid_notifications_vendor_id_fkey"
+            columns: ["vendor_id"]
+            isOneToOne: false
+            referencedRelation: "vendors"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       care_plan_items: {
         Row: {
           care_plan_id: string
@@ -2061,6 +2118,116 @@ export type Database = {
           value_unit?: string | null
         }
         Relationships: []
+      }
+      package_deal_items: {
+        Row: {
+          created_at: string
+          id: string
+          package_id: string
+          product_id: string | null
+          product_name: string
+          quantity: number
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          package_id: string
+          product_id?: string | null
+          product_name: string
+          quantity?: number
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          package_id?: string
+          product_id?: string | null
+          product_name?: string
+          quantity?: number
+        }
+        Relationships: [
+          {
+            foreignKeyName: "package_deal_items_package_id_fkey"
+            columns: ["package_id"]
+            isOneToOne: false
+            referencedRelation: "package_deals"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "package_deal_items_product_id_fkey"
+            columns: ["product_id"]
+            isOneToOne: false
+            referencedRelation: "products"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      package_deals: {
+        Row: {
+          category: string
+          created_at: string
+          current_redemptions: number | null
+          description: string | null
+          discount_percentage: number | null
+          discounted_price: number
+          id: string
+          image_url: string | null
+          is_active: boolean | null
+          max_redemptions: number | null
+          name: string
+          original_price: number
+          terms_conditions: string | null
+          updated_at: string
+          valid_from: string
+          valid_until: string | null
+          vendor_id: string | null
+        }
+        Insert: {
+          category?: string
+          created_at?: string
+          current_redemptions?: number | null
+          description?: string | null
+          discount_percentage?: number | null
+          discounted_price: number
+          id?: string
+          image_url?: string | null
+          is_active?: boolean | null
+          max_redemptions?: number | null
+          name: string
+          original_price: number
+          terms_conditions?: string | null
+          updated_at?: string
+          valid_from?: string
+          valid_until?: string | null
+          vendor_id?: string | null
+        }
+        Update: {
+          category?: string
+          created_at?: string
+          current_redemptions?: number | null
+          description?: string | null
+          discount_percentage?: number | null
+          discounted_price?: number
+          id?: string
+          image_url?: string | null
+          is_active?: boolean | null
+          max_redemptions?: number | null
+          name?: string
+          original_price?: number
+          terms_conditions?: string | null
+          updated_at?: string
+          valid_from?: string
+          valid_until?: string | null
+          vendor_id?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "package_deals_vendor_id_fkey"
+            columns: ["vendor_id"]
+            isOneToOne: false
+            referencedRelation: "vendors"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       patient_counseling: {
         Row: {
@@ -4346,10 +4513,78 @@ export type Database = {
           },
         ]
       }
+      vendor_ratings: {
+        Row: {
+          created_at: string
+          fulfillment_request_id: string | null
+          id: string
+          is_verified: boolean | null
+          patient_id: string | null
+          rated_by: string | null
+          rating: number
+          responded_at: string | null
+          response: string | null
+          review: string | null
+          updated_at: string
+          vendor_id: string
+        }
+        Insert: {
+          created_at?: string
+          fulfillment_request_id?: string | null
+          id?: string
+          is_verified?: boolean | null
+          patient_id?: string | null
+          rated_by?: string | null
+          rating: number
+          responded_at?: string | null
+          response?: string | null
+          review?: string | null
+          updated_at?: string
+          vendor_id: string
+        }
+        Update: {
+          created_at?: string
+          fulfillment_request_id?: string | null
+          id?: string
+          is_verified?: boolean | null
+          patient_id?: string | null
+          rated_by?: string | null
+          rating?: number
+          responded_at?: string | null
+          response?: string | null
+          review?: string | null
+          updated_at?: string
+          vendor_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "vendor_ratings_fulfillment_request_id_fkey"
+            columns: ["fulfillment_request_id"]
+            isOneToOne: false
+            referencedRelation: "fulfillment_requests"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "vendor_ratings_patient_id_fkey"
+            columns: ["patient_id"]
+            isOneToOne: false
+            referencedRelation: "patients"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "vendor_ratings_vendor_id_fkey"
+            columns: ["vendor_id"]
+            isOneToOne: false
+            referencedRelation: "vendors"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       vendors: {
         Row: {
           address_line1: string | null
           address_line2: string | null
+          average_rating: number | null
           city: string | null
           contact_email: string | null
           contact_phone: string | null
@@ -4372,6 +4607,7 @@ export type Database = {
           rating: number | null
           registration_number: string | null
           status: Database["public"]["Enums"]["approval_status"] | null
+          total_ratings: number | null
           total_reviews: number | null
           updated_at: string | null
           vendor_type: string
@@ -4380,6 +4616,7 @@ export type Database = {
         Insert: {
           address_line1?: string | null
           address_line2?: string | null
+          average_rating?: number | null
           city?: string | null
           contact_email?: string | null
           contact_phone?: string | null
@@ -4402,6 +4639,7 @@ export type Database = {
           rating?: number | null
           registration_number?: string | null
           status?: Database["public"]["Enums"]["approval_status"] | null
+          total_ratings?: number | null
           total_reviews?: number | null
           updated_at?: string | null
           vendor_type?: string
@@ -4410,6 +4648,7 @@ export type Database = {
         Update: {
           address_line1?: string | null
           address_line2?: string | null
+          average_rating?: number | null
           city?: string | null
           contact_email?: string | null
           contact_phone?: string | null
@@ -4432,6 +4671,7 @@ export type Database = {
           rating?: number | null
           registration_number?: string | null
           status?: Database["public"]["Enums"]["approval_status"] | null
+          total_ratings?: number | null
           total_reviews?: number | null
           updated_at?: string | null
           vendor_type?: string

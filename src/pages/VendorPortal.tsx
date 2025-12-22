@@ -16,6 +16,8 @@ import { Textarea } from "@/components/ui/textarea";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { useToast } from "@/hooks/use-toast";
 import { useNavigate } from "react-router-dom";
+import { BidNotifications } from "@/components/marketplace/BidNotifications";
+import { VendorRatingDisplay } from "@/components/marketplace/VendorRating";
 import {
   ArrowLeft,
   Search,
@@ -36,6 +38,7 @@ import {
   Loader2,
   Building2,
   ShoppingCart,
+  Star,
 } from "lucide-react";
 import { format, formatDistanceToNow } from "date-fns";
 import OrderDetailsDialog from "@/components/fulfillment/OrderDetailsDialog";
@@ -289,8 +292,9 @@ export default function VendorPortal() {
               </div>
             </div>
             
-            {/* Vendor Selector */}
-            <div className="flex items-center gap-2">
+            {/* Notifications & Vendor Selector */}
+            <div className="flex items-center gap-3">
+              {selectedVendorId && <BidNotifications vendorId={selectedVendorId} />}
               <Label className="text-sm text-muted-foreground hidden sm:block">Acting as:</Label>
               <Select value={selectedVendorId} onValueChange={setSelectedVendorId}>
                 <SelectTrigger className="w-[200px]">
