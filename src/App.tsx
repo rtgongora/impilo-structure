@@ -44,6 +44,7 @@ import TheatreScheduling from "./pages/scheduling/TheatreScheduling";
 import ProviderNoticeboard from "./pages/scheduling/ProviderNoticeboard";
 import ResourceCalendar from "./pages/scheduling/ResourceCalendar";
 import IdServices from "./pages/IdServices";
+import Communication from "./pages/Communication";
 const queryClient = new QueryClient();
 
 const App = () => (
@@ -219,6 +220,11 @@ const App = () => (
             <Route path="/id-services" element={
               <ProtectedRoute>
                 <IdServices />
+              </ProtectedRoute>
+            } />
+            <Route path="/communication" element={
+              <ProtectedRoute>
+                <Communication />
               </ProtectedRoute>
             } />
             {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}

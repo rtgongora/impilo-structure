@@ -527,6 +527,44 @@ export type Database = {
           },
         ]
       }
+      channel_members: {
+        Row: {
+          channel_id: string
+          id: string
+          is_muted: boolean | null
+          joined_at: string
+          last_read_at: string | null
+          role: string | null
+          user_id: string
+        }
+        Insert: {
+          channel_id: string
+          id?: string
+          is_muted?: boolean | null
+          joined_at?: string
+          last_read_at?: string | null
+          role?: string | null
+          user_id: string
+        }
+        Update: {
+          channel_id?: string
+          id?: string
+          is_muted?: boolean | null
+          joined_at?: string
+          last_read_at?: string | null
+          role?: string | null
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "channel_members_channel_id_fkey"
+            columns: ["channel_id"]
+            isOneToOne: false
+            referencedRelation: "message_channels"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       charge_items: {
         Row: {
           base_price: number
@@ -654,6 +692,42 @@ export type Database = {
             referencedColumns: ["id"]
           },
         ]
+      }
+      clinical_messages: {
+        Row: {
+          channel_id: string
+          content: string
+          created_at: string
+          id: string
+          is_read: boolean | null
+          message_type: string
+          metadata: Json | null
+          read_at: string | null
+          sender_id: string
+        }
+        Insert: {
+          channel_id: string
+          content: string
+          created_at?: string
+          id?: string
+          is_read?: boolean | null
+          message_type?: string
+          metadata?: Json | null
+          read_at?: string | null
+          sender_id: string
+        }
+        Update: {
+          channel_id?: string
+          content?: string
+          created_at?: string
+          id?: string
+          is_read?: boolean | null
+          message_type?: string
+          metadata?: Json | null
+          read_at?: string | null
+          sender_id?: string
+        }
+        Relationships: []
       }
       clinical_notes: {
         Row: {
@@ -797,6 +871,96 @@ export type Database = {
           },
           {
             foreignKeyName: "clinical_orders_patient_id_fkey"
+            columns: ["patient_id"]
+            isOneToOne: false
+            referencedRelation: "patients"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      clinical_pages: {
+        Row: {
+          acknowledged_at: string | null
+          acknowledged_by: string | null
+          callback_number: string | null
+          created_at: string
+          department: string | null
+          encounter_id: string | null
+          escalated_to: string | null
+          escalation_level: number | null
+          expires_at: string | null
+          id: string
+          location: string | null
+          message: string
+          page_number: string
+          page_type: string
+          patient_id: string | null
+          priority: string
+          recipient_id: string | null
+          recipient_role: string | null
+          response_notes: string | null
+          sender_id: string
+          status: string
+          updated_at: string
+        }
+        Insert: {
+          acknowledged_at?: string | null
+          acknowledged_by?: string | null
+          callback_number?: string | null
+          created_at?: string
+          department?: string | null
+          encounter_id?: string | null
+          escalated_to?: string | null
+          escalation_level?: number | null
+          expires_at?: string | null
+          id?: string
+          location?: string | null
+          message: string
+          page_number: string
+          page_type?: string
+          patient_id?: string | null
+          priority?: string
+          recipient_id?: string | null
+          recipient_role?: string | null
+          response_notes?: string | null
+          sender_id: string
+          status?: string
+          updated_at?: string
+        }
+        Update: {
+          acknowledged_at?: string | null
+          acknowledged_by?: string | null
+          callback_number?: string | null
+          created_at?: string
+          department?: string | null
+          encounter_id?: string | null
+          escalated_to?: string | null
+          escalation_level?: number | null
+          expires_at?: string | null
+          id?: string
+          location?: string | null
+          message?: string
+          page_number?: string
+          page_type?: string
+          patient_id?: string | null
+          priority?: string
+          recipient_id?: string | null
+          recipient_role?: string | null
+          response_notes?: string | null
+          sender_id?: string
+          status?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "clinical_pages_encounter_id_fkey"
+            columns: ["encounter_id"]
+            isOneToOne: false
+            referencedRelation: "encounters"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "clinical_pages_patient_id_fkey"
             columns: ["patient_id"]
             isOneToOne: false
             referencedRelation: "patients"
@@ -2217,6 +2381,66 @@ export type Database = {
           },
         ]
       }
+      message_channels: {
+        Row: {
+          channel_type: string
+          created_at: string
+          created_by: string | null
+          department: string | null
+          description: string | null
+          encounter_id: string | null
+          id: string
+          is_active: boolean | null
+          last_message_at: string | null
+          name: string | null
+          patient_id: string | null
+          updated_at: string
+        }
+        Insert: {
+          channel_type?: string
+          created_at?: string
+          created_by?: string | null
+          department?: string | null
+          description?: string | null
+          encounter_id?: string | null
+          id?: string
+          is_active?: boolean | null
+          last_message_at?: string | null
+          name?: string | null
+          patient_id?: string | null
+          updated_at?: string
+        }
+        Update: {
+          channel_type?: string
+          created_at?: string
+          created_by?: string | null
+          department?: string | null
+          description?: string | null
+          encounter_id?: string | null
+          id?: string
+          is_active?: boolean | null
+          last_message_at?: string | null
+          name?: string | null
+          patient_id?: string | null
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "message_channels_encounter_id_fkey"
+            columns: ["encounter_id"]
+            isOneToOne: false
+            referencedRelation: "encounters"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "message_channels_patient_id_fkey"
+            columns: ["patient_id"]
+            isOneToOne: false
+            referencedRelation: "patients"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       ndr_encounters: {
         Row: {
           admission_date: string
@@ -2418,6 +2642,51 @@ export type Database = {
           value_quantity?: number | null
           value_string?: string | null
           value_unit?: string | null
+        }
+        Relationships: []
+      }
+      notification_preferences: {
+        Row: {
+          alerts_enabled: boolean | null
+          created_at: string
+          id: string
+          messages_enabled: boolean | null
+          pages_enabled: boolean | null
+          priority_override: boolean | null
+          quiet_hours_end: string | null
+          quiet_hours_start: string | null
+          sound_enabled: boolean | null
+          updated_at: string
+          user_id: string
+          vibrate_enabled: boolean | null
+        }
+        Insert: {
+          alerts_enabled?: boolean | null
+          created_at?: string
+          id?: string
+          messages_enabled?: boolean | null
+          pages_enabled?: boolean | null
+          priority_override?: boolean | null
+          quiet_hours_end?: string | null
+          quiet_hours_start?: string | null
+          sound_enabled?: boolean | null
+          updated_at?: string
+          user_id: string
+          vibrate_enabled?: boolean | null
+        }
+        Update: {
+          alerts_enabled?: boolean | null
+          created_at?: string
+          id?: string
+          messages_enabled?: boolean | null
+          pages_enabled?: boolean | null
+          priority_override?: boolean | null
+          quiet_hours_end?: string | null
+          quiet_hours_start?: string | null
+          sound_enabled?: boolean | null
+          updated_at?: string
+          user_id?: string
+          vibrate_enabled?: boolean | null
         }
         Relationships: []
       }
@@ -2623,6 +2892,45 @@ export type Database = {
             referencedColumns: ["id"]
           },
         ]
+      }
+      page_escalation_rules: {
+        Row: {
+          created_at: string
+          department: string | null
+          escalation_target_role: string | null
+          escalation_target_user: string | null
+          escalation_timeout_minutes: number
+          id: string
+          is_active: boolean | null
+          max_escalations: number | null
+          page_type: string | null
+          priority: string
+        }
+        Insert: {
+          created_at?: string
+          department?: string | null
+          escalation_target_role?: string | null
+          escalation_target_user?: string | null
+          escalation_timeout_minutes?: number
+          id?: string
+          is_active?: boolean | null
+          max_escalations?: number | null
+          page_type?: string | null
+          priority: string
+        }
+        Update: {
+          created_at?: string
+          department?: string | null
+          escalation_target_role?: string | null
+          escalation_target_user?: string | null
+          escalation_timeout_minutes?: number
+          id?: string
+          is_active?: boolean | null
+          max_escalations?: number | null
+          page_type?: string | null
+          priority?: string
+        }
+        Relationships: []
       }
       patient_counseling: {
         Row: {
@@ -3580,6 +3888,45 @@ export type Database = {
           reason?: string | null
           start_date?: string
           status?: string | null
+        }
+        Relationships: []
+      }
+      push_subscriptions: {
+        Row: {
+          auth: string
+          created_at: string
+          device_name: string | null
+          device_type: string | null
+          endpoint: string
+          id: string
+          is_active: boolean | null
+          p256dh: string
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          auth: string
+          created_at?: string
+          device_name?: string | null
+          device_type?: string | null
+          endpoint: string
+          id?: string
+          is_active?: boolean | null
+          p256dh: string
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          auth?: string
+          created_at?: string
+          device_name?: string | null
+          device_type?: string | null
+          endpoint?: string
+          id?: string
+          is_active?: boolean | null
+          p256dh?: string
+          updated_at?: string
+          user_id?: string
         }
         Relationships: []
       }
@@ -5343,6 +5690,75 @@ export type Database = {
           },
         ]
       }
+      voice_calls: {
+        Row: {
+          answered_at: string | null
+          call_type: string
+          caller_id: string
+          created_at: string
+          duration_seconds: number | null
+          encounter_id: string | null
+          end_reason: string | null
+          ended_at: string | null
+          id: string
+          patient_id: string | null
+          recipient_id: string | null
+          recipient_role: string | null
+          recording_url: string | null
+          started_at: string | null
+          status: string
+        }
+        Insert: {
+          answered_at?: string | null
+          call_type?: string
+          caller_id: string
+          created_at?: string
+          duration_seconds?: number | null
+          encounter_id?: string | null
+          end_reason?: string | null
+          ended_at?: string | null
+          id?: string
+          patient_id?: string | null
+          recipient_id?: string | null
+          recipient_role?: string | null
+          recording_url?: string | null
+          started_at?: string | null
+          status?: string
+        }
+        Update: {
+          answered_at?: string | null
+          call_type?: string
+          caller_id?: string
+          created_at?: string
+          duration_seconds?: number | null
+          encounter_id?: string | null
+          end_reason?: string | null
+          ended_at?: string | null
+          id?: string
+          patient_id?: string | null
+          recipient_id?: string | null
+          recipient_role?: string | null
+          recording_url?: string | null
+          started_at?: string | null
+          status?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "voice_calls_encounter_id_fkey"
+            columns: ["encounter_id"]
+            isOneToOne: false
+            referencedRelation: "encounters"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "voice_calls_patient_id_fkey"
+            columns: ["patient_id"]
+            isOneToOne: false
+            referencedRelation: "patients"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
     }
     Views: {
       [_ in never]: never
@@ -5366,6 +5782,7 @@ export type Database = {
       }
       generate_lab_order_number: { Args: never; Returns: string }
       generate_mrn: { Args: never; Returns: string }
+      generate_page_number: { Args: never; Returns: string }
       generate_prescription_number: { Args: never; Returns: string }
       generate_provider_registry_id: {
         Args: { p_province_code?: string }

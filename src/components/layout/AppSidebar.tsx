@@ -25,6 +25,7 @@ import {
   Megaphone,
   LayoutGrid,
   Fingerprint,
+  MessageSquare,
 } from "lucide-react";
 import { NavLink } from "@/components/NavLink";
 import { useLocation } from "react-router-dom";
@@ -49,6 +50,7 @@ interface NavItem {
 const priorityNavItems: NavItem[] = [
   { label: "Dashboard", icon: Home, path: "/", description: "Overview & worklist" },
   { label: "My Worklist", icon: ClipboardList, path: "/queue", description: "Your assigned work" },
+  { label: "Communication", icon: MessageSquare, path: "/communication", description: "Messages, pages & calls" },
 ];
 
 // Role-specific primary items
