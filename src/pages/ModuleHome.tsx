@@ -26,6 +26,8 @@ import {
   User,
   ChevronRight,
   HelpCircle,
+  Pill,
+  ClipboardCheck,
 } from "lucide-react";
 import impiloLogo from "@/assets/impilo-logo.png";
 
@@ -65,6 +67,8 @@ const moduleCategories: ModuleCategory[] = [
     description: "Lab, imaging, pharmacy, and clinical orders",
     modules: [
       { id: "orders", label: "Order Entry", description: "Medications, labs, & imaging", icon: ShoppingCart, path: "/orders", color: "bg-green-500", roles: ["doctor", "nurse", "specialist"] },
+      { id: "eprescriptions", label: "ePrescriptions", description: "Electronic prescriptions & formulary", icon: Pill, path: "/pharmacy", color: "bg-emerald-600", roles: ["doctor", "nurse", "specialist", "pharmacist"] },
+      { id: "eorders", label: "E-Orders", description: "Electronic clinical orders", icon: ClipboardCheck, path: "/orders", color: "bg-cyan-600", roles: ["doctor", "nurse", "specialist"] },
       { id: "pharmacy", label: "Pharmacy", description: "Dispensing & medication tracking", icon: Syringe, path: "/pharmacy", color: "bg-pink-500" },
       { id: "lims", label: "Laboratory", description: "Lab orders & results", icon: FlaskConical, path: "/lims", color: "bg-amber-500" },
       { id: "pacs", label: "Imaging (PACS)", description: "Radiology & diagnostic imaging", icon: FileText, path: "/pacs", color: "bg-indigo-500" },
@@ -191,7 +195,7 @@ export default function ModuleHome() {
           <div className="flex items-center gap-2 mb-4">
             <Badge variant="secondary" className="px-3 py-1">Quick Access</Badge>
           </div>
-          <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
+          <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-4">
             <Button
               variant="outline"
               className="h-auto py-6 flex flex-col items-center gap-3 hover:bg-primary hover:text-primary-foreground hover:border-primary transition-all group"
@@ -200,7 +204,7 @@ export default function ModuleHome() {
               <div className="w-12 h-12 rounded-xl bg-primary/10 group-hover:bg-primary-foreground/20 flex items-center justify-center transition-colors">
                 <ClipboardList className="h-6 w-6 text-primary group-hover:text-primary-foreground" />
               </div>
-              <span className="font-medium">My Dashboard</span>
+              <span className="font-medium text-sm">My Dashboard</span>
             </Button>
             <Button
               variant="outline"
@@ -210,7 +214,27 @@ export default function ModuleHome() {
               <div className="w-12 h-12 rounded-xl bg-blue-500/10 group-hover:bg-white/20 flex items-center justify-center transition-colors">
                 <Users className="h-6 w-6 text-blue-500 group-hover:text-white" />
               </div>
-              <span className="font-medium">Patient Queue</span>
+              <span className="font-medium text-sm">Patient Queue</span>
+            </Button>
+            <Button
+              variant="outline"
+              className="h-auto py-6 flex flex-col items-center gap-3 hover:bg-emerald-600 hover:text-white hover:border-emerald-600 transition-all group"
+              onClick={() => navigate("/pharmacy")}
+            >
+              <div className="w-12 h-12 rounded-xl bg-emerald-600/10 group-hover:bg-white/20 flex items-center justify-center transition-colors">
+                <Pill className="h-6 w-6 text-emerald-600 group-hover:text-white" />
+              </div>
+              <span className="font-medium text-sm">ePrescriptions</span>
+            </Button>
+            <Button
+              variant="outline"
+              className="h-auto py-6 flex flex-col items-center gap-3 hover:bg-cyan-600 hover:text-white hover:border-cyan-600 transition-all group"
+              onClick={() => navigate("/orders")}
+            >
+              <div className="w-12 h-12 rounded-xl bg-cyan-600/10 group-hover:bg-white/20 flex items-center justify-center transition-colors">
+                <ClipboardCheck className="h-6 w-6 text-cyan-600 group-hover:text-white" />
+              </div>
+              <span className="font-medium text-sm">E-Orders</span>
             </Button>
             <Button
               variant="outline"
@@ -220,7 +244,7 @@ export default function ModuleHome() {
               <div className="w-12 h-12 rounded-xl bg-green-500/10 group-hover:bg-white/20 flex items-center justify-center transition-colors">
                 <UserPlus className="h-6 w-6 text-green-500 group-hover:text-white" />
               </div>
-              <span className="font-medium">Register Patient</span>
+              <span className="font-medium text-sm">Register Patient</span>
             </Button>
             <Button
               variant="outline"
@@ -230,7 +254,7 @@ export default function ModuleHome() {
               <div className="w-12 h-12 rounded-xl bg-purple-500/10 group-hover:bg-white/20 flex items-center justify-center transition-colors">
                 <Stethoscope className="h-6 w-6 text-purple-500 group-hover:text-white" />
               </div>
-              <span className="font-medium">Clinical EHR</span>
+              <span className="font-medium text-sm">Clinical EHR</span>
             </Button>
           </div>
         </div>
