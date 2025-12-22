@@ -24,7 +24,6 @@ import {
   CalendarDays,
   Megaphone,
   LayoutGrid,
-  Heart,
 } from "lucide-react";
 import { NavLink } from "@/components/NavLink";
 import { useLocation } from "react-router-dom";
@@ -80,10 +79,6 @@ const operationsNavItems: NavItem[] = [
   { label: "Charges", icon: Receipt, path: "/charges", description: "Encounter charges" },
   { label: "Stock", icon: Package, path: "/stock", description: "Inventory" },
   { label: "Consumables", icon: Syringe, path: "/consumables", description: "Usage tracking" },
-];
-
-const myHealthNavItems: NavItem[] = [
-  { label: "My Health Portal", icon: Heart, path: "/portal", description: "Your health records" },
 ];
 
 const systemNavItems: NavItem[] = [
@@ -217,9 +212,6 @@ export function AppSidebar() {
         
         {/* Operations section */}
         <NavSection title="Operations" items={operationsNavItems} collapsed={collapsed} userRole={userRole} />
-        
-        {/* My Health section - providers can also be patients */}
-        <NavSection title="My Health" items={myHealthNavItems} collapsed={collapsed} userRole={userRole} />
         
         {/* System section - shown last but visible to those who need it */}
         <NavSection title="System" items={systemNavItems} collapsed={collapsed} userRole={userRole} />
