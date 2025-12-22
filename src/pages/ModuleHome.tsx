@@ -32,6 +32,9 @@ import {
   BookOpen,
   Database,
   Heart,
+  MessageSquare,
+  Bell,
+  Phone,
 } from "lucide-react";
 import impiloLogo from "@/assets/impilo-logo.png";
 
@@ -59,6 +62,7 @@ const moduleCategories: ModuleCategory[] = [
     description: "Patient encounters, assessments, and care delivery",
     modules: [
       { id: "dashboard", label: "My Dashboard", description: "Your worklist, tasks, and alerts", icon: ClipboardList, path: "/dashboard", color: "bg-primary" },
+      { id: "communication", label: "Communication", description: "Messages, pages & calls", icon: MessageSquare, path: "/communication", color: "bg-primary" },
       { id: "ehr", label: "Patient Encounters", description: "Clinical documentation & care", icon: Stethoscope, path: "/encounter", color: "bg-blue-500", roles: ["doctor", "nurse", "specialist"] },
       { id: "queue", label: "Patient Queue", description: "Waiting patients & triage", icon: Users, path: "/queue", color: "bg-orange-500" },
       { id: "beds", label: "Bed Management", description: "Ward status & admissions", icon: Bed, path: "/beds", color: "bg-purple-500" },
@@ -222,6 +226,74 @@ export default function ModuleHome() {
           <p className="text-muted-foreground mt-1">
             Select a module to get started with your work today.
           </p>
+        </div>
+
+        {/* Communication */}
+        <div className="mb-8">
+          <div className="flex items-center justify-between mb-4">
+            <div className="flex items-center gap-2">
+              <Badge variant="secondary" className="px-3 py-1">Communication</Badge>
+              <p className="hidden sm:block text-sm text-muted-foreground">Messages, pages & calls</p>
+            </div>
+            <Button variant="outline" size="sm" onClick={() => navigate("/communication")}
+            >
+              Open Hub
+              <ChevronRight className="h-4 w-4 ml-1" />
+            </Button>
+          </div>
+
+          <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+            <Button
+              variant="outline"
+              className="h-auto p-5 flex items-center justify-between hover:bg-accent"
+              onClick={() => navigate("/communication?tab=messages")}
+            >
+              <div className="flex items-center gap-3">
+                <div className="h-10 w-10 rounded-lg bg-primary/10 flex items-center justify-center">
+                  <MessageSquare className="h-5 w-5 text-primary" />
+                </div>
+                <div className="text-left">
+                  <p className="font-medium">Messages</p>
+                  <p className="text-xs text-muted-foreground">Chat with teams</p>
+                </div>
+              </div>
+              <ChevronRight className="h-4 w-4 text-muted-foreground" />
+            </Button>
+
+            <Button
+              variant="outline"
+              className="h-auto p-5 flex items-center justify-between hover:bg-accent"
+              onClick={() => navigate("/communication?tab=pages")}
+            >
+              <div className="flex items-center gap-3">
+                <div className="h-10 w-10 rounded-lg bg-warning/10 flex items-center justify-center">
+                  <Bell className="h-5 w-5 text-warning" />
+                </div>
+                <div className="text-left">
+                  <p className="font-medium">Pages</p>
+                  <p className="text-xs text-muted-foreground">Urgent alerts</p>
+                </div>
+              </div>
+              <ChevronRight className="h-4 w-4 text-muted-foreground" />
+            </Button>
+
+            <Button
+              variant="outline"
+              className="h-auto p-5 flex items-center justify-between hover:bg-accent"
+              onClick={() => navigate("/communication?tab=calls")}
+            >
+              <div className="flex items-center gap-3">
+                <div className="h-10 w-10 rounded-lg bg-success/10 flex items-center justify-center">
+                  <Phone className="h-5 w-5 text-success" />
+                </div>
+                <div className="text-left">
+                  <p className="font-medium">Calls</p>
+                  <p className="text-xs text-muted-foreground">Voice & video</p>
+                </div>
+              </div>
+              <ChevronRight className="h-4 w-4 text-muted-foreground" />
+            </Button>
+          </div>
         </div>
 
         {/* Quick Access */}
