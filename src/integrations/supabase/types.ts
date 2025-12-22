@@ -687,6 +687,84 @@ export type Database = {
           },
         ]
       }
+      controlled_substance_log: {
+        Row: {
+          action: string
+          batch_number: string | null
+          created_at: string
+          dea_schedule: string
+          discrepancy_notes: string | null
+          id: string
+          inventory_after: number | null
+          inventory_before: number | null
+          location: string | null
+          medication_name: string
+          patient_id: string | null
+          performed_by: string
+          prescription_item_id: string | null
+          quantity: number
+          quantity_unit: string
+          reason: string | null
+          witness_required: boolean | null
+          witnessed_by: string | null
+        }
+        Insert: {
+          action: string
+          batch_number?: string | null
+          created_at?: string
+          dea_schedule: string
+          discrepancy_notes?: string | null
+          id?: string
+          inventory_after?: number | null
+          inventory_before?: number | null
+          location?: string | null
+          medication_name: string
+          patient_id?: string | null
+          performed_by: string
+          prescription_item_id?: string | null
+          quantity: number
+          quantity_unit: string
+          reason?: string | null
+          witness_required?: boolean | null
+          witnessed_by?: string | null
+        }
+        Update: {
+          action?: string
+          batch_number?: string | null
+          created_at?: string
+          dea_schedule?: string
+          discrepancy_notes?: string | null
+          id?: string
+          inventory_after?: number | null
+          inventory_before?: number | null
+          location?: string | null
+          medication_name?: string
+          patient_id?: string | null
+          performed_by?: string
+          prescription_item_id?: string | null
+          quantity?: number
+          quantity_unit?: string
+          reason?: string | null
+          witness_required?: boolean | null
+          witnessed_by?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "controlled_substance_log_patient_id_fkey"
+            columns: ["patient_id"]
+            isOneToOne: false
+            referencedRelation: "patients"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "controlled_substance_log_prescription_item_id_fkey"
+            columns: ["prescription_item_id"]
+            isOneToOne: false
+            referencedRelation: "prescription_items"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       encounter_charges: {
         Row: {
           charge_item_id: string
@@ -878,6 +956,181 @@ export type Database = {
           phone?: string | null
           province?: string | null
           updated_at?: string | null
+        }
+        Relationships: []
+      }
+      five_rights_verification: {
+        Row: {
+          actual_time: string | null
+          all_rights_confirmed: boolean
+          created_at: string
+          dose_calculated: boolean | null
+          double_check_required: boolean | null
+          double_checked_by: string | null
+          id: string
+          medication_administration_id: string | null
+          medication_barcode_scanned: boolean | null
+          notes: string | null
+          override_reason: string | null
+          patient_id: string
+          patient_verification_method: string | null
+          prescription_item_id: string | null
+          right_dose: boolean
+          right_medication: boolean
+          right_patient: boolean
+          right_route: boolean
+          right_time: boolean
+          scheduled_time: string | null
+          verified_at: string
+          verified_by: string
+        }
+        Insert: {
+          actual_time?: string | null
+          all_rights_confirmed?: boolean
+          created_at?: string
+          dose_calculated?: boolean | null
+          double_check_required?: boolean | null
+          double_checked_by?: string | null
+          id?: string
+          medication_administration_id?: string | null
+          medication_barcode_scanned?: boolean | null
+          notes?: string | null
+          override_reason?: string | null
+          patient_id: string
+          patient_verification_method?: string | null
+          prescription_item_id?: string | null
+          right_dose?: boolean
+          right_medication?: boolean
+          right_patient?: boolean
+          right_route?: boolean
+          right_time?: boolean
+          scheduled_time?: string | null
+          verified_at?: string
+          verified_by: string
+        }
+        Update: {
+          actual_time?: string | null
+          all_rights_confirmed?: boolean
+          created_at?: string
+          dose_calculated?: boolean | null
+          double_check_required?: boolean | null
+          double_checked_by?: string | null
+          id?: string
+          medication_administration_id?: string | null
+          medication_barcode_scanned?: boolean | null
+          notes?: string | null
+          override_reason?: string | null
+          patient_id?: string
+          patient_verification_method?: string | null
+          prescription_item_id?: string | null
+          right_dose?: boolean
+          right_medication?: boolean
+          right_patient?: boolean
+          right_route?: boolean
+          right_time?: boolean
+          scheduled_time?: string | null
+          verified_at?: string
+          verified_by?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "five_rights_verification_medication_administration_id_fkey"
+            columns: ["medication_administration_id"]
+            isOneToOne: false
+            referencedRelation: "medication_administrations"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "five_rights_verification_patient_id_fkey"
+            columns: ["patient_id"]
+            isOneToOne: false
+            referencedRelation: "patients"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "five_rights_verification_prescription_item_id_fkey"
+            columns: ["prescription_item_id"]
+            isOneToOne: false
+            referencedRelation: "prescription_items"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      formulary: {
+        Row: {
+          alternatives: string[] | null
+          available_strengths: string[] | null
+          black_box_warning: string | null
+          brand_names: string[] | null
+          contraindications: string[] | null
+          created_at: string
+          dea_schedule: string | null
+          dosage_forms: string[] | null
+          drug_class: string | null
+          formulary_status: string
+          generic_name: string | null
+          id: string
+          is_active: boolean | null
+          is_controlled: boolean | null
+          medication_name: string
+          monitoring_parameters: string[] | null
+          ndc_code: string | null
+          pregnancy_category: string | null
+          requires_monitoring: boolean | null
+          restrictions: string | null
+          therapeutic_category: string | null
+          unit_cost: number | null
+          updated_at: string
+        }
+        Insert: {
+          alternatives?: string[] | null
+          available_strengths?: string[] | null
+          black_box_warning?: string | null
+          brand_names?: string[] | null
+          contraindications?: string[] | null
+          created_at?: string
+          dea_schedule?: string | null
+          dosage_forms?: string[] | null
+          drug_class?: string | null
+          formulary_status?: string
+          generic_name?: string | null
+          id?: string
+          is_active?: boolean | null
+          is_controlled?: boolean | null
+          medication_name: string
+          monitoring_parameters?: string[] | null
+          ndc_code?: string | null
+          pregnancy_category?: string | null
+          requires_monitoring?: boolean | null
+          restrictions?: string | null
+          therapeutic_category?: string | null
+          unit_cost?: number | null
+          updated_at?: string
+        }
+        Update: {
+          alternatives?: string[] | null
+          available_strengths?: string[] | null
+          black_box_warning?: string | null
+          brand_names?: string[] | null
+          contraindications?: string[] | null
+          created_at?: string
+          dea_schedule?: string | null
+          dosage_forms?: string[] | null
+          drug_class?: string | null
+          formulary_status?: string
+          generic_name?: string | null
+          id?: string
+          is_active?: boolean | null
+          is_controlled?: boolean | null
+          medication_name?: string
+          monitoring_parameters?: string[] | null
+          ndc_code?: string | null
+          pregnancy_category?: string | null
+          requires_monitoring?: boolean | null
+          restrictions?: string | null
+          therapeutic_category?: string | null
+          unit_cost?: number | null
+          updated_at?: string
         }
         Relationships: []
       }
@@ -1545,6 +1798,87 @@ export type Database = {
         }
         Relationships: []
       }
+      patient_counseling: {
+        Row: {
+          comprehension_verified: boolean | null
+          counseled_at: string
+          counseled_by: string
+          counseling_accepted: boolean | null
+          counseling_declined_reason: string | null
+          counseling_offered: boolean
+          created_at: string
+          follow_up_notes: string | null
+          follow_up_required: boolean | null
+          id: string
+          interpreter_language: string | null
+          interpreter_used: boolean | null
+          patient_id: string
+          patient_questions: string | null
+          pharmacist_responses: string | null
+          prescription_id: string
+          signature_url: string | null
+          special_instructions: string | null
+          topics_covered: string[] | null
+        }
+        Insert: {
+          comprehension_verified?: boolean | null
+          counseled_at?: string
+          counseled_by: string
+          counseling_accepted?: boolean | null
+          counseling_declined_reason?: string | null
+          counseling_offered?: boolean
+          created_at?: string
+          follow_up_notes?: string | null
+          follow_up_required?: boolean | null
+          id?: string
+          interpreter_language?: string | null
+          interpreter_used?: boolean | null
+          patient_id: string
+          patient_questions?: string | null
+          pharmacist_responses?: string | null
+          prescription_id: string
+          signature_url?: string | null
+          special_instructions?: string | null
+          topics_covered?: string[] | null
+        }
+        Update: {
+          comprehension_verified?: boolean | null
+          counseled_at?: string
+          counseled_by?: string
+          counseling_accepted?: boolean | null
+          counseling_declined_reason?: string | null
+          counseling_offered?: boolean
+          created_at?: string
+          follow_up_notes?: string | null
+          follow_up_required?: boolean | null
+          id?: string
+          interpreter_language?: string | null
+          interpreter_used?: boolean | null
+          patient_id?: string
+          patient_questions?: string | null
+          pharmacist_responses?: string | null
+          prescription_id?: string
+          signature_url?: string | null
+          special_instructions?: string | null
+          topics_covered?: string[] | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "patient_counseling_patient_id_fkey"
+            columns: ["patient_id"]
+            isOneToOne: false
+            referencedRelation: "patients"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "patient_counseling_prescription_id_fkey"
+            columns: ["prescription_id"]
+            isOneToOne: false
+            referencedRelation: "prescriptions"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       patient_identifiers: {
         Row: {
           biometric_enrolled_at: string | null
@@ -1759,6 +2093,238 @@ export type Database = {
           },
           {
             foreignKeyName: "payment_transactions_patient_id_fkey"
+            columns: ["patient_id"]
+            isOneToOne: false
+            referencedRelation: "patients"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      prescription_items: {
+        Row: {
+          batch_number: string | null
+          created_at: string
+          dispense_as_written: boolean | null
+          dispensed_at: string | null
+          dispensed_by: string | null
+          dispensed_quantity: number | null
+          dosage: string
+          dosage_unit: string
+          duration: string | null
+          expiry_date: string | null
+          frequency: string
+          generic_name: string | null
+          id: string
+          indication: string | null
+          instructions: string | null
+          is_controlled: boolean | null
+          medication_name: string
+          ndc_code: string | null
+          prescription_id: string
+          quantity: number
+          route: string
+          schedule: string | null
+          status: string
+          substitution_allowed: boolean | null
+          verified_at: string | null
+          verified_by: string | null
+        }
+        Insert: {
+          batch_number?: string | null
+          created_at?: string
+          dispense_as_written?: boolean | null
+          dispensed_at?: string | null
+          dispensed_by?: string | null
+          dispensed_quantity?: number | null
+          dosage: string
+          dosage_unit: string
+          duration?: string | null
+          expiry_date?: string | null
+          frequency: string
+          generic_name?: string | null
+          id?: string
+          indication?: string | null
+          instructions?: string | null
+          is_controlled?: boolean | null
+          medication_name: string
+          ndc_code?: string | null
+          prescription_id: string
+          quantity: number
+          route: string
+          schedule?: string | null
+          status?: string
+          substitution_allowed?: boolean | null
+          verified_at?: string | null
+          verified_by?: string | null
+        }
+        Update: {
+          batch_number?: string | null
+          created_at?: string
+          dispense_as_written?: boolean | null
+          dispensed_at?: string | null
+          dispensed_by?: string | null
+          dispensed_quantity?: number | null
+          dosage?: string
+          dosage_unit?: string
+          duration?: string | null
+          expiry_date?: string | null
+          frequency?: string
+          generic_name?: string | null
+          id?: string
+          indication?: string | null
+          instructions?: string | null
+          is_controlled?: boolean | null
+          medication_name?: string
+          ndc_code?: string | null
+          prescription_id?: string
+          quantity?: number
+          route?: string
+          schedule?: string | null
+          status?: string
+          substitution_allowed?: boolean | null
+          verified_at?: string | null
+          verified_by?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "prescription_items_prescription_id_fkey"
+            columns: ["prescription_id"]
+            isOneToOne: false
+            referencedRelation: "prescriptions"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      prescription_refills: {
+        Row: {
+          approved_at: string | null
+          approved_by: string | null
+          created_at: string
+          denial_reason: string | null
+          dispensed_at: string | null
+          dispensed_by: string | null
+          id: string
+          notes: string | null
+          prescription_id: string
+          refill_number: number
+          requested_at: string
+          requested_by: string | null
+          status: string
+        }
+        Insert: {
+          approved_at?: string | null
+          approved_by?: string | null
+          created_at?: string
+          denial_reason?: string | null
+          dispensed_at?: string | null
+          dispensed_by?: string | null
+          id?: string
+          notes?: string | null
+          prescription_id: string
+          refill_number: number
+          requested_at?: string
+          requested_by?: string | null
+          status?: string
+        }
+        Update: {
+          approved_at?: string | null
+          approved_by?: string | null
+          created_at?: string
+          denial_reason?: string | null
+          dispensed_at?: string | null
+          dispensed_by?: string | null
+          id?: string
+          notes?: string | null
+          prescription_id?: string
+          refill_number?: number
+          requested_at?: string
+          requested_by?: string | null
+          status?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "prescription_refills_prescription_id_fkey"
+            columns: ["prescription_id"]
+            isOneToOne: false
+            referencedRelation: "prescriptions"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      prescriptions: {
+        Row: {
+          controlled_schedule: string | null
+          created_at: string
+          dispensing_instructions: string | null
+          encounter_id: string | null
+          id: string
+          is_controlled_substance: boolean | null
+          patient_id: string
+          pharmacy_notes: string | null
+          prescribed_at: string
+          prescribed_by: string | null
+          prescription_number: string
+          prior_auth_number: string | null
+          priority: string
+          refills_authorized: number | null
+          refills_remaining: number | null
+          requires_prior_auth: boolean | null
+          status: string
+          updated_at: string
+          valid_until: string | null
+        }
+        Insert: {
+          controlled_schedule?: string | null
+          created_at?: string
+          dispensing_instructions?: string | null
+          encounter_id?: string | null
+          id?: string
+          is_controlled_substance?: boolean | null
+          patient_id: string
+          pharmacy_notes?: string | null
+          prescribed_at?: string
+          prescribed_by?: string | null
+          prescription_number: string
+          prior_auth_number?: string | null
+          priority?: string
+          refills_authorized?: number | null
+          refills_remaining?: number | null
+          requires_prior_auth?: boolean | null
+          status?: string
+          updated_at?: string
+          valid_until?: string | null
+        }
+        Update: {
+          controlled_schedule?: string | null
+          created_at?: string
+          dispensing_instructions?: string | null
+          encounter_id?: string | null
+          id?: string
+          is_controlled_substance?: boolean | null
+          patient_id?: string
+          pharmacy_notes?: string | null
+          prescribed_at?: string
+          prescribed_by?: string | null
+          prescription_number?: string
+          prior_auth_number?: string | null
+          priority?: string
+          refills_authorized?: number | null
+          refills_remaining?: number | null
+          requires_prior_auth?: boolean | null
+          status?: string
+          updated_at?: string
+          valid_until?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "prescriptions_encounter_id_fkey"
+            columns: ["encounter_id"]
+            isOneToOne: false
+            referencedRelation: "encounters"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "prescriptions_patient_id_fkey"
             columns: ["patient_id"]
             isOneToOne: false
             referencedRelation: "patients"
@@ -2188,6 +2754,162 @@ export type Database = {
           },
           {
             foreignKeyName: "shr_bundles_patient_id_fkey"
+            columns: ["patient_id"]
+            isOneToOne: false
+            referencedRelation: "patients"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      specimen_tracking: {
+        Row: {
+          action: string
+          condition_on_receipt: string | null
+          created_at: string
+          id: string
+          location_from: string | null
+          location_to: string | null
+          notes: string | null
+          performed_at: string
+          performed_by: string
+          specimen_id: string
+          temperature_logged: number | null
+        }
+        Insert: {
+          action: string
+          condition_on_receipt?: string | null
+          created_at?: string
+          id?: string
+          location_from?: string | null
+          location_to?: string | null
+          notes?: string | null
+          performed_at?: string
+          performed_by: string
+          specimen_id: string
+          temperature_logged?: number | null
+        }
+        Update: {
+          action?: string
+          condition_on_receipt?: string | null
+          created_at?: string
+          id?: string
+          location_from?: string | null
+          location_to?: string | null
+          notes?: string | null
+          performed_at?: string
+          performed_by?: string
+          specimen_id?: string
+          temperature_logged?: number | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "specimen_tracking_specimen_id_fkey"
+            columns: ["specimen_id"]
+            isOneToOne: false
+            referencedRelation: "specimens"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      specimens: {
+        Row: {
+          collected_at: string
+          collected_by: string | null
+          collection_method: string | null
+          collection_notes: string | null
+          collection_site: string | null
+          container_type: string | null
+          created_at: string
+          encounter_id: string | null
+          fasting_status: string | null
+          id: string
+          is_biohazard: boolean | null
+          lab_order_id: string | null
+          patient_id: string
+          preservative: string | null
+          priority: string | null
+          rejection_reason: string | null
+          specimen_id: string
+          specimen_source: string | null
+          specimen_type: string
+          status: string
+          temperature_requirement: string | null
+          transport_conditions: string | null
+          updated_at: string
+          volume_collected: string | null
+          volume_unit: string | null
+        }
+        Insert: {
+          collected_at?: string
+          collected_by?: string | null
+          collection_method?: string | null
+          collection_notes?: string | null
+          collection_site?: string | null
+          container_type?: string | null
+          created_at?: string
+          encounter_id?: string | null
+          fasting_status?: string | null
+          id?: string
+          is_biohazard?: boolean | null
+          lab_order_id?: string | null
+          patient_id: string
+          preservative?: string | null
+          priority?: string | null
+          rejection_reason?: string | null
+          specimen_id: string
+          specimen_source?: string | null
+          specimen_type: string
+          status?: string
+          temperature_requirement?: string | null
+          transport_conditions?: string | null
+          updated_at?: string
+          volume_collected?: string | null
+          volume_unit?: string | null
+        }
+        Update: {
+          collected_at?: string
+          collected_by?: string | null
+          collection_method?: string | null
+          collection_notes?: string | null
+          collection_site?: string | null
+          container_type?: string | null
+          created_at?: string
+          encounter_id?: string | null
+          fasting_status?: string | null
+          id?: string
+          is_biohazard?: boolean | null
+          lab_order_id?: string | null
+          patient_id?: string
+          preservative?: string | null
+          priority?: string | null
+          rejection_reason?: string | null
+          specimen_id?: string
+          specimen_source?: string | null
+          specimen_type?: string
+          status?: string
+          temperature_requirement?: string | null
+          transport_conditions?: string | null
+          updated_at?: string
+          volume_collected?: string | null
+          volume_unit?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "specimens_encounter_id_fkey"
+            columns: ["encounter_id"]
+            isOneToOne: false
+            referencedRelation: "encounters"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "specimens_lab_order_id_fkey"
+            columns: ["lab_order_id"]
+            isOneToOne: false
+            referencedRelation: "lab_orders"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "specimens_patient_id_fkey"
             columns: ["patient_id"]
             isOneToOne: false
             referencedRelation: "patients"
@@ -3063,7 +3785,9 @@ export type Database = {
       generate_encounter_number: { Args: never; Returns: string }
       generate_lab_order_number: { Args: never; Returns: string }
       generate_mrn: { Args: never; Returns: string }
+      generate_prescription_number: { Args: never; Returns: string }
       generate_referral_number: { Args: never; Returns: string }
+      generate_specimen_id: { Args: never; Returns: string }
       generate_transaction_number: { Args: never; Returns: string }
       has_role: {
         Args: {
