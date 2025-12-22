@@ -38,6 +38,7 @@ import {
   ShoppingCart,
 } from "lucide-react";
 import { format, formatDistanceToNow } from "date-fns";
+import OrderDetailsDialog from "@/components/fulfillment/OrderDetailsDialog";
 
 interface FulfillmentRequest {
   id: string;
@@ -98,6 +99,8 @@ export default function VendorPortal() {
   const [searchTerm, setSearchTerm] = useState("");
   const [selectedRequest, setSelectedRequest] = useState<FulfillmentRequest | null>(null);
   const [bidDialogOpen, setBidDialogOpen] = useState(false);
+  const [orderDetailsOpen, setOrderDetailsOpen] = useState(false);
+  const [selectedOrderId, setSelectedOrderId] = useState<string | null>(null);
   const [selectedVendorId, setSelectedVendorId] = useState<string>("");
   
   // Bid form state
@@ -528,9 +531,15 @@ export default function VendorPortal() {
                     {myBids.map((bid) => (
                       <Card
                         key={bid.id}
-                        className={`transition-all ${
+                        className={`cursor-pointer transition-all hover:shadow-md ${
                           bid.status === "accepted" ? "border-green-500/50" : ""
                         }`}
+                        onClick={() => {
+                          if (bid.status === "accepted") {
+                            setSelectedOrderId(bid.request_id);
+                            setOrderDetailsOpen(true);
+                          }
+                        }}
                       >
                         <CardContent className="p-4">
                           <div className="flex items-start justify-between gap-4">
@@ -744,6 +753,14 @@ export default function VendorPortal() {
             </DialogFooter>
           </DialogContent>
         </Dialog>
+
+        {/* Order Details Dialog */}
+        <OrderDetailsDialog
+          open={orderDetailsOpen}
+          onOpenChange={setOrderDetailsOpen}
+          requestId={selectedOrderId}
+          isVendor={true}
+        />
       </main>
     </div>
   );

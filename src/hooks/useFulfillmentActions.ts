@@ -300,11 +300,109 @@ export function useFulfillmentActions() {
     }
   };
 
+  /**
+   * Update fulfillment request status with tracking
+   */
+  const updateFulfillmentStatus = async (
+    requestId: string,
+    newStatus: string,
+    notes?: string,
+    location?: string
+  ) => {
+    if (!user) {
+      toast.error("You must be logged in");
+      return false;
+    }
+
+    try {
+      // Update request status
+      const { error: requestError } = await supabase
+        .from("fulfillment_requests")
+        .update({ status: newStatus as any })
+        .eq("id", requestId);
+
+      if (requestError) throw requestError;
+
+      // Add tracking entry
+      await supabase.from("fulfillment_tracking").insert({
+        request_id: requestId,
+        status: newStatus as any,
+        notes: notes || `Status updated to ${newStatus}`,
+        location: location || null,
+        updated_by: user.id,
+      });
+
+      toast.success(`Order status updated to ${newStatus}`);
+      return true;
+    } catch (err) {
+      console.error("Error updating status:", err);
+      toast.error("Failed to update status");
+      return false;
+    }
+  };
+
+  /**
+   * Confirm an awarded order (vendor accepts)
+   */
+  const confirmOrder = async (requestId: string) => {
+    return updateFulfillmentStatus(requestId, "confirmed", "Vendor confirmed the order");
+  };
+
+  /**
+   * Mark order as processing
+   */
+  const startProcessing = async (requestId: string) => {
+    return updateFulfillmentStatus(requestId, "processing", "Order is being prepared");
+  };
+
+  /**
+   * Mark order as ready for pickup
+   */
+  const markReady = async (requestId: string, location?: string) => {
+    return updateFulfillmentStatus(requestId, "ready", "Order is ready for pickup", location);
+  };
+
+  /**
+   * Mark order as dispatched for delivery
+   */
+  const dispatchOrder = async (requestId: string, notes?: string) => {
+    return updateFulfillmentStatus(requestId, "dispatched", notes || "Order dispatched for delivery");
+  };
+
+  /**
+   * Mark order as delivered
+   */
+  const markDelivered = async (requestId: string, location?: string) => {
+    return updateFulfillmentStatus(requestId, "delivered", "Order delivered to patient", location);
+  };
+
+  /**
+   * Complete the order
+   */
+  const completeOrder = async (requestId: string) => {
+    return updateFulfillmentStatus(requestId, "completed", "Order completed successfully");
+  };
+
+  /**
+   * Cancel the order
+   */
+  const cancelOrder = async (requestId: string, reason?: string) => {
+    return updateFulfillmentStatus(requestId, "cancelled", reason || "Order cancelled");
+  };
+
   return {
     convertPrescriptionToFulfillment,
     submitForBidding,
     generateDemoBids,
     awardBid,
+    updateFulfillmentStatus,
+    confirmOrder,
+    startProcessing,
+    markReady,
+    dispatchOrder,
+    markDelivered,
+    completeOrder,
+    cancelOrder,
     converting,
     generatingBids,
   };
