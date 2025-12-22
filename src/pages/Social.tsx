@@ -1,4 +1,5 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
+import { useSearchParams } from "react-router-dom";
 import { AppLayout } from "@/components/layout/AppLayout";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { TimelineFeed } from "@/components/social/TimelineFeed";
@@ -88,8 +89,16 @@ type DetailView =
   | null;
 
 export default function Social() {
-  const [activeTab, setActiveTab] = useState("feed");
+  const [searchParams] = useSearchParams();
+  const [activeTab, setActiveTab] = useState(searchParams.get("tab") || "feed");
   const [detailView, setDetailView] = useState<DetailView>(null);
+
+  useEffect(() => {
+    const tab = searchParams.get("tab");
+    if (tab) {
+      setActiveTab(tab);
+    }
+  }, [searchParams]);
 
   const handleSelectCommunity = (community: Community) => {
     setDetailView({ type: "community", data: community });
