@@ -27,6 +27,7 @@ import {
   MessageSquare,
   Phone,
   Bell,
+  Inbox,
 } from "lucide-react";
 
 const Dashboard = () => {
@@ -61,6 +62,7 @@ const Dashboard = () => {
     { label: "Bed Management", icon: Bed, path: "/beds", color: "bg-secondary" },
     { label: "New Registration", icon: UserPlus, path: "/registration", color: "bg-success" },
     { label: "Appointments", icon: Calendar, path: "/appointments", color: "bg-warning" },
+    { label: "Provider Inbox", icon: Inbox, path: "/orders", color: "bg-info" },
   ];
 
   const communicationActions = [

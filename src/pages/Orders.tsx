@@ -7,8 +7,9 @@ import { MedicationTimeline } from "@/components/orders/MedicationTimeline";
 import { MedicationReconciliation } from "@/components/orders/MedicationReconciliation";
 import { MARTimelineView } from "@/components/orders/MARTimelineView";
 import { EscalatingMedicationAlerts } from "@/components/alerts/EscalatingMedicationAlerts";
+import { ProviderInbox } from "@/components/inbox/ProviderInbox";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { ShoppingCart, ClipboardList, Syringe, Timer, FileText, LayoutGrid, AlertTriangle } from "lucide-react";
+import { ShoppingCart, ClipboardList, Syringe, Timer, FileText, LayoutGrid, AlertTriangle, Inbox } from "lucide-react";
 import { AppLayout } from "@/components/layout/AppLayout";
 
 interface SelectedPatient {
@@ -21,7 +22,7 @@ interface SelectedPatient {
 
 const Orders = () => {
   const [selectedPatient, setSelectedPatient] = useState<SelectedPatient | null>(null);
-  const [activeTab, setActiveTab] = useState("new");
+  const [activeTab, setActiveTab] = useState("inbox");
 
   return (
     <AppLayout title="Order Entry System">
@@ -39,6 +40,10 @@ const Orders = () => {
           <div className="lg:col-span-3">
             <Tabs value={activeTab} onValueChange={setActiveTab}>
               <TabsList className="mb-4 flex-wrap h-auto gap-1">
+                <TabsTrigger value="inbox">
+                  <Inbox className="h-4 w-4 mr-2" />
+                  Provider Inbox
+                </TabsTrigger>
                 <TabsTrigger value="new">
                   <ShoppingCart className="h-4 w-4 mr-2" />
                   New Orders
@@ -68,6 +73,10 @@ const Orders = () => {
                   Critical Alerts
                 </TabsTrigger>
               </TabsList>
+
+              <TabsContent value="inbox">
+                <ProviderInbox />
+              </TabsContent>
 
               <TabsContent value="new">
                 <OrderEntrySystem
