@@ -228,7 +228,7 @@ export function OdooIntegration() {
             </div>
             <div>
               <h1 className="text-xl font-semibold">Odoo ERP Integration</h1>
-              <p className="text-sm text-muted-foreground">Synchronize data between Impilo EHR and Odoo</p>
+              <p className="text-sm text-muted-foreground">Synchronize data between Impilo and Odoo</p>
             </div>
           </div>
           <div className="flex items-center gap-3">

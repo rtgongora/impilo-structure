@@ -9,11 +9,11 @@ import {
   Wifi, 
   WifiOff, 
   CheckCircle2, 
-  Activity,
   Shield,
   Zap,
   Bell
 } from "lucide-react";
+import impiloLogo from "@/assets/impilo-logo.png";
 
 interface BeforeInstallPromptEvent extends Event {
   prompt: () => Promise<void>;
@@ -83,8 +83,7 @@ const Install = () => {
           {/* Header */}
           <div className="text-center mb-12">
             <div className="flex items-center justify-center gap-3 mb-4">
-              <Activity className="w-12 h-12 text-primary" />
-              <h1 className="text-4xl font-bold text-primary">Impilo EHR</h1>
+              <img src={impiloLogo} alt="Impilo" className="h-12 w-auto" />
             </div>
             <p className="text-xl text-muted-foreground">
               Install the app on your device for the best experience
@@ -110,7 +109,7 @@ const Install = () => {
           <Card className="mb-8">
             <CardHeader className="text-center">
               <CardTitle className="text-2xl">
-                {isInstalled ? "App Installed!" : "Install Impilo EHR"}
+                {isInstalled ? "App Installed!" : "Install Impilo"}
               </CardTitle>
               <CardDescription>
                 {isInstalled 
@@ -138,7 +137,7 @@ const Install = () => {
               ) : (
                 <div className="space-y-6">
                   <div className="text-center text-muted-foreground">
-                    <p className="mb-4">To install Impilo EHR on your device:</p>
+                    <p className="mb-4">To install Impilo on your device:</p>
                   </div>
                   
                   <div className="grid md:grid-cols-2 gap-4">

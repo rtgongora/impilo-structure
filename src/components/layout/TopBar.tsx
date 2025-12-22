@@ -9,9 +9,7 @@ import {
   Users,
   Bed,
   ClipboardList,
-  Bell,
   UserPlus,
-  Search,
   ShoppingCart,
   Pill,
   Calendar,
@@ -27,6 +25,7 @@ import { AlertBadge } from "@/components/alerts/ClinicalAlerts";
 import { UserMenu } from "@/components/auth/UserMenu";
 import { Link } from "react-router-dom";
 import { PatientSearch } from "@/components/search/PatientSearch";
+import impiloLogo from "@/assets/impilo-logo.png";
 
 const iconMap: Record<string, React.ComponentType<{ className?: string }>> = {
   Boxes,
@@ -51,10 +50,7 @@ export function TopBar() {
       {/* Left: Logo & Title */}
       <div className="flex items-center gap-4">
         <div className="flex items-center gap-2">
-          <div className="w-8 h-8 rounded-lg bg-primary flex items-center justify-center">
-            <span className="text-primary-foreground font-bold text-sm">IM</span>
-          </div>
-          <span className="font-semibold text-lg tracking-tight">Impilo EHR</span>
+          <img src={impiloLogo} alt="Impilo" className="h-7 w-auto" />
         </div>
         
         <div className="h-6 w-px bg-topbar-muted/30 mx-2" />
