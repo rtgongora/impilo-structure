@@ -12,6 +12,8 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from 
 import { Calendar } from "@/components/ui/calendar";
 import { toast } from "sonner";
 import { AppLayout } from "@/components/layout/AppLayout";
+import { BookingConfirmation, generateBookingReference } from "@/components/booking/BookingConfirmation";
+import { AdvancePayment } from "@/components/booking/AdvancePayment";
 import { 
   CalendarDays, 
   Plus, 
@@ -22,6 +24,7 @@ import {
   Stethoscope,
   Loader2,
   Search,
+  QrCode,
 } from "lucide-react";
 import { format, addDays, startOfWeek, isSameDay, parseISO } from "date-fns";
 
@@ -91,6 +94,9 @@ const Appointments = () => {
   const [dialogOpen, setDialogOpen] = useState(false);
   const [saving, setSaving] = useState(false);
   const [searchTerm, setSearchTerm] = useState('');
+  const [showConfirmation, setShowConfirmation] = useState(false);
+  const [showPayment, setShowPayment] = useState(false);
+  const [lastBooking, setLastBooking] = useState<any>(null);
 
   const [formData, setFormData] = useState({
     patient_id: '',
@@ -152,8 +158,9 @@ const Appointments = () => {
     try {
       const scheduledStart = new Date(`${formData.scheduled_date}T${formData.scheduled_time}`);
       const scheduledEnd = new Date(scheduledStart.getTime() + parseInt(formData.duration) * 60000);
+      const referenceNumber = generateBookingReference();
 
-      const { error } = await supabase
+      const { data, error } = await supabase
         .from('appointments')
         .insert({
           patient_id: formData.patient_id || null,
@@ -166,11 +173,33 @@ const Appointments = () => {
           reason: formData.reason || null,
           priority: formData.priority,
           status: 'scheduled',
-        });
+        })
+        .select()
+        .single();
 
       if (error) throw error;
-      toast.success('Appointment scheduled successfully');
+      
+      // Get patient name
+      const selectedPatient = patients.find(p => p.id === formData.patient_id);
+      
+      // Set booking data for confirmation
+      setLastBooking({
+        id: data.id,
+        referenceNumber,
+        patientName: selectedPatient ? `${selectedPatient.first_name} ${selectedPatient.last_name}` : 'Guest',
+        patientMrn: selectedPatient?.mrn || '',
+        appointmentType: formData.appointment_type,
+        department: formData.department || 'General',
+        scheduledDate: scheduledStart,
+        scheduledTime: formData.scheduled_time,
+        room: formData.room,
+        estimatedFee: 50, // Mock fee
+        isPaid: false,
+        qrData: JSON.stringify({ ref: referenceNumber, id: data.id }),
+      });
+      
       setDialogOpen(false);
+      setShowConfirmation(true);
       fetchAppointments();
       setFormData({
         patient_id: '',
@@ -184,6 +213,7 @@ const Appointments = () => {
         reason: '',
         priority: 'normal',
       });
+      setSearchTerm('');
     } catch (error: any) {
       toast.error(error.message || 'Failed to schedule appointment');
     } finally {
@@ -513,6 +543,41 @@ const Appointments = () => {
             </CardContent>
           </Card>
         </div>
+
+        {/* Booking Confirmation Dialog */}
+        <Dialog open={showConfirmation} onOpenChange={setShowConfirmation}>
+          <DialogContent className="max-w-lg">
+            {lastBooking && (
+              <BookingConfirmation
+                booking={lastBooking}
+                onPayNow={() => {
+                  setShowConfirmation(false);
+                  setShowPayment(true);
+                }}
+                onClose={() => setShowConfirmation(false)}
+              />
+            )}
+          </DialogContent>
+        </Dialog>
+
+        {/* Advance Payment Dialog */}
+        <Dialog open={showPayment} onOpenChange={setShowPayment}>
+          <DialogContent className="max-w-md">
+            {lastBooking && (
+              <AdvancePayment
+                bookingReference={lastBooking.referenceNumber}
+                patientName={lastBooking.patientName}
+                appointmentDate={format(lastBooking.scheduledDate, 'PPP')}
+                items={[{ description: 'Consultation Fee', amount: 50, type: 'consultation' }]}
+                onPaymentComplete={() => {
+                  setShowPayment(false);
+                  toast.success('Payment completed! Your booking is confirmed.');
+                }}
+                onCancel={() => setShowPayment(false)}
+              />
+            )}
+          </DialogContent>
+        </Dialog>
       </div>
     </AppLayout>
   );
