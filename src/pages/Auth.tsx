@@ -39,7 +39,7 @@ const Auth = () => {
     if (!provider) return;
 
     try {
-      // Find the user account associated with this provider ID
+      // Find the user account and email associated with this provider ID
       const { data: profile } = await supabase
         .from('profiles')
         .select('user_id')
@@ -52,8 +52,41 @@ const Auth = () => {
         return;
       }
 
-      // Log the biometric authentication
-      await supabase.from('provider_registry_logs').insert({
+      // Get the user's email from auth.users via the profile
+      // For demo: use the known test password for biometric-verified login
+      const testPassword = 'Impilo2025!';
+      
+      // Lookup email based on provider pattern
+      const emailMap: Record<string, string> = {
+        'VARAPI-2025-ZW000001-A1B2': 'sarah.moyo@impilo.health',
+        'VARAPI-2025-ZW000002-C3D4': 'tendai.ncube@impilo.health',
+        'VARAPI-2025-ZW000003-E5F6': 'grace.mutasa@impilo.health',
+        'VARAPI-2025-ZW000004-G7H8': 'farai.chikwava@impilo.health',
+        'VARAPI-2025-ZW000005-I9J0': 'rumbi.mhaka@impilo.health',
+      };
+      
+      const email = emailMap[provider.providerId];
+      
+      if (!email) {
+        toast.error('Demo login not available for this provider');
+        setView('lookup');
+        return;
+      }
+
+      // Sign in the user
+      const { error: signInError } = await supabase.auth.signInWithPassword({
+        email,
+        password: testPassword,
+      });
+
+      if (signInError) {
+        console.error('Sign in error:', signInError);
+        toast.error('Failed to complete sign in', { description: signInError.message });
+        return;
+      }
+
+      // Log the biometric authentication (fire and forget)
+      supabase.from('provider_registry_logs').insert({
         user_id: profile.user_id,
         provider_registry_id: provider.providerId,
         action: 'biometric_login',
@@ -62,14 +95,11 @@ const Auth = () => {
         user_agent: navigator.userAgent
       });
 
-      // For demo purposes, we'll sign in with a magic link approach
-      // In production, this would use a secure token-based auth after biometric verification
       toast.success(`Welcome, ${provider.fullName}!`, {
         description: `Verified via ${method} (${(confidence * 100).toFixed(1)}% confidence)`
       });
 
-      // Redirect to dashboard - in production, this would complete the auth session
-      navigate('/');
+      // Navigation handled by useEffect when user state updates
       
     } catch (error) {
       console.error('Authentication error:', error);
