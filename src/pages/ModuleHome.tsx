@@ -53,6 +53,12 @@ import {
   ScanLine,
   Trophy,
   Megaphone,
+  Clock,
+  TrendingUp,
+  FileCheck,
+  UserCog,
+  Wallet,
+  Target,
 } from "lucide-react";
 import impiloLogo from "@/assets/impilo-logo.png";
 
@@ -542,6 +548,103 @@ export default function ModuleHome() {
                       <p className="font-medium text-muted-foreground">Recent Scans</p>
                       <p className="text-xs text-muted-foreground">No documents scanned yet</p>
                     </div>
+                  </CardContent>
+                </Card>
+              </div>
+            </div>
+
+            {/* My Practice Section */}
+            <div className="mb-8">
+              <div className="flex items-center justify-between mb-4">
+                <div className="flex items-center gap-2">
+                  <Badge variant="secondary" className="px-3 py-1 bg-gradient-to-r from-teal-500/10 to-cyan-500/10">
+                    <Briefcase className="h-3 w-3 mr-1" />
+                    My Practice
+                  </Badge>
+                  <p className="hidden sm:block text-sm text-muted-foreground">Manage your practice operations</p>
+                </div>
+                <Button variant="outline" size="sm" onClick={() => navigate("/practice")}>
+                  Practice Dashboard
+                  <ChevronRight className="h-4 w-4 ml-1" />
+                </Button>
+              </div>
+
+              <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-4">
+                <Card 
+                  className="cursor-pointer hover:shadow-lg hover:border-teal-500/50 transition-all group"
+                  onClick={() => navigate("/appointments")}
+                >
+                  <CardContent className="pt-5 pb-4 text-center">
+                    <div className="w-11 h-11 mx-auto rounded-xl bg-teal-500/10 flex items-center justify-center mb-2 group-hover:bg-teal-500 transition-colors">
+                      <Calendar className="h-5 w-5 text-teal-500 group-hover:text-white" />
+                    </div>
+                    <p className="text-sm font-medium">Schedule</p>
+                    <p className="text-xs text-muted-foreground">Appointments</p>
+                  </CardContent>
+                </Card>
+
+                <Card 
+                  className="cursor-pointer hover:shadow-lg hover:border-teal-500/50 transition-all group"
+                  onClick={() => navigate("/patients")}
+                >
+                  <CardContent className="pt-5 pb-4 text-center">
+                    <div className="w-11 h-11 mx-auto rounded-xl bg-blue-500/10 flex items-center justify-center mb-2 group-hover:bg-blue-500 transition-colors">
+                      <Users className="h-5 w-5 text-blue-500 group-hover:text-white" />
+                    </div>
+                    <p className="text-sm font-medium">Patient Panel</p>
+                    <p className="text-xs text-muted-foreground">My patients</p>
+                  </CardContent>
+                </Card>
+
+                <Card 
+                  className="cursor-pointer hover:shadow-lg hover:border-teal-500/50 transition-all group"
+                  onClick={() => navigate("/charges")}
+                >
+                  <CardContent className="pt-5 pb-4 text-center">
+                    <div className="w-11 h-11 mx-auto rounded-xl bg-green-500/10 flex items-center justify-center mb-2 group-hover:bg-green-500 transition-colors">
+                      <Wallet className="h-5 w-5 text-green-500 group-hover:text-white" />
+                    </div>
+                    <p className="text-sm font-medium">Billing</p>
+                    <p className="text-xs text-muted-foreground">Revenue & claims</p>
+                  </CardContent>
+                </Card>
+
+                <Card 
+                  className="cursor-pointer hover:shadow-lg hover:border-teal-500/50 transition-all group"
+                  onClick={() => navigate("/reports")}
+                >
+                  <CardContent className="pt-5 pb-4 text-center">
+                    <div className="w-11 h-11 mx-auto rounded-xl bg-purple-500/10 flex items-center justify-center mb-2 group-hover:bg-purple-500 transition-colors">
+                      <TrendingUp className="h-5 w-5 text-purple-500 group-hover:text-white" />
+                    </div>
+                    <p className="text-sm font-medium">Analytics</p>
+                    <p className="text-xs text-muted-foreground">Performance</p>
+                  </CardContent>
+                </Card>
+
+                <Card 
+                  className="cursor-pointer hover:shadow-lg hover:border-teal-500/50 transition-all group"
+                  onClick={() => navigate("/admin")}
+                >
+                  <CardContent className="pt-5 pb-4 text-center">
+                    <div className="w-11 h-11 mx-auto rounded-xl bg-orange-500/10 flex items-center justify-center mb-2 group-hover:bg-orange-500 transition-colors">
+                      <UserCog className="h-5 w-5 text-orange-500 group-hover:text-white" />
+                    </div>
+                    <p className="text-sm font-medium">Staff</p>
+                    <p className="text-xs text-muted-foreground">Team & roles</p>
+                  </CardContent>
+                </Card>
+
+                <Card 
+                  className="cursor-pointer hover:shadow-lg hover:border-teal-500/50 transition-all group"
+                  onClick={() => navigate("/stock")}
+                >
+                  <CardContent className="pt-5 pb-4 text-center">
+                    <div className="w-11 h-11 mx-auto rounded-xl bg-amber-500/10 flex items-center justify-center mb-2 group-hover:bg-amber-500 transition-colors">
+                      <Package className="h-5 w-5 text-amber-500 group-hover:text-white" />
+                    </div>
+                    <p className="text-sm font-medium">Inventory</p>
+                    <p className="text-xs text-muted-foreground">Supplies & stock</p>
                   </CardContent>
                 </Card>
               </div>
