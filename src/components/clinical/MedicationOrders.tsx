@@ -15,6 +15,7 @@ import { toast } from "sonner";
 import { Pill, Plus, Play, Pause, XCircle, CheckCircle, Loader2 } from "lucide-react";
 import { format } from "date-fns";
 import { generateMedicationSchedule, parseDuration } from "@/utils/medicationScheduleGenerator";
+import { DrugUnitsSelect } from "@/components/shared/DrugUnitsSelect";
 interface MedicationFormData {
   medication_name: string;
   generic_name: string;
@@ -250,22 +251,11 @@ export function MedicationOrders({ encounterId, patientId: propPatientId, existi
                           {...register('dosage', { required: true })}
                           placeholder="500"
                         />
-                        <Select 
-                          value={watch('dosage_unit')} 
+                        <DrugUnitsSelect
+                          value={watch('dosage_unit')}
                           onValueChange={(v) => setValue('dosage_unit', v)}
-                        >
-                          <SelectTrigger className="w-24">
-                            <SelectValue />
-                          </SelectTrigger>
-                          <SelectContent>
-                            <SelectItem value="mg">mg</SelectItem>
-                            <SelectItem value="g">g</SelectItem>
-                            <SelectItem value="mcg">mcg</SelectItem>
-                            <SelectItem value="ml">ml</SelectItem>
-                            <SelectItem value="units">units</SelectItem>
-                            <SelectItem value="tabs">tabs</SelectItem>
-                          </SelectContent>
-                        </Select>
+                          className="w-28"
+                        />
                       </div>
                     </div>
                     
