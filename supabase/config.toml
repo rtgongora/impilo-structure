@@ -23,3 +23,6 @@ verify_jwt = false
 
 [functions.ai-diagnostic]
 verify_jwt = true
+
+[functions.odoo-integration]
+verify_jwt = true

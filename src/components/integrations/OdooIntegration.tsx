@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -10,6 +10,7 @@ import { Switch } from "@/components/ui/switch";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Progress } from "@/components/ui/progress";
 import { toast } from "sonner";
+import { supabase } from "@/integrations/supabase/client";
 import {
   Building2,
   RefreshCw,
@@ -36,25 +37,39 @@ import {
   Zap,
   Activity,
   Shield,
-  Key
+  Key,
+  Loader2
 } from "lucide-react";
 
-// Mock sync status
-const syncModules = [
-  { id: "patients", name: "Patients/Partners", icon: Users, odooModel: "res.partner", synced: 2847, pending: 12, lastSync: "5 min ago", enabled: true },
-  { id: "products", name: "Products/Services", icon: Package, odooModel: "product.template", synced: 1256, pending: 3, lastSync: "15 min ago", enabled: true },
-  { id: "invoices", name: "Invoices", icon: FileText, odooModel: "account.move", synced: 8934, pending: 45, lastSync: "2 min ago", enabled: true },
-  { id: "payments", name: "Payments", icon: DollarSign, odooModel: "account.payment", synced: 12456, pending: 8, lastSync: "1 min ago", enabled: true },
-  { id: "stock", name: "Stock/Inventory", icon: Package, odooModel: "stock.quant", synced: 3421, pending: 156, lastSync: "30 min ago", enabled: false },
-  { id: "hr", name: "HR/Employees", icon: Users, odooModel: "hr.employee", synced: 89, pending: 0, lastSync: "1 hour ago", enabled: true },
-];
+interface SyncModule {
+  id: string;
+  name: string;
+  icon: React.ComponentType<{ className?: string }>;
+  odooModel: string;
+  action: string;
+  synced: number;
+  pending: number;
+  lastSync: string | null;
+  enabled: boolean;
+}
 
-const syncHistory = [
-  { id: 1, module: "Invoices", action: "Push", records: 45, status: "success", timestamp: "2024-12-20 14:30:00", duration: "2.3s" },
-  { id: 2, module: "Payments", action: "Pull", records: 128, status: "success", timestamp: "2024-12-20 14:28:00", duration: "4.1s" },
-  { id: 3, module: "Products", action: "Push", records: 3, status: "partial", timestamp: "2024-12-20 14:25:00", duration: "1.8s" },
-  { id: 4, module: "Patients", action: "Sync", records: 12, status: "error", timestamp: "2024-12-20 14:20:00", duration: "8.5s" },
-  { id: 5, module: "Stock", action: "Pull", records: 856, status: "success", timestamp: "2024-12-20 14:15:00", duration: "15.2s" },
+interface SyncHistoryItem {
+  id: number;
+  module: string;
+  action: string;
+  records: number;
+  status: string;
+  timestamp: string;
+  duration: string;
+}
+
+const initialModules: SyncModule[] = [
+  { id: "partners", name: "Partners/Contacts", icon: Users, odooModel: "res.partner", action: "get_partners", synced: 0, pending: 0, lastSync: null, enabled: true },
+  { id: "products", name: "Products/Services", icon: Package, odooModel: "product.template", action: "get_products", synced: 0, pending: 0, lastSync: null, enabled: true },
+  { id: "invoices", name: "Invoices", icon: FileText, odooModel: "account.move", action: "get_invoices", synced: 0, pending: 0, lastSync: null, enabled: true },
+  { id: "payments", name: "Payments", icon: DollarSign, odooModel: "account.payment", action: "get_payments", synced: 0, pending: 0, lastSync: null, enabled: true },
+  { id: "stock", name: "Stock/Inventory", icon: Package, odooModel: "stock.quant", action: "get_stock", synced: 0, pending: 0, lastSync: null, enabled: true },
+  { id: "employees", name: "HR/Employees", icon: Users, odooModel: "hr.employee", action: "get_employees", synced: 0, pending: 0, lastSync: null, enabled: true },
 ];
 
 const fieldMappings = [
@@ -67,41 +82,121 @@ const fieldMappings = [
 ];
 
 export function OdooIntegration() {
-  const [isConnected, setIsConnected] = useState(true);
+  const [isConnected, setIsConnected] = useState(false);
+  const [isConnecting, setIsConnecting] = useState(false);
   const [isSyncing, setIsSyncing] = useState(false);
   const [syncProgress, setSyncProgress] = useState(0);
   const [searchQuery, setSearchQuery] = useState("");
-  const [selectedModule, setSelectedModule] = useState<string | null>(null);
+  const [modules, setModules] = useState<SyncModule[]>(initialModules);
+  const [syncHistory, setSyncHistory] = useState<SyncHistoryItem[]>([]);
+  const [liveData, setLiveData] = useState<Record<string, any[]>>({});
 
   // Connection settings state
-  const [odooUrl, setOdooUrl] = useState("https://erp.hospital.co.zw");
-  const [odooDatabase, setOdooDatabase] = useState("hospital_prod");
-  const [odooUsername, setOdooUsername] = useState("api_user@hospital.co.zw");
+  const [odooUrl, setOdooUrl] = useState("https://demo.odoo.com");
+  const [odooDatabase, setOdooDatabase] = useState("demo");
+  const [odooUsername, setOdooUsername] = useState("admin");
+  const [odooPassword, setOdooPassword] = useState("admin");
   const [autoSync, setAutoSync] = useState(true);
   const [syncInterval, setSyncInterval] = useState("5");
 
-  const handleConnect = () => {
-    setIsConnected(true);
-    toast.success("Connected to Odoo ERP successfully");
+  const getOdooConfig = () => ({
+    url: odooUrl,
+    db: odooDatabase,
+    username: odooUsername,
+    password: odooPassword,
+  });
+
+  const callOdooApi = async (action: string, extraParams: Record<string, any> = {}) => {
+    const { data, error } = await supabase.functions.invoke('odoo-integration', {
+      body: { action, config: getOdooConfig(), ...extraParams },
+    });
+    
+    if (error) throw new Error(error.message);
+    return data;
+  };
+
+  const handleConnect = async () => {
+    setIsConnecting(true);
+    try {
+      const result = await callOdooApi('test_connection');
+      if (result.success) {
+        setIsConnected(true);
+        toast.success(`Connected to Odoo at ${odooUrl}`);
+        // Fetch summary after connecting
+        await fetchSummary();
+      } else {
+        toast.error(result.message || 'Connection failed');
+      }
+    } catch (error) {
+      toast.error('Failed to connect to Odoo');
+      console.error(error);
+    } finally {
+      setIsConnecting(false);
+    }
   };
 
   const handleDisconnect = () => {
     setIsConnected(false);
+    setModules(initialModules);
+    setLiveData({});
     toast.info("Disconnected from Odoo ERP");
+  };
+
+  const fetchSummary = async () => {
+    try {
+      const result = await callOdooApi('get_summary');
+      if (result.success && result.summary) {
+        setModules(prev => prev.map(mod => {
+          const key = mod.id === 'partners' ? 'partners' : mod.id;
+          return { ...mod, synced: result.summary[key] || 0, lastSync: 'Just now' };
+        }));
+      }
+    } catch (error) {
+      console.error('Error fetching summary:', error);
+    }
   };
 
   const handleSync = async (moduleId?: string) => {
     setIsSyncing(true);
     setSyncProgress(0);
+    const startTime = Date.now();
 
-    // Simulate sync progress
-    for (let i = 0; i <= 100; i += 10) {
-      await new Promise(resolve => setTimeout(resolve, 200));
-      setSyncProgress(i);
+    try {
+      const modulesToSync = moduleId 
+        ? modules.filter(m => m.id === moduleId) 
+        : modules.filter(m => m.enabled);
+
+      let completed = 0;
+      for (const mod of modulesToSync) {
+        const result = await callOdooApi(mod.action, { limit: 100 });
+        if (result.success) {
+          setModules(prev => prev.map(m => 
+            m.id === mod.id ? { ...m, synced: result.total || result.records?.length || 0, lastSync: 'Just now' } : m
+          ));
+          setLiveData(prev => ({ ...prev, [mod.id]: result.records || [] }));
+          
+          // Add to history
+          const duration = ((Date.now() - startTime) / 1000).toFixed(1);
+          setSyncHistory(prev => [{
+            id: Date.now(),
+            module: mod.name,
+            action: 'Pull',
+            records: result.records?.length || 0,
+            status: 'success',
+            timestamp: new Date().toISOString().replace('T', ' ').slice(0, 19),
+            duration: `${duration}s`,
+          }, ...prev].slice(0, 20));
+        }
+        completed++;
+        setSyncProgress(Math.round((completed / modulesToSync.length) * 100));
+      }
+      toast.success(moduleId ? `${moduleId} synced successfully` : "All modules synced successfully");
+    } catch (error) {
+      console.error('Sync error:', error);
+      toast.error('Sync failed');
+    } finally {
+      setIsSyncing(false);
     }
-
-    setIsSyncing(false);
-    toast.success(moduleId ? `${moduleId} synced successfully` : "All modules synced successfully");
   };
 
   const getStatusIcon = (status: string) => {
@@ -156,9 +251,13 @@ export function OdooIntegration() {
                 Disconnect
               </Button>
             ) : (
-              <Button onClick={handleConnect}>
-                <Link2 className="w-4 h-4 mr-2" />
-                Connect
+              <Button onClick={handleConnect} disabled={isConnecting}>
+                {isConnecting ? (
+                  <Loader2 className="w-4 h-4 mr-2 animate-spin" />
+                ) : (
+                  <Link2 className="w-4 h-4 mr-2" />
+                )}
+                {isConnecting ? 'Connecting...' : 'Connect'}
               </Button>
             )}
             <Button onClick={() => handleSync()} disabled={!isConnected || isSyncing}>
@@ -194,7 +293,7 @@ export function OdooIntegration() {
             {/* Modules Tab */}
             <TabsContent value="modules" className="mt-0 space-y-4">
               <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-4">
-                {syncModules.map((module) => (
+                {modules.map((module) => (
                   <Card key={module.id} className={!module.enabled ? "opacity-60" : ""}>
                     <CardHeader className="pb-3">
                       <div className="flex items-center justify-between">
@@ -207,24 +306,29 @@ export function OdooIntegration() {
                             <p className="text-xs text-muted-foreground font-mono">{module.odooModel}</p>
                           </div>
                         </div>
-                        <Switch checked={module.enabled} />
+                        <Switch 
+                          checked={module.enabled} 
+                          onCheckedChange={(checked) => setModules(prev => 
+                            prev.map(m => m.id === module.id ? { ...m, enabled: checked } : m)
+                          )}
+                        />
                       </div>
                     </CardHeader>
                     <CardContent>
                       <div className="grid grid-cols-2 gap-4 mb-4">
                         <div className="text-center p-2 bg-muted rounded-lg">
                           <p className="text-2xl font-bold text-green-600">{module.synced.toLocaleString()}</p>
-                          <p className="text-xs text-muted-foreground">Synced</p>
+                          <p className="text-xs text-muted-foreground">Records</p>
                         </div>
                         <div className="text-center p-2 bg-muted rounded-lg">
-                          <p className="text-2xl font-bold text-orange-600">{module.pending}</p>
-                          <p className="text-xs text-muted-foreground">Pending</p>
+                          <p className="text-2xl font-bold text-blue-600">{liveData[module.id]?.length || 0}</p>
+                          <p className="text-xs text-muted-foreground">Fetched</p>
                         </div>
                       </div>
                       <div className="flex items-center justify-between text-sm">
                         <div className="flex items-center gap-1 text-muted-foreground">
                           <Clock className="w-3 h-3" />
-                          {module.lastSync}
+                          {module.lastSync || 'Never'}
                         </div>
                         <Button size="sm" variant="outline" disabled={!module.enabled} onClick={() => handleSync(module.id)}>
                           <RefreshCw className="w-3 h-3 mr-1" />
@@ -402,12 +506,16 @@ export function OdooIntegration() {
                       />
                     </div>
                     <div className="space-y-2">
-                      <Label>API Key</Label>
-                      <Input type="password" value="••••••••••••••••" readOnly />
-                      <Button variant="link" size="sm" className="p-0 h-auto">
-                        <Key className="w-3 h-3 mr-1" />
-                        Update API Key
-                      </Button>
+                      <Label>Password / API Key</Label>
+                      <Input 
+                        type="password" 
+                        value={odooPassword} 
+                        onChange={(e) => setOdooPassword(e.target.value)}
+                        placeholder="Enter password or API key" 
+                      />
+                      <p className="text-xs text-muted-foreground">
+                        For demo: use "admin" as password
+                      </p>
                     </div>
                   </div>
                 </CardContent>
