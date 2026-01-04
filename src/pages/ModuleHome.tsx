@@ -210,7 +210,7 @@ function SocialHubLayout() {
   };
 
   return (
-    <div className="flex gap-6">
+    <div className="flex flex-col lg:flex-row gap-4 sm:gap-6">
       {/* Left Sidebar Navigation */}
       <div className="hidden lg:block w-64 shrink-0">
         <Card className="sticky top-24">
@@ -312,19 +312,19 @@ function SocialHubLayout() {
       {/* Main Content Area */}
       <div className="flex-1 min-w-0">
         {/* Mobile Navigation */}
-        <div className="lg:hidden mb-4">
+        <div className="lg:hidden mb-3 sm:mb-4">
           <ScrollArea className="w-full">
-            <div className="flex gap-2 pb-2">
+            <div className="flex gap-1.5 sm:gap-2 pb-2">
               {socialNavItems.map((item) => (
                 <Button
                   key={item.id}
                   variant={activeSection === item.id ? "default" : "outline"}
                   size="sm"
+                  className={`text-xs h-8 px-2.5 sm:px-3 ${activeSection === item.id ? "bg-purple-500 hover:bg-purple-600" : ""}`}
                   onClick={() => setActiveSection(item.id)}
-                  className={activeSection === item.id ? "bg-purple-500 hover:bg-purple-600" : ""}
                 >
-                  <item.icon className="h-4 w-4 mr-1.5" />
-                  {item.label}
+                  <item.icon className="h-3.5 w-3.5 mr-1" />
+                  <span className="hidden xs:inline">{item.label}</span>
                 </Button>
               ))}
             </div>
@@ -332,26 +332,26 @@ function SocialHubLayout() {
         </div>
 
         {/* Section Header */}
-        <div className="flex items-center justify-between mb-4">
-          <div className="flex items-center gap-3">
+        <div className="flex items-center justify-between mb-3 sm:mb-4">
+          <div className="flex items-center gap-2 sm:gap-3">
             {(() => {
               const currentItem = socialNavItems.find(item => item.id === activeSection);
               const Icon = currentItem?.icon || MessageSquare;
               return (
                 <>
-                  <div className="w-10 h-10 rounded-xl bg-purple-500/10 flex items-center justify-center">
-                    <Icon className="h-5 w-5 text-purple-500" />
+                  <div className="w-8 h-8 sm:w-10 sm:h-10 rounded-lg sm:rounded-xl bg-purple-500/10 flex items-center justify-center">
+                    <Icon className="h-4 w-4 sm:h-5 sm:w-5 text-purple-500" />
                   </div>
                   <div>
-                    <h3 className="text-lg font-semibold">{currentItem?.label}</h3>
-                    <p className="text-sm text-muted-foreground">{currentItem?.description}</p>
+                    <h3 className="text-base sm:text-lg font-semibold">{currentItem?.label}</h3>
+                    <p className="text-xs sm:text-sm text-muted-foreground">{currentItem?.description}</p>
                   </div>
                 </>
               );
             })()}
           </div>
           <div className="lg:hidden">
-            <HealthDocumentScanner variant="button" className="bg-purple-500 hover:bg-purple-600 text-white" />
+            <HealthDocumentScanner variant="button" className="bg-purple-500 hover:bg-purple-600 text-white text-xs h-8" />
           </div>
         </div>
 
@@ -400,24 +400,24 @@ export default function ModuleHome() {
   return (
     <div className="min-h-screen bg-gradient-to-br from-background via-background to-muted/30">
       {/* Header */}
-      <header className="sticky top-0 z-50 bg-background/80 backdrop-blur-sm border-b">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex items-center justify-between h-16">
-            <div className="flex items-center gap-3">
-              <img src={impiloLogo} alt="Impilo" className="h-10 w-auto" />
+      <header className="sticky top-0 z-50 bg-background/95 backdrop-blur-md border-b">
+        <div className="max-w-7xl mx-auto px-3 sm:px-6 lg:px-8">
+          <div className="flex items-center justify-between h-14 sm:h-16">
+            <div className="flex items-center gap-2 sm:gap-3">
+              <img src={impiloLogo} alt="Impilo" className="h-8 sm:h-10 w-auto" />
             </div>
 
-            <div className="flex items-center gap-4">
-              <div className="flex items-center gap-2 px-3 py-1.5 bg-muted/50 rounded-full">
-                <div className="w-8 h-8 rounded-full bg-primary/10 flex items-center justify-center">
-                  <User className="h-4 w-4 text-primary" />
+            <div className="flex items-center gap-2 sm:gap-4">
+              <div className="flex items-center gap-2 px-2 sm:px-3 py-1 sm:py-1.5 bg-muted/50 rounded-full">
+                <div className="w-7 h-7 sm:w-8 sm:h-8 rounded-full bg-primary/10 flex items-center justify-center">
+                  <User className="h-3.5 w-3.5 sm:h-4 sm:w-4 text-primary" />
                 </div>
                 <div className="hidden sm:block">
                   <p className="text-sm font-medium">{profile?.display_name}</p>
                   <p className="text-xs text-muted-foreground capitalize">{profile?.role} • {profile?.department || "General"}</p>
                 </div>
               </div>
-              <Button variant="ghost" size="icon" onClick={() => signOut()}>
+              <Button variant="ghost" size="icon" className="h-8 w-8 sm:h-9 sm:w-9" onClick={() => signOut()}>
                 <LogOut className="h-4 w-4" />
               </Button>
             </div>
@@ -426,126 +426,128 @@ export default function ModuleHome() {
       </header>
 
       {/* Main Content */}
-      <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+      <main className="max-w-7xl mx-auto px-3 sm:px-6 lg:px-8 py-4 sm:py-8">
         {/* Welcome */}
-        <div className="mb-6">
-          <h2 className="text-2xl sm:text-3xl font-bold">
+        <div className="mb-4 sm:mb-6">
+          <h2 className="text-xl sm:text-2xl md:text-3xl font-bold">
             Welcome back, {getDisplayTitle()}
           </h2>
-          <p className="text-muted-foreground mt-1">
+          <p className="text-sm sm:text-base text-muted-foreground mt-0.5 sm:mt-1">
             Select a module to get started.
           </p>
         </div>
 
         {/* Main Tabs */}
         <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
-          <TabsList className="grid w-full grid-cols-3 mb-6 h-auto">
-            <TabsTrigger value="work" className="flex items-center gap-2 py-3 data-[state=active]:bg-primary data-[state=active]:text-primary-foreground">
-              <Briefcase className="h-4 w-4" />
+          <TabsList className="grid w-full grid-cols-3 mb-4 sm:mb-6 h-auto p-1">
+            <TabsTrigger value="work" className="flex items-center justify-center gap-1.5 sm:gap-2 py-2.5 sm:py-3 text-xs sm:text-sm data-[state=active]:bg-primary data-[state=active]:text-primary-foreground">
+              <Briefcase className="h-3.5 w-3.5 sm:h-4 sm:w-4" />
+              <span className="hidden xs:inline sm:hidden">Work</span>
               <span className="hidden sm:inline">My Work</span>
-              <span className="sm:hidden">Work</span>
+              <span className="xs:hidden">Work</span>
             </TabsTrigger>
-            <TabsTrigger value="portal" className="flex items-center gap-2 py-3 data-[state=active]:bg-pink-500 data-[state=active]:text-white">
-              <Heart className="h-4 w-4" />
-              <span className="hidden sm:inline">My Personal Health Portal</span>
+            <TabsTrigger value="portal" className="flex items-center justify-center gap-1.5 sm:gap-2 py-2.5 sm:py-3 text-xs sm:text-sm data-[state=active]:bg-pink-500 data-[state=active]:text-white">
+              <Heart className="h-3.5 w-3.5 sm:h-4 sm:w-4" />
+              <span className="hidden sm:inline">Health Portal</span>
               <span className="sm:hidden">Health</span>
             </TabsTrigger>
-            <TabsTrigger value="social" className="flex items-center gap-2 py-3 data-[state=active]:bg-purple-500 data-[state=active]:text-white">
-              <Users className="h-4 w-4" />
-              <span className="hidden sm:inline">Health Social Hub</span>
+            <TabsTrigger value="social" className="flex items-center justify-center gap-1.5 sm:gap-2 py-2.5 sm:py-3 text-xs sm:text-sm data-[state=active]:bg-purple-500 data-[state=active]:text-white">
+              <Users className="h-3.5 w-3.5 sm:h-4 sm:w-4" />
+              <span className="hidden sm:inline">Social Hub</span>
               <span className="sm:hidden">Social</span>
             </TabsTrigger>
           </TabsList>
 
           {/* My Work Tab */}
-          <TabsContent value="work" className="mt-0">
+          <TabsContent value="work" className="mt-0 space-y-4 sm:space-y-8">
             {/* Communication Quick Access */}
-            <div className="mb-8">
-              <div className="flex items-center justify-between mb-4">
+            <div>
+              <div className="flex items-center justify-between mb-3 sm:mb-4">
                 <div className="flex items-center gap-2">
-                  <Badge variant="secondary" className="px-3 py-1">Communication</Badge>
-                  <p className="hidden sm:block text-sm text-muted-foreground">Messages, pages & calls</p>
+                  <Badge variant="secondary" className="px-2 sm:px-3 py-0.5 sm:py-1 text-xs sm:text-sm">Communication</Badge>
+                  <p className="hidden md:block text-sm text-muted-foreground">Messages, pages & calls</p>
                 </div>
-                <Button variant="outline" size="sm" onClick={() => navigate("/communication")}>
-                  Open Hub
-                  <ChevronRight className="h-4 w-4 ml-1" />
+                <Button variant="outline" size="sm" className="h-8 text-xs sm:text-sm" onClick={() => navigate("/communication")}>
+                  <span className="hidden sm:inline">Open Hub</span>
+                  <span className="sm:hidden">Hub</span>
+                  <ChevronRight className="h-3.5 w-3.5 sm:h-4 sm:w-4 ml-1" />
                 </Button>
               </div>
 
-              <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+              <div className="grid grid-cols-3 gap-2 sm:gap-4">
                 <Button
                   variant="outline"
-                  className="h-auto p-5 flex items-center justify-between hover:bg-accent"
+                  className="h-auto p-3 sm:p-5 flex flex-col sm:flex-row items-center sm:justify-between gap-2 sm:gap-3 hover:bg-accent"
                   onClick={() => navigate("/communication?tab=messages")}
                 >
-                  <div className="flex items-center gap-3">
-                    <div className="h-10 w-10 rounded-lg bg-primary/10 flex items-center justify-center">
-                      <MessageSquare className="h-5 w-5 text-primary" />
+                  <div className="flex flex-col sm:flex-row items-center gap-1.5 sm:gap-3">
+                    <div className="h-9 w-9 sm:h-10 sm:w-10 rounded-lg bg-primary/10 flex items-center justify-center">
+                      <MessageSquare className="h-4 w-4 sm:h-5 sm:w-5 text-primary" />
                     </div>
-                    <div className="text-left">
-                      <p className="font-medium">Messages</p>
-                      <p className="text-xs text-muted-foreground">Chat with teams</p>
+                    <div className="text-center sm:text-left">
+                      <p className="font-medium text-xs sm:text-sm">Messages</p>
+                      <p className="hidden sm:block text-xs text-muted-foreground">Chat with teams</p>
                     </div>
                   </div>
-                  <ChevronRight className="h-4 w-4 text-muted-foreground" />
+                  <ChevronRight className="hidden sm:block h-4 w-4 text-muted-foreground" />
                 </Button>
 
                 <Button
                   variant="outline"
-                  className="h-auto p-5 flex items-center justify-between hover:bg-accent"
+                  className="h-auto p-3 sm:p-5 flex flex-col sm:flex-row items-center sm:justify-between gap-2 sm:gap-3 hover:bg-accent"
                   onClick={() => navigate("/communication?tab=pages")}
                 >
-                  <div className="flex items-center gap-3">
-                    <div className="h-10 w-10 rounded-lg bg-warning/10 flex items-center justify-center">
-                      <Bell className="h-5 w-5 text-warning" />
+                  <div className="flex flex-col sm:flex-row items-center gap-1.5 sm:gap-3">
+                    <div className="h-9 w-9 sm:h-10 sm:w-10 rounded-lg bg-warning/10 flex items-center justify-center">
+                      <Bell className="h-4 w-4 sm:h-5 sm:w-5 text-warning" />
                     </div>
-                    <div className="text-left">
-                      <p className="font-medium">Pages</p>
-                      <p className="text-xs text-muted-foreground">Urgent alerts</p>
+                    <div className="text-center sm:text-left">
+                      <p className="font-medium text-xs sm:text-sm">Pages</p>
+                      <p className="hidden sm:block text-xs text-muted-foreground">Urgent alerts</p>
                     </div>
                   </div>
-                  <ChevronRight className="h-4 w-4 text-muted-foreground" />
+                  <ChevronRight className="hidden sm:block h-4 w-4 text-muted-foreground" />
                 </Button>
 
                 <Button
                   variant="outline"
-                  className="h-auto p-5 flex items-center justify-between hover:bg-accent"
+                  className="h-auto p-3 sm:p-5 flex flex-col sm:flex-row items-center sm:justify-between gap-2 sm:gap-3 hover:bg-accent"
                   onClick={() => navigate("/communication?tab=calls")}
                 >
-                  <div className="flex items-center gap-3">
-                    <div className="h-10 w-10 rounded-lg bg-success/10 flex items-center justify-center">
-                      <Phone className="h-5 w-5 text-success" />
+                  <div className="flex flex-col sm:flex-row items-center gap-1.5 sm:gap-3">
+                    <div className="h-9 w-9 sm:h-10 sm:w-10 rounded-lg bg-success/10 flex items-center justify-center">
+                      <Phone className="h-4 w-4 sm:h-5 sm:w-5 text-success" />
                     </div>
-                    <div className="text-left">
-                      <p className="font-medium">Calls</p>
-                      <p className="text-xs text-muted-foreground">Voice & video</p>
+                    <div className="text-center sm:text-left">
+                      <p className="font-medium text-xs sm:text-sm">Calls</p>
+                      <p className="hidden sm:block text-xs text-muted-foreground">Voice & video</p>
                     </div>
                   </div>
-                  <ChevronRight className="h-4 w-4 text-muted-foreground" />
+                  <ChevronRight className="hidden sm:block h-4 w-4 text-muted-foreground" />
                 </Button>
               </div>
             </div>
 
             {/* Document Scanner */}
-            <div className="mb-8">
-              <div className="flex items-center justify-between mb-4">
+            <div>
+              <div className="flex items-center justify-between mb-3 sm:mb-4">
                 <div className="flex items-center gap-2">
-                  <Badge variant="secondary" className="px-3 py-1 bg-gradient-to-r from-primary/10 to-blue-500/10">
+                  <Badge variant="secondary" className="px-2 sm:px-3 py-0.5 sm:py-1 text-xs sm:text-sm bg-gradient-to-r from-primary/10 to-blue-500/10">
                     <ScanLine className="h-3 w-3 mr-1" />
-                    Document Scanner
+                    <span className="hidden sm:inline">Document </span>Scanner
                   </Badge>
-                  <p className="hidden sm:block text-sm text-muted-foreground">Scan prescriptions, lab results & more</p>
+                  <p className="hidden md:block text-sm text-muted-foreground">Scan prescriptions, lab results & more</p>
                 </div>
               </div>
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4">
                 <HealthDocumentScanner variant="card" />
                 <Card className="bg-gradient-to-br from-muted/50 to-muted/30 border-dashed">
-                  <CardContent className="pt-6 flex flex-col items-center gap-3 text-center">
-                    <div className="w-14 h-14 rounded-xl bg-muted flex items-center justify-center">
-                      <FileText className="h-7 w-7 text-muted-foreground" />
+                  <CardContent className="py-4 sm:pt-6 flex flex-col items-center gap-2 sm:gap-3 text-center">
+                    <div className="w-10 h-10 sm:w-14 sm:h-14 rounded-xl bg-muted flex items-center justify-center">
+                      <FileText className="h-5 w-5 sm:h-7 sm:w-7 text-muted-foreground" />
                     </div>
                     <div>
-                      <p className="font-medium text-muted-foreground">Recent Scans</p>
+                      <p className="font-medium text-sm text-muted-foreground">Recent Scans</p>
                       <p className="text-xs text-muted-foreground">No documents scanned yet</p>
                     </div>
                   </CardContent>
@@ -554,445 +556,448 @@ export default function ModuleHome() {
             </div>
 
             {/* My Practice Section */}
-            <div className="mb-8">
-              <div className="flex items-center justify-between mb-4">
+            <div>
+              <div className="flex items-center justify-between mb-3 sm:mb-4">
                 <div className="flex items-center gap-2">
-                  <Badge variant="secondary" className="px-3 py-1 bg-gradient-to-r from-teal-500/10 to-cyan-500/10">
+                  <Badge variant="secondary" className="px-2 sm:px-3 py-0.5 sm:py-1 text-xs sm:text-sm bg-gradient-to-r from-teal-500/10 to-cyan-500/10">
                     <Briefcase className="h-3 w-3 mr-1" />
                     My Practice
                   </Badge>
-                  <p className="hidden sm:block text-sm text-muted-foreground">Manage your practice operations</p>
+                  <p className="hidden md:block text-sm text-muted-foreground">Manage your practice operations</p>
                 </div>
-                <Button variant="outline" size="sm" onClick={() => navigate("/practice")}>
-                  Practice Dashboard
-                  <ChevronRight className="h-4 w-4 ml-1" />
+                <Button variant="outline" size="sm" className="h-8 text-xs sm:text-sm" onClick={() => navigate("/practice")}>
+                  <span className="hidden sm:inline">Practice Dashboard</span>
+                  <span className="sm:hidden">Dashboard</span>
+                  <ChevronRight className="h-3.5 w-3.5 sm:h-4 sm:w-4 ml-1" />
                 </Button>
               </div>
 
-              <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-4">
+              <div className="grid grid-cols-3 sm:grid-cols-3 lg:grid-cols-6 gap-2 sm:gap-4">
                 <Card 
-                  className="cursor-pointer hover:shadow-lg hover:border-teal-500/50 transition-all group"
+                  className="cursor-pointer hover:shadow-md sm:hover:shadow-lg hover:border-teal-500/50 transition-all group"
                   onClick={() => navigate("/appointments")}
                 >
-                  <CardContent className="pt-5 pb-4 text-center">
-                    <div className="w-11 h-11 mx-auto rounded-xl bg-teal-500/10 flex items-center justify-center mb-2 group-hover:bg-teal-500 transition-colors">
-                      <Calendar className="h-5 w-5 text-teal-500 group-hover:text-white" />
+                  <CardContent className="p-2.5 sm:pt-5 sm:pb-4 text-center">
+                    <div className="w-9 h-9 sm:w-11 sm:h-11 mx-auto rounded-lg sm:rounded-xl bg-teal-500/10 flex items-center justify-center mb-1.5 sm:mb-2 group-hover:bg-teal-500 transition-colors">
+                      <Calendar className="h-4 w-4 sm:h-5 sm:w-5 text-teal-500 group-hover:text-white" />
                     </div>
-                    <p className="text-sm font-medium">Schedule</p>
-                    <p className="text-xs text-muted-foreground">Appointments</p>
+                    <p className="text-xs sm:text-sm font-medium">Schedule</p>
+                    <p className="hidden sm:block text-xs text-muted-foreground">Appointments</p>
                   </CardContent>
                 </Card>
 
                 <Card 
-                  className="cursor-pointer hover:shadow-lg hover:border-teal-500/50 transition-all group"
+                  className="cursor-pointer hover:shadow-md sm:hover:shadow-lg hover:border-teal-500/50 transition-all group"
                   onClick={() => navigate("/patients")}
                 >
-                  <CardContent className="pt-5 pb-4 text-center">
-                    <div className="w-11 h-11 mx-auto rounded-xl bg-blue-500/10 flex items-center justify-center mb-2 group-hover:bg-blue-500 transition-colors">
-                      <Users className="h-5 w-5 text-blue-500 group-hover:text-white" />
+                  <CardContent className="p-2.5 sm:pt-5 sm:pb-4 text-center">
+                    <div className="w-9 h-9 sm:w-11 sm:h-11 mx-auto rounded-lg sm:rounded-xl bg-blue-500/10 flex items-center justify-center mb-1.5 sm:mb-2 group-hover:bg-blue-500 transition-colors">
+                      <Users className="h-4 w-4 sm:h-5 sm:w-5 text-blue-500 group-hover:text-white" />
                     </div>
-                    <p className="text-sm font-medium">Patient Panel</p>
-                    <p className="text-xs text-muted-foreground">My patients</p>
+                    <p className="text-xs sm:text-sm font-medium">Patients</p>
+                    <p className="hidden sm:block text-xs text-muted-foreground">My patients</p>
                   </CardContent>
                 </Card>
 
                 <Card 
-                  className="cursor-pointer hover:shadow-lg hover:border-teal-500/50 transition-all group"
+                  className="cursor-pointer hover:shadow-md sm:hover:shadow-lg hover:border-teal-500/50 transition-all group"
                   onClick={() => navigate("/charges")}
                 >
-                  <CardContent className="pt-5 pb-4 text-center">
-                    <div className="w-11 h-11 mx-auto rounded-xl bg-green-500/10 flex items-center justify-center mb-2 group-hover:bg-green-500 transition-colors">
-                      <Wallet className="h-5 w-5 text-green-500 group-hover:text-white" />
+                  <CardContent className="p-2.5 sm:pt-5 sm:pb-4 text-center">
+                    <div className="w-9 h-9 sm:w-11 sm:h-11 mx-auto rounded-lg sm:rounded-xl bg-green-500/10 flex items-center justify-center mb-1.5 sm:mb-2 group-hover:bg-green-500 transition-colors">
+                      <Wallet className="h-4 w-4 sm:h-5 sm:w-5 text-green-500 group-hover:text-white" />
                     </div>
-                    <p className="text-sm font-medium">Billing</p>
-                    <p className="text-xs text-muted-foreground">Revenue & claims</p>
+                    <p className="text-xs sm:text-sm font-medium">Billing</p>
+                    <p className="hidden sm:block text-xs text-muted-foreground">Revenue & claims</p>
                   </CardContent>
                 </Card>
 
                 <Card 
-                  className="cursor-pointer hover:shadow-lg hover:border-teal-500/50 transition-all group"
+                  className="cursor-pointer hover:shadow-md sm:hover:shadow-lg hover:border-teal-500/50 transition-all group"
                   onClick={() => navigate("/reports")}
                 >
-                  <CardContent className="pt-5 pb-4 text-center">
-                    <div className="w-11 h-11 mx-auto rounded-xl bg-purple-500/10 flex items-center justify-center mb-2 group-hover:bg-purple-500 transition-colors">
-                      <TrendingUp className="h-5 w-5 text-purple-500 group-hover:text-white" />
+                  <CardContent className="p-2.5 sm:pt-5 sm:pb-4 text-center">
+                    <div className="w-9 h-9 sm:w-11 sm:h-11 mx-auto rounded-lg sm:rounded-xl bg-purple-500/10 flex items-center justify-center mb-1.5 sm:mb-2 group-hover:bg-purple-500 transition-colors">
+                      <TrendingUp className="h-4 w-4 sm:h-5 sm:w-5 text-purple-500 group-hover:text-white" />
                     </div>
-                    <p className="text-sm font-medium">Analytics</p>
-                    <p className="text-xs text-muted-foreground">Performance</p>
+                    <p className="text-xs sm:text-sm font-medium">Analytics</p>
+                    <p className="hidden sm:block text-xs text-muted-foreground">Performance</p>
                   </CardContent>
                 </Card>
 
                 <Card 
-                  className="cursor-pointer hover:shadow-lg hover:border-teal-500/50 transition-all group"
+                  className="cursor-pointer hover:shadow-md sm:hover:shadow-lg hover:border-teal-500/50 transition-all group"
                   onClick={() => navigate("/admin")}
                 >
-                  <CardContent className="pt-5 pb-4 text-center">
-                    <div className="w-11 h-11 mx-auto rounded-xl bg-orange-500/10 flex items-center justify-center mb-2 group-hover:bg-orange-500 transition-colors">
-                      <UserCog className="h-5 w-5 text-orange-500 group-hover:text-white" />
+                  <CardContent className="p-2.5 sm:pt-5 sm:pb-4 text-center">
+                    <div className="w-9 h-9 sm:w-11 sm:h-11 mx-auto rounded-lg sm:rounded-xl bg-orange-500/10 flex items-center justify-center mb-1.5 sm:mb-2 group-hover:bg-orange-500 transition-colors">
+                      <UserCog className="h-4 w-4 sm:h-5 sm:w-5 text-orange-500 group-hover:text-white" />
                     </div>
-                    <p className="text-sm font-medium">Staff</p>
-                    <p className="text-xs text-muted-foreground">Team & roles</p>
+                    <p className="text-xs sm:text-sm font-medium">Staff</p>
+                    <p className="hidden sm:block text-xs text-muted-foreground">Team & roles</p>
                   </CardContent>
                 </Card>
 
                 <Card 
-                  className="cursor-pointer hover:shadow-lg hover:border-teal-500/50 transition-all group"
+                  className="cursor-pointer hover:shadow-md sm:hover:shadow-lg hover:border-teal-500/50 transition-all group"
                   onClick={() => navigate("/stock")}
                 >
-                  <CardContent className="pt-5 pb-4 text-center">
-                    <div className="w-11 h-11 mx-auto rounded-xl bg-amber-500/10 flex items-center justify-center mb-2 group-hover:bg-amber-500 transition-colors">
-                      <Package className="h-5 w-5 text-amber-500 group-hover:text-white" />
+                  <CardContent className="p-2.5 sm:pt-5 sm:pb-4 text-center">
+                    <div className="w-9 h-9 sm:w-11 sm:h-11 mx-auto rounded-lg sm:rounded-xl bg-amber-500/10 flex items-center justify-center mb-1.5 sm:mb-2 group-hover:bg-amber-500 transition-colors">
+                      <Package className="h-4 w-4 sm:h-5 sm:w-5 text-amber-500 group-hover:text-white" />
                     </div>
-                    <p className="text-sm font-medium">Inventory</p>
-                    <p className="text-xs text-muted-foreground">Supplies & stock</p>
+                    <p className="text-xs sm:text-sm font-medium">Inventory</p>
+                    <p className="hidden sm:block text-xs text-muted-foreground">Supplies & stock</p>
                   </CardContent>
                 </Card>
               </div>
             </div>
 
             {/* Quick Access */}
-            <div className="mb-8">
-              <div className="flex items-center gap-2 mb-4">
-                <Badge variant="secondary" className="px-3 py-1">Quick Access</Badge>
+            <div>
+              <div className="flex items-center gap-2 mb-3 sm:mb-4">
+                <Badge variant="secondary" className="px-2 sm:px-3 py-0.5 sm:py-1 text-xs sm:text-sm">Quick Access</Badge>
               </div>
-              <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-4">
+              <div className="grid grid-cols-3 sm:grid-cols-3 lg:grid-cols-6 gap-2 sm:gap-4">
                 <Button
                   variant="outline"
-                  className="h-auto py-6 flex flex-col items-center gap-3 hover:bg-primary hover:text-primary-foreground hover:border-primary transition-all group"
+                  className="h-auto py-3 sm:py-6 flex flex-col items-center gap-1.5 sm:gap-3 hover:bg-primary hover:text-primary-foreground hover:border-primary transition-all group"
                   onClick={() => navigate("/dashboard")}
                 >
-                  <div className="w-12 h-12 rounded-xl bg-primary/10 group-hover:bg-primary-foreground/20 flex items-center justify-center transition-colors">
-                    <ClipboardList className="h-6 w-6 text-primary group-hover:text-primary-foreground" />
+                  <div className="w-9 h-9 sm:w-12 sm:h-12 rounded-lg sm:rounded-xl bg-primary/10 group-hover:bg-primary-foreground/20 flex items-center justify-center transition-colors">
+                    <ClipboardList className="h-4 w-4 sm:h-6 sm:w-6 text-primary group-hover:text-primary-foreground" />
                   </div>
-                  <span className="font-medium text-sm">My Dashboard</span>
+                  <span className="font-medium text-[10px] sm:text-sm">Dashboard</span>
                 </Button>
                 <Button
                   variant="outline"
-                  className="h-auto py-6 flex flex-col items-center gap-3 hover:bg-blue-500 hover:text-white hover:border-blue-500 transition-all group"
+                  className="h-auto py-3 sm:py-6 flex flex-col items-center gap-1.5 sm:gap-3 hover:bg-blue-500 hover:text-white hover:border-blue-500 transition-all group"
                   onClick={() => navigate("/queue")}
                 >
-                  <div className="w-12 h-12 rounded-xl bg-blue-500/10 group-hover:bg-white/20 flex items-center justify-center transition-colors">
-                    <Users className="h-6 w-6 text-blue-500 group-hover:text-white" />
+                  <div className="w-9 h-9 sm:w-12 sm:h-12 rounded-lg sm:rounded-xl bg-blue-500/10 group-hover:bg-white/20 flex items-center justify-center transition-colors">
+                    <Users className="h-4 w-4 sm:h-6 sm:w-6 text-blue-500 group-hover:text-white" />
                   </div>
-                  <span className="font-medium text-sm">Patient Queue</span>
+                  <span className="font-medium text-[10px] sm:text-sm">Queue</span>
                 </Button>
                 <Button
                   variant="outline"
-                  className="h-auto py-6 flex flex-col items-center gap-3 hover:bg-emerald-600 hover:text-white hover:border-emerald-600 transition-all group"
+                  className="h-auto py-3 sm:py-6 flex flex-col items-center gap-1.5 sm:gap-3 hover:bg-emerald-600 hover:text-white hover:border-emerald-600 transition-all group"
                   onClick={() => navigate("/pharmacy")}
                 >
-                  <div className="w-12 h-12 rounded-xl bg-emerald-600/10 group-hover:bg-white/20 flex items-center justify-center transition-colors">
-                    <Pill className="h-6 w-6 text-emerald-600 group-hover:text-white" />
+                  <div className="w-9 h-9 sm:w-12 sm:h-12 rounded-lg sm:rounded-xl bg-emerald-600/10 group-hover:bg-white/20 flex items-center justify-center transition-colors">
+                    <Pill className="h-4 w-4 sm:h-6 sm:w-6 text-emerald-600 group-hover:text-white" />
                   </div>
-                  <span className="font-medium text-sm">ePrescriptions</span>
+                  <span className="font-medium text-[10px] sm:text-sm">Prescribe</span>
                 </Button>
                 <Button
                   variant="outline"
-                  className="h-auto py-6 flex flex-col items-center gap-3 hover:bg-cyan-600 hover:text-white hover:border-cyan-600 transition-all group"
+                  className="h-auto py-3 sm:py-6 flex flex-col items-center gap-1.5 sm:gap-3 hover:bg-cyan-600 hover:text-white hover:border-cyan-600 transition-all group"
                   onClick={() => navigate("/orders")}
                 >
-                  <div className="w-12 h-12 rounded-xl bg-cyan-600/10 group-hover:bg-white/20 flex items-center justify-center transition-colors">
-                    <ClipboardCheck className="h-6 w-6 text-cyan-600 group-hover:text-white" />
+                  <div className="w-9 h-9 sm:w-12 sm:h-12 rounded-lg sm:rounded-xl bg-cyan-600/10 group-hover:bg-white/20 flex items-center justify-center transition-colors">
+                    <ClipboardCheck className="h-4 w-4 sm:h-6 sm:w-6 text-cyan-600 group-hover:text-white" />
                   </div>
-                  <span className="font-medium text-sm">E-Orders</span>
+                  <span className="font-medium text-[10px] sm:text-sm">Orders</span>
                 </Button>
                 <Button
                   variant="outline"
-                  className="h-auto py-6 flex flex-col items-center gap-3 hover:bg-green-500 hover:text-white hover:border-green-500 transition-all group"
+                  className="h-auto py-3 sm:py-6 flex flex-col items-center gap-1.5 sm:gap-3 hover:bg-green-500 hover:text-white hover:border-green-500 transition-all group"
                   onClick={() => navigate("/registration")}
                 >
-                  <div className="w-12 h-12 rounded-xl bg-green-500/10 group-hover:bg-white/20 flex items-center justify-center transition-colors">
-                    <UserPlus className="h-6 w-6 text-green-500 group-hover:text-white" />
+                  <div className="w-9 h-9 sm:w-12 sm:h-12 rounded-lg sm:rounded-xl bg-green-500/10 group-hover:bg-white/20 flex items-center justify-center transition-colors">
+                    <UserPlus className="h-4 w-4 sm:h-6 sm:w-6 text-green-500 group-hover:text-white" />
                   </div>
-                  <span className="font-medium text-sm">Register Patient</span>
+                  <span className="font-medium text-[10px] sm:text-sm">Register</span>
                 </Button>
                 <Button
                   variant="outline"
-                  className="h-auto py-6 flex flex-col items-center gap-3 hover:bg-purple-500 hover:text-white hover:border-purple-500 transition-all group"
+                  className="h-auto py-3 sm:py-6 flex flex-col items-center gap-1.5 sm:gap-3 hover:bg-purple-500 hover:text-white hover:border-purple-500 transition-all group"
                   onClick={() => navigate("/encounter")}
                 >
-                  <div className="w-12 h-12 rounded-xl bg-purple-500/10 group-hover:bg-white/20 flex items-center justify-center transition-colors">
-                    <Stethoscope className="h-6 w-6 text-purple-500 group-hover:text-white" />
+                  <div className="w-9 h-9 sm:w-12 sm:h-12 rounded-lg sm:rounded-xl bg-purple-500/10 group-hover:bg-white/20 flex items-center justify-center transition-colors">
+                    <Stethoscope className="h-4 w-4 sm:h-6 sm:w-6 text-purple-500 group-hover:text-white" />
                   </div>
-                  <span className="font-medium text-sm">Clinical EHR</span>
+                  <span className="font-medium text-[10px] sm:text-sm">EHR</span>
                 </Button>
               </div>
             </div>
 
             {/* Module Categories */}
-            <div className="space-y-8 pb-8">
-              <div className="space-y-8 pb-8">
-                {workModuleCategories.map((category) => {
-                  const visibleModules = getVisibleModules(category.modules);
-                  if (visibleModules.length === 0) return null;
+            <div className="space-y-4 sm:space-y-8 pb-4 sm:pb-8">
+              {workModuleCategories.map((category) => {
+                const visibleModules = getVisibleModules(category.modules);
+                if (visibleModules.length === 0) return null;
 
-                  return (
-                    <section key={category.id}>
-                      <div className="mb-4">
-                        <h3 className="text-lg font-semibold">{category.title}</h3>
-                        <p className="text-sm text-muted-foreground">{category.description}</p>
-                      </div>
-                      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
-                        {visibleModules.map((module) => (
-                          <Card
-                            key={module.id}
-                            className="cursor-pointer hover:shadow-lg hover:border-primary/50 transition-all group"
-                            onClick={() => handleModuleClick(module.path)}
-                          >
-                            <CardHeader className="pb-3">
-                              <div className="flex items-start justify-between">
-                                <div className={`w-10 h-10 rounded-lg ${module.color} flex items-center justify-center`}>
-                                  <module.icon className="h-5 w-5 text-white" />
-                                </div>
-                                <ChevronRight className="h-4 w-4 text-muted-foreground group-hover:text-primary transition-colors" />
+                return (
+                  <section key={category.id}>
+                    <div className="mb-2 sm:mb-4">
+                      <h3 className="text-base sm:text-lg font-semibold">{category.title}</h3>
+                      <p className="text-xs sm:text-sm text-muted-foreground">{category.description}</p>
+                    </div>
+                    <div className="grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-2 sm:gap-4">
+                      {visibleModules.map((module) => (
+                        <Card
+                          key={module.id}
+                          className="cursor-pointer hover:shadow-md sm:hover:shadow-lg hover:border-primary/50 transition-all group"
+                          onClick={() => handleModuleClick(module.path)}
+                        >
+                          <CardHeader className="p-3 sm:pb-3 sm:p-6">
+                            <div className="flex items-start justify-between">
+                              <div className={`w-8 h-8 sm:w-10 sm:h-10 rounded-md sm:rounded-lg ${module.color} flex items-center justify-center`}>
+                                <module.icon className="h-4 w-4 sm:h-5 sm:w-5 text-white" />
                               </div>
-                            </CardHeader>
-                            <CardContent>
-                              <CardTitle className="text-base mb-1">{module.label}</CardTitle>
-                              <CardDescription className="text-xs">{module.description}</CardDescription>
-                            </CardContent>
-                          </Card>
-                        ))}
-                      </div>
-                    </section>
-                  );
-                })}
-              </div>
+                              <ChevronRight className="h-3.5 w-3.5 sm:h-4 sm:w-4 text-muted-foreground group-hover:text-primary transition-colors" />
+                            </div>
+                          </CardHeader>
+                          <CardContent className="p-3 pt-0 sm:p-6 sm:pt-0">
+                            <CardTitle className="text-xs sm:text-base mb-0.5 sm:mb-1">{module.label}</CardTitle>
+                            <CardDescription className="text-[10px] sm:text-xs line-clamp-1 sm:line-clamp-none">{module.description}</CardDescription>
+                          </CardContent>
+                        </Card>
+                      ))}
+                    </div>
+                  </section>
+                );
+              })}
             </div>
           </TabsContent>
 
           {/* My Personal Health Portal Tab */}
           <TabsContent value="portal" className="mt-0">
-            <div className="space-y-8">
+            <div className="space-y-4 sm:space-y-8">
               {/* Hero Section */}
-              <div className="bg-gradient-to-r from-pink-500/10 via-rose-500/10 to-red-500/10 rounded-2xl p-8 border border-pink-200/50">
-                <div className="flex items-center gap-4 mb-4">
-                  <div className="w-16 h-16 rounded-2xl bg-pink-500 flex items-center justify-center">
-                    <Heart className="h-8 w-8 text-white" />
+              <div className="bg-gradient-to-r from-pink-500/10 via-rose-500/10 to-red-500/10 rounded-xl sm:rounded-2xl p-4 sm:p-8 border border-pink-200/50">
+                <div className="flex items-center gap-3 sm:gap-4 mb-3 sm:mb-4">
+                  <div className="w-12 h-12 sm:w-16 sm:h-16 rounded-xl sm:rounded-2xl bg-pink-500 flex items-center justify-center shrink-0">
+                    <Heart className="h-6 w-6 sm:h-8 sm:w-8 text-white" />
                   </div>
                   <div>
-                    <h3 className="text-2xl font-bold">My Health Portal</h3>
-                    <p className="text-muted-foreground">Access your personal health records, appointments, and more</p>
+                    <h3 className="text-lg sm:text-2xl font-bold">My Health Portal</h3>
+                    <p className="text-xs sm:text-base text-muted-foreground">Access your personal health records, appointments, and more</p>
                   </div>
                 </div>
                 <Button 
-                  size="lg" 
-                  className="bg-pink-500 hover:bg-pink-600 text-white"
+                  size="default" 
+                  className="w-full sm:w-auto bg-pink-500 hover:bg-pink-600 text-white"
                   onClick={() => navigate("/portal")}
                 >
                   Open My Health Portal
-                  <ChevronRight className="h-5 w-5 ml-2" />
+                  <ChevronRight className="h-4 w-4 sm:h-5 sm:w-5 ml-2" />
                 </Button>
               </div>
 
               {/* Communication Hub for Portal */}
-              <div className="bg-gradient-to-r from-indigo-500/10 via-blue-500/10 to-cyan-500/10 rounded-xl p-6 border border-indigo-200/50">
-                <div className="flex items-center justify-between flex-wrap gap-4">
-                  <div className="flex items-center gap-4">
-                    <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-indigo-500 to-blue-600 flex items-center justify-center">
-                      <MessageSquare className="h-6 w-6 text-white" />
+              <div className="bg-gradient-to-r from-indigo-500/10 via-blue-500/10 to-cyan-500/10 rounded-xl p-4 sm:p-6 border border-indigo-200/50">
+                <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 sm:gap-4">
+                  <div className="flex items-center gap-3 sm:gap-4">
+                    <div className="w-10 h-10 sm:w-12 sm:h-12 rounded-lg sm:rounded-xl bg-gradient-to-br from-indigo-500 to-blue-600 flex items-center justify-center shrink-0">
+                      <MessageSquare className="h-5 w-5 sm:h-6 sm:w-6 text-white" />
                     </div>
                     <div>
-                      <h4 className="font-semibold">Communication Hub</h4>
-                      <p className="text-sm text-muted-foreground">Messages, pages & calls with your care team</p>
+                      <h4 className="text-sm sm:text-base font-semibold">Communication Hub</h4>
+                      <p className="text-xs sm:text-sm text-muted-foreground">Messages, pages & calls with your care team</p>
                     </div>
                   </div>
                   <div className="flex gap-2 flex-wrap">
-                    <Button variant="outline" size="sm" onClick={() => navigate("/communication?tab=messages")}>
-                      <MessageSquare className="h-4 w-4 mr-1" />
-                      Messages
+                    <Button variant="outline" size="sm" className="text-xs h-8" onClick={() => navigate("/communication?tab=messages")}>
+                      <MessageSquare className="h-3.5 w-3.5 mr-1" />
+                      <span className="hidden sm:inline">Messages</span>
+                      <span className="sm:hidden">Msg</span>
                     </Button>
-                    <Button variant="outline" size="sm" onClick={() => navigate("/communication?tab=pages")}>
-                      <Bell className="h-4 w-4 mr-1" />
+                    <Button variant="outline" size="sm" className="text-xs h-8" onClick={() => navigate("/communication?tab=pages")}>
+                      <Bell className="h-3.5 w-3.5 mr-1" />
                       Pages
                     </Button>
-                    <Button className="bg-indigo-500 hover:bg-indigo-600 text-white" size="sm" onClick={() => navigate("/communication")}>
-                      <Phone className="h-4 w-4 mr-1" />
-                      Open Hub
+                    <Button className="bg-indigo-500 hover:bg-indigo-600 text-white text-xs h-8" size="sm" onClick={() => navigate("/communication")}>
+                      <Phone className="h-3.5 w-3.5 mr-1" />
+                      Open
                     </Button>
                   </div>
                 </div>
               </div>
 
               {/* Document Scanner for Portal */}
-              <div className="bg-gradient-to-r from-blue-500/10 via-cyan-500/10 to-teal-500/10 rounded-xl p-6 border border-blue-200/50">
-                <div className="flex items-center justify-between">
-                  <div className="flex items-center gap-4">
-                    <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-primary to-blue-600 flex items-center justify-center">
-                      <ScanLine className="h-6 w-6 text-white" />
+              <div className="bg-gradient-to-r from-blue-500/10 via-cyan-500/10 to-teal-500/10 rounded-xl p-4 sm:p-6 border border-blue-200/50">
+                <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
+                  <div className="flex items-center gap-3 sm:gap-4">
+                    <div className="w-10 h-10 sm:w-12 sm:h-12 rounded-lg sm:rounded-xl bg-gradient-to-br from-primary to-blue-600 flex items-center justify-center shrink-0">
+                      <ScanLine className="h-5 w-5 sm:h-6 sm:w-6 text-white" />
                     </div>
                     <div>
-                      <h4 className="font-semibold">Scan Health Documents</h4>
-                      <p className="text-sm text-muted-foreground">Upload prescriptions, lab results, insurance cards & more</p>
+                      <h4 className="text-sm sm:text-base font-semibold">Scan Health Documents</h4>
+                      <p className="text-xs sm:text-sm text-muted-foreground">Upload prescriptions, lab results, insurance cards & more</p>
                     </div>
                   </div>
-                  <HealthDocumentScanner variant="button" className="bg-primary hover:bg-primary/90 text-primary-foreground" />
+                  <HealthDocumentScanner variant="button" className="w-full sm:w-auto bg-primary hover:bg-primary/90 text-primary-foreground" />
                 </div>
               </div>
 
               {/* E-Prescriptions & E-Orders Quick Access */}
-              <div className="bg-gradient-to-r from-emerald-500/10 via-green-500/10 to-teal-500/10 rounded-xl p-6 border border-emerald-200/50">
-                <div className="flex items-center justify-between flex-wrap gap-4">
-                  <div className="flex items-center gap-4">
-                    <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-emerald-500 to-green-600 flex items-center justify-center">
-                      <Pill className="h-6 w-6 text-white" />
+              <div className="bg-gradient-to-r from-emerald-500/10 via-green-500/10 to-teal-500/10 rounded-xl p-4 sm:p-6 border border-emerald-200/50">
+                <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 sm:gap-4">
+                  <div className="flex items-center gap-3 sm:gap-4">
+                    <div className="w-10 h-10 sm:w-12 sm:h-12 rounded-lg sm:rounded-xl bg-gradient-to-br from-emerald-500 to-green-600 flex items-center justify-center shrink-0">
+                      <Pill className="h-5 w-5 sm:h-6 sm:w-6 text-white" />
                     </div>
                     <div>
-                      <h4 className="font-semibold">Prescriptions & Orders</h4>
-                      <p className="text-sm text-muted-foreground">View your prescriptions, request refills & track orders</p>
+                      <h4 className="text-sm sm:text-base font-semibold">Prescriptions & Orders</h4>
+                      <p className="text-xs sm:text-sm text-muted-foreground">View your prescriptions, request refills & track orders</p>
                     </div>
                   </div>
                   <div className="flex gap-2 flex-wrap">
-                    <Button variant="outline" onClick={() => navigate("/pharmacy")}>
-                      <Pill className="h-4 w-4 mr-2" />
-                      My Prescriptions
+                    <Button variant="outline" size="sm" className="text-xs h-8 flex-1 sm:flex-none" onClick={() => navigate("/pharmacy")}>
+                      <Pill className="h-3.5 w-3.5 mr-1" />
+                      Prescriptions
                     </Button>
-                    <Button className="bg-emerald-500 hover:bg-emerald-600 text-white" onClick={() => navigate("/orders")}>
-                      <ClipboardCheck className="h-4 w-4 mr-2" />
-                      My Orders
+                    <Button className="bg-emerald-500 hover:bg-emerald-600 text-white text-xs h-8 flex-1 sm:flex-none" size="sm" onClick={() => navigate("/orders")}>
+                      <ClipboardCheck className="h-3.5 w-3.5 mr-1" />
+                      Orders
                     </Button>
                   </div>
                 </div>
               </div>
 
               {/* Health Marketplace Quick Access */}
-              <div className="bg-gradient-to-r from-green-500/10 via-emerald-500/10 to-teal-500/10 rounded-xl p-6 border border-green-200/50">
-                <div className="flex items-center justify-between flex-wrap gap-4">
-                  <div className="flex items-center gap-4">
-                    <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-green-500 to-emerald-600 flex items-center justify-center">
-                      <Store className="h-6 w-6 text-white" />
+              <div className="bg-gradient-to-r from-green-500/10 via-emerald-500/10 to-teal-500/10 rounded-xl p-4 sm:p-6 border border-green-200/50">
+                <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 sm:gap-4">
+                  <div className="flex items-center gap-3 sm:gap-4">
+                    <div className="w-10 h-10 sm:w-12 sm:h-12 rounded-lg sm:rounded-xl bg-gradient-to-br from-green-500 to-emerald-600 flex items-center justify-center shrink-0">
+                      <Store className="h-5 w-5 sm:h-6 sm:w-6 text-white" />
                     </div>
                     <div>
-                      <h4 className="font-semibold">Health Marketplace</h4>
-                      <p className="text-sm text-muted-foreground">Browse health products, compare prices & order from trusted vendors</p>
+                      <h4 className="text-sm sm:text-base font-semibold">Health Marketplace</h4>
+                      <p className="text-xs sm:text-sm text-muted-foreground">Browse health products, compare prices & order from vendors</p>
                     </div>
                   </div>
                   <div className="flex gap-2">
                     <Button 
                       variant="outline"
+                      size="sm"
+                      className="text-xs h-8 flex-1 sm:flex-none"
                       onClick={() => navigate("/catalogue")}
                     >
-                      <BookOpen className="h-4 w-4 mr-2" />
-                      Browse Catalogue
+                      <BookOpen className="h-3.5 w-3.5 mr-1" />
+                      Catalogue
                     </Button>
                     <Button 
-                      className="bg-green-500 hover:bg-green-600 text-white"
+                      className="bg-green-500 hover:bg-green-600 text-white text-xs h-8 flex-1 sm:flex-none"
+                      size="sm"
                       onClick={() => navigate("/marketplace")}
                     >
-                      <Store className="h-4 w-4 mr-2" />
-                      Open Marketplace
+                      <Store className="h-3.5 w-3.5 mr-1" />
+                      Marketplace
                     </Button>
                   </div>
                 </div>
               </div>
 
               {/* Portal Features Grid */}
-              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+              <div className="grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-3 gap-2 sm:gap-4">
                 <Card 
-                  className="cursor-pointer hover:shadow-lg hover:border-pink-500/50 transition-all group"
+                  className="cursor-pointer hover:shadow-md sm:hover:shadow-lg hover:border-pink-500/50 transition-all group"
                   onClick={() => navigate("/portal")}
                 >
-                  <CardHeader className="pb-3">
+                  <CardHeader className="p-3 sm:pb-3 sm:p-6">
                     <div className="flex items-start justify-between">
-                      <div className="w-12 h-12 rounded-lg bg-pink-500/10 flex items-center justify-center">
-                        <FileHeart className="h-6 w-6 text-pink-500" />
+                      <div className="w-9 h-9 sm:w-12 sm:h-12 rounded-lg bg-pink-500/10 flex items-center justify-center">
+                        <FileHeart className="h-4 w-4 sm:h-6 sm:w-6 text-pink-500" />
                       </div>
-                      <ChevronRight className="h-4 w-4 text-muted-foreground group-hover:text-pink-500 transition-colors" />
+                      <ChevronRight className="h-3.5 w-3.5 sm:h-4 sm:w-4 text-muted-foreground group-hover:text-pink-500 transition-colors" />
                     </div>
                   </CardHeader>
-                  <CardContent>
-                    <CardTitle className="text-base mb-1">Health Records</CardTitle>
-                    <CardDescription className="text-xs">View your medical history, lab results, and documents</CardDescription>
+                  <CardContent className="p-3 pt-0 sm:p-6 sm:pt-0">
+                    <CardTitle className="text-xs sm:text-base mb-0.5 sm:mb-1">Health Records</CardTitle>
+                    <CardDescription className="text-[10px] sm:text-xs line-clamp-2">View your medical history & documents</CardDescription>
                   </CardContent>
                 </Card>
 
                 <Card 
-                  className="cursor-pointer hover:shadow-lg hover:border-pink-500/50 transition-all group"
+                  className="cursor-pointer hover:shadow-md sm:hover:shadow-lg hover:border-pink-500/50 transition-all group"
                   onClick={() => navigate("/portal")}
                 >
-                  <CardHeader className="pb-3">
+                  <CardHeader className="p-3 sm:pb-3 sm:p-6">
                     <div className="flex items-start justify-between">
-                      <div className="w-12 h-12 rounded-lg bg-blue-500/10 flex items-center justify-center">
-                        <Calendar className="h-6 w-6 text-blue-500" />
+                      <div className="w-9 h-9 sm:w-12 sm:h-12 rounded-lg bg-blue-500/10 flex items-center justify-center">
+                        <Calendar className="h-4 w-4 sm:h-6 sm:w-6 text-blue-500" />
                       </div>
-                      <ChevronRight className="h-4 w-4 text-muted-foreground group-hover:text-pink-500 transition-colors" />
+                      <ChevronRight className="h-3.5 w-3.5 sm:h-4 sm:w-4 text-muted-foreground group-hover:text-pink-500 transition-colors" />
                     </div>
                   </CardHeader>
-                  <CardContent>
-                    <CardTitle className="text-base mb-1">My Appointments</CardTitle>
-                    <CardDescription className="text-xs">Schedule and manage your healthcare appointments</CardDescription>
+                  <CardContent className="p-3 pt-0 sm:p-6 sm:pt-0">
+                    <CardTitle className="text-xs sm:text-base mb-0.5 sm:mb-1">Appointments</CardTitle>
+                    <CardDescription className="text-[10px] sm:text-xs line-clamp-2">Schedule & manage appointments</CardDescription>
                   </CardContent>
                 </Card>
 
                 <Card 
-                  className="cursor-pointer hover:shadow-lg hover:border-pink-500/50 transition-all group"
+                  className="cursor-pointer hover:shadow-md sm:hover:shadow-lg hover:border-pink-500/50 transition-all group"
                   onClick={() => navigate("/portal")}
                 >
-                  <CardHeader className="pb-3">
+                  <CardHeader className="p-3 sm:pb-3 sm:p-6">
                     <div className="flex items-start justify-between">
-                      <div className="w-12 h-12 rounded-lg bg-emerald-500/10 flex items-center justify-center">
-                        <Pill className="h-6 w-6 text-emerald-500" />
+                      <div className="w-9 h-9 sm:w-12 sm:h-12 rounded-lg bg-emerald-500/10 flex items-center justify-center">
+                        <Pill className="h-4 w-4 sm:h-6 sm:w-6 text-emerald-500" />
                       </div>
-                      <ChevronRight className="h-4 w-4 text-muted-foreground group-hover:text-pink-500 transition-colors" />
+                      <ChevronRight className="h-3.5 w-3.5 sm:h-4 sm:w-4 text-muted-foreground group-hover:text-pink-500 transition-colors" />
                     </div>
                   </CardHeader>
-                  <CardContent>
-                    <CardTitle className="text-base mb-1">My Medications</CardTitle>
-                    <CardDescription className="text-xs">Track prescriptions and request refills</CardDescription>
+                  <CardContent className="p-3 pt-0 sm:p-6 sm:pt-0">
+                    <CardTitle className="text-xs sm:text-base mb-0.5 sm:mb-1">Medications</CardTitle>
+                    <CardDescription className="text-[10px] sm:text-xs line-clamp-2">Track prescriptions & refills</CardDescription>
                   </CardContent>
                 </Card>
 
                 <Card 
-                  className="cursor-pointer hover:shadow-lg hover:border-pink-500/50 transition-all group"
+                  className="cursor-pointer hover:shadow-md sm:hover:shadow-lg hover:border-pink-500/50 transition-all group"
                   onClick={() => navigate("/portal")}
                 >
-                  <CardHeader className="pb-3">
+                  <CardHeader className="p-3 sm:pb-3 sm:p-6">
                     <div className="flex items-start justify-between">
-                      <div className="w-12 h-12 rounded-lg bg-purple-500/10 flex items-center justify-center">
-                        <Video className="h-6 w-6 text-purple-500" />
+                      <div className="w-9 h-9 sm:w-12 sm:h-12 rounded-lg bg-purple-500/10 flex items-center justify-center">
+                        <Video className="h-4 w-4 sm:h-6 sm:w-6 text-purple-500" />
                       </div>
-                      <ChevronRight className="h-4 w-4 text-muted-foreground group-hover:text-pink-500 transition-colors" />
+                      <ChevronRight className="h-3.5 w-3.5 sm:h-4 sm:w-4 text-muted-foreground group-hover:text-pink-500 transition-colors" />
                     </div>
                   </CardHeader>
-                  <CardContent>
-                    <CardTitle className="text-base mb-1">Telehealth</CardTitle>
-                    <CardDescription className="text-xs">Virtual consultations with your care team</CardDescription>
+                  <CardContent className="p-3 pt-0 sm:p-6 sm:pt-0">
+                    <CardTitle className="text-xs sm:text-base mb-0.5 sm:mb-1">Telehealth</CardTitle>
+                    <CardDescription className="text-[10px] sm:text-xs line-clamp-2">Virtual consultations</CardDescription>
                   </CardContent>
                 </Card>
 
                 <Card 
-                  className="cursor-pointer hover:shadow-lg hover:border-pink-500/50 transition-all group"
+                  className="cursor-pointer hover:shadow-md sm:hover:shadow-lg hover:border-pink-500/50 transition-all group"
                   onClick={() => navigate("/portal")}
                 >
-                  <CardHeader className="pb-3">
+                  <CardHeader className="p-3 sm:pb-3 sm:p-6">
                     <div className="flex items-start justify-between">
-                      <div className="w-12 h-12 rounded-lg bg-amber-500/10 flex items-center justify-center">
-                        <Activity className="h-6 w-6 text-amber-500" />
+                      <div className="w-9 h-9 sm:w-12 sm:h-12 rounded-lg bg-amber-500/10 flex items-center justify-center">
+                        <Activity className="h-4 w-4 sm:h-6 sm:w-6 text-amber-500" />
                       </div>
-                      <ChevronRight className="h-4 w-4 text-muted-foreground group-hover:text-pink-500 transition-colors" />
+                      <ChevronRight className="h-3.5 w-3.5 sm:h-4 sm:w-4 text-muted-foreground group-hover:text-pink-500 transition-colors" />
                     </div>
                   </CardHeader>
-                  <CardContent>
-                    <CardTitle className="text-base mb-1">Vitals & Tracking</CardTitle>
-                    <CardDescription className="text-xs">Monitor your health metrics and vitals</CardDescription>
+                  <CardContent className="p-3 pt-0 sm:p-6 sm:pt-0">
+                    <CardTitle className="text-xs sm:text-base mb-0.5 sm:mb-1">Vitals</CardTitle>
+                    <CardDescription className="text-[10px] sm:text-xs line-clamp-2">Monitor health metrics</CardDescription>
                   </CardContent>
                 </Card>
 
                 <Card 
-                  className="cursor-pointer hover:shadow-lg hover:border-pink-500/50 transition-all group"
+                  className="cursor-pointer hover:shadow-md sm:hover:shadow-lg hover:border-pink-500/50 transition-all group"
                   onClick={() => navigate("/portal")}
                 >
-                  <CardHeader className="pb-3">
+                  <CardHeader className="p-3 sm:pb-3 sm:p-6">
                     <div className="flex items-start justify-between">
-                      <div className="w-12 h-12 rounded-lg bg-green-500/10 flex items-center justify-center">
-                        <CreditCard className="h-6 w-6 text-green-500" />
+                      <div className="w-9 h-9 sm:w-12 sm:h-12 rounded-lg bg-green-500/10 flex items-center justify-center">
+                        <CreditCard className="h-4 w-4 sm:h-6 sm:w-6 text-green-500" />
                       </div>
-                      <ChevronRight className="h-4 w-4 text-muted-foreground group-hover:text-pink-500 transition-colors" />
+                      <ChevronRight className="h-3.5 w-3.5 sm:h-4 sm:w-4 text-muted-foreground group-hover:text-pink-500 transition-colors" />
                     </div>
                   </CardHeader>
-                  <CardContent>
-                    <CardTitle className="text-base mb-1">Billing & Payments</CardTitle>
-                    <CardDescription className="text-xs">View bills and make payments online</CardDescription>
+                  <CardContent className="p-3 pt-0 sm:p-6 sm:pt-0">
+                    <CardTitle className="text-xs sm:text-base mb-0.5 sm:mb-1">Billing</CardTitle>
+                    <CardDescription className="text-[10px] sm:text-xs line-clamp-2">View & pay bills</CardDescription>
                   </CardContent>
                 </Card>
               </div>
