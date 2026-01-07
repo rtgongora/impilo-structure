@@ -156,6 +156,7 @@ const workModuleCategories: ModuleCategory[] = [
       { id: "facilities", label: "Facility Registry", description: "GOFR health facilities", icon: Building2, path: "/admin", color: "bg-purple-500", roles: ["admin"] },
       { id: "providers", label: "Provider Registry", description: "iHRIS healthcare workers", icon: Stethoscope, path: "/admin", color: "bg-teal-500", roles: ["admin"] },
       { id: "product-registry", label: "Product Registry", description: "Manage products & vendors", icon: Database, path: "/admin/product-registry", color: "bg-indigo-500", roles: ["admin"] },
+      { id: "fhir-viewer", label: "FHIR Resources", description: "HL7 FHIR interoperability viewer", icon: FileCheck, path: "/admin", color: "bg-cyan-500", roles: ["admin"] },
     ],
   },
   {
@@ -164,8 +165,18 @@ const workModuleCategories: ModuleCategory[] = [
     description: "System settings, analytics, and integrations",
     modules: [
       { id: "reports", label: "Reports & Analytics", description: "Dashboards & insights", icon: BarChart3, path: "/reports", color: "bg-violet-500" },
+      { id: "report-builder", label: "Custom Reports", description: "Build custom reports & queries", icon: FileCheck, path: "/reports", color: "bg-indigo-500" },
       { id: "odoo", label: "Odoo ERP", description: "ERP integration", icon: Building2, path: "/odoo", color: "bg-gray-600", roles: ["admin"] },
       { id: "admin", label: "System Admin", description: "Users, security & settings", icon: Settings, path: "/admin", color: "bg-gray-700", roles: ["admin"] },
+    ],
+  },
+  {
+    id: "clinical-tools",
+    title: "Clinical Tools",
+    description: "Advanced clinical documentation and utilities",
+    modules: [
+      { id: "voice-dictation", label: "Voice Dictation", description: "Speech-to-text for notes", icon: Activity, path: "/encounter", color: "bg-rose-500", roles: ["doctor", "nurse", "specialist"] },
+      { id: "sync", label: "Offline Sync", description: "Conflict resolution & sync status", icon: ArrowRightLeft, path: "/admin", color: "bg-slate-600", roles: ["admin"] },
     ],
   },
   {
@@ -913,7 +924,7 @@ export default function ModuleHome() {
 
                 <Card 
                   className="cursor-pointer hover:shadow-md sm:hover:shadow-lg hover:border-pink-500/50 transition-all group"
-                  onClick={() => navigate("/portal")}
+                  onClick={() => navigate("/appointments")}
                 >
                   <CardHeader className="p-3 sm:pb-3 sm:p-6">
                     <div className="flex items-start justify-between">
@@ -924,14 +935,32 @@ export default function ModuleHome() {
                     </div>
                   </CardHeader>
                   <CardContent className="p-3 pt-0 sm:p-6 sm:pt-0">
-                    <CardTitle className="text-xs sm:text-base mb-0.5 sm:mb-1">Appointments</CardTitle>
-                    <CardDescription className="text-[10px] sm:text-xs line-clamp-2">Schedule & manage appointments</CardDescription>
+                    <CardTitle className="text-xs sm:text-base mb-0.5 sm:mb-1">Book Appointment</CardTitle>
+                    <CardDescription className="text-[10px] sm:text-xs line-clamp-2">Find & book available slots</CardDescription>
                   </CardContent>
                 </Card>
 
                 <Card 
                   className="cursor-pointer hover:shadow-md sm:hover:shadow-lg hover:border-pink-500/50 transition-all group"
                   onClick={() => navigate("/portal")}
+                >
+                  <CardHeader className="p-3 sm:pb-3 sm:p-6">
+                    <div className="flex items-start justify-between">
+                      <div className="w-9 h-9 sm:w-12 sm:h-12 rounded-lg bg-orange-500/10 flex items-center justify-center">
+                        <Clock className="h-4 w-4 sm:h-6 sm:w-6 text-orange-500" />
+                      </div>
+                      <ChevronRight className="h-3.5 w-3.5 sm:h-4 sm:w-4 text-muted-foreground group-hover:text-pink-500 transition-colors" />
+                    </div>
+                  </CardHeader>
+                  <CardContent className="p-3 pt-0 sm:p-6 sm:pt-0">
+                    <CardTitle className="text-xs sm:text-base mb-0.5 sm:mb-1">My Appointments</CardTitle>
+                    <CardDescription className="text-[10px] sm:text-xs line-clamp-2">Upcoming & past visits</CardDescription>
+                  </CardContent>
+                </Card>
+
+                <Card 
+                  className="cursor-pointer hover:shadow-md sm:hover:shadow-lg hover:border-pink-500/50 transition-all group"
+                  onClick={() => navigate("/pharmacy")}
                 >
                   <CardHeader className="p-3 sm:pb-3 sm:p-6">
                     <div className="flex items-start justify-between">
@@ -944,6 +973,24 @@ export default function ModuleHome() {
                   <CardContent className="p-3 pt-0 sm:p-6 sm:pt-0">
                     <CardTitle className="text-xs sm:text-base mb-0.5 sm:mb-1">Medications</CardTitle>
                     <CardDescription className="text-[10px] sm:text-xs line-clamp-2">Track prescriptions & refills</CardDescription>
+                  </CardContent>
+                </Card>
+
+                <Card 
+                  className="cursor-pointer hover:shadow-md sm:hover:shadow-lg hover:border-pink-500/50 transition-all group"
+                  onClick={() => navigate("/portal")}
+                >
+                  <CardHeader className="p-3 sm:pb-3 sm:p-6">
+                    <div className="flex items-start justify-between">
+                      <div className="w-9 h-9 sm:w-12 sm:h-12 rounded-lg bg-teal-500/10 flex items-center justify-center">
+                        <Target className="h-4 w-4 sm:h-6 sm:w-6 text-teal-500" />
+                      </div>
+                      <ChevronRight className="h-3.5 w-3.5 sm:h-4 sm:w-4 text-muted-foreground group-hover:text-pink-500 transition-colors" />
+                    </div>
+                  </CardHeader>
+                  <CardContent className="p-3 pt-0 sm:p-6 sm:pt-0">
+                    <CardTitle className="text-xs sm:text-base mb-0.5 sm:mb-1">Refill Request</CardTitle>
+                    <CardDescription className="text-[10px] sm:text-xs line-clamp-2">Request prescription refills</CardDescription>
                   </CardContent>
                 </Card>
 
