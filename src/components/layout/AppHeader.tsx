@@ -15,6 +15,7 @@ import { PatientSearch } from "@/components/search/PatientSearch";
 import { HandoffNotifications } from "@/components/handoff/HandoffNotifications";
 import { VoiceCommandButton } from "@/components/voice/VoiceCommandButton";
 import { ActiveWorkspaceIndicator } from "@/components/layout/ActiveWorkspaceIndicator";
+import { FacilitySelector } from "@/components/layout/FacilitySelector";
 
 interface AppHeaderProps {
   title?: string;
@@ -87,6 +88,11 @@ export function AppHeader({ title }: AppHeaderProps) {
 
       {/* Right: Actions & User */}
       <div className="flex items-center gap-2">
+        {/* Facility Selector */}
+        <FacilitySelector />
+        
+        <div className="h-5 w-px bg-border" />
+
         {/* Active Workspace Indicator */}
         <ActiveWorkspaceIndicator />
 

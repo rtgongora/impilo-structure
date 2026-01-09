@@ -3106,6 +3106,13 @@ export type Database = {
             referencedRelation: "facilities"
             referencedColumns: ["id"]
           },
+          {
+            foreignKeyName: "facility_change_requests_facility_id_fkey"
+            columns: ["facility_id"]
+            isOneToOne: false
+            referencedRelation: "facility_capabilities"
+            referencedColumns: ["facility_id"]
+          },
         ]
       }
       facility_history: {
@@ -3146,6 +3153,13 @@ export type Database = {
             isOneToOne: false
             referencedRelation: "facilities"
             referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "facility_history_facility_id_fkey"
+            columns: ["facility_id"]
+            isOneToOne: false
+            referencedRelation: "facility_capabilities"
+            referencedColumns: ["facility_id"]
           },
         ]
       }
@@ -3190,6 +3204,13 @@ export type Database = {
             isOneToOne: false
             referencedRelation: "facilities"
             referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "facility_identifiers_facility_id_fkey"
+            columns: ["facility_id"]
+            isOneToOne: false
+            referencedRelation: "facility_capabilities"
+            referencedColumns: ["facility_id"]
           },
         ]
       }
@@ -3332,6 +3353,13 @@ export type Database = {
             isOneToOne: false
             referencedRelation: "facilities"
             referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "facility_reconciliation_matches_candidate_facility_id_fkey"
+            columns: ["candidate_facility_id"]
+            isOneToOne: false
+            referencedRelation: "facility_capabilities"
+            referencedColumns: ["facility_id"]
           },
           {
             foreignKeyName: "facility_reconciliation_matches_job_id_fkey"
@@ -3498,6 +3526,13 @@ export type Database = {
             referencedRelation: "facilities"
             referencedColumns: ["id"]
           },
+          {
+            foreignKeyName: "facility_registry_records_facility_id_fkey"
+            columns: ["facility_id"]
+            isOneToOne: false
+            referencedRelation: "facility_capabilities"
+            referencedColumns: ["facility_id"]
+          },
         ]
       }
       facility_registry_roles: {
@@ -3650,6 +3685,13 @@ export type Database = {
             referencedColumns: ["id"]
           },
           {
+            foreignKeyName: "facility_services_facility_id_fkey"
+            columns: ["facility_id"]
+            isOneToOne: false
+            referencedRelation: "facility_capabilities"
+            referencedColumns: ["facility_id"]
+          },
+          {
             foreignKeyName: "facility_services_service_category_id_fkey"
             columns: ["service_category_id"]
             isOneToOne: false
@@ -3660,6 +3702,7 @@ export type Database = {
       }
       facility_types: {
         Row: {
+          capabilities: string[] | null
           category: string | null
           code: string
           created_at: string | null
@@ -3671,6 +3714,7 @@ export type Database = {
           updated_at: string | null
         }
         Insert: {
+          capabilities?: string[] | null
           category?: string | null
           code: string
           created_at?: string | null
@@ -3682,6 +3726,7 @@ export type Database = {
           updated_at?: string | null
         }
         Update: {
+          capabilities?: string[] | null
           category?: string | null
           code?: string
           created_at?: string | null
@@ -7648,6 +7693,13 @@ export type Database = {
             referencedColumns: ["id"]
           },
           {
+            foreignKeyName: "provider_employment_history_facility_id_fkey"
+            columns: ["facility_id"]
+            isOneToOne: false
+            referencedRelation: "facility_capabilities"
+            referencedColumns: ["facility_id"]
+          },
+          {
             foreignKeyName: "provider_employment_history_provider_id_fkey"
             columns: ["provider_id"]
             isOneToOne: false
@@ -8061,11 +8113,25 @@ export type Database = {
             referencedColumns: ["id"]
           },
           {
+            foreignKeyName: "provider_position_changes_new_facility_id_fkey"
+            columns: ["new_facility_id"]
+            isOneToOne: false
+            referencedRelation: "facility_capabilities"
+            referencedColumns: ["facility_id"]
+          },
+          {
             foreignKeyName: "provider_position_changes_previous_facility_id_fkey"
             columns: ["previous_facility_id"]
             isOneToOne: false
             referencedRelation: "facilities"
             referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "provider_position_changes_previous_facility_id_fkey"
+            columns: ["previous_facility_id"]
+            isOneToOne: false
+            referencedRelation: "facility_capabilities"
+            referencedColumns: ["facility_id"]
           },
           {
             foreignKeyName: "provider_position_changes_provider_id_fkey"
@@ -8273,6 +8339,13 @@ export type Database = {
             isOneToOne: false
             referencedRelation: "facilities"
             referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "provider_registry_records_facility_id_fkey"
+            columns: ["facility_id"]
+            isOneToOne: false
+            referencedRelation: "facility_capabilities"
+            referencedColumns: ["facility_id"]
           },
         ]
       }
@@ -11582,6 +11655,19 @@ export type Database = {
       }
     }
     Views: {
+      facility_capabilities: {
+        Row: {
+          capabilities: string[] | null
+          category: string | null
+          facility_code: string | null
+          facility_id: string | null
+          facility_name: string | null
+          facility_type_code: string | null
+          facility_type_name: string | null
+          level_of_care: string | null
+        }
+        Relationships: []
+      }
       provider_scheduling_info: {
         Row: {
           department: string | null
