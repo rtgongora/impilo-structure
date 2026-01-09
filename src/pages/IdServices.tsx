@@ -1,95 +1,76 @@
-import { useState } from "react";
 import { AppLayout } from "@/components/layout/AppLayout";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { Button } from "@/components/ui/button";
+import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { toast } from "sonner";
 import { 
-  Fingerprint, 
   User, 
+  UserCheck, 
   Building2, 
   Shield, 
-  Copy, 
-  CheckCircle, 
   RefreshCw,
   Key,
-  Smartphone,
-  Mail,
-  FileText,
-  UserCheck,
-  QrCode
+  QrCode,
+  Fingerprint,
+  Search,
+  Package
 } from "lucide-react";
+import { IdGenerationCard } from "@/components/id/IdGenerationCard";
+import { IdRecoveryPanel } from "@/components/id/IdRecoveryPanel";
+import { IdValidationCard } from "@/components/id/IdValidationCard";
+import { IdBatchGenerator } from "@/components/id/IdBatchGenerator";
 import { PHIDService, formatPHID } from "@/services/phidService";
 import { ProviderIdService } from "@/services/providerIdService";
 import { IdGenerationService } from "@/services/idGenerationService";
+import { supabase } from "@/integrations/supabase/client";
 
 export default function IdServices() {
-  const [activeTab, setActiveTab] = useState("patient");
-  const [generatedPHID, setGeneratedPHID] = useState<{ phid: string; shrId: string; clientRegistryId: string } | null>(null);
-  const [generatedProviderId, setGeneratedProviderId] = useState<{ providerId: string; providerToken: string } | null>(null);
-  const [generatedFacilityId, setGeneratedFacilityId] = useState<string | null>(null);
-  const [isGenerating, setIsGenerating] = useState(false);
-  const [provinceCode, setProvinceCode] = useState("ZW");
-
-  // Recovery state
-  const [recoveryMethod, setRecoveryMethod] = useState<string>("id_document");
-  const [recoveryData, setRecoveryData] = useState<Record<string, string>>({});
-
+  // Generate PHID with linked IDs
   const handleGeneratePHID = async () => {
-    setIsGenerating(true);
-    try {
-      const result = await PHIDService.generatePHID();
-      setGeneratedPHID(result);
-      toast.success("Patient PHID generated successfully");
-    } catch (error) {
-      toast.error("Failed to generate PHID");
-    } finally {
-      setIsGenerating(false);
-    }
+    const result = await PHIDService.generatePHID();
+    return {
+      primaryId: formatPHID(result.phid),
+      token: result.phid,
+      secondaryIds: {
+        clientRegistryId: result.clientRegistryId,
+        shrId: result.shrId
+      }
+    };
   };
 
-  const handleGenerateProviderId = async () => {
-    setIsGenerating(true);
-    try {
-      const result = await ProviderIdService.generateProviderId(provinceCode);
-      setGeneratedProviderId(result);
-      toast.success("Provider ID generated successfully");
-    } catch (error) {
-      toast.error("Failed to generate Provider ID");
-    } finally {
-      setIsGenerating(false);
-    }
+  // Generate Provider ID
+  const handleGenerateProviderId = async (provinceCode?: string) => {
+    const result = await ProviderIdService.generateProviderId(provinceCode || "ZW");
+    return {
+      primaryId: result.providerId,
+      token: result.providerToken,
+      secondaryIds: {
+        registryId: result.registryId
+      }
+    };
   };
 
-  const handleGenerateFacilityId = async () => {
-    setIsGenerating(true);
-    try {
-      const result = await IdGenerationService.generateFacilityRegistryId(provinceCode);
-      setGeneratedFacilityId(result);
-      toast.success("Facility ID generated successfully");
-    } catch (error) {
-      toast.error("Failed to generate Facility ID");
-    } finally {
-      setIsGenerating(false);
-    }
+  // Generate Facility ID
+  const handleGenerateFacilityId = async (provinceCode?: string) => {
+    const result = await IdGenerationService.generateFacilityRegistryId(provinceCode || "ZW");
+    return {
+      primaryId: result
+    };
   };
 
-  const copyToClipboard = (text: string) => {
-    navigator.clipboard.writeText(text);
-    toast.success("Copied to clipboard");
+  // Send ID via email
+  const handleSendToEmail = async (id: string, email: string) => {
+    const { error } = await supabase.functions.invoke("send-secure-id", {
+      body: {
+        recipientEmail: email,
+        recipientName: "Recipient",
+        idValue: id,
+        idType: "impilo",
+        deliveryMethod: "email"
+      }
+    });
+    
+    if (error) throw error;
   };
-
-  const recoveryMethods = [
-    { id: "biometric", label: "Biometric", icon: Fingerprint, description: "Fingerprint, facial, or iris scan" },
-    { id: "id_document", label: "ID Document", icon: FileText, description: "National ID, passport verification" },
-    { id: "phone_otp", label: "Phone OTP", icon: Smartphone, description: "SMS verification code" },
-    { id: "email_otp", label: "Email OTP", icon: Mail, description: "Email verification code" },
-    { id: "provider_verification", label: "Provider Verify", icon: UserCheck, description: "Healthcare provider assisted" },
-  ];
 
   return (
     <AppLayout>
@@ -97,8 +78,8 @@ export default function IdServices() {
         {/* Header */}
         <div className="flex items-center justify-between">
           <div>
-            <h1 className="text-2xl font-bold text-foreground">ID Generation Services</h1>
-            <p className="text-muted-foreground">Generate and manage Impilo health identifiers</p>
+            <h1 className="text-2xl font-bold text-foreground">Identity Services</h1>
+            <p className="text-muted-foreground">Generate, validate, and recover Impilo health identifiers</p>
           </div>
           <Badge variant="outline" className="text-primary border-primary">
             <Shield className="w-3 h-3 mr-1" />
@@ -119,109 +100,133 @@ export default function IdServices() {
                   Patient Token (PHID) → Links to → Client Registry ID + SHR ID → Full Health Record Access
                 </p>
               </div>
-              <div className="flex gap-2">
+              <div className="flex gap-2 flex-wrap">
                 <Badge>Biometric Linked</Badge>
                 <Badge variant="secondary">Multi-Recovery</Badge>
+                <Badge variant="outline">Offline Ready</Badge>
               </div>
             </div>
           </CardContent>
         </Card>
 
         {/* Main Tabs */}
-        <Tabs value={activeTab} onValueChange={setActiveTab} className="space-y-4">
-          <TabsList className="grid w-full grid-cols-4">
-            <TabsTrigger value="patient" className="gap-2">
-              <User className="w-4 h-4" />
-              Patient ID (PHID)
+        <Tabs defaultValue="generate" className="space-y-4">
+          <TabsList className="grid w-full grid-cols-5">
+            <TabsTrigger value="generate" className="gap-2">
+              <Key className="w-4 h-4" />
+              <span className="hidden sm:inline">Generate</span>
             </TabsTrigger>
-            <TabsTrigger value="provider" className="gap-2">
-              <UserCheck className="w-4 h-4" />
-              Provider ID (Varapi)
+            <TabsTrigger value="validate" className="gap-2">
+              <Search className="w-4 h-4" />
+              <span className="hidden sm:inline">Validate</span>
             </TabsTrigger>
-            <TabsTrigger value="facility" className="gap-2">
-              <Building2 className="w-4 h-4" />
-              Facility ID (Thuso)
+            <TabsTrigger value="batch" className="gap-2">
+              <Package className="w-4 h-4" />
+              <span className="hidden sm:inline">Batch</span>
             </TabsTrigger>
             <TabsTrigger value="recovery" className="gap-2">
               <RefreshCw className="w-4 h-4" />
-              ID Recovery
+              <span className="hidden sm:inline">Recovery</span>
+            </TabsTrigger>
+            <TabsTrigger value="architecture" className="gap-2">
+              <Shield className="w-4 h-4" />
+              <span className="hidden sm:inline">Architecture</span>
             </TabsTrigger>
           </TabsList>
 
-          {/* Patient PHID Tab */}
-          <TabsContent value="patient" className="space-y-4">
+          {/* Generate Tab */}
+          <TabsContent value="generate" className="space-y-4">
+            <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+              {/* Patient PHID */}
+              <IdGenerationCard
+                title="Patient PHID"
+                description="Patient Health ID for client identity"
+                icon={User}
+                format="DDDSDDDX (e.g., 123-A-456-8)"
+                onGenerate={handleGeneratePHID}
+                onSendToEmail={handleSendToEmail}
+                idLabels={{
+                  primary: "Patient Token (PHID)",
+                  token: "Raw PHID",
+                  secondary: {
+                    clientRegistryId: "Client Registry ID",
+                    shrId: "SHR ID"
+                  }
+                }}
+              />
+
+              {/* Provider ID */}
+              <IdGenerationCard
+                title="Provider ID (Varapi)"
+                description="Healthcare worker identity"
+                icon={UserCheck}
+                format="VARAPI-YYYY-PPNNNNNN-XXXX"
+                onGenerate={handleGenerateProviderId}
+                showProvinceSelector
+                onSendToEmail={handleSendToEmail}
+                idLabels={{
+                  primary: "Provider ID",
+                  token: "Provider Token",
+                  secondary: {
+                    registryId: "Registry ID"
+                  }
+                }}
+              />
+
+              {/* Facility ID */}
+              <IdGenerationCard
+                title="Facility ID (Thuso)"
+                description="Health facility identity"
+                icon={Building2}
+                format="THUSO-PP-NNNNNN-XXX"
+                onGenerate={handleGenerateFacilityId}
+                showProvinceSelector
+                idLabels={{
+                  primary: "Facility ID"
+                }}
+              />
+            </div>
+          </TabsContent>
+
+          {/* Validate Tab */}
+          <TabsContent value="validate" className="space-y-4">
+            <IdValidationCard />
+          </TabsContent>
+
+          {/* Batch Tab */}
+          <TabsContent value="batch" className="space-y-4">
+            <IdBatchGenerator />
+          </TabsContent>
+
+          {/* Recovery Tab */}
+          <TabsContent value="recovery" className="space-y-4">
+            <IdRecoveryPanel />
+          </TabsContent>
+
+          {/* Architecture Tab */}
+          <TabsContent value="architecture" className="space-y-4">
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-              {/* Generate Card */}
+              {/* PHID Architecture */}
               <Card>
-                <CardHeader>
-                  <CardTitle className="flex items-center gap-2">
-                    <User className="w-5 h-5 text-primary" />
-                    Patient Health ID (PHID)
-                  </CardTitle>
-                  <CardDescription>
-                    Format: DDDSDDDX (e.g., 123-A-456-8) - Easy to remember, portable
-                  </CardDescription>
-                </CardHeader>
-                <CardContent className="space-y-4">
-                  <Button 
-                    onClick={handleGeneratePHID} 
-                    disabled={isGenerating}
-                    className="w-full"
-                  >
-                    {isGenerating ? (
-                      <RefreshCw className="w-4 h-4 mr-2 animate-spin" />
-                    ) : (
-                      <Key className="w-4 h-4 mr-2" />
-                    )}
-                    Generate New PHID
-                  </Button>
-
-                  {generatedPHID && (
-                    <div className="space-y-3 p-4 bg-muted/50 rounded-lg">
-                      <div className="flex items-center justify-between">
-                        <span className="text-sm text-muted-foreground">Patient Token (PHID)</span>
-                        <div className="flex items-center gap-2">
-                          <code className="text-lg font-mono font-bold text-primary">
-                            {formatPHID(generatedPHID.phid)}
-                          </code>
-                          <Button size="icon" variant="ghost" onClick={() => copyToClipboard(generatedPHID.phid)}>
-                            <Copy className="w-4 h-4" />
-                          </Button>
-                        </div>
-                      </div>
-                      <div className="flex items-center justify-between text-sm">
-                        <span className="text-muted-foreground">Client Registry ID</span>
-                        <code className="font-mono text-xs">{generatedPHID.clientRegistryId}</code>
-                      </div>
-                      <div className="flex items-center justify-between text-sm">
-                        <span className="text-muted-foreground">SHR ID</span>
-                        <code className="font-mono text-xs">{generatedPHID.shrId}</code>
-                      </div>
-                      <div className="pt-2 border-t">
-                        <p className="text-xs text-muted-foreground">
-                          <CheckCircle className="w-3 h-3 inline mr-1 text-green-500" />
-                          Biometric linking available for instant recovery
-                        </p>
-                      </div>
+                <CardContent className="p-6 space-y-4">
+                  <div className="flex items-center gap-3">
+                    <div className="p-3 bg-blue-100 rounded-lg">
+                      <User className="w-6 h-6 text-blue-600" />
                     </div>
-                  )}
-                </CardContent>
-              </Card>
-
-              {/* Info Card */}
-              <Card>
-                <CardHeader>
-                  <CardTitle>PHID Architecture</CardTitle>
-                </CardHeader>
-                <CardContent className="space-y-4">
+                    <div>
+                      <h3 className="font-semibold">Patient PHID Architecture</h3>
+                      <p className="text-sm text-muted-foreground">Portable token linking to full identity</p>
+                    </div>
+                  </div>
+                  
                   <div className="space-y-3">
                     <div className="flex items-start gap-3">
-                      <div className="p-2 bg-blue-100 rounded-lg">
-                        <QrCode className="w-4 h-4 text-blue-600" />
+                      <div className="p-2 bg-primary/10 rounded-lg">
+                        <QrCode className="w-4 h-4 text-primary" />
                       </div>
                       <div>
                         <p className="font-medium">Portable Token</p>
-                        <p className="text-sm text-muted-foreground">8-character ID patient can easily remember</p>
+                        <p className="text-sm text-muted-foreground">8-character ID patient can easily remember and carry</p>
                       </div>
                     </div>
                     <div className="flex items-start gap-3">
@@ -230,7 +235,7 @@ export default function IdServices() {
                       </div>
                       <div>
                         <p className="font-medium">Biometric = PHID</p>
-                        <p className="text-sm text-muted-foreground">Biometrics directly link to patient identity</p>
+                        <p className="text-sm text-muted-foreground">Biometrics directly resolve to patient identity</p>
                       </div>
                     </div>
                     <div className="flex items-start gap-3">
@@ -243,101 +248,36 @@ export default function IdServices() {
                       </div>
                     </div>
                   </div>
-                </CardContent>
-              </Card>
-            </div>
-          </TabsContent>
 
-          {/* Provider ID Tab */}
-          <TabsContent value="provider" className="space-y-4">
-            <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-              <Card>
-                <CardHeader>
-                  <CardTitle className="flex items-center gap-2">
-                    <UserCheck className="w-5 h-5 text-primary" />
-                    Provider Registry ID (Varapi)
-                  </CardTitle>
-                  <CardDescription>
-                    Format: VARAPI-YYYY-PPNNNNNN-XXXX - Healthcare worker identity
-                  </CardDescription>
-                </CardHeader>
-                <CardContent className="space-y-4">
-                  <div className="space-y-2">
-                    <Label>Province Code</Label>
-                    <Select value={provinceCode} onValueChange={setProvinceCode}>
-                      <SelectTrigger>
-                        <SelectValue placeholder="Select province" />
-                      </SelectTrigger>
-                      <SelectContent>
-                        <SelectItem value="ZW">Zimbabwe (ZW)</SelectItem>
-                        <SelectItem value="HA">Harare (HA)</SelectItem>
-                        <SelectItem value="BU">Bulawayo (BU)</SelectItem>
-                        <SelectItem value="MA">Manicaland (MA)</SelectItem>
-                        <SelectItem value="MW">Mashonaland West (MW)</SelectItem>
-                        <SelectItem value="ME">Mashonaland East (ME)</SelectItem>
-                        <SelectItem value="MC">Mashonaland Central (MC)</SelectItem>
-                        <SelectItem value="MT">Matabeleland North (MT)</SelectItem>
-                        <SelectItem value="MS">Matabeleland South (MS)</SelectItem>
-                        <SelectItem value="MV">Masvingo (MV)</SelectItem>
-                        <SelectItem value="MD">Midlands (MD)</SelectItem>
-                      </SelectContent>
-                    </Select>
+                  <div className="p-3 bg-muted/50 rounded-lg">
+                    <p className="text-xs font-mono text-center">
+                      PHID → Client Registry ID → SHR ID → Health Record
+                    </p>
                   </div>
-
-                  <Button 
-                    onClick={handleGenerateProviderId} 
-                    disabled={isGenerating}
-                    className="w-full"
-                  >
-                    {isGenerating ? (
-                      <RefreshCw className="w-4 h-4 mr-2 animate-spin" />
-                    ) : (
-                      <Key className="w-4 h-4 mr-2" />
-                    )}
-                    Generate Provider ID
-                  </Button>
-
-                  {generatedProviderId && (
-                    <div className="space-y-3 p-4 bg-muted/50 rounded-lg">
-                      <div className="flex items-center justify-between">
-                        <span className="text-sm text-muted-foreground">Full Provider ID</span>
-                        <div className="flex items-center gap-2">
-                          <code className="font-mono font-bold text-primary">
-                            {generatedProviderId.providerId}
-                          </code>
-                          <Button size="icon" variant="ghost" onClick={() => copyToClipboard(generatedProviderId.providerId)}>
-                            <Copy className="w-4 h-4" />
-                          </Button>
-                        </div>
-                      </div>
-                      <div className="flex items-center justify-between text-sm">
-                        <span className="text-muted-foreground">Provider Token</span>
-                        <code className="font-mono text-lg font-bold">{generatedProviderId.providerToken}</code>
-                      </div>
-                      <div className="pt-2 border-t">
-                        <p className="text-xs text-muted-foreground">
-                          <Fingerprint className="w-3 h-3 inline mr-1 text-green-500" />
-                          Biometrics = Provider ID for instant verification
-                        </p>
-                      </div>
-                    </div>
-                  )}
                 </CardContent>
               </Card>
 
+              {/* Provider ID Architecture */}
               <Card>
-                <CardHeader>
-                  <CardTitle>Provider ID Architecture</CardTitle>
-                </CardHeader>
-                <CardContent className="space-y-4">
+                <CardContent className="p-6 space-y-4">
+                  <div className="flex items-center gap-3">
+                    <div className="p-3 bg-orange-100 rounded-lg">
+                      <UserCheck className="w-6 h-6 text-orange-600" />
+                    </div>
+                    <div>
+                      <h3 className="font-semibold">Provider ID Architecture</h3>
+                      <p className="text-sm text-muted-foreground">Healthcare worker identity system</p>
+                    </div>
+                  </div>
+                  
                   <div className="space-y-3">
                     <div className="flex items-start gap-3">
-                      <div className="p-2 bg-blue-100 rounded-lg">
-                        <FileText className="w-4 h-4 text-blue-600" />
+                      <div className="p-2 bg-primary/10 rounded-lg">
+                        <Key className="w-4 h-4 text-primary" />
                       </div>
                       <div>
-                        <p className="font-medium">Professional License Link</p>
-                        <p className="text-sm text-muted-foreground">Links to medical council registration</p>
+                        <p className="font-medium">Varapi Format</p>
+                        <p className="text-sm text-muted-foreground">Year, province, sequence, and check component</p>
                       </div>
                     </div>
                     <div className="flex items-start gap-3">
@@ -345,13 +285,13 @@ export default function IdServices() {
                         <Fingerprint className="w-4 h-4 text-green-600" />
                       </div>
                       <div>
-                        <p className="font-medium">Biometric = Provider ID</p>
-                        <p className="text-sm text-muted-foreground">Same concept as patient PHID</p>
+                        <p className="font-medium">Biometric Binding</p>
+                        <p className="text-sm text-muted-foreground">Same architecture as PHID for instant verification</p>
                       </div>
                     </div>
                     <div className="flex items-start gap-3">
-                      <div className="p-2 bg-orange-100 rounded-lg">
-                        <Building2 className="w-4 h-4 text-orange-600" />
+                      <div className="p-2 bg-blue-100 rounded-lg">
+                        <Building2 className="w-4 h-4 text-blue-600" />
                       </div>
                       <div>
                         <p className="font-medium">Facility Verification</p>
@@ -359,128 +299,91 @@ export default function IdServices() {
                       </div>
                     </div>
                   </div>
+
+                  <div className="p-3 bg-muted/50 rounded-lg">
+                    <p className="text-xs font-mono text-center">
+                      Provider ID → iHRIS Registry → Professional License → Access
+                    </p>
+                  </div>
                 </CardContent>
               </Card>
-            </div>
-          </TabsContent>
 
-          {/* Facility ID Tab */}
-          <TabsContent value="facility" className="space-y-4">
-            <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+              {/* Facility ID Architecture */}
               <Card>
-                <CardHeader>
-                  <CardTitle className="flex items-center gap-2">
-                    <Building2 className="w-5 h-5 text-primary" />
-                    Facility Registry ID (Thuso)
-                  </CardTitle>
-                  <CardDescription>
-                    Format: THUSO-PP-NNNNNN-XXX - Health facility identity
-                  </CardDescription>
-                </CardHeader>
-                <CardContent className="space-y-4">
-                  <div className="space-y-2">
-                    <Label>Province Code</Label>
-                    <Select value={provinceCode} onValueChange={setProvinceCode}>
-                      <SelectTrigger>
-                        <SelectValue placeholder="Select province" />
-                      </SelectTrigger>
-                      <SelectContent>
-                        <SelectItem value="ZW">Zimbabwe (ZW)</SelectItem>
-                        <SelectItem value="HA">Harare (HA)</SelectItem>
-                        <SelectItem value="BU">Bulawayo (BU)</SelectItem>
-                        <SelectItem value="MA">Manicaland (MA)</SelectItem>
-                      </SelectContent>
-                    </Select>
+                <CardContent className="p-6 space-y-4">
+                  <div className="flex items-center gap-3">
+                    <div className="p-3 bg-green-100 rounded-lg">
+                      <Building2 className="w-6 h-6 text-green-600" />
+                    </div>
+                    <div>
+                      <h3 className="font-semibold">Facility ID Architecture</h3>
+                      <p className="text-sm text-muted-foreground">Health facility registry (Thuso/GOFR)</p>
+                    </div>
                   </div>
-
-                  <Button 
-                    onClick={handleGenerateFacilityId} 
-                    disabled={isGenerating}
-                    className="w-full"
-                  >
-                    {isGenerating ? (
-                      <RefreshCw className="w-4 h-4 mr-2 animate-spin" />
-                    ) : (
-                      <Key className="w-4 h-4 mr-2" />
-                    )}
-                    Generate Facility ID
-                  </Button>
-
-                  {generatedFacilityId && (
-                    <div className="p-4 bg-muted/50 rounded-lg">
-                      <div className="flex items-center justify-between">
-                        <span className="text-sm text-muted-foreground">Facility ID</span>
-                        <div className="flex items-center gap-2">
-                          <code className="text-lg font-mono font-bold text-primary">
-                            {generatedFacilityId}
-                          </code>
-                          <Button size="icon" variant="ghost" onClick={() => copyToClipboard(generatedFacilityId)}>
-                            <Copy className="w-4 h-4" />
-                          </Button>
-                        </div>
+                  
+                  <div className="space-y-3">
+                    <div className="flex items-start gap-3">
+                      <div className="p-2 bg-primary/10 rounded-lg">
+                        <Key className="w-4 h-4 text-primary" />
+                      </div>
+                      <div>
+                        <p className="font-medium">Thuso Format</p>
+                        <p className="text-sm text-muted-foreground">Province code, sequence, and verification</p>
                       </div>
                     </div>
-                  )}
+                    <div className="flex items-start gap-3">
+                      <div className="p-2 bg-orange-100 rounded-lg">
+                        <Shield className="w-4 h-4 text-orange-600" />
+                      </div>
+                      <div>
+                        <p className="font-medium">GOFR Integration</p>
+                        <p className="text-sm text-muted-foreground">Global Open Facility Registry compliant</p>
+                      </div>
+                    </div>
+                  </div>
+
+                  <div className="p-3 bg-muted/50 rounded-lg">
+                    <p className="text-xs font-mono text-center">
+                      Facility ID → GOFR → Location Data → Services
+                    </p>
+                  </div>
                 </CardContent>
               </Card>
 
+              {/* Security Overview */}
               <Card>
-                <CardHeader>
-                  <CardTitle>Facility Registry</CardTitle>
-                </CardHeader>
-                <CardContent>
-                  <p className="text-sm text-muted-foreground">
-                    Facility IDs link to the GOFR (Global Open Facility Registry) for interoperability 
-                    across health information systems.
-                  </p>
+                <CardContent className="p-6 space-y-4">
+                  <div className="flex items-center gap-3">
+                    <div className="p-3 bg-red-100 rounded-lg">
+                      <Shield className="w-6 h-6 text-red-600" />
+                    </div>
+                    <div>
+                      <h3 className="font-semibold">Security Model</h3>
+                      <p className="text-sm text-muted-foreground">Cryptographic security across all IDs</p>
+                    </div>
+                  </div>
+                  
+                  <div className="space-y-2">
+                    <div className="flex items-center gap-2">
+                      <Badge variant="outline">Luhn Check Digit</Badge>
+                      <span className="text-sm text-muted-foreground">Validation integrity</span>
+                    </div>
+                    <div className="flex items-center gap-2">
+                      <Badge variant="outline">Web Crypto API</Badge>
+                      <span className="text-sm text-muted-foreground">Secure random generation</span>
+                    </div>
+                    <div className="flex items-center gap-2">
+                      <Badge variant="outline">Database Sequences</Badge>
+                      <span className="text-sm text-muted-foreground">Guaranteed uniqueness</span>
+                    </div>
+                    <div className="flex items-center gap-2">
+                      <Badge variant="outline">Audit Logging</Badge>
+                      <span className="text-sm text-muted-foreground">Complete generation trail</span>
+                    </div>
+                  </div>
                 </CardContent>
               </Card>
             </div>
-          </TabsContent>
-
-          {/* Recovery Tab */}
-          <TabsContent value="recovery" className="space-y-4">
-            <Card>
-              <CardHeader>
-                <CardTitle className="flex items-center gap-2">
-                  <RefreshCw className="w-5 h-5 text-primary" />
-                  ID Recovery Methods
-                </CardTitle>
-                <CardDescription>
-                  Multiple fallback options when primary identifier is unavailable
-                </CardDescription>
-              </CardHeader>
-              <CardContent>
-                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-4">
-                  {recoveryMethods.map((method) => (
-                    <Card 
-                      key={method.id}
-                      className={`cursor-pointer transition-all ${recoveryMethod === method.id ? 'ring-2 ring-primary' : 'hover:bg-muted/50'}`}
-                      onClick={() => setRecoveryMethod(method.id)}
-                    >
-                      <CardContent className="p-4 text-center">
-                        <div className="mx-auto w-12 h-12 rounded-full bg-primary/10 flex items-center justify-center mb-3">
-                          <method.icon className="w-6 h-6 text-primary" />
-                        </div>
-                        <h4 className="font-medium text-sm">{method.label}</h4>
-                        <p className="text-xs text-muted-foreground mt-1">{method.description}</p>
-                      </CardContent>
-                    </Card>
-                  ))}
-                </div>
-
-                <div className="mt-6 p-4 bg-muted/50 rounded-lg">
-                  <h4 className="font-medium mb-2">How Recovery Works</h4>
-                  <ul className="text-sm text-muted-foreground space-y-1">
-                    <li>• <strong>Primary:</strong> Biometrics instantly resolve to full identity</li>
-                    <li>• <strong>Fallback 1:</strong> National ID + Date of Birth verification</li>
-                    <li>• <strong>Fallback 2:</strong> OTP to registered phone/email</li>
-                    <li>• <strong>Fallback 3:</strong> Healthcare provider in-person verification</li>
-                    <li>• <strong>Fallback 4:</strong> Security questions (if pre-registered)</li>
-                  </ul>
-                </div>
-              </CardContent>
-            </Card>
           </TabsContent>
         </Tabs>
       </div>
