@@ -67,6 +67,7 @@ import { ProfessionalCouncilsManager } from '@/components/hpr/ProfessionalCounci
 import { ReferenceDataManager } from '@/components/hpr/ReferenceDataManager';
 import { HPRAuditLog } from '@/components/hpr/HPRAuditLog';
 import { HPRReports } from '@/components/hpr/HPRReports';
+import { ProviderRegistrationWizard } from '@/components/hpr/ProviderRegistrationWizard';
 
 export default function HealthProviderRegistry() {
   const [activeTab, setActiveTab] = useState('dashboard');
@@ -184,16 +185,17 @@ export default function HealthProviderRegistry() {
                   Register Provider
                 </Button>
               </DialogTrigger>
-              <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
+              <DialogContent className="max-w-4xl max-h-[90vh] overflow-y-auto">
                 <DialogHeader>
                   <DialogTitle>Register New Health Provider</DialogTitle>
                 </DialogHeader>
-                <ProviderRegistrationForm 
+                <ProviderRegistrationWizard 
                   onSuccess={() => { 
                     setRegisterDialogOpen(false); 
                     loadProviders(); 
                     loadStats(); 
-                  }} 
+                  }}
+                  onCancel={() => setRegisterDialogOpen(false)}
                 />
               </DialogContent>
             </Dialog>
