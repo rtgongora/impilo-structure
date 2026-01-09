@@ -53,7 +53,12 @@ const RegistryManagement = () => {
     { id: 'ndr', label: 'National Data Repository', icon: Database, description: 'Analytics & Reporting', pendingCount: 0 },
   ];
 
-  const getActiveRecords = () => {
+  const getActiveRecords = (): { 
+    records: (ClientRegistryRecord | ProviderRegistryRecord | FacilityRegistryRecord)[]; 
+    loading: boolean; 
+    pendingCount: number; 
+    totalCount: number;
+  } => {
     switch (activeRegistry) {
       case 'client': return clientRecords;
       case 'provider': return providerRecords;
@@ -64,15 +69,17 @@ const RegistryManagement = () => {
 
   const activeData = getActiveRecords();
 
-  const getRecordName = (record: ClientRegistryRecord | ProviderRegistryRecord | FacilityRegistryRecord) => {
+  type AnyRegistryRecord = ClientRegistryRecord | ProviderRegistryRecord | FacilityRegistryRecord;
+
+  const getRecordName = (record: AnyRegistryRecord) => {
     if ('name' in record) return record.name;
     return `${record.first_name} ${record.last_name}`;
   };
 
-  const getRecordId = (record: ClientRegistryRecord | ProviderRegistryRecord | FacilityRegistryRecord) => {
-    if ('impilo_id' in record) return record.impilo_id;
-    if ('provider_id' in record) return record.provider_id;
-    if ('thuso_id' in record) return record.thuso_id;
+  const getRecordId = (record: AnyRegistryRecord): string | null => {
+    if ('impilo_id' in record && record.impilo_id) return record.impilo_id;
+    if ('provider_id' in record && record.provider_id) return record.provider_id;
+    if ('thuso_id' in record && record.thuso_id) return record.thuso_id;
     return record.id;
   };
 
@@ -198,7 +205,7 @@ const RegistryManagement = () => {
                     </tr>
                   </thead>
                   <tbody>
-                    {activeData.records.slice(0, 10).map((record) => (
+                    {(activeData.records as AnyRegistryRecord[]).slice(0, 10).map((record) => (
                       <tr key={record.id} className="border-t hover:bg-muted/30">
                         <td className="p-3 font-medium">{getRecordName(record)}</td>
                         <td className="p-3 text-sm text-muted-foreground font-mono">
