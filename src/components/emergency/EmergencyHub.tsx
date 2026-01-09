@@ -1,137 +1,29 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { ScrollArea } from "@/components/ui/scroll-area";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import {
   AlertTriangle,
   Heart,
   Zap,
   Phone,
-  Ambulance,
   Activity,
-  Baby,
-  Flame,
-  Skull,
-  Shield,
-  Stethoscope,
-  Users,
-  MapPin,
   Clock,
   ChevronRight,
   ArrowLeft,
   UserRound,
   Building2,
+  Users,
+  Stethoscope,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { EmergencySOS } from "@/components/portal/EmergencySOS";
+import { getEmergencyProtocols, type CarePathway } from "@/types/clinicalSpaces";
 
-// Clinical Emergency Protocol Types
-interface ClinicalEmergencyProtocol {
-  id: string;
-  name: string;
-  description: string;
-  icon: React.ComponentType<{ className?: string }>;
-  severity: "critical" | "high" | "medium";
-  workspaceType: string;
-  teamRequired: string[];
-  typicalDuration: string;
-}
-
-const CLINICAL_EMERGENCY_PROTOCOLS: ClinicalEmergencyProtocol[] = [
-  {
-    id: "code-blue",
-    name: "Code Blue",
-    description: "Cardiac/Respiratory Arrest - Immediate resuscitation required",
-    icon: Heart,
-    severity: "critical",
-    workspaceType: "resuscitation",
-    teamRequired: ["Team Leader", "Airway", "Compressions", "IV/Meds", "Defibrillator", "Documentation"],
-    typicalDuration: "30-60 min",
-  },
-  {
-    id: "rapid-response",
-    name: "Rapid Response",
-    description: "Clinical deterioration - Urgent assessment and intervention",
-    icon: Activity,
-    severity: "critical",
-    workspaceType: "rapid_response",
-    teamRequired: ["Physician", "Nurse", "Respiratory Therapist"],
-    typicalDuration: "15-30 min",
-  },
-  {
-    id: "trauma",
-    name: "Trauma Activation",
-    description: "Major trauma - ATLS protocol activation",
-    icon: Ambulance,
-    severity: "critical",
-    workspaceType: "trauma",
-    teamRequired: ["Team Leader", "Airway", "Circulation", "Procedures", "Radiology", "Documentation"],
-    typicalDuration: "60+ min",
-  },
-  {
-    id: "neonatal-resus",
-    name: "Neonatal Resuscitation",
-    description: "Newborn requiring immediate resuscitation",
-    icon: Baby,
-    severity: "critical",
-    workspaceType: "neonatal_resus",
-    teamRequired: ["Neonatologist/Paediatrician", "Nurse", "Midwife"],
-    typicalDuration: "15-30 min",
-  },
-  {
-    id: "burns",
-    name: "Burns Protocol",
-    description: "Major burns - Fluid resuscitation and wound care",
-    icon: Flame,
-    severity: "high",
-    workspaceType: "burns",
-    teamRequired: ["Burns Surgeon", "Nurse", "Anaesthetist"],
-    typicalDuration: "60+ min",
-  },
-  {
-    id: "poisoning",
-    name: "Poisoning/Overdose",
-    description: "Toxicological emergency - Decontamination and antidotes",
-    icon: Skull,
-    severity: "critical",
-    workspaceType: "poisoning",
-    teamRequired: ["Physician", "Nurse", "Toxicology Consult"],
-    typicalDuration: "Variable",
-  },
-  {
-    id: "sexual-assault",
-    name: "Sexual Assault Exam",
-    description: "Trauma-informed examination and evidence collection",
-    icon: Shield,
-    severity: "high",
-    workspaceType: "sexual_assault",
-    teamRequired: ["Forensic Examiner", "Nurse", "Counsellor", "Police Liaison"],
-    typicalDuration: "2-4 hours",
-  },
-  {
-    id: "obstetric-emergency",
-    name: "Obstetric Emergency",
-    description: "Maternal or fetal emergency - Immediate intervention",
-    icon: Baby,
-    severity: "critical",
-    workspaceType: "labour_delivery",
-    teamRequired: ["Obstetrician", "Midwife", "Anaesthetist", "Neonatologist"],
-    typicalDuration: "Variable",
-  },
-];
-
-// Personal Emergency Types (for practitioner as patient)
-const PERSONAL_EMERGENCY_TYPES = [
-  { id: "chest-pain", label: "Chest Pain", icon: Heart, severity: "critical" },
-  { id: "breathing", label: "Difficulty Breathing", icon: Activity, severity: "critical" },
-  { id: "injury", label: "Severe Injury", icon: Ambulance, severity: "high" },
-  { id: "allergic", label: "Allergic Reaction", icon: AlertTriangle, severity: "high" },
-  { id: "poisoning", label: "Poisoning", icon: Skull, severity: "critical" },
-  { id: "other", label: "Other Emergency", icon: Phone, severity: "medium" },
-];
+// Get emergency protocols from centralized definition
+const EMERGENCY_PROTOCOLS = getEmergencyProtocols();
 
 interface EmergencyHubProps {
   onClose?: () => void;
@@ -140,28 +32,16 @@ interface EmergencyHubProps {
 export function EmergencyHub({ onClose }: EmergencyHubProps) {
   const navigate = useNavigate();
   const [selectedTab, setSelectedTab] = useState<"select" | "personal" | "clinical">("select");
-  const [selectedProtocol, setSelectedProtocol] = useState<ClinicalEmergencyProtocol | null>(null);
+  const [selectedProtocol, setSelectedProtocol] = useState<CarePathway | null>(null);
   const [isActivating, setIsActivating] = useState(false);
 
-  const handleActivateClinicalProtocol = (protocol: ClinicalEmergencyProtocol) => {
+  const handleActivateClinicalProtocol = (protocol: CarePathway) => {
     setIsActivating(true);
     // Navigate to encounter with the workspace activated
-    // In real implementation, this would create a critical event and navigate
     setTimeout(() => {
-      navigate(`/encounter?workspace=${protocol.workspaceType}&critical=true`);
+      navigate(`/encounter?workspace=${protocol.id}&critical=true`);
       onClose?.();
     }, 500);
-  };
-
-  const getSeverityStyles = (severity: string) => {
-    switch (severity) {
-      case "critical":
-        return "border-destructive bg-destructive/10 hover:bg-destructive/20";
-      case "high":
-        return "border-warning bg-warning/10 hover:bg-warning/20";
-      default:
-        return "border-border hover:bg-muted";
-    }
   };
 
   // Initial Selection Screen
@@ -284,13 +164,7 @@ export function EmergencyHub({ onClose }: EmergencyHubProps) {
                 <Zap className="h-5 w-5 text-destructive" />
                 <h3 className="font-semibold">{selectedProtocol.name}</h3>
               </div>
-              <Badge className={cn(
-                "ml-auto",
-                selectedProtocol.severity === "critical" && "bg-destructive text-white",
-                selectedProtocol.severity === "high" && "bg-warning text-warning-foreground"
-              )}>
-                {selectedProtocol.severity.toUpperCase()}
-              </Badge>
+              <Badge className="ml-auto bg-destructive text-white">CRITICAL</Badge>
             </div>
           </div>
 
@@ -298,39 +172,43 @@ export function EmergencyHub({ onClose }: EmergencyHubProps) {
           <div className="flex-1 p-6 space-y-6 overflow-auto">
             <div className="text-center">
               <div className="w-20 h-20 rounded-full bg-destructive/20 flex items-center justify-center mx-auto mb-4">
-                <selectedProtocol.icon className="h-10 w-10 text-destructive" />
+                <AlertTriangle className="h-10 w-10 text-destructive" />
               </div>
               <h2 className="text-xl font-bold">{selectedProtocol.name}</h2>
               <p className="text-muted-foreground mt-1">{selectedProtocol.description}</p>
             </div>
 
             {/* Team Required */}
-            <Card>
-              <CardHeader className="pb-2">
-                <CardTitle className="text-sm flex items-center gap-2">
-                  <Users className="h-4 w-4" />
-                  Team Required
-                </CardTitle>
-              </CardHeader>
-              <CardContent>
-                <div className="flex flex-wrap gap-2">
-                  {selectedProtocol.teamRequired.map((role) => (
-                    <Badge key={role} variant="outline">{role}</Badge>
-                  ))}
-                </div>
-              </CardContent>
-            </Card>
+            {selectedProtocol.teamRequired && (
+              <Card>
+                <CardHeader className="pb-2">
+                  <CardTitle className="text-sm flex items-center gap-2">
+                    <Users className="h-4 w-4" />
+                    Team Required
+                  </CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <div className="flex flex-wrap gap-2">
+                    {selectedProtocol.teamRequired.map((role) => (
+                      <Badge key={role} variant="outline">{role}</Badge>
+                    ))}
+                  </div>
+                </CardContent>
+              </Card>
+            )}
 
             {/* Duration */}
-            <Card>
-              <CardContent className="p-4 flex items-center gap-3">
-                <Clock className="h-5 w-5 text-muted-foreground" />
-                <div>
-                  <p className="text-sm font-medium">Typical Duration</p>
-                  <p className="text-sm text-muted-foreground">{selectedProtocol.typicalDuration}</p>
-                </div>
-              </CardContent>
-            </Card>
+            {selectedProtocol.typicalDuration && (
+              <Card>
+                <CardContent className="p-4 flex items-center gap-3">
+                  <Clock className="h-5 w-5 text-muted-foreground" />
+                  <div>
+                    <p className="text-sm font-medium">Typical Duration</p>
+                    <p className="text-sm text-muted-foreground">{selectedProtocol.typicalDuration}</p>
+                  </div>
+                </CardContent>
+              </Card>
+            )}
 
             {/* Activation Warning */}
             <div className="p-4 bg-destructive/10 border border-destructive/30 rounded-lg">
@@ -391,54 +269,41 @@ export function EmergencyHub({ onClose }: EmergencyHubProps) {
         {/* Protocols List */}
         <ScrollArea className="flex-1">
           <div className="p-4 space-y-3">
-            {CLINICAL_EMERGENCY_PROTOCOLS.map((protocol) => {
-              const Icon = protocol.icon;
-              return (
-                <Card
-                  key={protocol.id}
-                  className={cn(
-                    "cursor-pointer border-2 transition-all",
-                    getSeverityStyles(protocol.severity)
-                  )}
-                  onClick={() => setSelectedProtocol(protocol)}
-                >
-                  <CardContent className="p-4">
-                    <div className="flex items-center gap-4">
-                      <div className={cn(
-                        "w-12 h-12 rounded-lg flex items-center justify-center shrink-0",
-                        protocol.severity === "critical" && "bg-destructive",
-                        protocol.severity === "high" && "bg-warning"
-                      )}>
-                        <Icon className={cn(
-                          "h-6 w-6",
-                          protocol.severity === "critical" && "text-white",
-                          protocol.severity === "high" && "text-warning-foreground"
-                        )} />
-                      </div>
-                      <div className="flex-1 min-w-0">
-                        <div className="flex items-center gap-2">
-                          <h4 className="font-semibold">{protocol.name}</h4>
-                          <Badge 
-                            variant="outline" 
-                            className={cn(
-                              "text-xs",
-                              protocol.severity === "critical" && "border-destructive text-destructive",
-                              protocol.severity === "high" && "border-warning text-warning"
-                            )}
-                          >
-                            {protocol.severity}
-                          </Badge>
-                        </div>
-                        <p className="text-sm text-muted-foreground line-clamp-1">
-                          {protocol.description}
-                        </p>
-                      </div>
-                      <ChevronRight className="h-5 w-5 text-muted-foreground shrink-0" />
+            {EMERGENCY_PROTOCOLS.map((protocol) => (
+              <Card
+                key={protocol.id}
+                className="cursor-pointer border-2 border-destructive bg-destructive/10 hover:bg-destructive/20 transition-all"
+                onClick={() => setSelectedProtocol(protocol)}
+              >
+                <CardContent className="p-4">
+                  <div className="flex items-center gap-4">
+                    <div className="w-12 h-12 rounded-lg flex items-center justify-center shrink-0 bg-destructive">
+                      <AlertTriangle className="h-6 w-6 text-white" />
                     </div>
-                  </CardContent>
-                </Card>
-              );
-            })}
+                    <div className="flex-1 min-w-0">
+                      <div className="flex items-center gap-2">
+                        <h4 className="font-semibold">{protocol.name}</h4>
+                        <Badge 
+                          variant="outline" 
+                          className="text-xs border-destructive text-destructive"
+                        >
+                          Critical
+                        </Badge>
+                      </div>
+                      <p className="text-sm text-muted-foreground line-clamp-1">
+                        {protocol.description}
+                      </p>
+                      {protocol.teamRequired && (
+                        <p className="text-xs text-destructive mt-1">
+                          Team: {protocol.teamRequired.length} roles required
+                        </p>
+                      )}
+                    </div>
+                    <ChevronRight className="h-5 w-5 text-muted-foreground shrink-0" />
+                  </div>
+                </CardContent>
+              </Card>
+            ))}
           </div>
         </ScrollArea>
 

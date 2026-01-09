@@ -2,7 +2,7 @@ import { WorkspaceData } from "@/types/ehr";
 import { useEHR } from "@/contexts/EHRContext";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { X, Clock, MapPin } from "lucide-react";
+import { X, Clock, MapPin, Route } from "lucide-react";
 import { useEffect, useState } from "react";
 import { TheatreWorkspace } from "./workspaces/TheatreWorkspace";
 import { TraumaWorkspace } from "./workspaces/TraumaWorkspace";
@@ -21,6 +21,7 @@ import { NeonatalResusWorkspace } from "./workspaces/NeonatalResusWorkspace";
 import { AnaesthesiaPreOpWorkspace } from "./workspaces/AnaesthesiaPreOpWorkspace";
 import { TeleconsultationWorkspace } from "./workspaces/TeleconsultationWorkspace";
 import { VirtualCareWorkspace } from "./workspaces/VirtualCareWorkspace";
+import { getCarePathway } from "@/types/clinicalSpaces";
 
 interface WorkspaceViewProps {
   workspace: WorkspaceData;
