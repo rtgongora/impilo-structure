@@ -38,6 +38,7 @@ import {
   XCircle,
   Loader2,
   Edit,
+  Plus,
 } from 'lucide-react';
 import type { HealthProvider } from '@/types/hpr';
 import { IHRISService } from '@/services/ihrisService';
@@ -55,6 +56,15 @@ import type {
 } from '@/types/ihris';
 import { format } from 'date-fns';
 import { ProviderEditForm } from './ProviderEditForm';
+import {
+  AddEducationDialog,
+  AddTrainingDialog,
+  AddEmploymentDialog,
+  AddLeaveDialog,
+  AddDisciplinaryDialog,
+  AddPerformanceDialog,
+  AddEmergencyContactDialog,
+} from './ProviderRecordForms';
 
 interface IHRISProviderPanelProps {
   provider: HealthProvider;
@@ -67,6 +77,15 @@ export function IHRISProviderPanel({ provider, onProviderUpdated }: IHRISProvide
   const [activeTab, setActiveTab] = useState<TabValue>('overview');
   const [loading, setLoading] = useState(false);
   const [editDialogOpen, setEditDialogOpen] = useState(false);
+  
+  // Add dialog states
+  const [addEducationOpen, setAddEducationOpen] = useState(false);
+  const [addTrainingOpen, setAddTrainingOpen] = useState(false);
+  const [addEmploymentOpen, setAddEmploymentOpen] = useState(false);
+  const [addLeaveOpen, setAddLeaveOpen] = useState(false);
+  const [addDisciplinaryOpen, setAddDisciplinaryOpen] = useState(false);
+  const [addPerformanceOpen, setAddPerformanceOpen] = useState(false);
+  const [addEmergencyContactOpen, setAddEmergencyContactOpen] = useState(false);
   
   // Data state
   const [education, setEducation] = useState<ProviderEducation[]>([]);
@@ -296,6 +315,12 @@ export function IHRISProviderPanel({ provider, onProviderUpdated }: IHRISProvide
 
               {/* Education Tab */}
               <TabsContent value="education" className="mt-0 space-y-3">
+                <div className="flex justify-end mb-2">
+                  <Button size="sm" onClick={() => setAddEducationOpen(true)}>
+                    <Plus className="h-4 w-4 mr-1" />
+                    Add Qualification
+                  </Button>
+                </div>
                 {education.length === 0 ? (
                   <div className="text-center text-muted-foreground py-8">
                     <GraduationCap className="h-8 w-8 mx-auto mb-2 opacity-50" />
@@ -340,6 +365,12 @@ export function IHRISProviderPanel({ provider, onProviderUpdated }: IHRISProvide
 
               {/* Training Tab */}
               <TabsContent value="training" className="mt-0 space-y-3">
+                <div className="flex justify-end mb-2">
+                  <Button size="sm" onClick={() => setAddTrainingOpen(true)}>
+                    <Plus className="h-4 w-4 mr-1" />
+                    Add Training
+                  </Button>
+                </div>
                 {training.length === 0 ? (
                   <div className="text-center text-muted-foreground py-8">
                     <Award className="h-8 w-8 mx-auto mb-2 opacity-50" />
@@ -384,6 +415,12 @@ export function IHRISProviderPanel({ provider, onProviderUpdated }: IHRISProvide
 
               {/* Employment History Tab */}
               <TabsContent value="employment" className="mt-0 space-y-3">
+                <div className="flex justify-end mb-2">
+                  <Button size="sm" onClick={() => setAddEmploymentOpen(true)}>
+                    <Plus className="h-4 w-4 mr-1" />
+                    Add Work Experience
+                  </Button>
+                </div>
                 {employmentHistory.length === 0 ? (
                   <div className="text-center text-muted-foreground py-8">
                     <Briefcase className="h-8 w-8 mx-auto mb-2 opacity-50" />
@@ -439,6 +476,12 @@ export function IHRISProviderPanel({ provider, onProviderUpdated }: IHRISProvide
 
               {/* Leave Tab */}
               <TabsContent value="leave" className="mt-0 space-y-3">
+                <div className="flex justify-end mb-2">
+                  <Button size="sm" onClick={() => setAddLeaveOpen(true)}>
+                    <Plus className="h-4 w-4 mr-1" />
+                    Add Leave
+                  </Button>
+                </div>
                 {leave.length === 0 ? (
                   <div className="text-center text-muted-foreground py-8">
                     <Calendar className="h-8 w-8 mx-auto mb-2 opacity-50" />
@@ -491,6 +534,12 @@ export function IHRISProviderPanel({ provider, onProviderUpdated }: IHRISProvide
 
               {/* Performance Tab */}
               <TabsContent value="performance" className="mt-0 space-y-3">
+                <div className="flex justify-end mb-2">
+                  <Button size="sm" onClick={() => setAddPerformanceOpen(true)}>
+                    <Plus className="h-4 w-4 mr-1" />
+                    Add Evaluation
+                  </Button>
+                </div>
                 {performance.length === 0 ? (
                   <div className="text-center text-muted-foreground py-8">
                     <Star className="h-8 w-8 mx-auto mb-2 opacity-50" />
@@ -726,11 +775,21 @@ export function IHRISProviderPanel({ provider, onProviderUpdated }: IHRISProvide
             onSuccess={() => {
               setEditDialogOpen(false);
               onProviderUpdated?.();
+              loadAllData();
             }}
             onCancel={() => setEditDialogOpen(false)}
           />
         </DialogContent>
       </Dialog>
+
+      {/* Add Record Dialogs */}
+      <AddEducationDialog providerId={provider.id} open={addEducationOpen} onOpenChange={setAddEducationOpen} onSuccess={loadAllData} />
+      <AddTrainingDialog providerId={provider.id} open={addTrainingOpen} onOpenChange={setAddTrainingOpen} onSuccess={loadAllData} />
+      <AddEmploymentDialog providerId={provider.id} open={addEmploymentOpen} onOpenChange={setAddEmploymentOpen} onSuccess={loadAllData} />
+      <AddLeaveDialog providerId={provider.id} open={addLeaveOpen} onOpenChange={setAddLeaveOpen} onSuccess={loadAllData} />
+      <AddDisciplinaryDialog providerId={provider.id} open={addDisciplinaryOpen} onOpenChange={setAddDisciplinaryOpen} onSuccess={loadAllData} />
+      <AddPerformanceDialog providerId={provider.id} open={addPerformanceOpen} onOpenChange={setAddPerformanceOpen} onSuccess={loadAllData} />
+      <AddEmergencyContactDialog providerId={provider.id} open={addEmergencyContactOpen} onOpenChange={setAddEmergencyContactOpen} onSuccess={loadAllData} />
     </Card>
   );
 }
