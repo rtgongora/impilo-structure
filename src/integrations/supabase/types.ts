@@ -2700,6 +2700,7 @@ export type Database = {
           review_notes: string | null
           reviewed_at: string | null
           reviewed_by: string | null
+          services: string[] | null
           short_name: string | null
           status_effective_date: string | null
           submitted_at: string | null
@@ -2765,6 +2766,7 @@ export type Database = {
           review_notes?: string | null
           reviewed_at?: string | null
           reviewed_by?: string | null
+          services?: string[] | null
           short_name?: string | null
           status_effective_date?: string | null
           submitted_at?: string | null
@@ -2830,6 +2832,7 @@ export type Database = {
           review_notes?: string | null
           reviewed_at?: string | null
           reviewed_by?: string | null
+          services?: string[] | null
           short_name?: string | null
           status_effective_date?: string | null
           submitted_at?: string | null
@@ -10013,6 +10016,45 @@ export type Database = {
           severity?: string
           user_agent?: string | null
           user_id?: string | null
+        }
+        Relationships: []
+      }
+      service_catalog: {
+        Row: {
+          category: string
+          code: string
+          created_at: string | null
+          description: string | null
+          id: string
+          is_active: boolean | null
+          name: string
+          requires_capabilities: string[] | null
+          sort_order: number | null
+          updated_at: string | null
+        }
+        Insert: {
+          category: string
+          code: string
+          created_at?: string | null
+          description?: string | null
+          id?: string
+          is_active?: boolean | null
+          name: string
+          requires_capabilities?: string[] | null
+          sort_order?: number | null
+          updated_at?: string | null
+        }
+        Update: {
+          category?: string
+          code?: string
+          created_at?: string | null
+          description?: string | null
+          id?: string
+          is_active?: boolean | null
+          name?: string
+          requires_capabilities?: string[] | null
+          sort_order?: number | null
+          updated_at?: string | null
         }
         Relationships: []
       }
