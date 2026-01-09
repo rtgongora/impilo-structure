@@ -60,7 +60,10 @@ import {
   UserCog,
   Wallet,
   Target,
+  AlertTriangle,
 } from "lucide-react";
+import { Dialog, DialogContent, DialogTrigger } from "@/components/ui/dialog";
+import { EmergencySOS } from "@/components/portal/EmergencySOS";
 import impiloLogo from "@/assets/impilo-logo.png";
 
 interface ModuleItem {
@@ -788,6 +791,21 @@ export default function ModuleHome() {
           </TabsContent>
         </Tabs>
       </main>
+
+      {/* Floating Emergency SOS Button - Always Visible */}
+      <Dialog>
+        <DialogTrigger asChild>
+          <Button
+            className="fixed bottom-6 right-6 h-16 w-16 rounded-full bg-destructive hover:bg-destructive/90 shadow-2xl z-50 flex items-center justify-center animate-pulse hover:animate-none"
+            aria-label="Emergency SOS"
+          >
+            <AlertTriangle className="h-8 w-8 text-white" />
+          </Button>
+        </DialogTrigger>
+        <DialogContent className="max-w-4xl max-h-[90vh] overflow-y-auto p-0">
+          <EmergencySOS />
+        </DialogContent>
+      </Dialog>
     </div>
   );
 }
