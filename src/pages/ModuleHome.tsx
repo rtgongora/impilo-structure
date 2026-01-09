@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { useAuth } from "@/contexts/AuthContext";
 import { useNavigate } from "react-router-dom";
+import { useUserRoles, ModuleAccessRole } from "@/hooks/useUserRoles";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -61,6 +62,7 @@ import {
   Wallet,
   Target,
   AlertTriangle,
+  Lock,
 } from "lucide-react";
 import { Dialog, DialogContent, DialogTrigger } from "@/components/ui/dialog";
 import { EmergencyHub } from "@/components/emergency/EmergencyHub";
@@ -73,7 +75,8 @@ interface ModuleItem {
   icon: React.ComponentType<{ className?: string }>;
   path: string;
   color: string;
-  roles?: string[];
+  roles?: ModuleAccessRole[];
+  requiresAuth?: boolean;
 }
 
 interface ModuleCategory {
@@ -81,6 +84,8 @@ interface ModuleCategory {
   title: string;
   description: string;
   modules: ModuleItem[];
+  roles?: ModuleAccessRole[]; // Category-level role restriction
+  requiresAuth?: boolean;
 }
 
 // Work modules (excluding myhealth and support which go to other tabs)
@@ -89,12 +94,13 @@ const workModuleCategories: ModuleCategory[] = [
     id: "clinical",
     title: "Clinical Care",
     description: "Patient encounters, assessments, and care delivery",
+    roles: ['doctor', 'nurse', 'specialist', 'admin'],
     modules: [
       { id: "dashboard", label: "My Dashboard", description: "Your worklist, tasks, and alerts", icon: ClipboardList, path: "/dashboard", color: "bg-primary" },
       { id: "communication", label: "Communication", description: "Messages, pages & calls", icon: MessageSquare, path: "/communication", color: "bg-primary" },
       { id: "ehr", label: "Patient Encounters", description: "Clinical documentation & care", icon: Stethoscope, path: "/encounter", color: "bg-blue-500", roles: ["doctor", "nurse", "specialist"] },
-      { id: "queue", label: "Patient Queue", description: "Waiting patients & triage", icon: Users, path: "/queue", color: "bg-orange-500" },
-      { id: "beds", label: "Bed Management", description: "Ward status & admissions", icon: Bed, path: "/beds", color: "bg-purple-500" },
+      { id: "queue", label: "Patient Queue", description: "Waiting patients & triage", icon: Users, path: "/queue", color: "bg-orange-500", roles: ["doctor", "nurse", "specialist", "receptionist"] },
+      { id: "beds", label: "Bed Management", description: "Ward status & admissions", icon: Bed, path: "/beds", color: "bg-purple-500", roles: ["doctor", "nurse", "admin"] },
       { id: "handoff", label: "Shift Handoff", description: "Care continuity reports", icon: ArrowRightLeft, path: "/handoff", color: "bg-teal-500", roles: ["doctor", "nurse"] },
     ],
   },
@@ -102,24 +108,26 @@ const workModuleCategories: ModuleCategory[] = [
     id: "orders",
     title: "Orders & Diagnostics",
     description: "Lab, imaging, pharmacy, and clinical orders",
+    roles: ['doctor', 'nurse', 'specialist', 'pharmacist', 'lab_tech', 'radiologist', 'admin'],
     modules: [
       { id: "orders", label: "Order Entry", description: "Medications, labs, & imaging", icon: ShoppingCart, path: "/orders", color: "bg-green-500", roles: ["doctor", "nurse", "specialist"] },
-      { id: "eprescriptions", label: "ePrescriptions", description: "Electronic prescriptions & formulary", icon: Pill, path: "/pharmacy", color: "bg-emerald-600", roles: ["doctor", "nurse", "specialist", "pharmacist"] },
+      { id: "eprescriptions", label: "ePrescriptions", description: "Electronic prescriptions & formulary", icon: Pill, path: "/pharmacy", color: "bg-emerald-600", roles: ["doctor", "specialist", "pharmacist"] },
       { id: "eorders", label: "E-Orders", description: "Electronic clinical orders", icon: ClipboardCheck, path: "/orders", color: "bg-cyan-600", roles: ["doctor", "nurse", "specialist"] },
-      { id: "pharmacy", label: "Pharmacy", description: "Dispensing & medication tracking", icon: Syringe, path: "/pharmacy", color: "bg-pink-500" },
-      { id: "lims", label: "Laboratory", description: "Lab orders & results", icon: FlaskConical, path: "/lims", color: "bg-amber-500" },
-      { id: "pacs", label: "Imaging (PACS)", description: "Radiology & diagnostic imaging", icon: FileText, path: "/pacs", color: "bg-indigo-500" },
+      { id: "pharmacy", label: "Pharmacy", description: "Dispensing & medication tracking", icon: Syringe, path: "/pharmacy", color: "bg-pink-500", roles: ["pharmacist", "doctor", "nurse", "admin"] },
+      { id: "lims", label: "Laboratory", description: "Lab orders & results", icon: FlaskConical, path: "/lims", color: "bg-amber-500", roles: ["lab_tech", "doctor", "nurse", "specialist", "admin"] },
+      { id: "pacs", label: "Imaging (PACS)", description: "Radiology & diagnostic imaging", icon: FileText, path: "/pacs", color: "bg-indigo-500", roles: ["radiologist", "doctor", "specialist", "admin"] },
     ],
   },
   {
     id: "scheduling",
     title: "Scheduling & Registration",
     description: "Appointments, patient registration, and theatre",
+    roles: ['doctor', 'nurse', 'specialist', 'receptionist', 'registrar', 'admin'],
     modules: [
-      { id: "appointments", label: "Appointments", description: "Clinic & provider scheduling", icon: Calendar, path: "/appointments", color: "bg-cyan-500" },
-      { id: "registration", label: "Patient Registration", description: "New patient intake & ID", icon: UserPlus, path: "/registration", color: "bg-emerald-500" },
-      { id: "patients", label: "Patient Registry", description: "Search & manage patients", icon: Users, path: "/patients", color: "bg-slate-500" },
-      { id: "theatre", label: "Theatre Booking", description: "Surgical scheduling", icon: Building2, path: "/theatre", color: "bg-rose-500" },
+      { id: "appointments", label: "Appointments", description: "Clinic & provider scheduling", icon: Calendar, path: "/appointments", color: "bg-cyan-500", roles: ["doctor", "nurse", "specialist", "receptionist", "admin"] },
+      { id: "registration", label: "Patient Registration", description: "New patient intake & ID", icon: UserPlus, path: "/registration", color: "bg-emerald-500", roles: ["receptionist", "registrar", "nurse", "admin"] },
+      { id: "patients", label: "Patient Registry", description: "Search & manage patients", icon: Users, path: "/patients", color: "bg-slate-500", roles: ["doctor", "nurse", "specialist", "receptionist", "admin"] },
+      { id: "theatre", label: "Theatre Booking", description: "Surgical scheduling", icon: Building2, path: "/theatre", color: "bg-rose-500", roles: ["doctor", "specialist", "nurse", "admin"] },
     ],
   },
   {
@@ -137,54 +145,59 @@ const workModuleCategories: ModuleCategory[] = [
     id: "finance",
     title: "Finance & Billing",
     description: "Payments, charges, and financial operations",
+    roles: ['admin', 'receptionist'],
     modules: [
-      { id: "payments", label: "Payments", description: "Patient billing & collections", icon: DollarSign, path: "/payments", color: "bg-green-600" },
-      { id: "charges", label: "Encounter Charges", description: "Service & item charges", icon: Receipt, path: "/charges", color: "bg-yellow-600" },
+      { id: "payments", label: "Payments", description: "Patient billing & collections", icon: DollarSign, path: "/payments", color: "bg-green-600", roles: ["admin", "receptionist"] },
+      { id: "charges", label: "Encounter Charges", description: "Service & item charges", icon: Receipt, path: "/charges", color: "bg-yellow-600", roles: ["admin", "receptionist", "nurse"] },
     ],
   },
   {
     id: "inventory",
     title: "Inventory & Supply Chain",
     description: "Stock management and consumables tracking",
+    roles: ['admin', 'pharmacist', 'nurse'],
     modules: [
-      { id: "stock", label: "Stock Management", description: "Inventory & reordering", icon: Package, path: "/stock", color: "bg-orange-600" },
-      { id: "consumables", label: "Consumables", description: "Usage & administration", icon: Syringe, path: "/consumables", color: "bg-red-500" },
+      { id: "stock", label: "Stock Management", description: "Inventory & reordering", icon: Package, path: "/stock", color: "bg-orange-600", roles: ["admin", "pharmacist"] },
+      { id: "consumables", label: "Consumables", description: "Usage & administration", icon: Syringe, path: "/consumables", color: "bg-red-500", roles: ["admin", "pharmacist", "nurse"] },
     ],
   },
   {
     id: "identity",
     title: "Identity Services",
     description: "Generate, validate, and recover health IDs",
+    roles: ['admin', 'registrar', 'receptionist', 'hie_admin'],
     modules: [
-      { id: "id-services", label: "ID Services Hub", description: "Generate, validate & recover IDs", icon: Shield, path: "/id-services", color: "bg-primary" },
-      { id: "phid-generation", label: "Patient PHID", description: "Generate Patient Health IDs", icon: UserCog, path: "/id-services", color: "bg-blue-500" },
-      { id: "provider-id", label: "Provider ID (Varapi)", description: "Generate healthcare worker IDs", icon: Stethoscope, path: "/id-services", color: "bg-teal-500" },
-      { id: "facility-id", label: "Facility ID (Thuso)", description: "Generate facility identifiers", icon: Building2, path: "/id-services", color: "bg-purple-500" },
-      { id: "id-recovery", label: "ID Recovery", description: "Recover lost or forgotten IDs", icon: Shield, path: "/id-services", color: "bg-amber-500" },
+      { id: "id-services", label: "ID Services Hub", description: "Generate, validate & recover IDs", icon: Shield, path: "/id-services", color: "bg-primary", roles: ["admin", "registrar", "hie_admin"] },
+      { id: "phid-generation", label: "Patient PHID", description: "Generate Patient Health IDs", icon: UserCog, path: "/id-services", color: "bg-blue-500", roles: ["admin", "registrar", "receptionist", "hie_admin"] },
+      { id: "provider-id", label: "Provider ID (Varapi)", description: "Generate healthcare worker IDs", icon: Stethoscope, path: "/id-services", color: "bg-teal-500", roles: ["admin", "hie_admin"] },
+      { id: "facility-id", label: "Facility ID (Thuso)", description: "Generate facility identifiers", icon: Building2, path: "/id-services", color: "bg-purple-500", roles: ["admin", "hie_admin"] },
+      { id: "id-recovery", label: "ID Recovery", description: "Recover lost or forgotten IDs", icon: Shield, path: "/id-services", color: "bg-amber-500", roles: ["admin", "registrar", "receptionist", "hie_admin"] },
     ],
   },
   {
     id: "registries",
     title: "HIE Registries",
     description: "Health information exchange registries and services",
+    roles: ['admin', 'hie_admin'],
     modules: [
-      { id: "patients-registry", label: "Client Registry (MOSIP)", description: "Master patient index & Impilo ID", icon: Users, path: "/id-services", color: "bg-blue-500" },
-      { id: "providers", label: "Provider Registry (Varapi)", description: "iHRIS healthcare workers", icon: Stethoscope, path: "/id-services", color: "bg-teal-500" },
-      { id: "facilities", label: "Facility Registry (Thuso)", description: "GOFR health facilities", icon: Building2, path: "/id-services", color: "bg-purple-500" },
-      { id: "terminology", label: "Terminology Service", description: "ICD-11, SNOMED-CT, LOINC codes", icon: BookOpen, path: "/id-services", color: "bg-amber-500" },
-      { id: "shr", label: "Shared Health Record", description: "FHIR-based patient records", icon: FileHeart, path: "/id-services", color: "bg-rose-500" },
-      { id: "ndr", label: "National Data Repository", description: "Aggregated facility reporting", icon: Database, path: "/id-services", color: "bg-indigo-500" },
+      { id: "patients-registry", label: "Client Registry (MOSIP)", description: "Master patient index & Impilo ID", icon: Users, path: "/id-services", color: "bg-blue-500", roles: ["admin", "hie_admin", "registrar"] },
+      { id: "providers", label: "Provider Registry (Varapi)", description: "iHRIS healthcare workers", icon: Stethoscope, path: "/id-services", color: "bg-teal-500", roles: ["admin", "hie_admin"] },
+      { id: "facilities", label: "Facility Registry (Thuso)", description: "GOFR health facilities", icon: Building2, path: "/id-services", color: "bg-purple-500", roles: ["admin", "hie_admin"] },
+      { id: "terminology", label: "Terminology Service", description: "ICD-11, SNOMED-CT, LOINC codes", icon: BookOpen, path: "/id-services", color: "bg-amber-500", roles: ["admin", "hie_admin", "doctor", "specialist"] },
+      { id: "shr", label: "Shared Health Record", description: "FHIR-based patient records", icon: FileHeart, path: "/id-services", color: "bg-rose-500", roles: ["admin", "hie_admin"] },
+      { id: "ndr", label: "National Data Repository", description: "Aggregated facility reporting", icon: Database, path: "/id-services", color: "bg-indigo-500", roles: ["admin", "hie_admin"] },
       { id: "product-registry", label: "Product Registry", description: "Health products catalogue", icon: Package, path: "/admin/product-registry", color: "bg-green-500", roles: ["admin"] },
-      { id: "fhir-viewer", label: "FHIR Resources", description: "HL7 FHIR interoperability viewer", icon: FileCheck, path: "/admin", color: "bg-cyan-500", roles: ["admin"] },
+      { id: "fhir-viewer", label: "FHIR Resources", description: "HL7 FHIR interoperability viewer", icon: FileCheck, path: "/admin", color: "bg-cyan-500", roles: ["admin", "hie_admin"] },
     ],
   },
   {
     id: "admin",
     title: "Administration & Reports",
     description: "System settings, analytics, and integrations",
+    roles: ['admin'],
     modules: [
-      { id: "reports", label: "Reports & Analytics", description: "Dashboards & insights", icon: BarChart3, path: "/reports", color: "bg-violet-500" },
-      { id: "report-builder", label: "Custom Reports", description: "Build custom reports & queries", icon: FileCheck, path: "/reports", color: "bg-indigo-500" },
+      { id: "reports", label: "Reports & Analytics", description: "Dashboards & insights", icon: BarChart3, path: "/reports", color: "bg-violet-500", roles: ["admin", "doctor", "specialist"] },
+      { id: "report-builder", label: "Custom Reports", description: "Build custom reports & queries", icon: FileCheck, path: "/reports", color: "bg-indigo-500", roles: ["admin"] },
       { id: "odoo", label: "Odoo ERP", description: "ERP integration", icon: Building2, path: "/odoo", color: "bg-gray-600", roles: ["admin"] },
       { id: "admin", label: "System Admin", description: "Users, security & settings", icon: Settings, path: "/admin", color: "bg-gray-700", roles: ["admin"] },
     ],
@@ -193,6 +206,7 @@ const workModuleCategories: ModuleCategory[] = [
     id: "clinical-tools",
     title: "Clinical Tools",
     description: "Advanced clinical documentation and utilities",
+    roles: ['doctor', 'nurse', 'specialist', 'admin'],
     modules: [
       { id: "voice-dictation", label: "Voice Dictation", description: "Speech-to-text for notes", icon: Activity, path: "/encounter", color: "bg-rose-500", roles: ["doctor", "nurse", "specialist"] },
       { id: "sync", label: "Offline Sync", description: "Conflict resolution & sync status", icon: ArrowRightLeft, path: "/admin", color: "bg-slate-600", roles: ["admin"] },
@@ -402,7 +416,7 @@ function SocialHubLayout() {
 export default function ModuleHome() {
   const { profile, signOut } = useAuth();
   const navigate = useNavigate();
-  const userRole = profile?.role || "nurse";
+  const { canAccessModule, isAdmin, loading: rolesLoading } = useUserRoles();
   const [activeTab, setActiveTab] = useState("work");
 
   const getDisplayTitle = () => {
@@ -416,16 +430,38 @@ export default function ModuleHome() {
     return name;
   };
 
+  // Filter modules based on role-based access control
   const getVisibleModules = (modules: ModuleItem[]) => {
-    return modules.filter((module) => {
-      if (!module.roles) return true;
-      return module.roles.includes(userRole);
-    });
+    return modules.filter((module) => canAccessModule(module.roles));
+  };
+
+  // Filter categories based on category-level role restrictions
+  const getVisibleCategories = (categories: ModuleCategory[]) => {
+    return categories
+      .map((category) => {
+        // Check if user can access this category
+        if (!canAccessModule(category.roles)) {
+          return null;
+        }
+        
+        // Filter modules within the category
+        const visibleModules = getVisibleModules(category.modules);
+        
+        // Only show category if it has visible modules
+        if (visibleModules.length === 0) {
+          return null;
+        }
+        
+        return { ...category, modules: visibleModules };
+      })
+      .filter((cat): cat is ModuleCategory => cat !== null);
   };
 
   const handleModuleClick = (path: string) => {
     navigate(path);
   };
+
+  const visibleCategories = getVisibleCategories(workModuleCategories);
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-background via-background to-muted/30">
@@ -754,41 +790,49 @@ export default function ModuleHome() {
 
             {/* Module Categories */}
             <div className="space-y-4 sm:space-y-8 pb-4 sm:pb-8">
-              {workModuleCategories.map((category) => {
-                const visibleModules = getVisibleModules(category.modules);
-                if (visibleModules.length === 0) return null;
-
-                return (
-                  <section key={category.id}>
-                    <div className="mb-2 sm:mb-4">
+              {visibleCategories.map((category) => (
+                <section key={category.id}>
+                  <div className="mb-2 sm:mb-4">
+                    <div className="flex items-center gap-2">
                       <h3 className="text-base sm:text-lg font-semibold">{category.title}</h3>
-                      <p className="text-xs sm:text-sm text-muted-foreground">{category.description}</p>
+                      {category.roles && category.roles.length > 0 && (
+                        <Badge variant="outline" className="text-[10px] sm:text-xs px-1.5 py-0 h-4 sm:h-5 border-muted-foreground/30">
+                          <Lock className="h-2.5 w-2.5 sm:h-3 sm:w-3 mr-0.5" />
+                          <span className="hidden sm:inline">Restricted</span>
+                        </Badge>
+                      )}
                     </div>
-                    <div className="grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-2 sm:gap-4">
-                      {visibleModules.map((module) => (
-                        <Card
-                          key={module.id}
-                          className="cursor-pointer hover:shadow-md sm:hover:shadow-lg hover:border-primary/50 transition-all group"
-                          onClick={() => handleModuleClick(module.path)}
-                        >
-                          <CardHeader className="p-3 sm:pb-3 sm:p-6">
-                            <div className="flex items-start justify-between">
-                              <div className={`w-8 h-8 sm:w-10 sm:h-10 rounded-md sm:rounded-lg ${module.color} flex items-center justify-center`}>
-                                <module.icon className="h-4 w-4 sm:h-5 sm:w-5 text-white" />
-                              </div>
+                    <p className="text-xs sm:text-sm text-muted-foreground">{category.description}</p>
+                  </div>
+                  <div className="grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-2 sm:gap-4">
+                    {category.modules.map((module) => (
+                      <Card
+                        key={module.id}
+                        className="cursor-pointer hover:shadow-md sm:hover:shadow-lg hover:border-primary/50 transition-all group"
+                        onClick={() => handleModuleClick(module.path)}
+                      >
+                        <CardHeader className="p-3 sm:pb-3 sm:p-6">
+                          <div className="flex items-start justify-between">
+                            <div className={`w-8 h-8 sm:w-10 sm:h-10 rounded-md sm:rounded-lg ${module.color} flex items-center justify-center`}>
+                              <module.icon className="h-4 w-4 sm:h-5 sm:w-5 text-white" />
+                            </div>
+                            <div className="flex items-center gap-1">
+                              {module.roles && module.roles.length > 0 && (
+                                <Lock className="h-3 w-3 text-muted-foreground/50" />
+                              )}
                               <ChevronRight className="h-3.5 w-3.5 sm:h-4 sm:w-4 text-muted-foreground group-hover:text-primary transition-colors" />
                             </div>
-                          </CardHeader>
-                          <CardContent className="p-3 pt-0 sm:p-6 sm:pt-0">
-                            <CardTitle className="text-xs sm:text-base mb-0.5 sm:mb-1">{module.label}</CardTitle>
-                            <CardDescription className="text-[10px] sm:text-xs line-clamp-1 sm:line-clamp-none">{module.description}</CardDescription>
-                          </CardContent>
-                        </Card>
-                      ))}
-                    </div>
-                  </section>
-                );
-              })}
+                          </div>
+                        </CardHeader>
+                        <CardContent className="p-3 pt-0 sm:p-6 sm:pt-0">
+                          <CardTitle className="text-xs sm:text-base mb-0.5 sm:mb-1">{module.label}</CardTitle>
+                          <CardDescription className="text-[10px] sm:text-xs line-clamp-1 sm:line-clamp-none">{module.description}</CardDescription>
+                        </CardContent>
+                      </Card>
+                    ))}
+                  </div>
+                </section>
+              ))}
             </div>
           </TabsContent>
 
