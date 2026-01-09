@@ -2074,58 +2074,740 @@ export type Database = {
       }
       facilities: {
         Row: {
+          accreditation_body: string | null
+          accreditation_status: string | null
           address_line1: string | null
+          admin_hierarchy_id: string | null
+          altitude: number | null
+          approved_at: string | null
+          approved_by: string | null
+          bed_count: number | null
           city: string | null
+          cot_count: number | null
           country: string | null
           created_at: string | null
+          created_by: string | null
+          data_source: string | null
+          dhis2_uid: string | null
           email: string | null
+          facility_code: string | null
           facility_type: string
+          facility_type_id: string | null
+          fax: string | null
           gofr_id: string
+          has_electricity: boolean | null
+          has_internet: boolean | null
+          has_water: boolean | null
+          id: string
+          is_24hr: boolean | null
+          is_active: boolean | null
+          is_verified: boolean | null
+          last_modified_by: string | null
+          latitude: number | null
+          legacy_code: string | null
+          level: string | null
+          license_expiry: string | null
+          license_number: string | null
+          longitude: number | null
+          managing_org_contact: string | null
+          managing_org_name: string | null
+          name: string
+          operating_hours: Json | null
+          operational_status: string | null
+          ownership_type_id: string | null
+          phone: string | null
+          phone_alt: string | null
+          physical_address: string | null
+          postal_address: string | null
+          postal_code: string | null
+          province: string | null
+          published_at: string | null
+          published_by: string | null
+          record_date: string | null
+          review_notes: string | null
+          reviewed_at: string | null
+          reviewed_by: string | null
+          short_name: string | null
+          status_effective_date: string | null
+          submitted_at: string | null
+          submitted_by: string | null
+          updated_at: string | null
+          verified_at: string | null
+          verified_by: string | null
+          version: number | null
+          website: string | null
+          workflow_status: string | null
+        }
+        Insert: {
+          accreditation_body?: string | null
+          accreditation_status?: string | null
+          address_line1?: string | null
+          admin_hierarchy_id?: string | null
+          altitude?: number | null
+          approved_at?: string | null
+          approved_by?: string | null
+          bed_count?: number | null
+          city?: string | null
+          cot_count?: number | null
+          country?: string | null
+          created_at?: string | null
+          created_by?: string | null
+          data_source?: string | null
+          dhis2_uid?: string | null
+          email?: string | null
+          facility_code?: string | null
+          facility_type: string
+          facility_type_id?: string | null
+          fax?: string | null
+          gofr_id: string
+          has_electricity?: boolean | null
+          has_internet?: boolean | null
+          has_water?: boolean | null
+          id?: string
+          is_24hr?: boolean | null
+          is_active?: boolean | null
+          is_verified?: boolean | null
+          last_modified_by?: string | null
+          latitude?: number | null
+          legacy_code?: string | null
+          level?: string | null
+          license_expiry?: string | null
+          license_number?: string | null
+          longitude?: number | null
+          managing_org_contact?: string | null
+          managing_org_name?: string | null
+          name: string
+          operating_hours?: Json | null
+          operational_status?: string | null
+          ownership_type_id?: string | null
+          phone?: string | null
+          phone_alt?: string | null
+          physical_address?: string | null
+          postal_address?: string | null
+          postal_code?: string | null
+          province?: string | null
+          published_at?: string | null
+          published_by?: string | null
+          record_date?: string | null
+          review_notes?: string | null
+          reviewed_at?: string | null
+          reviewed_by?: string | null
+          short_name?: string | null
+          status_effective_date?: string | null
+          submitted_at?: string | null
+          submitted_by?: string | null
+          updated_at?: string | null
+          verified_at?: string | null
+          verified_by?: string | null
+          version?: number | null
+          website?: string | null
+          workflow_status?: string | null
+        }
+        Update: {
+          accreditation_body?: string | null
+          accreditation_status?: string | null
+          address_line1?: string | null
+          admin_hierarchy_id?: string | null
+          altitude?: number | null
+          approved_at?: string | null
+          approved_by?: string | null
+          bed_count?: number | null
+          city?: string | null
+          cot_count?: number | null
+          country?: string | null
+          created_at?: string | null
+          created_by?: string | null
+          data_source?: string | null
+          dhis2_uid?: string | null
+          email?: string | null
+          facility_code?: string | null
+          facility_type?: string
+          facility_type_id?: string | null
+          fax?: string | null
+          gofr_id?: string
+          has_electricity?: boolean | null
+          has_internet?: boolean | null
+          has_water?: boolean | null
+          id?: string
+          is_24hr?: boolean | null
+          is_active?: boolean | null
+          is_verified?: boolean | null
+          last_modified_by?: string | null
+          latitude?: number | null
+          legacy_code?: string | null
+          level?: string | null
+          license_expiry?: string | null
+          license_number?: string | null
+          longitude?: number | null
+          managing_org_contact?: string | null
+          managing_org_name?: string | null
+          name?: string
+          operating_hours?: Json | null
+          operational_status?: string | null
+          ownership_type_id?: string | null
+          phone?: string | null
+          phone_alt?: string | null
+          physical_address?: string | null
+          postal_address?: string | null
+          postal_code?: string | null
+          province?: string | null
+          published_at?: string | null
+          published_by?: string | null
+          record_date?: string | null
+          review_notes?: string | null
+          reviewed_at?: string | null
+          reviewed_by?: string | null
+          short_name?: string | null
+          status_effective_date?: string | null
+          submitted_at?: string | null
+          submitted_by?: string | null
+          updated_at?: string | null
+          verified_at?: string | null
+          verified_by?: string | null
+          version?: number | null
+          website?: string | null
+          workflow_status?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "facilities_admin_hierarchy_id_fkey"
+            columns: ["admin_hierarchy_id"]
+            isOneToOne: false
+            referencedRelation: "facility_admin_hierarchies"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "facilities_facility_type_id_fkey"
+            columns: ["facility_type_id"]
+            isOneToOne: false
+            referencedRelation: "facility_types"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "facilities_ownership_type_id_fkey"
+            columns: ["ownership_type_id"]
+            isOneToOne: false
+            referencedRelation: "facility_ownership_types"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      facility_admin_hierarchies: {
+        Row: {
+          boundary_geojson: Json | null
+          code: string
+          created_at: string | null
           id: string
           is_active: boolean | null
           latitude: number | null
-          level: string | null
+          level: number
+          level_name: string
           longitude: number | null
           name: string
-          phone: string | null
-          province: string | null
+          parent_id: string | null
+          population: number | null
           updated_at: string | null
         }
         Insert: {
-          address_line1?: string | null
-          city?: string | null
-          country?: string | null
+          boundary_geojson?: Json | null
+          code: string
           created_at?: string | null
-          email?: string | null
-          facility_type: string
-          gofr_id: string
           id?: string
           is_active?: boolean | null
           latitude?: number | null
-          level?: string | null
+          level: number
+          level_name: string
           longitude?: number | null
           name: string
-          phone?: string | null
-          province?: string | null
+          parent_id?: string | null
+          population?: number | null
           updated_at?: string | null
         }
         Update: {
-          address_line1?: string | null
-          city?: string | null
-          country?: string | null
+          boundary_geojson?: Json | null
+          code?: string
           created_at?: string | null
-          email?: string | null
-          facility_type?: string
-          gofr_id?: string
           id?: string
           is_active?: boolean | null
           latitude?: number | null
-          level?: string | null
+          level?: number
+          level_name?: string
           longitude?: number | null
           name?: string
-          phone?: string | null
-          province?: string | null
+          parent_id?: string | null
+          population?: number | null
           updated_at?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "facility_admin_hierarchies_parent_id_fkey"
+            columns: ["parent_id"]
+            isOneToOne: false
+            referencedRelation: "facility_admin_hierarchies"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      facility_audit_log: {
+        Row: {
+          action: string
+          entity_id: string
+          entity_type: string
+          id: string
+          ip_address: unknown
+          new_values: Json | null
+          notes: string | null
+          old_values: Json | null
+          performed_at: string | null
+          performed_by: string | null
+          user_agent: string | null
+        }
+        Insert: {
+          action: string
+          entity_id: string
+          entity_type: string
+          id?: string
+          ip_address?: unknown
+          new_values?: Json | null
+          notes?: string | null
+          old_values?: Json | null
+          performed_at?: string | null
+          performed_by?: string | null
+          user_agent?: string | null
+        }
+        Update: {
+          action?: string
+          entity_id?: string
+          entity_type?: string
+          id?: string
+          ip_address?: unknown
+          new_values?: Json | null
+          notes?: string | null
+          old_values?: Json | null
+          performed_at?: string | null
+          performed_by?: string | null
+          user_agent?: string | null
+        }
+        Relationships: []
+      }
+      facility_change_request_comments: {
+        Row: {
+          change_request_id: string
+          comment: string
+          comment_type: string | null
+          created_at: string | null
+          created_by: string
+          id: string
+          is_internal: boolean | null
+        }
+        Insert: {
+          change_request_id: string
+          comment: string
+          comment_type?: string | null
+          created_at?: string | null
+          created_by: string
+          id?: string
+          is_internal?: boolean | null
+        }
+        Update: {
+          change_request_id?: string
+          comment?: string
+          comment_type?: string | null
+          created_at?: string | null
+          created_by?: string
+          id?: string
+          is_internal?: boolean | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "facility_change_request_comments_change_request_id_fkey"
+            columns: ["change_request_id"]
+            isOneToOne: false
+            referencedRelation: "facility_change_requests"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      facility_change_requests: {
+        Row: {
+          approved_at: string | null
+          approved_by: string | null
+          assigned_to: string | null
+          attachments: Json | null
+          clarification_request: string | null
+          clarification_response: string | null
+          created_at: string | null
+          created_by: string | null
+          description: string | null
+          facility_id: string | null
+          id: string
+          justification: string | null
+          merge_source_ids: string[] | null
+          priority: string | null
+          proposed_changes: Json | null
+          published_at: string | null
+          published_by: string | null
+          rejected_at: string | null
+          rejected_by: string | null
+          rejection_reason: string | null
+          request_type: string
+          review_comments: string | null
+          reviewed_at: string | null
+          reviewed_by: string | null
+          split_target_count: number | null
+          status: string | null
+          submitted_at: string | null
+          submitted_by: string | null
+          title: string
+          updated_at: string | null
+        }
+        Insert: {
+          approved_at?: string | null
+          approved_by?: string | null
+          assigned_to?: string | null
+          attachments?: Json | null
+          clarification_request?: string | null
+          clarification_response?: string | null
+          created_at?: string | null
+          created_by?: string | null
+          description?: string | null
+          facility_id?: string | null
+          id?: string
+          justification?: string | null
+          merge_source_ids?: string[] | null
+          priority?: string | null
+          proposed_changes?: Json | null
+          published_at?: string | null
+          published_by?: string | null
+          rejected_at?: string | null
+          rejected_by?: string | null
+          rejection_reason?: string | null
+          request_type: string
+          review_comments?: string | null
+          reviewed_at?: string | null
+          reviewed_by?: string | null
+          split_target_count?: number | null
+          status?: string | null
+          submitted_at?: string | null
+          submitted_by?: string | null
+          title: string
+          updated_at?: string | null
+        }
+        Update: {
+          approved_at?: string | null
+          approved_by?: string | null
+          assigned_to?: string | null
+          attachments?: Json | null
+          clarification_request?: string | null
+          clarification_response?: string | null
+          created_at?: string | null
+          created_by?: string | null
+          description?: string | null
+          facility_id?: string | null
+          id?: string
+          justification?: string | null
+          merge_source_ids?: string[] | null
+          priority?: string | null
+          proposed_changes?: Json | null
+          published_at?: string | null
+          published_by?: string | null
+          rejected_at?: string | null
+          rejected_by?: string | null
+          rejection_reason?: string | null
+          request_type?: string
+          review_comments?: string | null
+          reviewed_at?: string | null
+          reviewed_by?: string | null
+          split_target_count?: number | null
+          status?: string | null
+          submitted_at?: string | null
+          submitted_by?: string | null
+          title?: string
+          updated_at?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "facility_change_requests_facility_id_fkey"
+            columns: ["facility_id"]
+            isOneToOne: false
+            referencedRelation: "facilities"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      facility_history: {
+        Row: {
+          change_summary: string | null
+          change_type: string | null
+          changed_at: string | null
+          changed_by: string | null
+          facility_id: string
+          id: string
+          snapshot: Json
+          version: number
+        }
+        Insert: {
+          change_summary?: string | null
+          change_type?: string | null
+          changed_at?: string | null
+          changed_by?: string | null
+          facility_id: string
+          id?: string
+          snapshot: Json
+          version: number
+        }
+        Update: {
+          change_summary?: string | null
+          change_type?: string | null
+          changed_at?: string | null
+          changed_by?: string | null
+          facility_id?: string
+          id?: string
+          snapshot?: Json
+          version?: number
+        }
+        Relationships: [
+          {
+            foreignKeyName: "facility_history_facility_id_fkey"
+            columns: ["facility_id"]
+            isOneToOne: false
+            referencedRelation: "facilities"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      facility_identifiers: {
+        Row: {
+          created_at: string | null
+          facility_id: string
+          id: string
+          identifier_type: string
+          identifier_value: string
+          is_primary: boolean | null
+          source_system: string | null
+          valid_from: string | null
+          valid_to: string | null
+        }
+        Insert: {
+          created_at?: string | null
+          facility_id: string
+          id?: string
+          identifier_type: string
+          identifier_value: string
+          is_primary?: boolean | null
+          source_system?: string | null
+          valid_from?: string | null
+          valid_to?: string | null
+        }
+        Update: {
+          created_at?: string | null
+          facility_id?: string
+          id?: string
+          identifier_type?: string
+          identifier_value?: string
+          is_primary?: boolean | null
+          source_system?: string | null
+          valid_from?: string | null
+          valid_to?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "facility_identifiers_facility_id_fkey"
+            columns: ["facility_id"]
+            isOneToOne: false
+            referencedRelation: "facilities"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      facility_ownership_types: {
+        Row: {
+          code: string
+          created_at: string | null
+          description: string | null
+          id: string
+          is_active: boolean | null
+          name: string
+          sector: string | null
+        }
+        Insert: {
+          code: string
+          created_at?: string | null
+          description?: string | null
+          id?: string
+          is_active?: boolean | null
+          name: string
+          sector?: string | null
+        }
+        Update: {
+          code?: string
+          created_at?: string | null
+          description?: string | null
+          id?: string
+          is_active?: boolean | null
+          name?: string
+          sector?: string | null
+        }
+        Relationships: []
+      }
+      facility_reconciliation_jobs: {
+        Row: {
+          completed_at: string | null
+          created_at: string | null
+          created_by: string | null
+          error_records: number | null
+          errors: Json | null
+          id: string
+          job_type: string
+          matched_records: number | null
+          new_records: number | null
+          processed_records: number | null
+          source_id: string | null
+          started_at: string | null
+          status: string | null
+          total_records: number | null
+          updated_records: number | null
+        }
+        Insert: {
+          completed_at?: string | null
+          created_at?: string | null
+          created_by?: string | null
+          error_records?: number | null
+          errors?: Json | null
+          id?: string
+          job_type: string
+          matched_records?: number | null
+          new_records?: number | null
+          processed_records?: number | null
+          source_id?: string | null
+          started_at?: string | null
+          status?: string | null
+          total_records?: number | null
+          updated_records?: number | null
+        }
+        Update: {
+          completed_at?: string | null
+          created_at?: string | null
+          created_by?: string | null
+          error_records?: number | null
+          errors?: Json | null
+          id?: string
+          job_type?: string
+          matched_records?: number | null
+          new_records?: number | null
+          processed_records?: number | null
+          source_id?: string | null
+          started_at?: string | null
+          status?: string | null
+          total_records?: number | null
+          updated_records?: number | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "facility_reconciliation_jobs_source_id_fkey"
+            columns: ["source_id"]
+            isOneToOne: false
+            referencedRelation: "facility_reconciliation_sources"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      facility_reconciliation_matches: {
+        Row: {
+          candidate_facility_id: string | null
+          created_at: string | null
+          decision_at: string | null
+          decision_by: string | null
+          decision_notes: string | null
+          id: string
+          job_id: string | null
+          match_reasons: Json | null
+          match_score: number | null
+          source_record: Json
+          status: string | null
+        }
+        Insert: {
+          candidate_facility_id?: string | null
+          created_at?: string | null
+          decision_at?: string | null
+          decision_by?: string | null
+          decision_notes?: string | null
+          id?: string
+          job_id?: string | null
+          match_reasons?: Json | null
+          match_score?: number | null
+          source_record: Json
+          status?: string | null
+        }
+        Update: {
+          candidate_facility_id?: string | null
+          created_at?: string | null
+          decision_at?: string | null
+          decision_by?: string | null
+          decision_notes?: string | null
+          id?: string
+          job_id?: string | null
+          match_reasons?: Json | null
+          match_score?: number | null
+          source_record?: Json
+          status?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "facility_reconciliation_matches_candidate_facility_id_fkey"
+            columns: ["candidate_facility_id"]
+            isOneToOne: false
+            referencedRelation: "facilities"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "facility_reconciliation_matches_job_id_fkey"
+            columns: ["job_id"]
+            isOneToOne: false
+            referencedRelation: "facility_reconciliation_jobs"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      facility_reconciliation_sources: {
+        Row: {
+          connection_config: Json | null
+          created_at: string | null
+          created_by: string | null
+          description: string | null
+          field_mapping: Json | null
+          id: string
+          is_active: boolean | null
+          last_sync_at: string | null
+          name: string
+          source_type: string
+          sync_frequency: string | null
+        }
+        Insert: {
+          connection_config?: Json | null
+          created_at?: string | null
+          created_by?: string | null
+          description?: string | null
+          field_mapping?: Json | null
+          id?: string
+          is_active?: boolean | null
+          last_sync_at?: string | null
+          name: string
+          source_type: string
+          sync_frequency?: string | null
+        }
+        Update: {
+          connection_config?: Json | null
+          created_at?: string | null
+          created_by?: string | null
+          description?: string | null
+          field_mapping?: Json | null
+          id?: string
+          is_active?: boolean | null
+          last_sync_at?: string | null
+          name?: string
+          source_type?: string
+          sync_frequency?: string | null
         }
         Relationships: []
       }
@@ -2244,6 +2926,200 @@ export type Database = {
             referencedColumns: ["id"]
           },
         ]
+      }
+      facility_registry_roles: {
+        Row: {
+          can_approve: boolean | null
+          can_create: boolean | null
+          can_edit: boolean | null
+          can_publish: boolean | null
+          can_reconcile: boolean | null
+          can_validate: boolean | null
+          created_at: string | null
+          expires_at: string | null
+          granted_at: string | null
+          granted_by: string | null
+          id: string
+          is_active: boolean | null
+          role: string
+          scope_id: string | null
+          scope_type: string | null
+          user_id: string
+        }
+        Insert: {
+          can_approve?: boolean | null
+          can_create?: boolean | null
+          can_edit?: boolean | null
+          can_publish?: boolean | null
+          can_reconcile?: boolean | null
+          can_validate?: boolean | null
+          created_at?: string | null
+          expires_at?: string | null
+          granted_at?: string | null
+          granted_by?: string | null
+          id?: string
+          is_active?: boolean | null
+          role: string
+          scope_id?: string | null
+          scope_type?: string | null
+          user_id: string
+        }
+        Update: {
+          can_approve?: boolean | null
+          can_create?: boolean | null
+          can_edit?: boolean | null
+          can_publish?: boolean | null
+          can_reconcile?: boolean | null
+          can_validate?: boolean | null
+          created_at?: string | null
+          expires_at?: string | null
+          granted_at?: string | null
+          granted_by?: string | null
+          id?: string
+          is_active?: boolean | null
+          role?: string
+          scope_id?: string | null
+          scope_type?: string | null
+          user_id?: string
+        }
+        Relationships: []
+      }
+      facility_service_categories: {
+        Row: {
+          code: string
+          created_at: string | null
+          description: string | null
+          id: string
+          is_active: boolean | null
+          name: string
+          parent_id: string | null
+        }
+        Insert: {
+          code: string
+          created_at?: string | null
+          description?: string | null
+          id?: string
+          is_active?: boolean | null
+          name: string
+          parent_id?: string | null
+        }
+        Update: {
+          code?: string
+          created_at?: string | null
+          description?: string | null
+          id?: string
+          is_active?: boolean | null
+          name?: string
+          parent_id?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "facility_service_categories_parent_id_fkey"
+            columns: ["parent_id"]
+            isOneToOne: false
+            referencedRelation: "facility_service_categories"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      facility_services: {
+        Row: {
+          availability_notes: string | null
+          capacity: number | null
+          created_at: string | null
+          effective_from: string | null
+          effective_to: string | null
+          facility_id: string
+          id: string
+          is_available: boolean | null
+          operating_days: string | null
+          operating_hours: string | null
+          service_category_id: string | null
+          service_name: string
+          updated_at: string | null
+        }
+        Insert: {
+          availability_notes?: string | null
+          capacity?: number | null
+          created_at?: string | null
+          effective_from?: string | null
+          effective_to?: string | null
+          facility_id: string
+          id?: string
+          is_available?: boolean | null
+          operating_days?: string | null
+          operating_hours?: string | null
+          service_category_id?: string | null
+          service_name: string
+          updated_at?: string | null
+        }
+        Update: {
+          availability_notes?: string | null
+          capacity?: number | null
+          created_at?: string | null
+          effective_from?: string | null
+          effective_to?: string | null
+          facility_id?: string
+          id?: string
+          is_available?: boolean | null
+          operating_days?: string | null
+          operating_hours?: string | null
+          service_category_id?: string | null
+          service_name?: string
+          updated_at?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "facility_services_facility_id_fkey"
+            columns: ["facility_id"]
+            isOneToOne: false
+            referencedRelation: "facilities"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "facility_services_service_category_id_fkey"
+            columns: ["service_category_id"]
+            isOneToOne: false
+            referencedRelation: "facility_service_categories"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      facility_types: {
+        Row: {
+          category: string | null
+          code: string
+          created_at: string | null
+          description: string | null
+          id: string
+          is_active: boolean | null
+          level_of_care: string | null
+          name: string
+          updated_at: string | null
+        }
+        Insert: {
+          category?: string | null
+          code: string
+          created_at?: string | null
+          description?: string | null
+          id?: string
+          is_active?: boolean | null
+          level_of_care?: string | null
+          name: string
+          updated_at?: string | null
+        }
+        Update: {
+          category?: string | null
+          code?: string
+          created_at?: string | null
+          description?: string | null
+          id?: string
+          is_active?: boolean | null
+          level_of_care?: string | null
+          name?: string
+          updated_at?: string | null
+        }
+        Relationships: []
       }
       five_rights_verification: {
         Row: {
