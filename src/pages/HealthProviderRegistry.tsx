@@ -115,20 +115,8 @@ export default function HealthProviderRegistry() {
     }
   };
 
-  const handleProviderSelect = async (provider: HealthProvider) => {
+  const handleProviderSelect = (provider: HealthProvider) => {
     setSelectedProvider(provider);
-    
-    // Load eligibility and state history
-    try {
-      const [eligibility, history] = await Promise.all([
-        HPRService.checkEligibility(provider.id),
-        HPRService.getStateTransitions(provider.id),
-      ]);
-      setEligibilityResult(eligibility);
-      setStateHistory(history);
-    } catch (error) {
-      console.error('Failed to load provider details:', error);
-    }
   };
 
   const handleStateTransition = async (newState: ProviderLifecycleState, reason: string) => {
