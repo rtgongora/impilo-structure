@@ -1,50 +1,81 @@
 import { TopBarAction, TOP_BAR_ACTIONS } from "@/types/ehr";
 import { useEHR } from "@/contexts/EHRContext";
 import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { X, Boxes, Route, Package, Receipt, Plus, Pill, Calendar, CreditCard } from "lucide-react";
+import { Card, CardContent } from "@/components/ui/card";
+import { X, MapPin, Route, Package, Receipt, Plus, AlertTriangle, Activity, Stethoscope, Calendar } from "lucide-react";
 import { QueueManagement } from "./queue/QueueManagement";
 import { BedManagement } from "./beds/BedManagement";
 import { ShiftHandoffReport } from "@/components/handoff/ShiftHandoffReport";
 import { MedicationDispensing } from "@/components/pharmacy/MedicationDispensing";
 import { TheatreBookingSystem } from "@/components/booking/TheatreBookingSystem";
 import { PaymentGateway } from "@/components/payments/PaymentGateway";
+import { Badge } from "@/components/ui/badge";
+import { 
+  PHYSICAL_WORKSPACES, 
+  CARE_PATHWAYS,
+  getEmergencyProtocols,
+  getTreatmentWorkflows,
+  getLongitudinalProgrammes,
+  type CarePathway 
+} from "@/types/clinicalSpaces";
 
 interface TopBarPanelProps {
   action: TopBarAction;
 }
 
-const WORKSPACES = [
-  { id: "theatre", name: "Theatre", description: "Surgical procedures" },
-  { id: "labour", name: "Labour & Delivery", description: "Obstetric care" },
-  { id: "trauma", name: "Trauma", description: "Trauma resuscitation" },
-  { id: "resuscitation", name: "Resuscitation", description: "Code Blue / Rapid Response" },
-  { id: "burns", name: "Burns Care", description: "Burns management" },
-  { id: "procedure", name: "Minor Procedure", description: "Minor procedures" },
-  { id: "chemotherapy", name: "Chemotherapy", description: "Cancer treatment cycles" },
-  { id: "radiotherapy", name: "Radiotherapy", description: "Radiation therapy" },
-  { id: "dialysis", name: "Dialysis", description: "Renal replacement therapy" },
-  { id: "physiotherapy", name: "Physiotherapy", description: "Physical rehabilitation" },
-  { id: "psychotherapy", name: "Psychotherapy", description: "Mental health therapy" },
-  { id: "sexual_assault", name: "Sexual Assault", description: "Forensic examination" },
-  { id: "poisoning", name: "Poisoning", description: "Overdose management" },
-  { id: "neonatal_resus", name: "Neonatal Resuscitation", description: "Newborn resuscitation" },
-  { id: "anaesthesia_preop", name: "Anaesthesia Pre-Op", description: "Pre-operative assessment" },
-  { id: "teleconsultation", name: "Teleconsultation", description: "Remote specialist consultation" },
-  { id: "virtual_care", name: "Virtual Care", description: "Telemedicine patient visits" },
-];
+const getCategoryIcon = (category: CarePathway["category"]) => {
+  switch (category) {
+    case "emergency_protocol":
+      return <AlertTriangle className="w-5 h-5" />;
+    case "treatment_workflow":
+      return <Activity className="w-5 h-5" />;
+    case "procedure_workflow":
+      return <Stethoscope className="w-5 h-5" />;
+    case "longitudinal_programme":
+      return <Calendar className="w-5 h-5" />;
+    default:
+      return <Route className="w-5 h-5" />;
+  }
+};
 
-const CARE_PATHWAYS = [
-  { id: "anc", name: "Antenatal Care (ANC)", description: "Pregnancy monitoring" },
-  { id: "hiv", name: "HIV Care", description: "HIV management programme" },
-  { id: "tb", name: "TB Treatment", description: "Tuberculosis management" },
-  { id: "ncd", name: "NCD Management", description: "Chronic disease care" },
-  { id: "immunization", name: "Immunization", description: "Vaccination schedules" },
-];
+const getCategoryColor = (category: CarePathway["category"]) => {
+  switch (category) {
+    case "emergency_protocol":
+      return "bg-destructive/10 text-destructive";
+    case "treatment_workflow":
+      return "bg-primary/10 text-primary";
+    case "procedure_workflow":
+      return "bg-accent/10 text-accent-foreground";
+    case "longitudinal_programme":
+      return "bg-muted text-muted-foreground";
+    default:
+      return "bg-secondary/10 text-secondary-foreground";
+  }
+};
 
 export function TopBarPanel({ action }: TopBarPanelProps) {
-  const { setActiveTopBarAction, openWorkspace } = useEHR();
+  const { setActiveTopBarAction, openWorkspace, activateCriticalEvent } = useEHR();
   const actionConfig = TOP_BAR_ACTIONS.find((a) => a.id === action);
+
+  const handlePathwayActivation = (pathway: CarePathway) => {
+    if (pathway.isEmergency) {
+      // Map to critical event type
+      const eventTypeMap: Record<string, string> = {
+        code_blue: "code_blue",
+        rapid_response: "rapid_response",
+        trauma_activation: "trauma",
+        neonatal_resuscitation: "neonatal_resus",
+        obstetric_emergency: "obstetric_emergency",
+        stroke_code: "stroke_code",
+        stemi_code: "stemi_code",
+      };
+      activateCriticalEvent(eventTypeMap[pathway.id] as any, `Activated from pathway selector`);
+    } else {
+      // Open as workspace/pathway overlay
+      openWorkspace(pathway.name);
+    }
+    setActiveTopBarAction(null);
+  };
 
   const renderContent = () => {
     switch (action) {
@@ -60,52 +91,212 @@ export function TopBarPanel({ action }: TopBarPanelProps) {
         return <TheatreBookingSystem />;
       case "payments":
         return <PaymentGateway />;
+      
       case "workspaces":
+        // Physical Workspaces - actual locations
         return (
-          <div className="grid grid-cols-3 gap-4">
-            {WORKSPACES.map((ws) => (
-              <Card
-                key={ws.id}
-                className="cursor-pointer hover:border-primary hover:shadow-md transition-all"
-                onClick={() => openWorkspace(ws.name)}
-              >
-                <CardContent className="p-4">
-                  <div className="flex items-center gap-3">
-                    <div className="w-10 h-10 rounded-lg bg-primary/10 flex items-center justify-center">
-                      <Boxes className="w-5 h-5 text-primary" />
-                    </div>
-                    <div>
-                      <h3 className="font-semibold">{ws.name}</h3>
-                      <p className="text-sm text-muted-foreground">{ws.description}</p>
-                    </div>
-                  </div>
-                </CardContent>
-              </Card>
-            ))}
+          <div className="space-y-6">
+            <div>
+              <h2 className="text-lg font-semibold mb-1">Physical Workspaces</h2>
+              <p className="text-sm text-muted-foreground mb-4">
+                Actual locations where clinical work takes place
+              </p>
+            </div>
+            
+            {/* High Acuity Spaces */}
+            <div>
+              <h3 className="text-sm font-medium text-muted-foreground mb-3 flex items-center gap-2">
+                <Badge variant="destructive" className="text-xs">High Acuity</Badge>
+              </h3>
+              <div className="grid grid-cols-2 lg:grid-cols-4 gap-3">
+                {PHYSICAL_WORKSPACES.filter(ws => ws.category === "high_acuity").map((ws) => (
+                  <Card
+                    key={ws.id}
+                    className="cursor-pointer hover:border-destructive hover:shadow-md transition-all border-l-4 border-l-destructive"
+                  >
+                    <CardContent className="p-4">
+                      <div className="flex items-center gap-3">
+                        <div className="w-10 h-10 rounded-lg bg-destructive/10 flex items-center justify-center">
+                          <MapPin className="w-5 h-5 text-destructive" />
+                        </div>
+                        <div>
+                          <h3 className="font-semibold text-sm">{ws.name}</h3>
+                          <p className="text-xs text-muted-foreground">{ws.description}</p>
+                        </div>
+                      </div>
+                    </CardContent>
+                  </Card>
+                ))}
+              </div>
+            </div>
+            
+            {/* Specialty Spaces */}
+            <div>
+              <h3 className="text-sm font-medium text-muted-foreground mb-3 flex items-center gap-2">
+                <Badge variant="secondary" className="text-xs">Specialty</Badge>
+              </h3>
+              <div className="grid grid-cols-2 lg:grid-cols-4 gap-3">
+                {PHYSICAL_WORKSPACES.filter(ws => ws.category === "specialty").map((ws) => (
+                  <Card
+                    key={ws.id}
+                    className="cursor-pointer hover:border-primary hover:shadow-md transition-all"
+                  >
+                    <CardContent className="p-4">
+                      <div className="flex items-center gap-3">
+                        <div className="w-10 h-10 rounded-lg bg-primary/10 flex items-center justify-center">
+                          <MapPin className="w-5 h-5 text-primary" />
+                        </div>
+                        <div>
+                          <h3 className="font-semibold text-sm">{ws.name}</h3>
+                          <p className="text-xs text-muted-foreground">{ws.description}</p>
+                        </div>
+                      </div>
+                    </CardContent>
+                  </Card>
+                ))}
+              </div>
+            </div>
+            
+            {/* General Spaces */}
+            <div>
+              <h3 className="text-sm font-medium text-muted-foreground mb-3 flex items-center gap-2">
+                <Badge variant="outline" className="text-xs">General</Badge>
+              </h3>
+              <div className="grid grid-cols-2 lg:grid-cols-4 gap-3">
+                {PHYSICAL_WORKSPACES.filter(ws => ws.category === "general").map((ws) => (
+                  <Card
+                    key={ws.id}
+                    className="cursor-pointer hover:border-accent hover:shadow-md transition-all"
+                  >
+                    <CardContent className="p-4">
+                      <div className="flex items-center gap-3">
+                        <div className="w-10 h-10 rounded-lg bg-muted flex items-center justify-center">
+                          <MapPin className="w-5 h-5 text-muted-foreground" />
+                        </div>
+                        <div>
+                          <h3 className="font-semibold text-sm">{ws.name}</h3>
+                          <p className="text-xs text-muted-foreground">{ws.description}</p>
+                        </div>
+                      </div>
+                    </CardContent>
+                  </Card>
+                ))}
+              </div>
+            </div>
           </div>
         );
 
       case "pathways":
+        // Care Pathways - clinical workflows
+        const emergencyProtocols = getEmergencyProtocols();
+        const treatmentWorkflows = getTreatmentWorkflows();
+        const longitudinalProgrammes = getLongitudinalProgrammes();
+        
         return (
-          <div className="grid grid-cols-3 gap-4">
-            {CARE_PATHWAYS.map((pathway) => (
-              <Card
-                key={pathway.id}
-                className="cursor-pointer hover:border-accent hover:shadow-md transition-all"
-              >
-                <CardContent className="p-4">
-                  <div className="flex items-center gap-3">
-                    <div className="w-10 h-10 rounded-lg bg-accent/10 flex items-center justify-center">
-                      <Route className="w-5 h-5 text-accent" />
-                    </div>
-                    <div>
-                      <h3 className="font-semibold">{pathway.name}</h3>
-                      <p className="text-sm text-muted-foreground">{pathway.description}</p>
-                    </div>
-                  </div>
-                </CardContent>
-              </Card>
-            ))}
+          <div className="space-y-6">
+            <div>
+              <h2 className="text-lg font-semibold mb-1">Care Pathways</h2>
+              <p className="text-sm text-muted-foreground mb-4">
+                Clinical workflows that can be activated from any physical workspace
+              </p>
+            </div>
+            
+            {/* Emergency Protocols */}
+            <div>
+              <h3 className="text-sm font-medium mb-3 flex items-center gap-2">
+                <AlertTriangle className="w-4 h-4 text-destructive" />
+                <span>Emergency Protocols</span>
+                <Badge variant="destructive" className="text-xs">Critical Events</Badge>
+              </h3>
+              <div className="grid grid-cols-2 lg:grid-cols-4 gap-3">
+                {emergencyProtocols.map((pathway) => (
+                  <Card
+                    key={pathway.id}
+                    className="cursor-pointer hover:border-destructive hover:shadow-md transition-all border-l-4 border-l-destructive bg-destructive/5"
+                    onClick={() => handlePathwayActivation(pathway)}
+                  >
+                    <CardContent className="p-4">
+                      <div className="flex items-start gap-3">
+                        <div className="w-10 h-10 rounded-lg bg-destructive/20 flex items-center justify-center shrink-0">
+                          <AlertTriangle className="w-5 h-5 text-destructive" />
+                        </div>
+                        <div>
+                          <h3 className="font-semibold text-sm">{pathway.name}</h3>
+                          <p className="text-xs text-muted-foreground">{pathway.description}</p>
+                          {pathway.teamRequired && (
+                            <p className="text-xs text-destructive mt-1">
+                              Team: {pathway.teamRequired.length} roles
+                            </p>
+                          )}
+                        </div>
+                      </div>
+                    </CardContent>
+                  </Card>
+                ))}
+              </div>
+            </div>
+            
+            {/* Treatment & Procedure Workflows */}
+            <div>
+              <h3 className="text-sm font-medium mb-3 flex items-center gap-2">
+                <Activity className="w-4 h-4 text-primary" />
+                <span>Treatment & Procedure Workflows</span>
+              </h3>
+              <div className="grid grid-cols-2 lg:grid-cols-4 gap-3">
+                {treatmentWorkflows.map((pathway) => (
+                  <Card
+                    key={pathway.id}
+                    className="cursor-pointer hover:border-primary hover:shadow-md transition-all"
+                    onClick={() => handlePathwayActivation(pathway)}
+                  >
+                    <CardContent className="p-4">
+                      <div className="flex items-start gap-3">
+                        <div className={`w-10 h-10 rounded-lg flex items-center justify-center shrink-0 ${getCategoryColor(pathway.category)}`}>
+                          {getCategoryIcon(pathway.category)}
+                        </div>
+                        <div>
+                          <h3 className="font-semibold text-sm">{pathway.name}</h3>
+                          <p className="text-xs text-muted-foreground">{pathway.description}</p>
+                          {pathway.typicalDuration && (
+                            <p className="text-xs text-primary mt-1">~{pathway.typicalDuration}</p>
+                          )}
+                        </div>
+                      </div>
+                    </CardContent>
+                  </Card>
+                ))}
+              </div>
+            </div>
+            
+            {/* Longitudinal Programmes */}
+            <div>
+              <h3 className="text-sm font-medium mb-3 flex items-center gap-2">
+                <Calendar className="w-4 h-4 text-muted-foreground" />
+                <span>Longitudinal Programmes</span>
+                <Badge variant="outline" className="text-xs">Reshapes Encounter</Badge>
+              </h3>
+              <div className="grid grid-cols-2 lg:grid-cols-4 gap-3">
+                {longitudinalProgrammes.map((pathway) => (
+                  <Card
+                    key={pathway.id}
+                    className="cursor-pointer hover:border-accent hover:shadow-md transition-all"
+                    onClick={() => handlePathwayActivation(pathway)}
+                  >
+                    <CardContent className="p-4">
+                      <div className="flex items-start gap-3">
+                        <div className="w-10 h-10 rounded-lg bg-muted flex items-center justify-center shrink-0">
+                          <Calendar className="w-5 h-5 text-muted-foreground" />
+                        </div>
+                        <div>
+                          <h3 className="font-semibold text-sm">{pathway.name}</h3>
+                          <p className="text-xs text-muted-foreground">{pathway.description}</p>
+                        </div>
+                      </div>
+                    </CardContent>
+                  </Card>
+                ))}
+              </div>
+            </div>
           </div>
         );
 
@@ -154,7 +345,11 @@ export function TopBarPanel({ action }: TopBarPanelProps) {
       <header className="bg-workspace-header border-b border-border px-6 py-4 flex items-center justify-between">
         <div>
           <h1 className="text-xl font-semibold text-foreground">{actionConfig?.label}</h1>
-          <p className="text-sm text-muted-foreground">Select an option or review current items</p>
+          <p className="text-sm text-muted-foreground">
+            {action === "workspaces" && "Physical locations where clinical work takes place"}
+            {action === "pathways" && "Clinical workflows activatable from any workspace"}
+            {action !== "workspaces" && action !== "pathways" && "Select an option or review current items"}
+          </p>
         </div>
         <Button variant="ghost" size="icon" onClick={() => setActiveTopBarAction(null)}>
           <X className="w-5 h-5" />
