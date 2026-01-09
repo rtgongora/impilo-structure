@@ -301,14 +301,23 @@ export const MODULE_CAPABILITY_REQUIREMENTS: Record<string, FacilityCapability[]
   'nursing-care': ['inpatient'],
   'handoff': ['inpatient'],
   
-  // ICU
+  // ICU / High Acuity
   'icu': ['icu'],
   'vitals-monitor': ['icu'],
+  'code-blue': ['icu', 'emergency_24hr', 'inpatient'],
+  'rapid-response': ['icu', 'emergency_24hr', 'inpatient'],
+  
+  // Emergency
+  'emergency': ['emergency_24hr'],
+  'trauma': ['emergency_24hr', 'theatre'],
+  'resuscitation': ['emergency_24hr', 'icu'],
   
   // Maternity
   'maternity': ['maternity'],
   'labour-delivery': ['maternity'],
   'anc': ['anc', 'maternity'],
+  'neonatal-resus': ['maternity'],
+  'obstetric-emergency': ['maternity'],
   
   // Dialysis
   'dialysis': ['dialysis'],
@@ -317,6 +326,7 @@ export const MODULE_CAPABILITY_REQUIREMENTS: Record<string, FacilityCapability[]
   'pacs': ['pacs', 'radiology'],
   'radiology': ['radiology'],
   'imaging': ['radiology'],
+  'interventional-radiology': ['radiology', 'pacs'],
   
   // Laboratory
   'lims': ['lims', 'laboratory'],
@@ -341,9 +351,15 @@ export const MODULE_CAPABILITY_REQUIREMENTS: Record<string, FacilityCapability[]
   // Cancer treatment
   'chemotherapy': ['chemotherapy'],
   'radiotherapy': ['radiotherapy'],
+  'oncology': ['chemotherapy', 'radiotherapy'],
   
-  // Emergency
-  'emergency-24hr': ['emergency_24hr'],
+  // Stroke / Cardiac codes (tertiary+)
+  'stroke-code': ['emergency_24hr', 'radiology'],
+  'stemi-code': ['emergency_24hr'],
+  
+  // Special examinations
+  'burns': ['emergency_24hr', 'inpatient'],
+  'poisoning': ['emergency_24hr'],
   
   // Dental
   'dental': ['dental'],
@@ -354,6 +370,9 @@ export const MODULE_CAPABILITY_REQUIREMENTS: Record<string, FacilityCapability[]
   // Outpatient (available at all levels)
   'queue': ['outpatient', 'emergency_24hr', 'inpatient'],
   'appointments': ['outpatient', 'emergency_24hr', 'inpatient'],
+  
+  // Longitudinal programmes (most are widely available)
+  'immunization': ['immunization'],
 };
 
 // Helper to check if a module is available at current facility
