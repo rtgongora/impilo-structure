@@ -30,6 +30,8 @@ const WORKSPACES = [
   { id: "poisoning", name: "Poisoning", description: "Overdose management" },
   { id: "neonatal_resus", name: "Neonatal Resuscitation", description: "Newborn resuscitation" },
   { id: "anaesthesia_preop", name: "Anaesthesia Pre-Op", description: "Pre-operative assessment" },
+  { id: "teleconsultation", name: "Teleconsultation", description: "Remote specialist consultation" },
+  { id: "virtual_care", name: "Virtual Care", description: "Telemedicine patient visits" },
 ];
 
 const CARE_PATHWAYS = [

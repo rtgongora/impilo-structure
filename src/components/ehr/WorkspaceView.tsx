@@ -19,6 +19,8 @@ import { SexualAssaultWorkspace } from "./workspaces/SexualAssaultWorkspace";
 import { PoisoningWorkspace } from "./workspaces/PoisoningWorkspace";
 import { NeonatalResusWorkspace } from "./workspaces/NeonatalResusWorkspace";
 import { AnaesthesiaPreOpWorkspace } from "./workspaces/AnaesthesiaPreOpWorkspace";
+import { TeleconsultationWorkspace } from "./workspaces/TeleconsultationWorkspace";
+import { VirtualCareWorkspace } from "./workspaces/VirtualCareWorkspace";
 
 interface WorkspaceViewProps {
   workspace: WorkspaceData;
@@ -83,6 +85,11 @@ export function WorkspaceView({ workspace }: WorkspaceViewProps) {
       case "anaesthesia pre-op":
       case "anaesthesia_preop":
         return <AnaesthesiaPreOpWorkspace />;
+      case "teleconsultation":
+        return <TeleconsultationWorkspace />;
+      case "virtual care":
+      case "virtual_care":
+        return <VirtualCareWorkspace />;
       default:
         return (
           <div className="p-6 text-center text-muted-foreground">
