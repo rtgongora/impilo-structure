@@ -37,35 +37,30 @@ import { toast } from 'sonner';
 import {
   Users,
   Shield,
-  Building2,
-  FileCheck,
   Search,
   Plus,
   RefreshCw,
   CheckCircle,
   XCircle,
-  Clock,
-  AlertTriangle,
   UserCheck,
   Key,
   Activity,
-  History,
   ShieldCheck,
   Fingerprint,
+  TestTube,
 } from 'lucide-react';
 import { HPRService } from '@/services/hprService';
-import { IdPService } from '@/services/idpService';
 import type {
   HealthProvider,
   ProviderLifecycleState,
-  EligibilityResponse,
-  ProviderStateTransition,
 } from '@/types/hpr';
 import {
   LIFECYCLE_STATE_METADATA,
   PROVIDER_CADRES,
-  VALID_STATE_TRANSITIONS,
 } from '@/types/hpr';
+import { ProviderDetailPanel } from '@/components/hpr/ProviderDetailPanel';
+import { IdPEventsPanel } from '@/components/hpr/IdPEventsPanel';
+import { EligibilityTester } from '@/components/hpr/EligibilityTester';
 
 export default function HealthProviderRegistry() {
   const [activeTab, setActiveTab] = useState('providers');
@@ -88,8 +83,6 @@ export default function HealthProviderRegistry() {
 
   // Selected provider for detail view
   const [selectedProvider, setSelectedProvider] = useState<HealthProvider | null>(null);
-  const [eligibilityResult, setEligibilityResult] = useState<EligibilityResponse | null>(null);
-  const [stateHistory, setStateHistory] = useState<ProviderStateTransition[]>([]);
 
   useEffect(() => {
     loadProviders();
@@ -243,8 +236,8 @@ export default function HealthProviderRegistry() {
               Providers ({totalProviders})
             </TabsTrigger>
             <TabsTrigger value="eligibility" className="flex items-center gap-2">
-              <ShieldCheck className="h-4 w-4" />
-              Eligibility Engine
+              <TestTube className="h-4 w-4" />
+              Eligibility Tester
             </TabsTrigger>
             <TabsTrigger value="idp" className="flex items-center gap-2">
               <Key className="h-4 w-4" />
@@ -366,325 +359,36 @@ export default function HealthProviderRegistry() {
                 </CardContent>
               </Card>
 
-              {/* Provider Detail */}
-              <Card>
-                <CardHeader className="pb-3">
-                  <CardTitle className="text-lg">Provider Details</CardTitle>
-                </CardHeader>
-                <CardContent>
-                  {selectedProvider ? (
-                    <div className="space-y-6">
-                      {/* Identity */}
-                      <div className="space-y-2">
-                        <h4 className="font-semibold flex items-center gap-2">
-                          <UserCheck className="h-4 w-4" />
-                          Identity
-                        </h4>
-                        <div className="grid grid-cols-2 gap-2 text-sm">
-                          <div>
-                            <span className="text-muted-foreground">UPID:</span>
-                            <span className="ml-2 font-mono">{selectedProvider.upid}</span>
-                          </div>
-                          <div>
-                            <span className="text-muted-foreground">National ID:</span>
-                            <span className="ml-2">{selectedProvider.national_id || '-'}</span>
-                          </div>
-                          <div>
-                            <span className="text-muted-foreground">Name:</span>
-                            <span className="ml-2">
-                              {selectedProvider.first_name} {selectedProvider.other_names} {selectedProvider.surname}
-                            </span>
-                          </div>
-                          <div>
-                            <span className="text-muted-foreground">DOB:</span>
-                            <span className="ml-2">{selectedProvider.date_of_birth}</span>
-                          </div>
-                        </div>
-                      </div>
-
-                      {/* Professional */}
-                      <div className="space-y-2">
-                        <h4 className="font-semibold flex items-center gap-2">
-                          <FileCheck className="h-4 w-4" />
-                          Professional
-                        </h4>
-                        <div className="grid grid-cols-2 gap-2 text-sm">
-                          <div>
-                            <span className="text-muted-foreground">Cadre:</span>
-                            <span className="ml-2">
-                              {PROVIDER_CADRES.find(c => c.value === selectedProvider.cadre)?.label}
-                            </span>
-                          </div>
-                          <div>
-                            <span className="text-muted-foreground">Specialty:</span>
-                            <span className="ml-2">{selectedProvider.specialty || '-'}</span>
-                          </div>
-                        </div>
-                      </div>
-
-                      {/* Lifecycle State */}
-                      <div className="space-y-2">
-                        <h4 className="font-semibold flex items-center gap-2">
-                          <Activity className="h-4 w-4" />
-                          Lifecycle State
-                        </h4>
-                        <div className="flex items-center gap-2">
-                          <Badge className={getStateColor(selectedProvider.lifecycle_state)}>
-                            {LIFECYCLE_STATE_METADATA[selectedProvider.lifecycle_state]?.label}
-                          </Badge>
-                          {LIFECYCLE_STATE_METADATA[selectedProvider.lifecycle_state]?.allowsAccess ? (
-                            <CheckCircle className="h-4 w-4 text-green-600" />
-                          ) : (
-                            <XCircle className="h-4 w-4 text-red-600" />
-                          )}
-                          <span className="text-sm text-muted-foreground">
-                            {LIFECYCLE_STATE_METADATA[selectedProvider.lifecycle_state]?.allowsAccess 
-                              ? 'Access Allowed' 
-                              : 'Access Denied'}
-                          </span>
-                        </div>
-                        {selectedProvider.lifecycle_state_reason && (
-                          <p className="text-sm text-muted-foreground">
-                            Reason: {selectedProvider.lifecycle_state_reason}
-                          </p>
-                        )}
-                      </div>
-
-                      {/* Eligibility Check */}
-                      {eligibilityResult && (
-                        <div className="space-y-2">
-                          <h4 className="font-semibold flex items-center gap-2">
-                            <ShieldCheck className="h-4 w-4" />
-                            Eligibility Status
-                          </h4>
-                          <div className={`p-3 rounded-lg ${
-                            eligibilityResult.eligible 
-                              ? 'bg-green-50 border border-green-200' 
-                              : 'bg-red-50 border border-red-200'
-                          }`}>
-                            <div className="flex items-center gap-2">
-                              {eligibilityResult.eligible ? (
-                                <CheckCircle className="h-5 w-5 text-green-600" />
-                              ) : (
-                                <XCircle className="h-5 w-5 text-red-600" />
-                              )}
-                              <span className="font-medium">
-                                {eligibilityResult.eligible ? 'Eligible' : 'Not Eligible'}
-                              </span>
-                            </div>
-                            {eligibilityResult.reason_codes.length > 0 && (
-                              <div className="mt-2 flex flex-wrap gap-1">
-                                {eligibilityResult.reason_codes.map((code, i) => (
-                                  <Badge key={i} variant="outline" className="text-xs">
-                                    {code}
-                                  </Badge>
-                                ))}
-                              </div>
-                            )}
-                            {eligibilityResult.license_valid_until && (
-                              <p className="text-xs mt-2 text-muted-foreground">
-                                License valid until: {eligibilityResult.license_valid_until}
-                              </p>
-                            )}
-                          </div>
-                        </div>
-                      )}
-
-                      {/* User Linkage */}
-                      <div className="space-y-2">
-                        <h4 className="font-semibold flex items-center gap-2">
-                          <Fingerprint className="h-4 w-4" />
-                          IdP Linkage
-                        </h4>
-                        {selectedProvider.user_id ? (
-                          <div className="p-3 rounded-lg bg-green-50 border border-green-200">
-                            <div className="flex items-center gap-2">
-                              <CheckCircle className="h-4 w-4 text-green-600" />
-                              <span className="text-sm">Linked to user account</span>
-                            </div>
-                            <p className="text-xs text-muted-foreground mt-1">
-                              Method: {selectedProvider.user_link_verification_method || 'Unknown'}
-                            </p>
-                          </div>
-                        ) : (
-                          <div className="p-3 rounded-lg bg-yellow-50 border border-yellow-200">
-                            <div className="flex items-center gap-2">
-                              <AlertTriangle className="h-4 w-4 text-yellow-600" />
-                              <span className="text-sm">Not linked to user account</span>
-                            </div>
-                          </div>
-                        )}
-                      </div>
-
-                      {/* State Transitions */}
-                      <div className="space-y-2">
-                        <h4 className="font-semibold flex items-center gap-2">
-                          <History className="h-4 w-4" />
-                          State History
-                        </h4>
-                        {stateHistory.length > 0 ? (
-                          <ScrollArea className="h-32">
-                            <div className="space-y-2">
-                              {stateHistory.map((transition) => (
-                                <div key={transition.id} className="text-xs flex items-center gap-2">
-                                  <Clock className="h-3 w-3 text-muted-foreground" />
-                                  <span className="text-muted-foreground">
-                                    {new Date(transition.created_at).toLocaleString()}
-                                  </span>
-                                  <span>→</span>
-                                  <Badge variant="outline" className="text-xs">
-                                    {LIFECYCLE_STATE_METADATA[transition.to_state]?.label}
-                                  </Badge>
-                                </div>
-                              ))}
-                            </div>
-                          </ScrollArea>
-                        ) : (
-                          <p className="text-sm text-muted-foreground">No state transitions</p>
-                        )}
-                      </div>
-
-                      {/* Actions */}
-                      <div className="pt-4 border-t flex flex-wrap gap-2">
-                        {VALID_STATE_TRANSITIONS[selectedProvider.lifecycle_state]?.map((targetState) => (
-                          <Button
-                            key={targetState}
-                            size="sm"
-                            variant="outline"
-                            onClick={() => handleStateTransition(targetState, 'Manual transition')}
-                          >
-                            → {LIFECYCLE_STATE_METADATA[targetState]?.label}
-                          </Button>
-                        ))}
-                      </div>
+              {/* Provider Detail Panel */}
+              {selectedProvider ? (
+                <ProviderDetailPanel 
+                  provider={selectedProvider} 
+                  onProviderUpdated={() => {
+                    loadProviders();
+                    loadStats();
+                  }}
+                />
+              ) : (
+                <Card>
+                  <CardContent className="flex items-center justify-center h-[500px] text-muted-foreground">
+                    <div className="text-center">
+                      <Users className="h-12 w-12 mx-auto mb-4 opacity-50" />
+                      <p>Select a provider to view details</p>
                     </div>
-                  ) : (
-                    <div className="text-center py-12 text-muted-foreground">
-                      Select a provider to view details
-                    </div>
-                  )}
-                </CardContent>
-              </Card>
+                  </CardContent>
+                </Card>
+              )}
             </div>
           </TabsContent>
 
-          {/* Eligibility Engine Tab */}
+          {/* Eligibility Tester Tab */}
           <TabsContent value="eligibility" className="space-y-4">
-            <Card>
-              <CardHeader>
-                <CardTitle className="flex items-center gap-2">
-                  <ShieldCheck className="h-5 w-5" />
-                  Eligibility Decision Engine
-                </CardTitle>
-                <CardDescription>
-                  Real-time provider eligibility checks based on lifecycle state, licenses, and affiliations
-                </CardDescription>
-              </CardHeader>
-              <CardContent>
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                  <div className="space-y-4">
-                    <h4 className="font-semibold">Eligibility Criteria (HPR-FR-050)</h4>
-                    <ul className="space-y-2 text-sm">
-                      <li className="flex items-center gap-2">
-                        <CheckCircle className="h-4 w-4 text-green-600" />
-                        Provider lifecycle state = Active
-                      </li>
-                      <li className="flex items-center gap-2">
-                        <CheckCircle className="h-4 w-4 text-green-600" />
-                        At least one active, non-expired license
-                      </li>
-                      <li className="flex items-center gap-2">
-                        <CheckCircle className="h-4 w-4 text-green-600" />
-                        Active affiliation with required facility
-                      </li>
-                      <li className="flex items-center gap-2">
-                        <CheckCircle className="h-4 w-4 text-green-600" />
-                        Required role granted
-                      </li>
-                      <li className="flex items-center gap-2">
-                        <CheckCircle className="h-4 w-4 text-green-600" />
-                        Required privileges granted
-                      </li>
-                    </ul>
-                  </div>
-                  <div className="space-y-4">
-                    <h4 className="font-semibold">Response Format</h4>
-                    <pre className="bg-muted p-4 rounded-lg text-xs overflow-auto">
-{`{
-  "eligible": true,
-  "provider_id": "UPID-XXXXXX-XXXXXXXX-X",
-  "roles": ["clinician"],
-  "privileges": ["prescribe", "order_lab"],
-  "facility_scope": ["FAC-001"],
-  "license_valid_until": "2026-12-31",
-  "reason_codes": []
-}`}
-                    </pre>
-                  </div>
-                </div>
-              </CardContent>
-            </Card>
+            <EligibilityTester />
           </TabsContent>
 
           {/* IdP Events Tab */}
           <TabsContent value="idp" className="space-y-4">
-            <Card>
-              <CardHeader>
-                <CardTitle className="flex items-center gap-2">
-                  <Key className="h-5 w-5" />
-                  Identity Provider Events
-                </CardTitle>
-                <CardDescription>
-                  Real-time revocation events and access control enforcement
-                </CardDescription>
-              </CardHeader>
-              <CardContent>
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                  <div className="space-y-4">
-                    <h4 className="font-semibold">Revocation Event Types (IDP-FR-040)</h4>
-                    <ul className="space-y-2 text-sm">
-                      <li className="flex items-center gap-2">
-                        <AlertTriangle className="h-4 w-4 text-red-600" />
-                        license_expired
-                      </li>
-                      <li className="flex items-center gap-2">
-                        <AlertTriangle className="h-4 w-4 text-red-600" />
-                        provider_suspended
-                      </li>
-                      <li className="flex items-center gap-2">
-                        <AlertTriangle className="h-4 w-4 text-red-600" />
-                        provider_revoked
-                      </li>
-                      <li className="flex items-center gap-2">
-                        <AlertTriangle className="h-4 w-4 text-yellow-600" />
-                        privilege_revoked
-                      </li>
-                      <li className="flex items-center gap-2">
-                        <AlertTriangle className="h-4 w-4 text-yellow-600" />
-                        affiliation_ended
-                      </li>
-                    </ul>
-                  </div>
-                  <div className="space-y-4">
-                    <h4 className="font-semibold">Enforcement Actions (IDP-FR-041)</h4>
-                    <ul className="space-y-2 text-sm">
-                      <li className="flex items-center gap-2">
-                        <XCircle className="h-4 w-4 text-red-600" />
-                        Revoke active sessions
-                      </li>
-                      <li className="flex items-center gap-2">
-                        <XCircle className="h-4 w-4 text-red-600" />
-                        Invalidate access tokens
-                      </li>
-                      <li className="flex items-center gap-2">
-                        <XCircle className="h-4 w-4 text-red-600" />
-                        Block re-authentication
-                      </li>
-                    </ul>
-                  </div>
-                </div>
-              </CardContent>
-            </Card>
+            <IdPEventsPanel />
           </TabsContent>
 
           {/* Architecture Tab */}
