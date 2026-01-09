@@ -61,6 +61,7 @@ import {
 import { ProviderDetailPanel } from '@/components/hpr/ProviderDetailPanel';
 import { IdPEventsPanel } from '@/components/hpr/IdPEventsPanel';
 import { EligibilityTester } from '@/components/hpr/EligibilityTester';
+import { IHRISProviderPanel } from '@/components/hpr/IHRISProviderPanel';
 
 export default function HealthProviderRegistry() {
   const [activeTab, setActiveTab] = useState('providers');
@@ -347,9 +348,9 @@ export default function HealthProviderRegistry() {
                 </CardContent>
               </Card>
 
-              {/* Provider Detail Panel */}
+              {/* Provider Detail Panel - iHRIS Aligned */}
               {selectedProvider ? (
-                <ProviderDetailPanel 
+                <IHRISProviderPanel 
                   provider={selectedProvider} 
                   onProviderUpdated={() => {
                     loadProviders();
