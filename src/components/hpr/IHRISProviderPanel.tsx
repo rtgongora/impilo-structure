@@ -436,7 +436,7 @@ export function IHRISProviderPanel({ provider, onProviderUpdated }: IHRISProvide
                     <div key={l.id} className="border rounded-lg p-3 space-y-2">
                       <div className="flex justify-between items-start">
                         <div>
-                          <h5 className="font-medium capitalize">{l.leave_type.replace('_', ' ')} Leave</h5>
+                          <h5 className="font-medium capitalize">{String(l.leave_type).replace('_', ' ')} Leave</h5>
                           <p className="text-sm text-muted-foreground">
                             {formatDate(l.start_date)} - {formatDate(l.end_date)}
                           </p>
@@ -552,25 +552,27 @@ export function IHRISProviderPanel({ provider, onProviderUpdated }: IHRISProvide
                         <div>
                           <h5 className="font-medium">Grade {s.salary_grade}</h5>
                           <p className="text-lg font-bold">
-                            {s.currency} {s.base_salary.toLocaleString()}
-                            <span className="text-sm font-normal text-muted-foreground ml-1">
-                              /{s.pay_frequency}
-                            </span>
+                            {s.currency} {s.base_salary?.toLocaleString() || 0}
+                            {s.pay_frequency && (
+                              <span className="text-sm font-normal text-muted-foreground ml-1">
+                                /{s.pay_frequency}
+                              </span>
+                            )}
                           </p>
                         </div>
                         <div className="flex gap-2">
                           {s.is_current && <Badge className="bg-green-100 text-green-800">Current</Badge>}
-                          <Badge variant="outline">{s.funds_source}</Badge>
+                          {s.funds_source && <Badge variant="outline">{s.funds_source}</Badge>}
                         </div>
                       </div>
                       <div className="grid grid-cols-3 gap-2 text-xs">
                         <div>
                           <span className="text-muted-foreground">Allowances: </span>
-                          {s.currency} {s.total_allowances.toLocaleString()}
+                          {s.currency} {(s.total_allowances || 0).toLocaleString()}
                         </div>
                         <div>
                           <span className="text-muted-foreground">Deductions: </span>
-                          {s.currency} {s.total_deductions.toLocaleString()}
+                          {s.currency} {(s.total_deductions || 0).toLocaleString()}
                         </div>
                         <div>
                           <span className="text-muted-foreground">Net: </span>

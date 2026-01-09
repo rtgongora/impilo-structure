@@ -274,7 +274,7 @@ export const IHRISService = {
     const { data: { user } } = await supabase.auth.getUser();
     const { data, error } = await supabase
       .from('provider_performance')
-      .insert({ ...input, created_by: user?.id })
+      .insert({ ...input, created_by: user?.id } as never)
       .select()
       .single();
     if (error) throw error;
@@ -284,7 +284,7 @@ export const IHRISService = {
   async updatePerformance(id: string, updates: Partial<ProviderPerformance>): Promise<ProviderPerformance> {
     const { data, error } = await supabase
       .from('provider_performance')
-      .update({ ...updates, updated_at: new Date().toISOString() })
+      .update({ ...updates, updated_at: new Date().toISOString() } as never)
       .eq('id', id)
       .select()
       .single();
@@ -317,7 +317,7 @@ export const IHRISService = {
     
     const { data, error } = await supabase
       .from('provider_salary')
-      .insert({ ...input, created_by: user?.id })
+      .insert({ ...input, created_by: user?.id } as never)
       .select()
       .single();
     if (error) throw error;
