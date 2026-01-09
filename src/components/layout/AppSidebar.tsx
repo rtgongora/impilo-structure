@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import {
   Users,
   Bed,
@@ -26,6 +26,16 @@ import {
   LayoutGrid,
   Fingerprint,
   MessageSquare,
+  Database,
+  Shield,
+  GitMerge,
+  FileCheck,
+  BookOpen,
+  Network,
+  Globe,
+  UserCheck,
+  Heart,
+  Store,
 } from "lucide-react";
 import { NavLink } from "@/components/NavLink";
 import { useLocation } from "react-router-dom";
@@ -34,7 +44,7 @@ import { Button } from "@/components/ui/button";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip";
 import { WorkspaceSelector } from "./WorkspaceSelector";
-import { useWorkspace } from "@/contexts/WorkspaceContext";
+import { useWorkspace, PageContext } from "@/contexts/WorkspaceContext";
 import { useAuth } from "@/contexts/AuthContext";
 import impiloLogo from "@/assets/impilo-logo.png";
 
@@ -46,52 +56,146 @@ interface NavItem {
   roles?: string[]; // Which roles can see this item
 }
 
-// Priority items that appear first for everyone
-const priorityNavItems: NavItem[] = [
-  { label: "Dashboard", icon: Home, path: "/", description: "Overview & worklist" },
-  { label: "My Worklist", icon: ClipboardList, path: "/queue", description: "Your assigned work" },
-  { label: "Communication", icon: MessageSquare, path: "/communication", description: "Messages, pages & calls" },
-  { label: "Social Hub", icon: Users, path: "/social", description: "Timeline, communities & crowdfunding" },
+// Map routes to page contexts
+function getPageContextFromPath(pathname: string): PageContext {
+  // Registry pages
+  if (pathname.startsWith('/facility-registry') || 
+      pathname.startsWith('/hpr') || 
+      pathname.startsWith('/registry')) {
+    return "registry";
+  }
+  // Clinical pages
+  if (pathname.startsWith('/encounter') || 
+      pathname.startsWith('/beds') || 
+      pathname.startsWith('/queue') ||
+      pathname.startsWith('/patients')) {
+    return "clinical";
+  }
+  // Operations pages
+  if (pathname.startsWith('/stock') || 
+      pathname.startsWith('/consumables') ||
+      pathname.startsWith('/charges') ||
+      pathname.startsWith('/payments')) {
+    return "operations";
+  }
+  // Scheduling pages
+  if (pathname.startsWith('/scheduling') || 
+      pathname.startsWith('/appointments') ||
+      pathname.startsWith('/theatre')) {
+    return "scheduling";
+  }
+  // Admin pages
+  if (pathname.startsWith('/admin')) {
+    return "admin";
+  }
+  // Portal pages
+  if (pathname.startsWith('/portal') || 
+      pathname.startsWith('/social')) {
+    return "portal";
+  }
+  return "home";
+}
+
+// Registry-specific navigation
+const registryNavItems: NavItem[] = [
+  { label: "Back to Home", icon: Home, path: "/", description: "Return to dashboard" },
+  { label: "Facility Registry", icon: Building2, path: "/facility-registry", description: "Master Facility List" },
+  { label: "Provider Registry", icon: UserCheck, path: "/hpr", description: "Health Provider Registry" },
+  { label: "Registry Management", icon: Database, path: "/registry", description: "Client & entity registries" },
 ];
 
-// Role-specific primary items
+const registryToolsItems: NavItem[] = [
+  { label: "Data Reconciliation", icon: GitMerge, path: "/facility-registry?tab=reconciliation", description: "Merge & deduplicate" },
+  { label: "Change Requests", icon: FileCheck, path: "/facility-registry?tab=changes", description: "Pending approvals" },
+  { label: "Reference Data", icon: BookOpen, path: "/facility-registry?tab=reference", description: "Lookup tables" },
+  { label: "Reports", icon: BarChart3, path: "/facility-registry?tab=reports", description: "Registry analytics" },
+];
+
+const registryAdminItems: NavItem[] = [
+  { label: "Access Control", icon: Shield, path: "/admin", description: "Permissions & roles" },
+  { label: "API & Integrations", icon: Network, path: "/admin?tab=integrations", description: "External systems" },
+  { label: "Audit Log", icon: FileText, path: "/admin?tab=audit", description: "Activity history" },
+];
+
+// Clinical navigation
+const clinicalPriorityItems: NavItem[] = [
+  { label: "Dashboard", icon: Home, path: "/", description: "Overview & worklist" },
+  { label: "My Worklist", icon: ClipboardList, path: "/queue", description: "Your assigned work" },
+  { label: "Communication", icon: MessageSquare, path: "/communication", description: "Messages & pages" },
+];
+
 const clinicalNavItems: NavItem[] = [
-  { label: "Clinical EHR", icon: Stethoscope, path: "/encounter", description: "Patient encounters", roles: ["doctor", "nurse", "specialist"] },
-  { label: "Bed Management", icon: Bed, path: "/beds", description: "Ward & bed status", roles: ["doctor", "nurse", "admin"] },
+  { label: "Clinical EHR", icon: Stethoscope, path: "/encounter", description: "Patient encounters" },
+  { label: "Bed Management", icon: Bed, path: "/beds", description: "Ward & bed status" },
   { label: "Appointments", icon: Calendar, path: "/appointments", description: "Scheduling" },
   { label: "Patients", icon: Users, path: "/patients", description: "Patient registry" },
 ];
 
 const ordersNavItems: NavItem[] = [
-  { label: "Order Entry", icon: ShoppingCart, path: "/orders", description: "Clinical orders", roles: ["doctor", "nurse", "specialist"] },
+  { label: "Order Entry", icon: ShoppingCart, path: "/orders", description: "Clinical orders" },
   { label: "Pharmacy", icon: Syringe, path: "/pharmacy", description: "Medication dispensing" },
   { label: "Laboratory", icon: FlaskConical, path: "/lims", description: "Lab results" },
   { label: "PACS Imaging", icon: FileText, path: "/pacs", description: "Medical imaging" },
-  { label: "Shift Handoff", icon: ArrowRightLeft, path: "/handoff", description: "Handoff reports", roles: ["doctor", "nurse"] },
+  { label: "Shift Handoff", icon: ArrowRightLeft, path: "/handoff", description: "Handoff reports" },
 ];
 
+// Operations navigation
+const operationsNavItems: NavItem[] = [
+  { label: "Dashboard", icon: Home, path: "/", description: "Return to home" },
+  { label: "Stock Management", icon: Package, path: "/stock", description: "Inventory" },
+  { label: "Consumables", icon: Syringe, path: "/consumables", description: "Usage tracking" },
+  { label: "Charges", icon: Receipt, path: "/charges", description: "Encounter charges" },
+  { label: "Payments", icon: DollarSign, path: "/payments", description: "Billing & payments" },
+  { label: "Theatre", icon: Building2, path: "/theatre", description: "Surgical scheduling" },
+];
+
+// Scheduling navigation
 const schedulingNavItems: NavItem[] = [
+  { label: "Dashboard", icon: Home, path: "/", description: "Return to home" },
   { label: "Appointments", icon: CalendarDays, path: "/scheduling", description: "Clinic scheduling" },
   { label: "Theatre Booking", icon: Building2, path: "/scheduling/theatre", description: "OR scheduling" },
   { label: "Noticeboard", icon: Megaphone, path: "/scheduling/noticeboard", description: "Announcements" },
   { label: "Resources", icon: LayoutGrid, path: "/scheduling/resources", description: "Room & equipment" },
 ];
 
-const operationsNavItems: NavItem[] = [
-  { label: "Theatre", icon: Building2, path: "/theatre", description: "Surgical scheduling" },
-  { label: "Payments", icon: DollarSign, path: "/payments", description: "Billing & payments" },
-  { label: "Charges", icon: Receipt, path: "/charges", description: "Encounter charges" },
-  { label: "Stock", icon: Package, path: "/stock", description: "Inventory" },
-  { label: "Consumables", icon: Syringe, path: "/consumables", description: "Usage tracking" },
+// Portal navigation
+const portalNavItems: NavItem[] = [
+  { label: "Dashboard", icon: Home, path: "/", description: "Return to home" },
+  { label: "My Health", icon: Heart, path: "/portal", description: "Personal health portal" },
+  { label: "Social Hub", icon: Users, path: "/social", description: "Communities & timeline" },
+  { label: "Marketplace", icon: Store, path: "/marketplace", description: "Health marketplace" },
+  { label: "Communication", icon: MessageSquare, path: "/communication", description: "Messages" },
 ];
 
-const systemNavItems: NavItem[] = [
-  { label: "ID Services", icon: Fingerprint, path: "/id-services", description: "ID Generation & Recovery" },
+// Admin navigation
+const adminNavItems: NavItem[] = [
+  { label: "Dashboard", icon: Home, path: "/", description: "Return to home" },
+  { label: "System Settings", icon: Settings, path: "/admin", description: "Configuration" },
+  { label: "User Management", icon: Users, path: "/admin?tab=users", description: "Users & roles" },
+  { label: "Security", icon: Shield, path: "/admin?tab=security", description: "Access control" },
+  { label: "Audit Logs", icon: FileText, path: "/admin?tab=audit", description: "Activity history" },
+  { label: "Integrations", icon: Network, path: "/admin?tab=integrations", description: "External systems" },
+];
+
+// Home/general navigation
+const homePriorityItems: NavItem[] = [
+  { label: "Dashboard", icon: Home, path: "/", description: "Overview & worklist" },
+  { label: "My Worklist", icon: ClipboardList, path: "/queue", description: "Your assigned work" },
+  { label: "Communication", icon: MessageSquare, path: "/communication", description: "Messages, pages & calls" },
+  { label: "Social Hub", icon: Users, path: "/social", description: "Timeline & communities" },
+];
+
+const homeQuickAccessItems: NavItem[] = [
+  { label: "Clinical EHR", icon: Stethoscope, path: "/encounter", description: "Patient encounters" },
+  { label: "Appointments", icon: Calendar, path: "/appointments", description: "Scheduling" },
+  { label: "Patients", icon: Users, path: "/patients", description: "Patient registry" },
+  { label: "Pharmacy", icon: Syringe, path: "/pharmacy", description: "Medications" },
+];
+
+const homeSystemItems: NavItem[] = [
+  { label: "ID Services", icon: Fingerprint, path: "/id-services", description: "ID Generation" },
   { label: "Reports", icon: BarChart3, path: "/reports", description: "Analytics" },
-  { label: "Registration", icon: UserPlus, path: "/registration", description: "Patient registration" },
-  { label: "Help Desk", icon: HelpCircle, path: "/help", description: "FAQs & guides" },
-  { label: "Odoo ERP", icon: Building2, path: "/odoo", description: "ERP integration", roles: ["admin"] },
-  { label: "Admin", icon: Settings, path: "/admin", description: "System settings", roles: ["admin"] },
+  { label: "Help Desk", icon: HelpCircle, path: "/help", description: "Support" },
 ];
 
 interface NavSectionProps {
@@ -122,7 +226,7 @@ function NavSection({ title, items, collapsed, userRole }: NavSectionProps) {
       <nav className="space-y-1">
         {visibleItems.map((item) => {
           const isActive = location.pathname === item.path || 
-            (item.path !== "/" && location.pathname.startsWith(item.path));
+            (item.path !== "/" && location.pathname.startsWith(item.path.split('?')[0]));
           
           const linkContent = (
             <NavLink
@@ -165,13 +269,82 @@ function NavSection({ title, items, collapsed, userRole }: NavSectionProps) {
 
 export function AppSidebar() {
   const [collapsed, setCollapsed] = useState(false);
-  const { currentView, setCurrentView } = useWorkspace();
+  const location = useLocation();
+  const { currentView, setCurrentView, pageContext, setPageContext } = useWorkspace();
   const { profile } = useAuth();
   const userRole = profile?.role || "nurse";
 
-  // Determine which sections to show based on role
-  const isAdmin = userRole === "admin";
-  const isClinical = ["doctor", "nurse", "specialist"].includes(userRole);
+  // Update page context based on current route
+  useEffect(() => {
+    const newContext = getPageContextFromPath(location.pathname);
+    if (newContext !== pageContext) {
+      setPageContext(newContext);
+    }
+  }, [location.pathname, pageContext, setPageContext]);
+
+  // Render context-specific navigation
+  const renderNavigation = () => {
+    switch (pageContext) {
+      case "registry":
+        return (
+          <>
+            <NavSection title="Registry" items={registryNavItems} collapsed={collapsed} userRole={userRole} />
+            <NavSection title="Tools" items={registryToolsItems} collapsed={collapsed} userRole={userRole} />
+            <NavSection title="Administration" items={registryAdminItems} collapsed={collapsed} userRole={userRole} />
+          </>
+        );
+      
+      case "clinical":
+        return (
+          <>
+            <NavSection title="Quick Access" items={clinicalPriorityItems} collapsed={collapsed} userRole={userRole} />
+            <NavSection title="Clinical" items={clinicalNavItems} collapsed={collapsed} userRole={userRole} />
+            <NavSection title="Orders & Results" items={ordersNavItems} collapsed={collapsed} userRole={userRole} />
+          </>
+        );
+      
+      case "operations":
+        return (
+          <>
+            <NavSection title="Operations" items={operationsNavItems} collapsed={collapsed} userRole={userRole} />
+          </>
+        );
+      
+      case "scheduling":
+        return (
+          <>
+            <NavSection title="Scheduling" items={schedulingNavItems} collapsed={collapsed} userRole={userRole} />
+          </>
+        );
+      
+      case "portal":
+        return (
+          <>
+            <NavSection title="Portal" items={portalNavItems} collapsed={collapsed} userRole={userRole} />
+          </>
+        );
+      
+      case "admin":
+        return (
+          <>
+            <NavSection title="Administration" items={adminNavItems} collapsed={collapsed} userRole={userRole} />
+          </>
+        );
+      
+      case "home":
+      default:
+        return (
+          <>
+            <NavSection title="Quick Access" items={homePriorityItems} collapsed={collapsed} userRole={userRole} />
+            <NavSection title="Clinical" items={homeQuickAccessItems} collapsed={collapsed} userRole={userRole} />
+            <NavSection title="System" items={homeSystemItems} collapsed={collapsed} userRole={userRole} />
+          </>
+        );
+    }
+  };
+
+  // Only show workspace selector for clinical contexts
+  const showWorkspaceSelector = pageContext === "clinical" || pageContext === "home";
 
   return (
     <aside
@@ -192,39 +365,31 @@ export function AppSidebar() {
         )}
       </div>
 
-      {/* Workspace Selector */}
-      <WorkspaceSelector
-        currentView={currentView}
-        onViewChange={setCurrentView}
-        collapsed={collapsed}
-      />
+      {/* Workspace Selector - only for clinical/home contexts */}
+      {showWorkspaceSelector && (
+        <WorkspaceSelector
+          currentView={currentView}
+          onViewChange={setCurrentView}
+          collapsed={collapsed}
+        />
+      )}
+
+      {/* Context indicator for non-home pages */}
+      {!showWorkspaceSelector && !collapsed && (
+        <div className="px-3 py-3 border-b border-sidebar-border">
+          <div className="text-xs font-semibold text-sidebar-foreground/50 uppercase tracking-wider">
+            {pageContext === "registry" && "Registry Management"}
+            {pageContext === "operations" && "Operations"}
+            {pageContext === "scheduling" && "Scheduling"}
+            {pageContext === "portal" && "Health Portal"}
+            {pageContext === "admin" && "Administration"}
+          </div>
+        </div>
+      )}
 
       {/* Navigation */}
       <ScrollArea className="flex-1 py-4 px-2">
-        {/* Priority section - always first */}
-        <NavSection title="Quick Access" items={priorityNavItems} collapsed={collapsed} userRole={userRole} />
-        
-        {/* Clinical section - prominent for clinical roles */}
-        {isClinical && (
-          <NavSection title="Clinical" items={clinicalNavItems} collapsed={collapsed} userRole={userRole} />
-        )}
-        
-        {/* Orders section */}
-        <NavSection title="Orders & Results" items={ordersNavItems} collapsed={collapsed} userRole={userRole} />
-        
-        {/* Scheduling section */}
-        <NavSection title="Scheduling" items={schedulingNavItems} collapsed={collapsed} userRole={userRole} />
-        
-        {/* Operations section */}
-        <NavSection title="Operations" items={operationsNavItems} collapsed={collapsed} userRole={userRole} />
-        
-        {/* System section - shown last but visible to those who need it */}
-        <NavSection title="System" items={systemNavItems} collapsed={collapsed} userRole={userRole} />
-        
-        {/* For non-clinical roles, show clinical items at end */}
-        {!isClinical && (
-          <NavSection title="Clinical" items={clinicalNavItems} collapsed={collapsed} userRole={userRole} />
-        )}
+        {renderNavigation()}
       </ScrollArea>
 
       {/* Collapse Toggle */}
