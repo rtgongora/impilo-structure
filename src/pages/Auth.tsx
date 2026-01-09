@@ -1,27 +1,32 @@
 import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "@/contexts/AuthContext";
+import { useWorkspace } from "@/contexts/WorkspaceContext";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
 import { ProviderIdLookup } from "@/components/auth/ProviderIdLookup";
 import { BiometricAuth } from "@/components/auth/BiometricAuth";
+import { WorkspaceSelection, type WorkspaceSelectionData } from "@/components/auth/WorkspaceSelection";
 import { type ProviderRegistryRecord, type FacilityRegistryRecord } from "@/services/registryServices";
 
-type AuthView = "lookup" | "biometric";
+type AuthView = "lookup" | "biometric" | "workspace";
 
 const Auth = () => {
   const navigate = useNavigate();
   const { user, loading } = useAuth();
+  const { setCurrentDepartment } = useWorkspace();
 
   const [view, setView] = useState<AuthView>("lookup");
   const [provider, setProvider] = useState<ProviderRegistryRecord | null>(null);
   const [facility, setFacility] = useState<FacilityRegistryRecord | null>(null);
+  const [pendingAuth, setPendingAuth] = useState<{ method: string; confidence: number } | null>(null);
 
   useEffect(() => {
-    if (user) {
+    if (user && view !== "workspace") {
+      // If user is logged in and not in workspace selection, go home
       navigate("/");
     }
-  }, [user, navigate]);
+  }, [user, view, navigate]);
 
   const handleProviderFound = (providerData: ProviderRegistryRecord, facilityData: FacilityRegistryRecord) => {
     setProvider(providerData);
@@ -46,7 +51,22 @@ const Auth = () => {
         return;
       }
 
-      //Retrieve the user's email from authentication.users via the profile
+      // Store pending auth for after workspace selection
+      setPendingAuth({ method, confidence });
+      
+      // Move to workspace selection before completing sign-in
+      setView("workspace");
+
+    } catch (error) {
+      console.error("Authentication error:", error);
+      toast.error("Failed to complete authentication");
+    }
+  };
+
+  const handleWorkspaceSelected = async (selection: WorkspaceSelectionData) => {
+    if (!provider || !pendingAuth) return;
+
+    try {
       // For demo: use the known test password for biometric-verified login
       const testPassword = "Impilo2025!";
 
@@ -79,24 +99,48 @@ const Auth = () => {
         return;
       }
 
-      // Log the biometric authentication (fire and forget)
-      supabase.from("provider_registry_logs").insert({
-        user_id: profile.user_id,
-        provider_registry_id: provider.providerId,
-        action: "biometric_login",
-        biometric_method: method,
-        verification_status: "success",
-        user_agent: navigator.userAgent,
-      });
+      // Set the workspace context
+      setCurrentDepartment(selection.department);
+
+      // Store workspace selection in session storage for persistence
+      sessionStorage.setItem('activeWorkspace', JSON.stringify({
+        department: selection.department,
+        physicalWorkspace: selection.physicalWorkspace,
+        workstation: selection.workstation,
+        facility: facility?.name,
+        loginTime: new Date().toISOString()
+      }));
+
+      // Log the biometric authentication with workspace info
+      const { data: profileData } = await supabase
+        .from("profiles")
+        .select("user_id")
+        .eq("provider_registry_id", provider.providerId)
+        .maybeSingle();
+
+      if (profileData) {
+        supabase.from("provider_registry_logs").insert({
+          user_id: profileData.user_id,
+          provider_registry_id: provider.providerId,
+          action: "biometric_login",
+          biometric_method: pendingAuth.method,
+          verification_status: "success",
+          user_agent: navigator.userAgent,
+        });
+      }
+
+      const workstationLabel = selection.workstation 
+        ? ` at ${selection.workstation}` 
+        : ` in ${selection.physicalWorkspace.name}`;
 
       toast.success(`Welcome, ${provider.fullName}!`, {
-        description: `Verified via ${method} (${(confidence * 100).toFixed(1)}% confidence)`,
+        description: `Logged in to ${selection.department}${workstationLabel}`,
       });
 
-      // Navigation handled by useEffect when user state updates
+      navigate("/");
     } catch (error) {
-      console.error("Authentication error:", error);
-      toast.error("Failed to complete authentication");
+      console.error("Workspace selection error:", error);
+      toast.error("Failed to complete login");
     }
   };
 
@@ -111,6 +155,12 @@ const Auth = () => {
     setView("lookup");
     setProvider(null);
     setFacility(null);
+    setPendingAuth(null);
+  };
+
+  const handleWorkspaceBack = () => {
+    setView("biometric");
+    setPendingAuth(null);
   };
 
   if (loading) {
@@ -123,7 +173,9 @@ const Auth = () => {
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-background via-muted to-background p-4">
-      {view === "lookup" && <ProviderIdLookup onProviderFound={handleProviderFound} onCancel={() => navigate("/")} />}
+      {view === "lookup" && (
+        <ProviderIdLookup onProviderFound={handleProviderFound} onCancel={() => navigate("/")} />
+      )}
 
       {view === "biometric" && provider && (
         <BiometricAuth
@@ -132,6 +184,15 @@ const Auth = () => {
           onFailed={handleBiometricFailed}
           onCancel={handleCancel}
           requiredMethods={["fingerprint", "facial", "iris"]}
+        />
+      )}
+
+      {view === "workspace" && provider && facility && (
+        <WorkspaceSelection
+          facility={facility}
+          provider={provider}
+          onWorkspaceSelected={handleWorkspaceSelected}
+          onBack={handleWorkspaceBack}
         />
       )}
     </div>
