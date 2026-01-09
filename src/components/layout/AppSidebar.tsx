@@ -61,6 +61,7 @@ function getPageContextFromPath(pathname: string): PageContext {
   // Registry pages
   if (pathname.startsWith('/facility-registry') || 
       pathname.startsWith('/hpr') || 
+      pathname.startsWith('/client-registry') ||
       pathname.startsWith('/registry')) {
     return "registry";
   }
@@ -99,9 +100,9 @@ function getPageContextFromPath(pathname: string): PageContext {
 // Registry-specific navigation
 const registryNavItems: NavItem[] = [
   { label: "Back to Home", icon: Home, path: "/", description: "Return to dashboard" },
-  { label: "Facility Registry", icon: Building2, path: "/facility-registry", description: "Master Facility List" },
+  { label: "Client Registry", icon: Users, path: "/client-registry", description: "National Health ID Registry" },
   { label: "Provider Registry", icon: UserCheck, path: "/hpr", description: "Health Provider Registry" },
-  { label: "Registry Management", icon: Database, path: "/registry", description: "Client & entity registries" },
+  { label: "Facility Registry", icon: Building2, path: "/facility-registry", description: "Master Facility List" },
 ];
 
 const registryToolsItems: NavItem[] = [

@@ -183,7 +183,7 @@ const workModuleCategories: ModuleCategory[] = [
     description: "Health information exchange registries and services",
     roles: ['admin', 'hie_admin', 'doctor', 'specialist'],
     modules: [
-      { id: "patients-registry", label: "Client Registry (MOSIP)", description: "Master patient index & Impilo ID", icon: Users, path: "/id-services", color: "bg-blue-500", roles: ["admin", "hie_admin", "registrar"] },
+      { id: "patients-registry", label: "Client Registry (MOSIP)", description: "Master patient index & Health ID", icon: Users, path: "/client-registry", color: "bg-blue-500", roles: ["admin", "hie_admin", "registrar"] },
       { id: "providers", label: "Provider Registry (Varapi)", description: "National HPR & IdP", icon: Stethoscope, path: "/hpr", color: "bg-teal-500", roles: ["admin", "hie_admin"] },
       { id: "facilities", label: "Facility Registry (Thuso)", description: "GOFR health facilities", icon: Building2, path: "/facility-registry", color: "bg-purple-500", roles: ["admin", "hie_admin"] },
       { id: "terminology", label: "Terminology Service", description: "ICD-11, SNOMED-CT, LOINC codes", icon: BookOpen, path: "/id-services", color: "bg-amber-500" },

@@ -50,6 +50,7 @@ import Kiosk from "./pages/Kiosk";
 import RegistryManagement from "./pages/RegistryManagement";
 import HealthProviderRegistry from "./pages/HealthProviderRegistry";
 import FacilityRegistry from "./pages/FacilityRegistry";
+import ClientRegistry from "./pages/ClientRegistry";
 const queryClient = new QueryClient();
 
 const App = () => (
@@ -251,6 +252,11 @@ const App = () => (
             <Route path="/facility-registry" element={
               <ProtectedRoute>
                 <FacilityRegistry />
+              </ProtectedRoute>
+            } />
+            <Route path="/client-registry" element={
+              <ProtectedRoute>
+                <ClientRegistry />
               </ProtectedRoute>
             } />
             {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
