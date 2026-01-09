@@ -89,30 +89,32 @@ interface ModuleCategory {
 }
 
 // Work modules (excluding myhealth and support which go to other tabs)
+// NOTE: Categories WITHOUT roles are visible to ALL authenticated users
+// Modules WITHOUT roles are visible to ALL users who can see the category
 const workModuleCategories: ModuleCategory[] = [
   {
     id: "clinical",
     title: "Clinical Care",
     description: "Patient encounters, assessments, and care delivery",
-    roles: ['doctor', 'nurse', 'specialist', 'admin'],
+    // No category-level restriction - all authenticated users can see this category
     modules: [
       { id: "dashboard", label: "My Dashboard", description: "Your worklist, tasks, and alerts", icon: ClipboardList, path: "/dashboard", color: "bg-primary" },
       { id: "communication", label: "Communication", description: "Messages, pages & calls", icon: MessageSquare, path: "/communication", color: "bg-primary" },
-      { id: "ehr", label: "Patient Encounters", description: "Clinical documentation & care", icon: Stethoscope, path: "/encounter", color: "bg-blue-500", roles: ["doctor", "nurse", "specialist"] },
-      { id: "queue", label: "Patient Queue", description: "Waiting patients & triage", icon: Users, path: "/queue", color: "bg-orange-500", roles: ["doctor", "nurse", "specialist", "receptionist"] },
+      { id: "ehr", label: "Patient Encounters", description: "Clinical documentation & care", icon: Stethoscope, path: "/encounter", color: "bg-blue-500", roles: ["doctor", "nurse", "specialist", "admin"] },
+      { id: "queue", label: "Patient Queue", description: "Waiting patients & triage", icon: Users, path: "/queue", color: "bg-orange-500" },
       { id: "beds", label: "Bed Management", description: "Ward status & admissions", icon: Bed, path: "/beds", color: "bg-purple-500", roles: ["doctor", "nurse", "admin"] },
-      { id: "handoff", label: "Shift Handoff", description: "Care continuity reports", icon: ArrowRightLeft, path: "/handoff", color: "bg-teal-500", roles: ["doctor", "nurse"] },
+      { id: "handoff", label: "Shift Handoff", description: "Care continuity reports", icon: ArrowRightLeft, path: "/handoff", color: "bg-teal-500", roles: ["doctor", "nurse", "admin"] },
     ],
   },
   {
     id: "orders",
     title: "Orders & Diagnostics",
     description: "Lab, imaging, pharmacy, and clinical orders",
-    roles: ['doctor', 'nurse', 'specialist', 'pharmacist', 'lab_tech', 'radiologist', 'admin'],
+    // No category-level restriction
     modules: [
-      { id: "orders", label: "Order Entry", description: "Medications, labs, & imaging", icon: ShoppingCart, path: "/orders", color: "bg-green-500", roles: ["doctor", "nurse", "specialist"] },
-      { id: "eprescriptions", label: "ePrescriptions", description: "Electronic prescriptions & formulary", icon: Pill, path: "/pharmacy", color: "bg-emerald-600", roles: ["doctor", "specialist", "pharmacist"] },
-      { id: "eorders", label: "E-Orders", description: "Electronic clinical orders", icon: ClipboardCheck, path: "/orders", color: "bg-cyan-600", roles: ["doctor", "nurse", "specialist"] },
+      { id: "orders", label: "Order Entry", description: "Medications, labs, & imaging", icon: ShoppingCart, path: "/orders", color: "bg-green-500", roles: ["doctor", "nurse", "specialist", "admin"] },
+      { id: "eprescriptions", label: "ePrescriptions", description: "Electronic prescriptions & formulary", icon: Pill, path: "/pharmacy", color: "bg-emerald-600", roles: ["doctor", "specialist", "pharmacist", "admin"] },
+      { id: "eorders", label: "E-Orders", description: "Electronic clinical orders", icon: ClipboardCheck, path: "/orders", color: "bg-cyan-600", roles: ["doctor", "nurse", "specialist", "admin"] },
       { id: "pharmacy", label: "Pharmacy", description: "Dispensing & medication tracking", icon: Syringe, path: "/pharmacy", color: "bg-pink-500", roles: ["pharmacist", "doctor", "nurse", "admin"] },
       { id: "lims", label: "Laboratory", description: "Lab orders & results", icon: FlaskConical, path: "/lims", color: "bg-amber-500", roles: ["lab_tech", "doctor", "nurse", "specialist", "admin"] },
       { id: "pacs", label: "Imaging (PACS)", description: "Radiology & diagnostic imaging", icon: FileText, path: "/pacs", color: "bg-indigo-500", roles: ["radiologist", "doctor", "specialist", "admin"] },
@@ -122,11 +124,11 @@ const workModuleCategories: ModuleCategory[] = [
     id: "scheduling",
     title: "Scheduling & Registration",
     description: "Appointments, patient registration, and theatre",
-    roles: ['doctor', 'nurse', 'specialist', 'receptionist', 'registrar', 'admin'],
+    // No category-level restriction
     modules: [
-      { id: "appointments", label: "Appointments", description: "Clinic & provider scheduling", icon: Calendar, path: "/appointments", color: "bg-cyan-500", roles: ["doctor", "nurse", "specialist", "receptionist", "admin"] },
-      { id: "registration", label: "Patient Registration", description: "New patient intake & ID", icon: UserPlus, path: "/registration", color: "bg-emerald-500", roles: ["receptionist", "registrar", "nurse", "admin"] },
-      { id: "patients", label: "Patient Registry", description: "Search & manage patients", icon: Users, path: "/patients", color: "bg-slate-500", roles: ["doctor", "nurse", "specialist", "receptionist", "admin"] },
+      { id: "appointments", label: "Appointments", description: "Clinic & provider scheduling", icon: Calendar, path: "/appointments", color: "bg-cyan-500" },
+      { id: "registration", label: "Patient Registration", description: "New patient intake & ID", icon: UserPlus, path: "/registration", color: "bg-emerald-500" },
+      { id: "patients", label: "Patient Registry", description: "Search & manage patients", icon: Users, path: "/patients", color: "bg-slate-500" },
       { id: "theatre", label: "Theatre Booking", description: "Surgical scheduling", icon: Building2, path: "/theatre", color: "bg-rose-500", roles: ["doctor", "specialist", "nurse", "admin"] },
     ],
   },
@@ -134,6 +136,7 @@ const workModuleCategories: ModuleCategory[] = [
     id: "marketplace",
     title: "Health Products & Marketplace",
     description: "Browse products, compare vendors, and order supplies",
+    // No category-level restriction - accessible to all
     modules: [
       { id: "catalogue", label: "Health Products Catalogue", description: "Browse approved health products", icon: BookOpen, path: "/catalogue", color: "bg-blue-600" },
       { id: "marketplace", label: "Health Marketplace", description: "Compare prices & order from vendors", icon: Store, path: "/marketplace", color: "bg-green-600" },
@@ -145,10 +148,10 @@ const workModuleCategories: ModuleCategory[] = [
     id: "finance",
     title: "Finance & Billing",
     description: "Payments, charges, and financial operations",
-    roles: ['admin', 'receptionist'],
+    roles: ['admin', 'receptionist', 'doctor', 'nurse'],
     modules: [
       { id: "payments", label: "Payments", description: "Patient billing & collections", icon: DollarSign, path: "/payments", color: "bg-green-600", roles: ["admin", "receptionist"] },
-      { id: "charges", label: "Encounter Charges", description: "Service & item charges", icon: Receipt, path: "/charges", color: "bg-yellow-600", roles: ["admin", "receptionist", "nurse"] },
+      { id: "charges", label: "Encounter Charges", description: "Service & item charges", icon: Receipt, path: "/charges", color: "bg-yellow-600" },
     ],
   },
   {
@@ -158,32 +161,32 @@ const workModuleCategories: ModuleCategory[] = [
     roles: ['admin', 'pharmacist', 'nurse'],
     modules: [
       { id: "stock", label: "Stock Management", description: "Inventory & reordering", icon: Package, path: "/stock", color: "bg-orange-600", roles: ["admin", "pharmacist"] },
-      { id: "consumables", label: "Consumables", description: "Usage & administration", icon: Syringe, path: "/consumables", color: "bg-red-500", roles: ["admin", "pharmacist", "nurse"] },
+      { id: "consumables", label: "Consumables", description: "Usage & administration", icon: Syringe, path: "/consumables", color: "bg-red-500" },
     ],
   },
   {
     id: "identity",
     title: "Identity Services",
     description: "Generate, validate, and recover health IDs",
-    roles: ['admin', 'registrar', 'receptionist', 'hie_admin'],
+    roles: ['admin', 'registrar', 'receptionist', 'hie_admin', 'doctor', 'nurse'],
     modules: [
       { id: "id-services", label: "ID Services Hub", description: "Generate, validate & recover IDs", icon: Shield, path: "/id-services", color: "bg-primary", roles: ["admin", "registrar", "hie_admin"] },
       { id: "phid-generation", label: "Patient PHID", description: "Generate Patient Health IDs", icon: UserCog, path: "/id-services", color: "bg-blue-500", roles: ["admin", "registrar", "receptionist", "hie_admin"] },
       { id: "provider-id", label: "Provider ID (Varapi)", description: "Generate healthcare worker IDs", icon: Stethoscope, path: "/id-services", color: "bg-teal-500", roles: ["admin", "hie_admin"] },
       { id: "facility-id", label: "Facility ID (Thuso)", description: "Generate facility identifiers", icon: Building2, path: "/id-services", color: "bg-purple-500", roles: ["admin", "hie_admin"] },
-      { id: "id-recovery", label: "ID Recovery", description: "Recover lost or forgotten IDs", icon: Shield, path: "/id-services", color: "bg-amber-500", roles: ["admin", "registrar", "receptionist", "hie_admin"] },
+      { id: "id-recovery", label: "ID Recovery", description: "Recover lost or forgotten IDs", icon: Shield, path: "/id-services", color: "bg-amber-500" },
     ],
   },
   {
     id: "registries",
     title: "HIE Registries",
     description: "Health information exchange registries and services",
-    roles: ['admin', 'hie_admin'],
+    roles: ['admin', 'hie_admin', 'doctor', 'specialist'],
     modules: [
       { id: "patients-registry", label: "Client Registry (MOSIP)", description: "Master patient index & Impilo ID", icon: Users, path: "/id-services", color: "bg-blue-500", roles: ["admin", "hie_admin", "registrar"] },
       { id: "providers", label: "Provider Registry (Varapi)", description: "iHRIS healthcare workers", icon: Stethoscope, path: "/id-services", color: "bg-teal-500", roles: ["admin", "hie_admin"] },
       { id: "facilities", label: "Facility Registry (Thuso)", description: "GOFR health facilities", icon: Building2, path: "/id-services", color: "bg-purple-500", roles: ["admin", "hie_admin"] },
-      { id: "terminology", label: "Terminology Service", description: "ICD-11, SNOMED-CT, LOINC codes", icon: BookOpen, path: "/id-services", color: "bg-amber-500", roles: ["admin", "hie_admin", "doctor", "specialist"] },
+      { id: "terminology", label: "Terminology Service", description: "ICD-11, SNOMED-CT, LOINC codes", icon: BookOpen, path: "/id-services", color: "bg-amber-500" },
       { id: "shr", label: "Shared Health Record", description: "FHIR-based patient records", icon: FileHeart, path: "/id-services", color: "bg-rose-500", roles: ["admin", "hie_admin"] },
       { id: "ndr", label: "National Data Repository", description: "Aggregated facility reporting", icon: Database, path: "/id-services", color: "bg-indigo-500", roles: ["admin", "hie_admin"] },
       { id: "product-registry", label: "Product Registry", description: "Health products catalogue", icon: Package, path: "/admin/product-registry", color: "bg-green-500", roles: ["admin"] },
@@ -194,9 +197,9 @@ const workModuleCategories: ModuleCategory[] = [
     id: "admin",
     title: "Administration & Reports",
     description: "System settings, analytics, and integrations",
-    roles: ['admin'],
+    roles: ['admin', 'doctor', 'specialist'],
     modules: [
-      { id: "reports", label: "Reports & Analytics", description: "Dashboards & insights", icon: BarChart3, path: "/reports", color: "bg-violet-500", roles: ["admin", "doctor", "specialist"] },
+      { id: "reports", label: "Reports & Analytics", description: "Dashboards & insights", icon: BarChart3, path: "/reports", color: "bg-violet-500" },
       { id: "report-builder", label: "Custom Reports", description: "Build custom reports & queries", icon: FileCheck, path: "/reports", color: "bg-indigo-500", roles: ["admin"] },
       { id: "odoo", label: "Odoo ERP", description: "ERP integration", icon: Building2, path: "/odoo", color: "bg-gray-600", roles: ["admin"] },
       { id: "admin", label: "System Admin", description: "Users, security & settings", icon: Settings, path: "/admin", color: "bg-gray-700", roles: ["admin"] },
@@ -208,7 +211,7 @@ const workModuleCategories: ModuleCategory[] = [
     description: "Advanced clinical documentation and utilities",
     roles: ['doctor', 'nurse', 'specialist', 'admin'],
     modules: [
-      { id: "voice-dictation", label: "Voice Dictation", description: "Speech-to-text for notes", icon: Activity, path: "/encounter", color: "bg-rose-500", roles: ["doctor", "nurse", "specialist"] },
+      { id: "voice-dictation", label: "Voice Dictation", description: "Speech-to-text for notes", icon: Activity, path: "/encounter", color: "bg-rose-500" },
       { id: "sync", label: "Offline Sync", description: "Conflict resolution & sync status", icon: ArrowRightLeft, path: "/admin", color: "bg-slate-600", roles: ["admin"] },
     ],
   },
@@ -216,6 +219,7 @@ const workModuleCategories: ModuleCategory[] = [
     id: "support",
     title: "Help & Support",
     description: "FAQs, user guides, and system documentation",
+    // No restriction - always visible
     modules: [
       { id: "help", label: "Help Desk", description: "FAQs, guides & documentation", icon: HelpCircle, path: "/help", color: "bg-teal-500" },
     ],
