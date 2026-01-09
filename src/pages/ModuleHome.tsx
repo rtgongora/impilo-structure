@@ -2,6 +2,8 @@ import { useState } from "react";
 import { useAuth } from "@/contexts/AuthContext";
 import { useNavigate } from "react-router-dom";
 import { useUserRoles, ModuleAccessRole } from "@/hooks/useUserRoles";
+import { useModuleAvailability } from "@/hooks/useFacilityCapabilities";
+import { FacilityCapability } from "@/contexts/FacilityContext";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -77,6 +79,8 @@ interface ModuleItem {
   color: string;
   roles?: ModuleAccessRole[];
   requiresAuth?: boolean;
+  // Facility capability requirements - module shows if user's facility has ANY of these capabilities
+  capabilities?: FacilityCapability[];
 }
 
 interface ModuleCategory {
@@ -86,6 +90,8 @@ interface ModuleCategory {
   modules: ModuleItem[];
   roles?: ModuleAccessRole[]; // Category-level role restriction
   requiresAuth?: boolean;
+  // Facility capability requirements - category shows if user's facility has ANY of these capabilities  
+  capabilities?: FacilityCapability[];
 }
 
 // Work modules (excluding myhealth and support which go to other tabs)
@@ -102,34 +108,32 @@ const workModuleCategories: ModuleCategory[] = [
       { id: "communication", label: "Communication", description: "Messages, pages & calls", icon: MessageSquare, path: "/communication", color: "bg-primary" },
       { id: "ehr", label: "Patient Encounters", description: "Clinical documentation & care", icon: Stethoscope, path: "/encounter", color: "bg-blue-500", roles: ["doctor", "nurse", "specialist", "admin"] },
       { id: "queue", label: "Patient Queue", description: "Waiting patients & triage", icon: Users, path: "/queue", color: "bg-orange-500" },
-      { id: "beds", label: "Bed Management", description: "Ward status & admissions", icon: Bed, path: "/beds", color: "bg-purple-500", roles: ["doctor", "nurse", "admin"] },
-      { id: "handoff", label: "Shift Handoff", description: "Care continuity reports", icon: ArrowRightLeft, path: "/handoff", color: "bg-teal-500", roles: ["doctor", "nurse", "admin"] },
+      { id: "beds", label: "Bed Management", description: "Ward status & admissions", icon: Bed, path: "/beds", color: "bg-purple-500", roles: ["doctor", "nurse", "admin"], capabilities: ["inpatient"] },
+      { id: "handoff", label: "Shift Handoff", description: "Care continuity reports", icon: ArrowRightLeft, path: "/handoff", color: "bg-teal-500", roles: ["doctor", "nurse", "admin"], capabilities: ["inpatient", "emergency_24hr"] },
     ],
   },
   {
     id: "orders",
     title: "Orders & Diagnostics",
     description: "Lab, imaging, pharmacy, and clinical orders",
-    // No category-level restriction
     modules: [
       { id: "orders", label: "Order Entry", description: "Medications, labs, & imaging", icon: ShoppingCart, path: "/orders", color: "bg-green-500", roles: ["doctor", "nurse", "specialist", "admin"] },
-      { id: "eprescriptions", label: "ePrescriptions", description: "Electronic prescriptions & formulary", icon: Pill, path: "/pharmacy", color: "bg-emerald-600", roles: ["doctor", "specialist", "pharmacist", "admin"] },
+      { id: "eprescriptions", label: "ePrescriptions", description: "Electronic prescriptions & formulary", icon: Pill, path: "/pharmacy", color: "bg-emerald-600", roles: ["doctor", "specialist", "pharmacist", "admin"], capabilities: ["pharmacy", "pharmacy_basic"] },
       { id: "eorders", label: "E-Orders", description: "Electronic clinical orders", icon: ClipboardCheck, path: "/orders", color: "bg-cyan-600", roles: ["doctor", "nurse", "specialist", "admin"] },
-      { id: "pharmacy", label: "Pharmacy", description: "Dispensing & medication tracking", icon: Syringe, path: "/pharmacy", color: "bg-pink-500", roles: ["pharmacist", "doctor", "nurse", "admin"] },
-      { id: "lims", label: "Laboratory", description: "Lab orders & results", icon: FlaskConical, path: "/lims", color: "bg-amber-500", roles: ["lab_tech", "doctor", "nurse", "specialist", "admin"] },
-      { id: "pacs", label: "Imaging (PACS)", description: "Radiology & diagnostic imaging", icon: FileText, path: "/pacs", color: "bg-indigo-500", roles: ["radiologist", "doctor", "specialist", "admin"] },
+      { id: "pharmacy", label: "Pharmacy", description: "Dispensing & medication tracking", icon: Syringe, path: "/pharmacy", color: "bg-pink-500", roles: ["pharmacist", "doctor", "nurse", "admin"], capabilities: ["pharmacy", "pharmacy_basic", "dispensing"] },
+      { id: "lims", label: "Laboratory", description: "Lab orders & results", icon: FlaskConical, path: "/lims", color: "bg-amber-500", roles: ["lab_tech", "doctor", "nurse", "specialist", "admin"], capabilities: ["laboratory", "lims", "specimen_collection"] },
+      { id: "pacs", label: "Imaging (PACS)", description: "Radiology & diagnostic imaging", icon: FileText, path: "/pacs", color: "bg-indigo-500", roles: ["radiologist", "doctor", "specialist", "admin"], capabilities: ["pacs", "radiology"] },
     ],
   },
   {
     id: "scheduling",
     title: "Scheduling & Registration",
     description: "Appointments, patient registration, and theatre",
-    // No category-level restriction
     modules: [
       { id: "appointments", label: "Appointments", description: "Clinic & provider scheduling", icon: Calendar, path: "/appointments", color: "bg-cyan-500" },
       { id: "registration", label: "Patient Registration", description: "New patient intake & ID", icon: UserPlus, path: "/registration", color: "bg-emerald-500" },
       { id: "patients", label: "Patient Registry", description: "Search & manage patients", icon: Users, path: "/patients", color: "bg-slate-500" },
-      { id: "theatre", label: "Theatre Booking", description: "Surgical scheduling", icon: Building2, path: "/theatre", color: "bg-rose-500", roles: ["doctor", "specialist", "nurse", "admin"] },
+      { id: "theatre", label: "Theatre Booking", description: "Surgical scheduling", icon: Building2, path: "/theatre", color: "bg-rose-500", roles: ["doctor", "specialist", "nurse", "admin"], capabilities: ["theatre"] },
     ],
   },
   {
@@ -434,27 +438,40 @@ export default function ModuleHome() {
     return name;
   };
 
-  // Filter modules based on role-based access control
+  const { hasAnyCapability, isLoaded: facilitiesLoaded } = useModuleAvailability();
+
+  // Filter modules based on role-based access control AND facility capabilities
   const getVisibleModules = (modules: ModuleItem[]) => {
-    return modules.filter((module) => canAccessModule(module.roles));
+    return modules.filter((module) => {
+      // Check role access
+      if (!canAccessModule(module.roles)) return false;
+      
+      // Check facility capabilities (if specified)
+      if (module.capabilities && module.capabilities.length > 0 && facilitiesLoaded) {
+        if (!hasAnyCapability(module.capabilities)) return false;
+      }
+      
+      return true;
+    });
   };
 
-  // Filter categories based on category-level role restrictions
+  // Filter categories based on category-level role restrictions AND facility capabilities
   const getVisibleCategories = (categories: ModuleCategory[]) => {
     return categories
       .map((category) => {
-        // Check if user can access this category
-        if (!canAccessModule(category.roles)) {
-          return null;
+        // Check if user can access this category by role
+        if (!canAccessModule(category.roles)) return null;
+        
+        // Check facility capabilities at category level
+        if (category.capabilities && category.capabilities.length > 0 && facilitiesLoaded) {
+          if (!hasAnyCapability(category.capabilities)) return null;
         }
         
         // Filter modules within the category
         const visibleModules = getVisibleModules(category.modules);
         
         // Only show category if it has visible modules
-        if (visibleModules.length === 0) {
-          return null;
-        }
+        if (visibleModules.length === 0) return null;
         
         return { ...category, modules: visibleModules };
       })

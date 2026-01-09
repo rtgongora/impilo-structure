@@ -12,6 +12,7 @@ interface Profile {
   phone: string | null;
   license_number: string | null;
   avatar_url: string | null;
+  facility_id: string | null;
 }
 
 interface AuthContextType {
