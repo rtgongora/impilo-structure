@@ -4,7 +4,11 @@
  * This file defines the clear distinction between:
  * 1. Physical Workspaces - Actual locations where practitioners work
  * 2. Care Pathways - Clinical workflows that can be activated from any workspace
+ * 
+ * Both types now include capability requirements for facility-type sensitivity
  */
+
+import type { FacilityCapability, LevelOfCare } from "@/contexts/FacilityContext";
 
 // ============= PHYSICAL WORKSPACES =============
 // These are actual physical spaces where practitioners log in and work from
@@ -29,25 +33,106 @@ export interface PhysicalWorkspace {
   category: "high_acuity" | "specialty" | "general";
   hasMonitoring?: boolean;
   typicalCapacity?: number;
+  // Facility capability requirements
+  requiredCapabilities?: FacilityCapability[];  // Needs ANY of these
+  minimumLevel?: LevelOfCare;                    // Minimum level of care required
 }
 
 export const PHYSICAL_WORKSPACES: PhysicalWorkspace[] = [
-  // High Acuity Spaces
-  { id: "theatre", name: "Theatre", description: "Operating rooms for surgical procedures", category: "high_acuity", hasMonitoring: true },
-  { id: "emergency", name: "Emergency Department", description: "Acute care and trauma services", category: "high_acuity", hasMonitoring: true },
-  { id: "icu", name: "Intensive Care Unit", description: "Critical care monitoring", category: "high_acuity", hasMonitoring: true },
-  { id: "labour_ward", name: "Labour & Delivery Suite", description: "Obstetric care and deliveries", category: "high_acuity", hasMonitoring: true },
+  // High Acuity Spaces - require specific capabilities
+  { 
+    id: "theatre", 
+    name: "Theatre", 
+    description: "Operating rooms for surgical procedures", 
+    category: "high_acuity", 
+    hasMonitoring: true,
+    requiredCapabilities: ["theatre"],
+    minimumLevel: "secondary"
+  },
+  { 
+    id: "emergency", 
+    name: "Emergency Department", 
+    description: "Acute care and trauma services", 
+    category: "high_acuity", 
+    hasMonitoring: true,
+    requiredCapabilities: ["emergency_24hr"],
+    minimumLevel: "secondary"
+  },
+  { 
+    id: "icu", 
+    name: "Intensive Care Unit", 
+    description: "Critical care monitoring", 
+    category: "high_acuity", 
+    hasMonitoring: true,
+    requiredCapabilities: ["icu"],
+    minimumLevel: "tertiary"
+  },
+  { 
+    id: "labour_ward", 
+    name: "Labour & Delivery Suite", 
+    description: "Obstetric care and deliveries", 
+    category: "high_acuity", 
+    hasMonitoring: true,
+    requiredCapabilities: ["maternity"],
+    minimumLevel: "secondary"
+  },
   
   // Specialty Spaces
-  { id: "dialysis_unit", name: "Dialysis Unit", description: "Renal replacement therapy", category: "specialty", hasMonitoring: true },
-  { id: "physiotherapy_gym", name: "Physiotherapy", description: "Physical rehabilitation", category: "specialty" },
-  { id: "psychology_suite", name: "Psychology Suite", description: "Mental health consultations", category: "specialty" },
-  { id: "radiology", name: "Radiology Department", description: "Imaging and interventional procedures", category: "specialty" },
-  { id: "day_procedure_unit", name: "Day Procedure Unit", description: "Minor procedures and day cases", category: "specialty" },
+  { 
+    id: "dialysis_unit", 
+    name: "Dialysis Unit", 
+    description: "Renal replacement therapy", 
+    category: "specialty", 
+    hasMonitoring: true,
+    requiredCapabilities: ["dialysis"],
+    minimumLevel: "tertiary"
+  },
+  { 
+    id: "physiotherapy_gym", 
+    name: "Physiotherapy", 
+    description: "Physical rehabilitation", 
+    category: "specialty",
+    requiredCapabilities: ["physiotherapy", "rehabilitation"]
+  },
+  { 
+    id: "psychology_suite", 
+    name: "Psychology Suite", 
+    description: "Mental health consultations", 
+    category: "specialty",
+    requiredCapabilities: ["mental_health", "psychotherapy"]
+  },
+  { 
+    id: "radiology", 
+    name: "Radiology Department", 
+    description: "Imaging and interventional procedures", 
+    category: "specialty",
+    requiredCapabilities: ["radiology", "pacs"],
+    minimumLevel: "secondary"
+  },
+  { 
+    id: "day_procedure_unit", 
+    name: "Day Procedure Unit", 
+    description: "Minor procedures and day cases", 
+    category: "specialty"
+    // No specific requirements - available at most facilities
+  },
   
-  // General Spaces
-  { id: "ward", name: "Ward", description: "Inpatient care areas", category: "general" },
-  { id: "outpatient_clinic", name: "Outpatient Clinic", description: "Scheduled consultations", category: "general" },
+  // General Spaces - widely available
+  { 
+    id: "ward", 
+    name: "Ward", 
+    description: "Inpatient care areas", 
+    category: "general",
+    requiredCapabilities: ["inpatient"]
+  },
+  { 
+    id: "outpatient_clinic", 
+    name: "Outpatient Clinic", 
+    description: "Scheduled consultations", 
+    category: "general",
+    requiredCapabilities: ["outpatient"]
+    // Available at all levels
+  },
 ];
 
 // ============= CARE PATHWAYS =============
@@ -116,6 +201,10 @@ export interface CarePathway {
   // UI behavior
   takesOverScreen: boolean;  // true = dedicated view, false = overlay
   isEmergency: boolean;      // true = Critical Event override behavior
+  
+  // Facility capability requirements
+  requiredCapabilities?: FacilityCapability[];  // Needs ANY of these
+  minimumLevel?: LevelOfCare;                    // Minimum level of care required
 }
 
 export const CARE_PATHWAYS: CarePathway[] = [
@@ -128,6 +217,8 @@ export const CARE_PATHWAYS: CarePathway[] = [
     teamRequired: ["Physician", "Nurse", "Respiratory", "Pharmacist"],
     takesOverScreen: true,
     isEmergency: true,
+    requiredCapabilities: ["icu", "emergency_24hr", "inpatient"],
+    minimumLevel: "secondary"
   },
   { 
     id: "rapid_response", 
@@ -137,6 +228,8 @@ export const CARE_PATHWAYS: CarePathway[] = [
     teamRequired: ["Physician", "Nurse", "Respiratory"],
     takesOverScreen: true,
     isEmergency: true,
+    requiredCapabilities: ["icu", "emergency_24hr", "inpatient"],
+    minimumLevel: "secondary"
   },
   { 
     id: "trauma_activation", 
@@ -146,6 +239,8 @@ export const CARE_PATHWAYS: CarePathway[] = [
     teamRequired: ["Trauma Surgeon", "ED Physician", "Nurse", "Anaesthetist"],
     takesOverScreen: true,
     isEmergency: true,
+    requiredCapabilities: ["emergency_24hr", "theatre"],
+    minimumLevel: "tertiary"
   },
   { 
     id: "neonatal_resuscitation", 
@@ -155,6 +250,8 @@ export const CARE_PATHWAYS: CarePathway[] = [
     teamRequired: ["Paediatrician", "Midwife", "Nurse"],
     takesOverScreen: true,
     isEmergency: true,
+    requiredCapabilities: ["maternity"],
+    minimumLevel: "secondary"
   },
   { 
     id: "obstetric_emergency", 
@@ -164,6 +261,8 @@ export const CARE_PATHWAYS: CarePathway[] = [
     teamRequired: ["Obstetrician", "Midwife", "Anaesthetist"],
     takesOverScreen: true,
     isEmergency: true,
+    requiredCapabilities: ["maternity"],
+    minimumLevel: "secondary"
   },
   { 
     id: "stroke_code", 
@@ -173,6 +272,8 @@ export const CARE_PATHWAYS: CarePathway[] = [
     teamRequired: ["Neurologist", "ED Physician", "Radiologist"],
     takesOverScreen: true,
     isEmergency: true,
+    requiredCapabilities: ["emergency_24hr", "radiology"],
+    minimumLevel: "tertiary"
   },
   { 
     id: "stemi_code", 
@@ -182,6 +283,8 @@ export const CARE_PATHWAYS: CarePathway[] = [
     teamRequired: ["Cardiologist", "ED Physician", "Cath Lab"],
     takesOverScreen: true,
     isEmergency: true,
+    requiredCapabilities: ["emergency_24hr"],
+    minimumLevel: "tertiary"
   },
 
   // ===== TREATMENT WORKFLOWS =====
@@ -193,6 +296,8 @@ export const CARE_PATHWAYS: CarePathway[] = [
     typicalDuration: "2-6 hours",
     takesOverScreen: true,
     isEmergency: false,
+    requiredCapabilities: ["chemotherapy"],
+    minimumLevel: "tertiary"
   },
   { 
     id: "radiotherapy", 
@@ -202,6 +307,8 @@ export const CARE_PATHWAYS: CarePathway[] = [
     typicalDuration: "15-45 mins",
     takesOverScreen: true,
     isEmergency: false,
+    requiredCapabilities: ["radiotherapy"],
+    minimumLevel: "quaternary"
   },
   { 
     id: "dialysis_session", 
@@ -211,6 +318,8 @@ export const CARE_PATHWAYS: CarePathway[] = [
     typicalDuration: "3-4 hours",
     takesOverScreen: true,
     isEmergency: false,
+    requiredCapabilities: ["dialysis"],
+    minimumLevel: "tertiary"
   },
   { 
     id: "physiotherapy_session", 
@@ -220,6 +329,8 @@ export const CARE_PATHWAYS: CarePathway[] = [
     typicalDuration: "30-60 mins",
     takesOverScreen: true,
     isEmergency: false,
+    requiredCapabilities: ["physiotherapy", "rehabilitation"]
+    // Available at multiple levels
   },
   { 
     id: "psychotherapy_session", 
@@ -229,6 +340,8 @@ export const CARE_PATHWAYS: CarePathway[] = [
     typicalDuration: "45-60 mins",
     takesOverScreen: true,
     isEmergency: false,
+    requiredCapabilities: ["psychotherapy", "mental_health"]
+    // Available at multiple levels
   },
   { 
     id: "burns_care", 
@@ -237,6 +350,8 @@ export const CARE_PATHWAYS: CarePathway[] = [
     category: "treatment_workflow",
     takesOverScreen: true,
     isEmergency: false,
+    requiredCapabilities: ["emergency_24hr", "inpatient"],
+    minimumLevel: "secondary"
   },
   { 
     id: "minor_procedure", 
@@ -245,7 +360,8 @@ export const CARE_PATHWAYS: CarePathway[] = [
     category: "treatment_workflow",
     typicalDuration: "15-45 mins",
     takesOverScreen: true,
-    isEmergency: false,
+    isEmergency: false
+    // Available at all levels
   },
   { 
     id: "wound_care", 
@@ -253,7 +369,8 @@ export const CARE_PATHWAYS: CarePathway[] = [
     description: "Dressing and wound management",
     category: "treatment_workflow",
     takesOverScreen: false,
-    isEmergency: false,
+    isEmergency: false
+    // Available at all levels
   },
 
   // ===== PROCEDURE WORKFLOWS =====
@@ -264,6 +381,8 @@ export const CARE_PATHWAYS: CarePathway[] = [
     category: "procedure_workflow",
     takesOverScreen: true,
     isEmergency: false,
+    requiredCapabilities: ["theatre"],
+    minimumLevel: "secondary"
   },
   { 
     id: "labour_delivery", 
@@ -272,6 +391,8 @@ export const CARE_PATHWAYS: CarePathway[] = [
     category: "procedure_workflow",
     takesOverScreen: true,
     isEmergency: false,
+    requiredCapabilities: ["maternity"],
+    minimumLevel: "secondary"
   },
   { 
     id: "endoscopy", 
@@ -280,6 +401,8 @@ export const CARE_PATHWAYS: CarePathway[] = [
     category: "procedure_workflow",
     takesOverScreen: true,
     isEmergency: false,
+    requiredCapabilities: ["theatre"],
+    minimumLevel: "secondary"
   },
   { 
     id: "interventional_radiology", 
@@ -288,6 +411,8 @@ export const CARE_PATHWAYS: CarePathway[] = [
     category: "procedure_workflow",
     takesOverScreen: true,
     isEmergency: false,
+    requiredCapabilities: ["radiology", "pacs"],
+    minimumLevel: "tertiary"
   },
   { 
     id: "anaesthesia_preop", 
@@ -296,6 +421,8 @@ export const CARE_PATHWAYS: CarePathway[] = [
     category: "procedure_workflow",
     takesOverScreen: true,
     isEmergency: false,
+    requiredCapabilities: ["theatre"],
+    minimumLevel: "secondary"
   },
 
   // ===== LONGITUDINAL PROGRAMMES =====
@@ -306,6 +433,8 @@ export const CARE_PATHWAYS: CarePathway[] = [
     category: "longitudinal_programme",
     takesOverScreen: false,
     isEmergency: false,
+    requiredCapabilities: ["anc", "maternity"]
+    // Available at primary level with ANC capability
   },
   { 
     id: "hiv_care", 
@@ -313,7 +442,8 @@ export const CARE_PATHWAYS: CarePathway[] = [
     description: "HIV management programme",
     category: "longitudinal_programme",
     takesOverScreen: false,
-    isEmergency: false,
+    isEmergency: false
+    // Available at all levels
   },
   { 
     id: "tb_treatment", 
@@ -321,7 +451,8 @@ export const CARE_PATHWAYS: CarePathway[] = [
     description: "Tuberculosis management",
     category: "longitudinal_programme",
     takesOverScreen: false,
-    isEmergency: false,
+    isEmergency: false
+    // Available at all levels
   },
   { 
     id: "ncd_management", 
@@ -329,7 +460,8 @@ export const CARE_PATHWAYS: CarePathway[] = [
     description: "Chronic disease care",
     category: "longitudinal_programme",
     takesOverScreen: false,
-    isEmergency: false,
+    isEmergency: false
+    // Available at all levels
   },
   { 
     id: "immunization", 
@@ -338,6 +470,8 @@ export const CARE_PATHWAYS: CarePathway[] = [
     category: "longitudinal_programme",
     takesOverScreen: false,
     isEmergency: false,
+    requiredCapabilities: ["immunization"]
+    // Available at primary level
   },
   { 
     id: "oncology_follow_up", 
@@ -346,6 +480,8 @@ export const CARE_PATHWAYS: CarePathway[] = [
     category: "longitudinal_programme",
     takesOverScreen: false,
     isEmergency: false,
+    requiredCapabilities: ["chemotherapy", "radiotherapy"],
+    minimumLevel: "tertiary"
   },
   { 
     id: "chronic_pain_management", 
@@ -353,7 +489,8 @@ export const CARE_PATHWAYS: CarePathway[] = [
     description: "Pain management programme",
     category: "longitudinal_programme",
     takesOverScreen: false,
-    isEmergency: false,
+    isEmergency: false
+    // Available at multiple levels
   },
 
   // ===== SPECIAL EXAMINATIONS =====
@@ -363,7 +500,8 @@ export const CARE_PATHWAYS: CarePathway[] = [
     description: "Forensic and clinical care",
     category: "treatment_workflow",
     takesOverScreen: true,
-    isEmergency: false,
+    isEmergency: false
+    // Available at most facilities
   },
   { 
     id: "poisoning_overdose", 
@@ -372,6 +510,8 @@ export const CARE_PATHWAYS: CarePathway[] = [
     category: "treatment_workflow",
     takesOverScreen: true,
     isEmergency: false,
+    requiredCapabilities: ["emergency_24hr"],
+    minimumLevel: "secondary"
   },
   { 
     id: "forensic_examination", 
@@ -379,7 +519,8 @@ export const CARE_PATHWAYS: CarePathway[] = [
     description: "Medico-legal examination",
     category: "treatment_workflow",
     takesOverScreen: true,
-    isEmergency: false,
+    isEmergency: false
+    // Available at most facilities
   },
 ];
 
@@ -406,4 +547,79 @@ export function getTreatmentWorkflows(): CarePathway[] {
 
 export function getLongitudinalProgrammes(): CarePathway[] {
   return CARE_PATHWAYS.filter(p => p.category === "longitudinal_programme");
+}
+
+// ===== CAPABILITY-FILTERED HELPERS =====
+// These filter workspaces and pathways based on facility capabilities
+
+import type { FacilityCapability as FacilityCap, LevelOfCare as LevelCare } from "@/contexts/FacilityContext";
+
+const LEVEL_HIERARCHY: LevelOfCare[] = ['quaternary', 'tertiary', 'secondary', 'primary'];
+
+function isAtLeastLevel(currentLevel: LevelOfCare | null, requiredLevel: LevelOfCare): boolean {
+  if (!currentLevel) return true;
+  const currentIndex = LEVEL_HIERARCHY.indexOf(currentLevel);
+  const requiredIndex = LEVEL_HIERARCHY.indexOf(requiredLevel);
+  return currentIndex <= requiredIndex; // Lower index = higher level
+}
+
+export function getAvailablePhysicalWorkspaces(
+  capabilities: FacilityCap[],
+  levelOfCare: LevelCare | null
+): PhysicalWorkspace[] {
+  return PHYSICAL_WORKSPACES.filter(ws => {
+    // Check level requirement
+    if (ws.minimumLevel && !isAtLeastLevel(levelOfCare, ws.minimumLevel)) {
+      return false;
+    }
+    // Check capability requirement - need ANY of the required capabilities
+    if (ws.requiredCapabilities && ws.requiredCapabilities.length > 0) {
+      return ws.requiredCapabilities.some(cap => capabilities.includes(cap));
+    }
+    // No requirements = always available
+    return true;
+  });
+}
+
+export function getAvailableCarePathways(
+  capabilities: FacilityCap[],
+  levelOfCare: LevelCare | null
+): CarePathway[] {
+  return CARE_PATHWAYS.filter(pathway => {
+    // Check level requirement
+    if (pathway.minimumLevel && !isAtLeastLevel(levelOfCare, pathway.minimumLevel)) {
+      return false;
+    }
+    // Check capability requirement - need ANY of the required capabilities
+    if (pathway.requiredCapabilities && pathway.requiredCapabilities.length > 0) {
+      return pathway.requiredCapabilities.some(cap => capabilities.includes(cap));
+    }
+    // No requirements = always available
+    return true;
+  });
+}
+
+export function getAvailableEmergencyProtocols(
+  capabilities: FacilityCap[],
+  levelOfCare: LevelCare | null
+): CarePathway[] {
+  return getAvailableCarePathways(capabilities, levelOfCare).filter(p => p.isEmergency);
+}
+
+export function getAvailableTreatmentWorkflows(
+  capabilities: FacilityCap[],
+  levelOfCare: LevelCare | null
+): CarePathway[] {
+  return getAvailableCarePathways(capabilities, levelOfCare).filter(
+    p => p.category === "treatment_workflow" || p.category === "procedure_workflow"
+  );
+}
+
+export function getAvailableLongitudinalProgrammes(
+  capabilities: FacilityCap[],
+  levelOfCare: LevelCare | null
+): CarePathway[] {
+  return getAvailableCarePathways(capabilities, levelOfCare).filter(
+    p => p.category === "longitudinal_programme"
+  );
 }
