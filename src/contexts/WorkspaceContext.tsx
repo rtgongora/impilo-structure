@@ -3,6 +3,16 @@ import React, { createContext, useContext, useState, ReactNode } from "react";
 export type WorkspaceView = "personal" | "department" | "team";
 export type CareSetting = "inpatient" | "outpatient" | "emergency" | "all";
 
+// Page context determines what sidebar navigation to show
+export type PageContext = 
+  | "clinical"      // Clinical EHR, patient encounters
+  | "operations"    // Stock, consumables, billing
+  | "scheduling"    // Appointments, theatre scheduling
+  | "registry"      // HIE registries (HPR, Facility, Client)
+  | "admin"         // System administration
+  | "portal"        // Patient portal, social hub
+  | "home";         // Dashboard, module home
+
 // Department to care setting mapping
 const DEPARTMENT_CARE_SETTINGS: Record<string, CareSetting> = {
   // Inpatient departments
@@ -43,6 +53,9 @@ interface WorkspaceContextType {
   isInpatientContext: boolean;
   isOutpatientContext: boolean;
   isEmergencyContext: boolean;
+  // Page context for sidebar navigation
+  pageContext: PageContext;
+  setPageContext: (context: PageContext) => void;
 }
 
 const WorkspaceContext = createContext<WorkspaceContextType | undefined>(undefined);
@@ -61,6 +74,7 @@ export function WorkspaceProvider({ children }: { children: ReactNode }) {
   const [careSetting, setCareSetting] = useState<CareSetting>(() => 
     getCareSetting("Emergency")
   );
+  const [pageContext, setPageContext] = useState<PageContext>("home");
 
   // Update care setting when department changes
   const handleSetDepartment = (dept: string) => {
@@ -83,6 +97,8 @@ export function WorkspaceProvider({ children }: { children: ReactNode }) {
       isInpatientContext,
       isOutpatientContext,
       isEmergencyContext,
+      pageContext,
+      setPageContext,
     }}>
       {children}
     </WorkspaceContext.Provider>
