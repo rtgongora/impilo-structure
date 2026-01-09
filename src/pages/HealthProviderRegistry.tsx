@@ -62,9 +62,14 @@ import { ProviderDetailPanel } from '@/components/hpr/ProviderDetailPanel';
 import { IdPEventsPanel } from '@/components/hpr/IdPEventsPanel';
 import { EligibilityTester } from '@/components/hpr/EligibilityTester';
 import { IHRISProviderPanel } from '@/components/hpr/IHRISProviderPanel';
+import { HPRDashboard } from '@/components/hpr/HPRDashboard';
+import { ProfessionalCouncilsManager } from '@/components/hpr/ProfessionalCouncilsManager';
+import { ReferenceDataManager } from '@/components/hpr/ReferenceDataManager';
+import { HPRAuditLog } from '@/components/hpr/HPRAuditLog';
+import { HPRReports } from '@/components/hpr/HPRReports';
 
 export default function HealthProviderRegistry() {
-  const [activeTab, setActiveTab] = useState('providers');
+  const [activeTab, setActiveTab] = useState('dashboard');
   const [providers, setProviders] = useState<HealthProvider[]>([]);
   const [loading, setLoading] = useState(true);
   const [searchQuery, setSearchQuery] = useState('');
@@ -219,22 +224,38 @@ export default function HealthProviderRegistry() {
 
         {/* Main Content */}
         <Tabs value={activeTab} onValueChange={setActiveTab}>
-          <TabsList>
+          <TabsList className="flex-wrap h-auto gap-1">
+            <TabsTrigger value="dashboard" className="flex items-center gap-2">
+              <Activity className="h-4 w-4" />
+              Dashboard
+            </TabsTrigger>
             <TabsTrigger value="providers" className="flex items-center gap-2">
               <Users className="h-4 w-4" />
               Providers ({totalProviders})
             </TabsTrigger>
+            <TabsTrigger value="councils" className="flex items-center gap-2">
+              <Shield className="h-4 w-4" />
+              Councils
+            </TabsTrigger>
+            <TabsTrigger value="reference" className="flex items-center gap-2">
+              <Key className="h-4 w-4" />
+              Reference Data
+            </TabsTrigger>
+            <TabsTrigger value="reports" className="flex items-center gap-2">
+              <Activity className="h-4 w-4" />
+              Reports
+            </TabsTrigger>
+            <TabsTrigger value="audit" className="flex items-center gap-2">
+              <Activity className="h-4 w-4" />
+              Audit Log
+            </TabsTrigger>
             <TabsTrigger value="eligibility" className="flex items-center gap-2">
               <TestTube className="h-4 w-4" />
-              Eligibility Tester
+              Eligibility
             </TabsTrigger>
             <TabsTrigger value="idp" className="flex items-center gap-2">
               <Key className="h-4 w-4" />
               IdP Events
-            </TabsTrigger>
-            <TabsTrigger value="architecture" className="flex items-center gap-2">
-              <Activity className="h-4 w-4" />
-              Architecture
             </TabsTrigger>
           </TabsList>
 

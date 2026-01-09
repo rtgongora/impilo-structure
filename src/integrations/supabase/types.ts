@@ -1596,6 +1596,59 @@ export type Database = {
           },
         ]
       }
+      council_administrators: {
+        Row: {
+          appointed_at: string
+          appointed_by: string | null
+          can_approve_registrations: boolean | null
+          can_suspend_providers: boolean | null
+          can_verify_licenses: boolean | null
+          council_id: string
+          created_at: string
+          expires_at: string | null
+          id: string
+          is_active: boolean | null
+          role: string
+          user_id: string
+        }
+        Insert: {
+          appointed_at?: string
+          appointed_by?: string | null
+          can_approve_registrations?: boolean | null
+          can_suspend_providers?: boolean | null
+          can_verify_licenses?: boolean | null
+          council_id: string
+          created_at?: string
+          expires_at?: string | null
+          id?: string
+          is_active?: boolean | null
+          role?: string
+          user_id: string
+        }
+        Update: {
+          appointed_at?: string
+          appointed_by?: string | null
+          can_approve_registrations?: boolean | null
+          can_suspend_providers?: boolean | null
+          can_verify_licenses?: boolean | null
+          council_id?: string
+          created_at?: string
+          expires_at?: string | null
+          id?: string
+          is_active?: boolean | null
+          role?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "council_administrators_council_id_fkey"
+            columns: ["council_id"]
+            isOneToOne: false
+            referencedRelation: "professional_councils"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       crowdfunding_campaigns: {
         Row: {
           beneficiary_id: string | null
@@ -2493,6 +2546,9 @@ export type Database = {
           birth_country: string | null
           cadre: string
           classification: string | null
+          council_registration_date: string | null
+          council_registration_expires: string | null
+          council_registration_number: string | null
           created_at: string
           created_by: string | null
           current_address: string | null
@@ -2521,6 +2577,7 @@ export type Database = {
           permanent_address: string | null
           phone: string | null
           photograph_url: string | null
+          professional_council_id: string | null
           qualifications: Json | null
           religion: string | null
           residence_country: string | null
@@ -2540,6 +2597,9 @@ export type Database = {
           birth_country?: string | null
           cadre: string
           classification?: string | null
+          council_registration_date?: string | null
+          council_registration_expires?: string | null
+          council_registration_number?: string | null
           created_at?: string
           created_by?: string | null
           current_address?: string | null
@@ -2568,6 +2628,7 @@ export type Database = {
           permanent_address?: string | null
           phone?: string | null
           photograph_url?: string | null
+          professional_council_id?: string | null
           qualifications?: Json | null
           religion?: string | null
           residence_country?: string | null
@@ -2587,6 +2648,9 @@ export type Database = {
           birth_country?: string | null
           cadre?: string
           classification?: string | null
+          council_registration_date?: string | null
+          council_registration_expires?: string | null
+          council_registration_number?: string | null
           created_at?: string
           created_by?: string | null
           current_address?: string | null
@@ -2615,6 +2679,7 @@ export type Database = {
           permanent_address?: string | null
           phone?: string | null
           photograph_url?: string | null
+          professional_council_id?: string | null
           qualifications?: Json | null
           religion?: string | null
           residence_country?: string | null
@@ -2630,7 +2695,74 @@ export type Database = {
           user_link_verified_by?: string | null
           user_linked_at?: string | null
         }
-        Relationships: []
+        Relationships: [
+          {
+            foreignKeyName: "health_providers_professional_council_id_fkey"
+            columns: ["professional_council_id"]
+            isOneToOne: false
+            referencedRelation: "professional_councils"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      hpr_audit_log: {
+        Row: {
+          action: string
+          council_id: string | null
+          created_at: string
+          entity_id: string
+          entity_type: string
+          field_changed: string | null
+          id: string
+          ip_address: string | null
+          metadata: Json | null
+          new_value: string | null
+          old_value: string | null
+          performed_by: string
+          performed_by_name: string | null
+          user_agent: string | null
+        }
+        Insert: {
+          action: string
+          council_id?: string | null
+          created_at?: string
+          entity_id: string
+          entity_type: string
+          field_changed?: string | null
+          id?: string
+          ip_address?: string | null
+          metadata?: Json | null
+          new_value?: string | null
+          old_value?: string | null
+          performed_by: string
+          performed_by_name?: string | null
+          user_agent?: string | null
+        }
+        Update: {
+          action?: string
+          council_id?: string | null
+          created_at?: string
+          entity_id?: string
+          entity_type?: string
+          field_changed?: string | null
+          id?: string
+          ip_address?: string | null
+          metadata?: Json | null
+          new_value?: string | null
+          old_value?: string | null
+          performed_by?: string
+          performed_by_name?: string | null
+          user_agent?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "hpr_audit_log_council_id_fkey"
+            columns: ["council_id"]
+            isOneToOne: false
+            referencedRelation: "professional_councils"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       id_generation_logs: {
         Row: {
@@ -4868,6 +5000,57 @@ export type Database = {
           },
         ]
       }
+      professional_councils: {
+        Row: {
+          abbreviation: string
+          address: string | null
+          code: string
+          created_at: string
+          description: string | null
+          email: string | null
+          id: string
+          is_active: boolean | null
+          jurisdiction_cadres: string[] | null
+          logo_url: string | null
+          name: string
+          phone: string | null
+          updated_at: string
+          website: string | null
+        }
+        Insert: {
+          abbreviation: string
+          address?: string | null
+          code: string
+          created_at?: string
+          description?: string | null
+          email?: string | null
+          id?: string
+          is_active?: boolean | null
+          jurisdiction_cadres?: string[] | null
+          logo_url?: string | null
+          name: string
+          phone?: string | null
+          updated_at?: string
+          website?: string | null
+        }
+        Update: {
+          abbreviation?: string
+          address?: string | null
+          code?: string
+          created_at?: string
+          description?: string | null
+          email?: string | null
+          id?: string
+          is_active?: boolean | null
+          jurisdiction_cadres?: string[] | null
+          logo_url?: string | null
+          name?: string
+          phone?: string | null
+          updated_at?: string
+          website?: string | null
+        }
+        Relationships: []
+      }
       professional_pages: {
         Row: {
           address: string | null
@@ -6527,6 +6710,44 @@ export type Database = {
         }
         Relationships: []
       }
+      ref_cadres: {
+        Row: {
+          category: string | null
+          code: string
+          council_id: string | null
+          created_at: string
+          id: string
+          is_active: boolean | null
+          name: string
+        }
+        Insert: {
+          category?: string | null
+          code: string
+          council_id?: string | null
+          created_at?: string
+          id?: string
+          is_active?: boolean | null
+          name: string
+        }
+        Update: {
+          category?: string | null
+          code?: string
+          council_id?: string | null
+          created_at?: string
+          id?: string
+          is_active?: boolean | null
+          name?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "ref_cadres_council_id_fkey"
+            columns: ["council_id"]
+            isOneToOne: false
+            referencedRelation: "professional_councils"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       ref_classifications: {
         Row: {
           code: string
@@ -6581,6 +6802,57 @@ export type Database = {
           is_active?: boolean | null
           name?: string
           sort_order?: number | null
+        }
+        Relationships: []
+      }
+      ref_employment_types: {
+        Row: {
+          code: string
+          created_at: string
+          id: string
+          is_active: boolean | null
+          name: string
+        }
+        Insert: {
+          code: string
+          created_at?: string
+          id?: string
+          is_active?: boolean | null
+          name: string
+        }
+        Update: {
+          code?: string
+          created_at?: string
+          id?: string
+          is_active?: boolean | null
+          name?: string
+        }
+        Relationships: []
+      }
+      ref_funds_sources: {
+        Row: {
+          code: string
+          created_at: string
+          description: string | null
+          id: string
+          is_active: boolean | null
+          name: string
+        }
+        Insert: {
+          code: string
+          created_at?: string
+          description?: string | null
+          id?: string
+          is_active?: boolean | null
+          name: string
+        }
+        Update: {
+          code?: string
+          created_at?: string
+          description?: string | null
+          id?: string
+          is_active?: boolean | null
+          name?: string
         }
         Relationships: []
       }
@@ -6649,6 +6921,36 @@ export type Database = {
           is_active?: boolean | null
           max_salary?: number | null
           min_salary?: number | null
+          name?: string
+        }
+        Relationships: []
+      }
+      ref_specializations: {
+        Row: {
+          applicable_cadres: string[] | null
+          category: string | null
+          code: string
+          created_at: string
+          id: string
+          is_active: boolean | null
+          name: string
+        }
+        Insert: {
+          applicable_cadres?: string[] | null
+          category?: string | null
+          code: string
+          created_at?: string
+          id?: string
+          is_active?: boolean | null
+          name: string
+        }
+        Update: {
+          applicable_cadres?: string[] | null
+          category?: string | null
+          code?: string
+          created_at?: string
+          id?: string
+          is_active?: boolean | null
           name?: string
         }
         Relationships: []
