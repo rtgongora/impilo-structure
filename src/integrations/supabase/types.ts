@@ -1683,6 +1683,71 @@ export type Database = {
         }
         Relationships: []
       }
+      eligibility_decisions: {
+        Row: {
+          eligible: boolean
+          facility_context: string | null
+          facility_scope: string[] | null
+          granted_privileges: string[] | null
+          granted_roles: string[] | null
+          id: string
+          license_valid_until: string | null
+          provider_id: string
+          reason_codes: string[] | null
+          requested_at: string
+          requested_by: string | null
+          requested_privileges: string[] | null
+          requested_role: string | null
+          response_time_ms: number | null
+          session_id: string | null
+          token_issued: boolean | null
+        }
+        Insert: {
+          eligible: boolean
+          facility_context?: string | null
+          facility_scope?: string[] | null
+          granted_privileges?: string[] | null
+          granted_roles?: string[] | null
+          id?: string
+          license_valid_until?: string | null
+          provider_id: string
+          reason_codes?: string[] | null
+          requested_at?: string
+          requested_by?: string | null
+          requested_privileges?: string[] | null
+          requested_role?: string | null
+          response_time_ms?: number | null
+          session_id?: string | null
+          token_issued?: boolean | null
+        }
+        Update: {
+          eligible?: boolean
+          facility_context?: string | null
+          facility_scope?: string[] | null
+          granted_privileges?: string[] | null
+          granted_roles?: string[] | null
+          id?: string
+          license_valid_until?: string | null
+          provider_id?: string
+          reason_codes?: string[] | null
+          requested_at?: string
+          requested_by?: string | null
+          requested_privileges?: string[] | null
+          requested_role?: string | null
+          response_time_ms?: number | null
+          session_id?: string | null
+          token_issued?: boolean | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "eligibility_decisions_provider_id_fkey"
+            columns: ["provider_id"]
+            isOneToOne: false
+            referencedRelation: "health_providers"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       encounter_charges: {
         Row: {
           charge_item_id: string
@@ -2423,6 +2488,117 @@ export type Database = {
           },
         ]
       }
+      health_providers: {
+        Row: {
+          cadre: string
+          created_at: string
+          created_by: string | null
+          date_of_birth: string
+          email: string | null
+          first_name: string
+          id: string
+          is_master_record: boolean | null
+          languages: string[] | null
+          lifecycle_state: Database["public"]["Enums"]["provider_lifecycle_state"]
+          lifecycle_state_changed_at: string | null
+          lifecycle_state_changed_by: string | null
+          lifecycle_state_reason: string | null
+          merge_reason: string | null
+          merged_at: string | null
+          merged_into_upid: string | null
+          national_id: string | null
+          nationality: string | null
+          other_names: string | null
+          passport_number: string | null
+          phone: string | null
+          photograph_url: string | null
+          qualifications: Json | null
+          sex: string
+          specialty: string | null
+          sub_specialty: string | null
+          surname: string
+          updated_at: string
+          updated_by: string | null
+          upid: string
+          user_id: string | null
+          user_link_verification_method: string | null
+          user_link_verified_by: string | null
+          user_linked_at: string | null
+        }
+        Insert: {
+          cadre: string
+          created_at?: string
+          created_by?: string | null
+          date_of_birth: string
+          email?: string | null
+          first_name: string
+          id?: string
+          is_master_record?: boolean | null
+          languages?: string[] | null
+          lifecycle_state?: Database["public"]["Enums"]["provider_lifecycle_state"]
+          lifecycle_state_changed_at?: string | null
+          lifecycle_state_changed_by?: string | null
+          lifecycle_state_reason?: string | null
+          merge_reason?: string | null
+          merged_at?: string | null
+          merged_into_upid?: string | null
+          national_id?: string | null
+          nationality?: string | null
+          other_names?: string | null
+          passport_number?: string | null
+          phone?: string | null
+          photograph_url?: string | null
+          qualifications?: Json | null
+          sex: string
+          specialty?: string | null
+          sub_specialty?: string | null
+          surname: string
+          updated_at?: string
+          updated_by?: string | null
+          upid: string
+          user_id?: string | null
+          user_link_verification_method?: string | null
+          user_link_verified_by?: string | null
+          user_linked_at?: string | null
+        }
+        Update: {
+          cadre?: string
+          created_at?: string
+          created_by?: string | null
+          date_of_birth?: string
+          email?: string | null
+          first_name?: string
+          id?: string
+          is_master_record?: boolean | null
+          languages?: string[] | null
+          lifecycle_state?: Database["public"]["Enums"]["provider_lifecycle_state"]
+          lifecycle_state_changed_at?: string | null
+          lifecycle_state_changed_by?: string | null
+          lifecycle_state_reason?: string | null
+          merge_reason?: string | null
+          merged_at?: string | null
+          merged_into_upid?: string | null
+          national_id?: string | null
+          nationality?: string | null
+          other_names?: string | null
+          passport_number?: string | null
+          phone?: string | null
+          photograph_url?: string | null
+          qualifications?: Json | null
+          sex?: string
+          specialty?: string | null
+          sub_specialty?: string | null
+          surname?: string
+          updated_at?: string
+          updated_by?: string | null
+          upid?: string
+          user_id?: string | null
+          user_link_verification_method?: string | null
+          user_link_verified_by?: string | null
+          user_linked_at?: string | null
+        }
+        Relationships: []
+      }
       id_generation_logs: {
         Row: {
           created_at: string
@@ -2491,6 +2667,59 @@ export type Database = {
           updated_at?: string
         }
         Relationships: []
+      }
+      idp_revocation_events: {
+        Row: {
+          event_type: string
+          id: string
+          metadata: Json | null
+          processed_at: string | null
+          processed_by: string | null
+          provider_id: string
+          sessions_revoked: number | null
+          source_entity_id: string | null
+          source_entity_type: string | null
+          tokens_invalidated: number | null
+          triggered_at: string
+          user_id: string | null
+        }
+        Insert: {
+          event_type: string
+          id?: string
+          metadata?: Json | null
+          processed_at?: string | null
+          processed_by?: string | null
+          provider_id: string
+          sessions_revoked?: number | null
+          source_entity_id?: string | null
+          source_entity_type?: string | null
+          tokens_invalidated?: number | null
+          triggered_at?: string
+          user_id?: string | null
+        }
+        Update: {
+          event_type?: string
+          id?: string
+          metadata?: Json | null
+          processed_at?: string | null
+          processed_by?: string | null
+          provider_id?: string
+          sessions_revoked?: number | null
+          source_entity_id?: string | null
+          source_entity_type?: string | null
+          tokens_invalidated?: number | null
+          triggered_at?: string
+          user_id?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "idp_revocation_events_provider_id_fkey"
+            columns: ["provider_id"]
+            isOneToOne: false
+            referencedRelation: "health_providers"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       insurance_claims: {
         Row: {
@@ -4783,6 +5012,187 @@ export type Database = {
         }
         Relationships: []
       }
+      provider_affiliations: {
+        Row: {
+          created_at: string
+          created_by: string | null
+          deactivated_at: string | null
+          deactivated_by: string | null
+          deactivation_reason: string | null
+          department: string | null
+          employment_type: Database["public"]["Enums"]["employment_type"]
+          end_date: string | null
+          facility_id: string
+          facility_name: string
+          id: string
+          is_active: boolean | null
+          is_primary: boolean | null
+          position_title: string | null
+          privileges: string[]
+          provider_id: string
+          role: string
+          start_date: string
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          created_by?: string | null
+          deactivated_at?: string | null
+          deactivated_by?: string | null
+          deactivation_reason?: string | null
+          department?: string | null
+          employment_type: Database["public"]["Enums"]["employment_type"]
+          end_date?: string | null
+          facility_id: string
+          facility_name: string
+          id?: string
+          is_active?: boolean | null
+          is_primary?: boolean | null
+          position_title?: string | null
+          privileges?: string[]
+          provider_id: string
+          role: string
+          start_date: string
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          created_by?: string | null
+          deactivated_at?: string | null
+          deactivated_by?: string | null
+          deactivation_reason?: string | null
+          department?: string | null
+          employment_type?: Database["public"]["Enums"]["employment_type"]
+          end_date?: string | null
+          facility_id?: string
+          facility_name?: string
+          id?: string
+          is_active?: boolean | null
+          is_primary?: boolean | null
+          position_title?: string | null
+          privileges?: string[]
+          provider_id?: string
+          role?: string
+          start_date?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "provider_affiliations_provider_id_fkey"
+            columns: ["provider_id"]
+            isOneToOne: false
+            referencedRelation: "health_providers"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      provider_licenses: {
+        Row: {
+          council_id: string
+          council_name: string
+          created_at: string
+          created_by: string | null
+          expiry_date: string
+          id: string
+          issue_date: string
+          last_verified_at: string | null
+          last_verified_by: string | null
+          license_category: string
+          provider_id: string
+          registration_number: string
+          source_reference: string | null
+          source_system: string | null
+          status: Database["public"]["Enums"]["license_status"]
+          status_changed_at: string | null
+          status_changed_by: string | null
+          status_reason: string | null
+          updated_at: string
+        }
+        Insert: {
+          council_id: string
+          council_name: string
+          created_at?: string
+          created_by?: string | null
+          expiry_date: string
+          id?: string
+          issue_date: string
+          last_verified_at?: string | null
+          last_verified_by?: string | null
+          license_category: string
+          provider_id: string
+          registration_number: string
+          source_reference?: string | null
+          source_system?: string | null
+          status?: Database["public"]["Enums"]["license_status"]
+          status_changed_at?: string | null
+          status_changed_by?: string | null
+          status_reason?: string | null
+          updated_at?: string
+        }
+        Update: {
+          council_id?: string
+          council_name?: string
+          created_at?: string
+          created_by?: string | null
+          expiry_date?: string
+          id?: string
+          issue_date?: string
+          last_verified_at?: string | null
+          last_verified_by?: string | null
+          license_category?: string
+          provider_id?: string
+          registration_number?: string
+          source_reference?: string | null
+          source_system?: string | null
+          status?: Database["public"]["Enums"]["license_status"]
+          status_changed_at?: string | null
+          status_changed_by?: string | null
+          status_reason?: string | null
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "provider_licenses_provider_id_fkey"
+            columns: ["provider_id"]
+            isOneToOne: false
+            referencedRelation: "health_providers"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      provider_privileges_taxonomy: {
+        Row: {
+          category: string
+          code: string
+          created_at: string
+          description: string | null
+          id: string
+          is_active: boolean | null
+          name: string
+          requires_supervision: boolean | null
+        }
+        Insert: {
+          category: string
+          code: string
+          created_at?: string
+          description?: string | null
+          id?: string
+          is_active?: boolean | null
+          name: string
+          requires_supervision?: boolean | null
+        }
+        Update: {
+          category?: string
+          code?: string
+          created_at?: string
+          description?: string | null
+          id?: string
+          is_active?: boolean | null
+          name?: string
+          requires_supervision?: boolean | null
+        }
+        Relationships: []
+      }
       provider_registry_logs: {
         Row: {
           action: string
@@ -4997,6 +5407,62 @@ export type Database = {
           start_time?: string
         }
         Relationships: []
+      }
+      provider_state_transitions: {
+        Row: {
+          changed_by: string
+          changed_by_role: string | null
+          council_reference: string | null
+          created_at: string
+          from_state:
+            | Database["public"]["Enums"]["provider_lifecycle_state"]
+            | null
+          id: string
+          metadata: Json | null
+          provider_id: string
+          reason: string | null
+          reason_code: string | null
+          to_state: Database["public"]["Enums"]["provider_lifecycle_state"]
+        }
+        Insert: {
+          changed_by: string
+          changed_by_role?: string | null
+          council_reference?: string | null
+          created_at?: string
+          from_state?:
+            | Database["public"]["Enums"]["provider_lifecycle_state"]
+            | null
+          id?: string
+          metadata?: Json | null
+          provider_id: string
+          reason?: string | null
+          reason_code?: string | null
+          to_state: Database["public"]["Enums"]["provider_lifecycle_state"]
+        }
+        Update: {
+          changed_by?: string
+          changed_by_role?: string | null
+          council_reference?: string | null
+          created_at?: string
+          from_state?:
+            | Database["public"]["Enums"]["provider_lifecycle_state"]
+            | null
+          id?: string
+          metadata?: Json | null
+          provider_id?: string
+          reason?: string | null
+          reason_code?: string | null
+          to_state?: Database["public"]["Enums"]["provider_lifecycle_state"]
+        }
+        Relationships: [
+          {
+            foreignKeyName: "provider_state_transitions_provider_id_fkey"
+            columns: ["provider_id"]
+            isOneToOne: false
+            referencedRelation: "health_providers"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       provider_time_off: {
         Row: {
@@ -7114,6 +7580,15 @@ export type Database = {
         Args: { _patient_id: string; _user_id: string }
         Returns: boolean
       }
+      check_provider_eligibility: {
+        Args: {
+          p_facility_context?: string
+          p_provider_id: string
+          p_requested_privileges?: string[]
+          p_requested_role?: string
+        }
+        Returns: Json
+      }
       generate_claim_number: { Args: never; Returns: string }
       generate_client_registry_id: { Args: never; Returns: string }
       generate_encounter_number: { Args: never; Returns: string }
@@ -7143,6 +7618,7 @@ export type Database = {
       generate_specimen_id: { Args: never; Returns: string }
       generate_theatre_booking_number: { Args: never; Returns: string }
       generate_transaction_number: { Args: never; Returns: string }
+      generate_upid: { Args: never; Returns: string }
       get_next_id_sequence: {
         Args: { p_counter_type: string }
         Returns: number
@@ -7166,6 +7642,13 @@ export type Database = {
       app_role: "admin" | "moderator" | "user"
       approval_status: "pending" | "approved" | "suspended" | "rejected"
       clinical_role: "doctor" | "nurse" | "specialist" | "patient" | "admin"
+      employment_type:
+        | "permanent"
+        | "contract"
+        | "locum"
+        | "volunteer"
+        | "intern"
+        | "student"
       fulfillment_status:
         | "draft"
         | "submitted"
@@ -7179,6 +7662,12 @@ export type Database = {
         | "completed"
         | "cancelled"
         | "expired"
+      license_status:
+        | "active"
+        | "suspended"
+        | "revoked"
+        | "expired"
+        | "pending_renewal"
       product_category_type:
         | "pharmaceutical"
         | "medical_device"
@@ -7189,6 +7678,15 @@ export type Database = {
         | "diagnostic"
         | "nutritional"
         | "other"
+      provider_lifecycle_state:
+        | "draft"
+        | "pending_council_verification"
+        | "pending_facility_affiliation"
+        | "active"
+        | "suspended"
+        | "revoked"
+        | "retired"
+        | "deceased"
       registry_record_status:
         | "draft"
         | "pending_approval"
@@ -7334,6 +7832,14 @@ export const Constants = {
       app_role: ["admin", "moderator", "user"],
       approval_status: ["pending", "approved", "suspended", "rejected"],
       clinical_role: ["doctor", "nurse", "specialist", "patient", "admin"],
+      employment_type: [
+        "permanent",
+        "contract",
+        "locum",
+        "volunteer",
+        "intern",
+        "student",
+      ],
       fulfillment_status: [
         "draft",
         "submitted",
@@ -7348,6 +7854,13 @@ export const Constants = {
         "cancelled",
         "expired",
       ],
+      license_status: [
+        "active",
+        "suspended",
+        "revoked",
+        "expired",
+        "pending_renewal",
+      ],
       product_category_type: [
         "pharmaceutical",
         "medical_device",
@@ -7358,6 +7871,16 @@ export const Constants = {
         "diagnostic",
         "nutritional",
         "other",
+      ],
+      provider_lifecycle_state: [
+        "draft",
+        "pending_council_verification",
+        "pending_facility_affiliation",
+        "active",
+        "suspended",
+        "revoked",
+        "retired",
+        "deceased",
       ],
       registry_record_status: [
         "draft",
