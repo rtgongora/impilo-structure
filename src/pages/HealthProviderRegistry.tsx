@@ -74,6 +74,7 @@ export default function HealthProviderRegistry() {
   const [searchQuery, setSearchQuery] = useState('');
   const [stateFilter, setStateFilter] = useState<string>('all');
   const [cadreFilter, setCadreFilter] = useState<string>('all');
+  const [registerDialogOpen, setRegisterDialogOpen] = useState(false);
   const [stats, setStats] = useState<Record<ProviderLifecycleState, number>>({
     draft: 0,
     pending_council_verification: 0,
@@ -185,14 +186,30 @@ export default function HealthProviderRegistry() {
             <Badge variant="outline" className="text-sm">
               FHIR R4
             </Badge>
-            <Button variant="outline" size="sm" onClick={loadProviders}>
-              <RefreshCw className="h-4 w-4 mr-2" />
+            <Button variant="outline" size="sm" onClick={() => { loadProviders(); loadStats(); toast.success('Data refreshed'); }}>
+              <RefreshCw className={`h-4 w-4 mr-2 ${loading ? 'animate-spin' : ''}`} />
               Refresh
             </Button>
-            <Button size="sm">
-              <Plus className="h-4 w-4 mr-2" />
-              Register Provider
-            </Button>
+            <Dialog open={registerDialogOpen} onOpenChange={setRegisterDialogOpen}>
+              <DialogTrigger asChild>
+                <Button size="sm">
+                  <Plus className="h-4 w-4 mr-2" />
+                  Register Provider
+                </Button>
+              </DialogTrigger>
+              <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
+                <DialogHeader>
+                  <DialogTitle>Register New Health Provider</DialogTitle>
+                </DialogHeader>
+                <ProviderRegistrationForm 
+                  onSuccess={() => { 
+                    setRegisterDialogOpen(false); 
+                    loadProviders(); 
+                    loadStats(); 
+                  }} 
+                />
+              </DialogContent>
+            </Dialog>
           </div>
         </div>
 
@@ -790,5 +807,194 @@ export default function HealthProviderRegistry() {
         </Tabs>
       </div>
     </AppLayout>
+  );
+}
+
+// Provider Registration Form Component
+function ProviderRegistrationForm({ onSuccess }: { onSuccess: () => void }) {
+  const [formData, setFormData] = useState({
+    first_name: '',
+    surname: '',
+    other_names: '',
+    date_of_birth: '',
+    sex: 'male' as 'male' | 'female' | 'other',
+    national_id: '',
+    passport_number: '',
+    cadre: '',
+    specialty: '',
+    email: '',
+    phone: '',
+  });
+  const [submitting, setSubmitting] = useState(false);
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    
+    if (!formData.first_name || !formData.surname || !formData.date_of_birth || !formData.cadre) {
+      toast.error('Please fill in all required fields');
+      return;
+    }
+
+    setSubmitting(true);
+    try {
+      await HPRService.createProvider({
+        first_name: formData.first_name,
+        surname: formData.surname,
+        other_names: formData.other_names || undefined,
+        date_of_birth: formData.date_of_birth,
+        sex: formData.sex,
+        national_id: formData.national_id || undefined,
+        passport_number: formData.passport_number || undefined,
+        cadre: formData.cadre,
+        specialty: formData.specialty || undefined,
+        email: formData.email || undefined,
+        phone: formData.phone || undefined,
+      });
+      toast.success('Provider registered successfully');
+      onSuccess();
+    } catch (error) {
+      console.error('Failed to register provider:', error);
+      toast.error('Failed to register provider');
+    } finally {
+      setSubmitting(false);
+    }
+  };
+
+  return (
+    <form onSubmit={handleSubmit} className="space-y-4">
+      <div className="grid grid-cols-2 gap-4">
+        <div className="space-y-2">
+          <label className="text-sm font-medium">First Name *</label>
+          <Input 
+            value={formData.first_name}
+            onChange={(e) => setFormData(prev => ({ ...prev, first_name: e.target.value }))}
+            placeholder="First name"
+            required
+          />
+        </div>
+        <div className="space-y-2">
+          <label className="text-sm font-medium">Surname *</label>
+          <Input 
+            value={formData.surname}
+            onChange={(e) => setFormData(prev => ({ ...prev, surname: e.target.value }))}
+            placeholder="Surname"
+            required
+          />
+        </div>
+      </div>
+
+      <div className="space-y-2">
+        <label className="text-sm font-medium">Other Names</label>
+        <Input 
+          value={formData.other_names}
+          onChange={(e) => setFormData(prev => ({ ...prev, other_names: e.target.value }))}
+          placeholder="Middle names"
+        />
+      </div>
+
+      <div className="grid grid-cols-2 gap-4">
+        <div className="space-y-2">
+          <label className="text-sm font-medium">Date of Birth *</label>
+          <Input 
+            type="date"
+            value={formData.date_of_birth}
+            onChange={(e) => setFormData(prev => ({ ...prev, date_of_birth: e.target.value }))}
+            required
+          />
+        </div>
+        <div className="space-y-2">
+          <label className="text-sm font-medium">Sex *</label>
+          <Select value={formData.sex} onValueChange={(v) => setFormData(prev => ({ ...prev, sex: v as any }))}>
+            <SelectTrigger>
+              <SelectValue />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="male">Male</SelectItem>
+              <SelectItem value="female">Female</SelectItem>
+              <SelectItem value="other">Other</SelectItem>
+            </SelectContent>
+          </Select>
+        </div>
+      </div>
+
+      <div className="grid grid-cols-2 gap-4">
+        <div className="space-y-2">
+          <label className="text-sm font-medium">National ID</label>
+          <Input 
+            value={formData.national_id}
+            onChange={(e) => setFormData(prev => ({ ...prev, national_id: e.target.value }))}
+            placeholder="National ID number"
+          />
+        </div>
+        <div className="space-y-2">
+          <label className="text-sm font-medium">Passport Number</label>
+          <Input 
+            value={formData.passport_number}
+            onChange={(e) => setFormData(prev => ({ ...prev, passport_number: e.target.value }))}
+            placeholder="Passport number"
+          />
+        </div>
+      </div>
+
+      <div className="grid grid-cols-2 gap-4">
+        <div className="space-y-2">
+          <label className="text-sm font-medium">Cadre/Profession *</label>
+          <Select value={formData.cadre} onValueChange={(v) => setFormData(prev => ({ ...prev, cadre: v }))}>
+            <SelectTrigger>
+              <SelectValue placeholder="Select cadre" />
+            </SelectTrigger>
+            <SelectContent>
+              {PROVIDER_CADRES.map((c) => (
+                <SelectItem key={c.value} value={c.value}>{c.label}</SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
+        </div>
+        <div className="space-y-2">
+          <label className="text-sm font-medium">Specialty</label>
+          <Input 
+            value={formData.specialty}
+            onChange={(e) => setFormData(prev => ({ ...prev, specialty: e.target.value }))}
+            placeholder="Specialization area"
+          />
+        </div>
+      </div>
+
+      <div className="grid grid-cols-2 gap-4">
+        <div className="space-y-2">
+          <label className="text-sm font-medium">Email</label>
+          <Input 
+            type="email"
+            value={formData.email}
+            onChange={(e) => setFormData(prev => ({ ...prev, email: e.target.value }))}
+            placeholder="Email address"
+          />
+        </div>
+        <div className="space-y-2">
+          <label className="text-sm font-medium">Phone</label>
+          <Input 
+            value={formData.phone}
+            onChange={(e) => setFormData(prev => ({ ...prev, phone: e.target.value }))}
+            placeholder="Phone number"
+          />
+        </div>
+      </div>
+
+      <div className="flex justify-end gap-2 pt-4">
+        <Button type="submit" disabled={submitting}>
+          {submitting ? (
+            <>
+              <RefreshCw className="h-4 w-4 mr-2 animate-spin" />
+              Registering...
+            </>
+          ) : (
+            <>
+              <Plus className="h-4 w-4 mr-2" />
+              Register Provider
+            </>
+          )}
+        </Button>
+      </div>
+    </form>
   );
 }
