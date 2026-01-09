@@ -8,22 +8,33 @@ import { ProviderIdLookup } from "@/components/auth/ProviderIdLookup";
 import { BiometricAuth } from "@/components/auth/BiometricAuth";
 import { WorkspaceSelection, type WorkspaceSelectionData } from "@/components/auth/WorkspaceSelection";
 import { type ProviderRegistryRecord, type FacilityRegistryRecord } from "@/services/registryServices";
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { Fingerprint, Mail, Shield, ArrowLeft } from "lucide-react";
+import impiloLogo from "@/assets/impilo-logo.png";
 
-type AuthView = "lookup" | "biometric" | "workspace";
+type AuthView = "method-select" | "lookup" | "biometric" | "workspace" | "email-login";
 
 const Auth = () => {
   const navigate = useNavigate();
   const { user, loading } = useAuth();
   const { setCurrentDepartment } = useWorkspace();
 
-  const [view, setView] = useState<AuthView>("lookup");
+  const [view, setView] = useState<AuthView>("method-select");
   const [provider, setProvider] = useState<ProviderRegistryRecord | null>(null);
   const [facility, setFacility] = useState<FacilityRegistryRecord | null>(null);
   const [pendingAuth, setPendingAuth] = useState<{ method: string; confidence: number } | null>(null);
+  
+  // Email login state
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
   useEffect(() => {
     if (user && view !== "workspace") {
-      // If user is logged in and not in workspace selection, go home
       navigate("/");
     }
   }, [user, view, navigate]);
@@ -38,7 +49,6 @@ const Auth = () => {
     if (!provider) return;
 
     try {
-      // Find the user account and email associated with this provider ID
       const { data: profile } = await supabase
         .from("profiles")
         .select("user_id")
@@ -51,10 +61,7 @@ const Auth = () => {
         return;
       }
 
-      // Store pending auth for after workspace selection
       setPendingAuth({ method, confidence });
-      
-      // Move to workspace selection before completing sign-in
       setView("workspace");
 
     } catch (error) {
@@ -67,10 +74,8 @@ const Auth = () => {
     if (!provider || !pendingAuth) return;
 
     try {
-      // For demo: use the known test password for biometric-verified login
       const testPassword = "Impilo2025!";
 
-      // Lookup email based on provider pattern
       const emailMap: Record<string, string> = {
         "VARAPI-2025-ZW000001-A1B2": "sarah.moyo@impilo.health",
         "VARAPI-2025-ZW000002-C3D4": "tendai.ncube@impilo.health",
@@ -79,17 +84,16 @@ const Auth = () => {
         "VARAPI-2025-ZW000005-I9J0": "rumbi.mhaka@impilo.health",
       };
 
-      const email = emailMap[provider.providerId];
+      const providerEmail = emailMap[provider.providerId];
 
-      if (!email) {
+      if (!providerEmail) {
         toast.error("Demo login not available for this provider");
         setView("lookup");
         return;
       }
 
-      // Sign in the user
       const { error: signInError } = await supabase.auth.signInWithPassword({
-        email,
+        email: providerEmail,
         password: testPassword,
       });
 
@@ -99,10 +103,8 @@ const Auth = () => {
         return;
       }
 
-      // Set the workspace context
       setCurrentDepartment(selection.department);
 
-      // Store workspace selection in session storage for persistence
       sessionStorage.setItem('activeWorkspace', JSON.stringify({
         department: selection.department,
         physicalWorkspace: selection.physicalWorkspace,
@@ -111,7 +113,6 @@ const Auth = () => {
         loginTime: new Date().toISOString()
       }));
 
-      // Log the biometric authentication with workspace info
       const { data: profileData } = await supabase
         .from("profiles")
         .select("user_id")
@@ -144,6 +145,31 @@ const Auth = () => {
     }
   };
 
+  const handleEmailLogin = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setIsSubmitting(true);
+
+    try {
+      const { error } = await supabase.auth.signInWithPassword({
+        email: email.trim(),
+        password,
+      });
+
+      if (error) {
+        toast.error("Login failed", { description: error.message });
+        return;
+      }
+
+      toast.success("Welcome back!", { description: "You have been logged in successfully." });
+      navigate("/");
+    } catch (error) {
+      console.error("Email login error:", error);
+      toast.error("An unexpected error occurred");
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
+
   const handleBiometricFailed = (error: string) => {
     toast.error("Biometric verification failed", { description: error });
     setView("lookup");
@@ -152,7 +178,7 @@ const Auth = () => {
   };
 
   const handleCancel = () => {
-    setView("lookup");
+    setView("method-select");
     setProvider(null);
     setFacility(null);
     setPendingAuth(null);
@@ -173,8 +199,112 @@ const Auth = () => {
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-background via-muted to-background p-4">
+      {view === "method-select" && (
+        <Card className="w-full max-w-md">
+          <CardHeader className="text-center space-y-4">
+            <div className="flex justify-center">
+              <img src={impiloLogo} alt="Impilo" className="h-16 w-auto" />
+            </div>
+            <div>
+              <CardTitle className="text-2xl">Welcome to Impilo</CardTitle>
+              <CardDescription>Choose your login method</CardDescription>
+            </div>
+          </CardHeader>
+          <CardContent className="space-y-4">
+            <Button
+              variant="outline"
+              className="w-full h-auto py-4 flex items-center gap-4 justify-start"
+              onClick={() => setView("lookup")}
+            >
+              <div className="h-12 w-12 rounded-lg bg-primary/10 flex items-center justify-center">
+                <Fingerprint className="h-6 w-6 text-primary" />
+              </div>
+              <div className="text-left">
+                <p className="font-semibold">Provider ID & Biometric</p>
+                <p className="text-sm text-muted-foreground">For clinical staff with Provider ID</p>
+              </div>
+            </Button>
+
+            <Button
+              variant="outline"
+              className="w-full h-auto py-4 flex items-center gap-4 justify-start"
+              onClick={() => setView("email-login")}
+            >
+              <div className="h-12 w-12 rounded-lg bg-secondary/50 flex items-center justify-center">
+                <Mail className="h-6 w-6 text-secondary-foreground" />
+              </div>
+              <div className="text-left">
+                <p className="font-semibold">Email & Password</p>
+                <p className="text-sm text-muted-foreground">For admin and system users</p>
+              </div>
+            </Button>
+
+            <div className="pt-4 text-center">
+              <p className="text-xs text-muted-foreground flex items-center justify-center gap-1">
+                <Shield className="h-3 w-3" />
+                Secure authentication powered by Impilo
+              </p>
+            </div>
+          </CardContent>
+        </Card>
+      )}
+
+      {view === "email-login" && (
+        <Card className="w-full max-w-md">
+          <CardHeader className="text-center space-y-4">
+            <div className="flex justify-center">
+              <img src={impiloLogo} alt="Impilo" className="h-12 w-auto" />
+            </div>
+            <div>
+              <CardTitle className="text-xl">Admin Login</CardTitle>
+              <CardDescription>Sign in with your email and password</CardDescription>
+            </div>
+          </CardHeader>
+          <CardContent>
+            <form onSubmit={handleEmailLogin} className="space-y-4">
+              <div className="space-y-2">
+                <Label htmlFor="email">Email</Label>
+                <Input
+                  id="email"
+                  type="email"
+                  placeholder="admin@impilo.health"
+                  value={email}
+                  onChange={(e) => setEmail(e.target.value)}
+                  required
+                />
+              </div>
+              <div className="space-y-2">
+                <Label htmlFor="password">Password</Label>
+                <Input
+                  id="password"
+                  type="password"
+                  placeholder="••••••••"
+                  value={password}
+                  onChange={(e) => setPassword(e.target.value)}
+                  required
+                />
+              </div>
+              <div className="flex gap-2 pt-2">
+                <Button
+                  type="button"
+                  variant="outline"
+                  onClick={() => setView("method-select")}
+                  className="flex-1"
+                >
+                  <ArrowLeft className="h-4 w-4 mr-2" />
+                  Back
+                </Button>
+                <Button type="submit" className="flex-1" disabled={isSubmitting}>
+                  {isSubmitting ? "Signing in..." : "Sign In"}
+                </Button>
+              </div>
+            </form>
+          </CardContent>
+        </Card>
+      )}
+
       {view === "lookup" && (
-        <ProviderIdLookup onProviderFound={handleProviderFound} onCancel={() => navigate("/")} />
+        <ProviderIdLookup onProviderFound={handleProviderFound} onCancel={handleCancel} />
       )}
 
       {view === "biometric" && provider && (
