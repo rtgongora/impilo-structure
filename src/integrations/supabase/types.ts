@@ -760,6 +760,463 @@ export type Database = {
           },
         ]
       }
+      client_duplicate_queue: {
+        Row: {
+          client_a_id: string
+          client_b_id: string
+          created_at: string | null
+          id: string
+          match_method: string | null
+          match_reasons: Json | null
+          match_score: number
+          merged_at: string | null
+          merged_by: string | null
+          review_notes: string | null
+          reviewed_at: string | null
+          reviewed_by: string | null
+          status: string | null
+          surviving_client_id: string | null
+        }
+        Insert: {
+          client_a_id: string
+          client_b_id: string
+          created_at?: string | null
+          id?: string
+          match_method?: string | null
+          match_reasons?: Json | null
+          match_score: number
+          merged_at?: string | null
+          merged_by?: string | null
+          review_notes?: string | null
+          reviewed_at?: string | null
+          reviewed_by?: string | null
+          status?: string | null
+          surviving_client_id?: string | null
+        }
+        Update: {
+          client_a_id?: string
+          client_b_id?: string
+          created_at?: string | null
+          id?: string
+          match_method?: string | null
+          match_reasons?: Json | null
+          match_score?: number
+          merged_at?: string | null
+          merged_by?: string | null
+          review_notes?: string | null
+          reviewed_at?: string | null
+          reviewed_by?: string | null
+          status?: string | null
+          surviving_client_id?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "client_duplicate_queue_client_a_id_fkey"
+            columns: ["client_a_id"]
+            isOneToOne: false
+            referencedRelation: "client_registry"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "client_duplicate_queue_client_b_id_fkey"
+            columns: ["client_b_id"]
+            isOneToOne: false
+            referencedRelation: "client_registry"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "client_duplicate_queue_surviving_client_id_fkey"
+            columns: ["surviving_client_id"]
+            isOneToOne: false
+            referencedRelation: "client_registry"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      client_identifiers: {
+        Row: {
+          assigning_authority: string | null
+          client_id: string
+          confidence:
+            | Database["public"]["Enums"]["identifier_confidence"]
+            | null
+          created_at: string | null
+          created_by: string | null
+          expiry_date: string | null
+          id: string
+          identifier_type: string
+          identifier_value: string
+          issue_date: string | null
+          source_system: string | null
+          status: string | null
+          updated_at: string | null
+          verification_method: string | null
+          verified_at: string | null
+          verified_by: string | null
+        }
+        Insert: {
+          assigning_authority?: string | null
+          client_id: string
+          confidence?:
+            | Database["public"]["Enums"]["identifier_confidence"]
+            | null
+          created_at?: string | null
+          created_by?: string | null
+          expiry_date?: string | null
+          id?: string
+          identifier_type: string
+          identifier_value: string
+          issue_date?: string | null
+          source_system?: string | null
+          status?: string | null
+          updated_at?: string | null
+          verification_method?: string | null
+          verified_at?: string | null
+          verified_by?: string | null
+        }
+        Update: {
+          assigning_authority?: string | null
+          client_id?: string
+          confidence?:
+            | Database["public"]["Enums"]["identifier_confidence"]
+            | null
+          created_at?: string | null
+          created_by?: string | null
+          expiry_date?: string | null
+          id?: string
+          identifier_type?: string
+          identifier_value?: string
+          issue_date?: string | null
+          source_system?: string | null
+          status?: string | null
+          updated_at?: string | null
+          verification_method?: string | null
+          verified_at?: string | null
+          verified_by?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "client_identifiers_client_id_fkey"
+            columns: ["client_id"]
+            isOneToOne: false
+            referencedRelation: "client_registry"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      client_matching_rules: {
+        Row: {
+          created_at: string | null
+          created_by: string | null
+          effective_from: string | null
+          effective_to: string | null
+          fields: Json
+          id: string
+          is_active: boolean | null
+          priority: number | null
+          rule_name: string
+          rule_type: string
+          threshold: number | null
+          updated_at: string | null
+          version: number | null
+          weights: Json | null
+        }
+        Insert: {
+          created_at?: string | null
+          created_by?: string | null
+          effective_from?: string | null
+          effective_to?: string | null
+          fields: Json
+          id?: string
+          is_active?: boolean | null
+          priority?: number | null
+          rule_name: string
+          rule_type: string
+          threshold?: number | null
+          updated_at?: string | null
+          version?: number | null
+          weights?: Json | null
+        }
+        Update: {
+          created_at?: string | null
+          created_by?: string | null
+          effective_from?: string | null
+          effective_to?: string | null
+          fields?: Json
+          id?: string
+          is_active?: boolean | null
+          priority?: number | null
+          rule_name?: string
+          rule_type?: string
+          threshold?: number | null
+          updated_at?: string | null
+          version?: number | null
+          weights?: Json | null
+        }
+        Relationships: []
+      }
+      client_merge_history: {
+        Row: {
+          can_unmerge: boolean | null
+          id: string
+          identifiers_transferred: Json | null
+          merge_method: string | null
+          merge_reason: string | null
+          merged_at: string | null
+          merged_by: string | null
+          merged_client_health_id: string
+          merged_client_id: string
+          merged_data: Json
+          relationships_transferred: Json | null
+          surviving_client_id: string
+          unmerged_at: string | null
+          unmerged_by: string | null
+        }
+        Insert: {
+          can_unmerge?: boolean | null
+          id?: string
+          identifiers_transferred?: Json | null
+          merge_method?: string | null
+          merge_reason?: string | null
+          merged_at?: string | null
+          merged_by?: string | null
+          merged_client_health_id: string
+          merged_client_id: string
+          merged_data: Json
+          relationships_transferred?: Json | null
+          surviving_client_id: string
+          unmerged_at?: string | null
+          unmerged_by?: string | null
+        }
+        Update: {
+          can_unmerge?: boolean | null
+          id?: string
+          identifiers_transferred?: Json | null
+          merge_method?: string | null
+          merge_reason?: string | null
+          merged_at?: string | null
+          merged_by?: string | null
+          merged_client_health_id?: string
+          merged_client_id?: string
+          merged_data?: Json
+          relationships_transferred?: Json | null
+          surviving_client_id?: string
+          unmerged_at?: string | null
+          unmerged_by?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "client_merge_history_surviving_client_id_fkey"
+            columns: ["surviving_client_id"]
+            isOneToOne: false
+            referencedRelation: "client_registry"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      client_registry: {
+        Row: {
+          address_line1: string | null
+          address_line2: string | null
+          biometric_enrolled: boolean | null
+          biometric_facial_hash: string | null
+          biometric_fingerprint_hash: string | null
+          biometric_iris_hash: string | null
+          country: string | null
+          created_at: string | null
+          created_by: string | null
+          date_of_birth: string | null
+          deceased_confirmed: boolean | null
+          deceased_date: string | null
+          deceased_source: string | null
+          district: string | null
+          dob_confidence: string | null
+          duplicate_flag: boolean | null
+          email: string | null
+          estimated_dob: boolean | null
+          family_name: string
+          given_names: string
+          health_id: string
+          id: string
+          last_modified_by: string | null
+          last_verified_at: string | null
+          lifecycle_state:
+            | Database["public"]["Enums"]["client_lifecycle_state"]
+            | null
+          lifecycle_state_changed_at: string | null
+          lifecycle_state_changed_by: string | null
+          lifecycle_state_reason: string | null
+          matching_score: number | null
+          merged_at: string | null
+          merged_by: string | null
+          merged_into_id: string | null
+          nationality: string | null
+          other_names: string | null
+          phone_primary: string | null
+          phone_secondary: string | null
+          place_of_birth: string | null
+          postal_code: string | null
+          province: string | null
+          sex: string
+          source_facility_id: string | null
+          source_system: string | null
+          updated_at: string | null
+          verification_source: string | null
+          version_id: number | null
+          village: string | null
+          ward: string | null
+        }
+        Insert: {
+          address_line1?: string | null
+          address_line2?: string | null
+          biometric_enrolled?: boolean | null
+          biometric_facial_hash?: string | null
+          biometric_fingerprint_hash?: string | null
+          biometric_iris_hash?: string | null
+          country?: string | null
+          created_at?: string | null
+          created_by?: string | null
+          date_of_birth?: string | null
+          deceased_confirmed?: boolean | null
+          deceased_date?: string | null
+          deceased_source?: string | null
+          district?: string | null
+          dob_confidence?: string | null
+          duplicate_flag?: boolean | null
+          email?: string | null
+          estimated_dob?: boolean | null
+          family_name: string
+          given_names: string
+          health_id: string
+          id?: string
+          last_modified_by?: string | null
+          last_verified_at?: string | null
+          lifecycle_state?:
+            | Database["public"]["Enums"]["client_lifecycle_state"]
+            | null
+          lifecycle_state_changed_at?: string | null
+          lifecycle_state_changed_by?: string | null
+          lifecycle_state_reason?: string | null
+          matching_score?: number | null
+          merged_at?: string | null
+          merged_by?: string | null
+          merged_into_id?: string | null
+          nationality?: string | null
+          other_names?: string | null
+          phone_primary?: string | null
+          phone_secondary?: string | null
+          place_of_birth?: string | null
+          postal_code?: string | null
+          province?: string | null
+          sex: string
+          source_facility_id?: string | null
+          source_system?: string | null
+          updated_at?: string | null
+          verification_source?: string | null
+          version_id?: number | null
+          village?: string | null
+          ward?: string | null
+        }
+        Update: {
+          address_line1?: string | null
+          address_line2?: string | null
+          biometric_enrolled?: boolean | null
+          biometric_facial_hash?: string | null
+          biometric_fingerprint_hash?: string | null
+          biometric_iris_hash?: string | null
+          country?: string | null
+          created_at?: string | null
+          created_by?: string | null
+          date_of_birth?: string | null
+          deceased_confirmed?: boolean | null
+          deceased_date?: string | null
+          deceased_source?: string | null
+          district?: string | null
+          dob_confidence?: string | null
+          duplicate_flag?: boolean | null
+          email?: string | null
+          estimated_dob?: boolean | null
+          family_name?: string
+          given_names?: string
+          health_id?: string
+          id?: string
+          last_modified_by?: string | null
+          last_verified_at?: string | null
+          lifecycle_state?:
+            | Database["public"]["Enums"]["client_lifecycle_state"]
+            | null
+          lifecycle_state_changed_at?: string | null
+          lifecycle_state_changed_by?: string | null
+          lifecycle_state_reason?: string | null
+          matching_score?: number | null
+          merged_at?: string | null
+          merged_by?: string | null
+          merged_into_id?: string | null
+          nationality?: string | null
+          other_names?: string | null
+          phone_primary?: string | null
+          phone_secondary?: string | null
+          place_of_birth?: string | null
+          postal_code?: string | null
+          province?: string | null
+          sex?: string
+          source_facility_id?: string | null
+          source_system?: string | null
+          updated_at?: string | null
+          verification_source?: string | null
+          version_id?: number | null
+          village?: string | null
+          ward?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "client_registry_merged_into_id_fkey"
+            columns: ["merged_into_id"]
+            isOneToOne: false
+            referencedRelation: "client_registry"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      client_registry_events: {
+        Row: {
+          client_id: string
+          created_at: string | null
+          event_data: Json | null
+          event_type: string
+          health_id: string
+          id: string
+          processed_by_consent: boolean | null
+          processed_by_iam: boolean | null
+          processed_by_ndr: boolean | null
+          processed_by_shr: boolean | null
+        }
+        Insert: {
+          client_id: string
+          created_at?: string | null
+          event_data?: Json | null
+          event_type: string
+          health_id: string
+          id?: string
+          processed_by_consent?: boolean | null
+          processed_by_iam?: boolean | null
+          processed_by_ndr?: boolean | null
+          processed_by_shr?: boolean | null
+        }
+        Update: {
+          client_id?: string
+          created_at?: string | null
+          event_data?: Json | null
+          event_type?: string
+          health_id?: string
+          id?: string
+          processed_by_consent?: boolean | null
+          processed_by_iam?: boolean | null
+          processed_by_ndr?: boolean | null
+          processed_by_shr?: boolean | null
+        }
+        Relationships: []
+      }
       client_registry_records: {
         Row: {
           address_line1: string | null
@@ -878,6 +1335,122 @@ export type Database = {
             columns: ["patient_id"]
             isOneToOne: false
             referencedRelation: "patients"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      client_relationships: {
+        Row: {
+          client_id: string
+          consent_relevance: boolean | null
+          created_at: string | null
+          created_by: string | null
+          effective_from: string | null
+          effective_to: string | null
+          id: string
+          is_active: boolean | null
+          legal_relevance: boolean | null
+          related_client_id: string | null
+          related_person_name: string | null
+          related_person_phone: string | null
+          relationship_description: string | null
+          relationship_type: Database["public"]["Enums"]["client_relationship_type"]
+          updated_at: string | null
+        }
+        Insert: {
+          client_id: string
+          consent_relevance?: boolean | null
+          created_at?: string | null
+          created_by?: string | null
+          effective_from?: string | null
+          effective_to?: string | null
+          id?: string
+          is_active?: boolean | null
+          legal_relevance?: boolean | null
+          related_client_id?: string | null
+          related_person_name?: string | null
+          related_person_phone?: string | null
+          relationship_description?: string | null
+          relationship_type: Database["public"]["Enums"]["client_relationship_type"]
+          updated_at?: string | null
+        }
+        Update: {
+          client_id?: string
+          consent_relevance?: boolean | null
+          created_at?: string | null
+          created_by?: string | null
+          effective_from?: string | null
+          effective_to?: string | null
+          id?: string
+          is_active?: boolean | null
+          legal_relevance?: boolean | null
+          related_client_id?: string | null
+          related_person_name?: string | null
+          related_person_phone?: string | null
+          relationship_description?: string | null
+          relationship_type?: Database["public"]["Enums"]["client_relationship_type"]
+          updated_at?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "client_relationships_client_id_fkey"
+            columns: ["client_id"]
+            isOneToOne: false
+            referencedRelation: "client_registry"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "client_relationships_related_client_id_fkey"
+            columns: ["related_client_id"]
+            isOneToOne: false
+            referencedRelation: "client_registry"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      client_state_transitions: {
+        Row: {
+          changed_at: string | null
+          changed_by: string | null
+          client_id: string
+          from_state:
+            | Database["public"]["Enums"]["client_lifecycle_state"]
+            | null
+          id: string
+          reason: string | null
+          to_state: Database["public"]["Enums"]["client_lifecycle_state"]
+          triggered_by: string | null
+        }
+        Insert: {
+          changed_at?: string | null
+          changed_by?: string | null
+          client_id: string
+          from_state?:
+            | Database["public"]["Enums"]["client_lifecycle_state"]
+            | null
+          id?: string
+          reason?: string | null
+          to_state: Database["public"]["Enums"]["client_lifecycle_state"]
+          triggered_by?: string | null
+        }
+        Update: {
+          changed_at?: string | null
+          changed_by?: string | null
+          client_id?: string
+          from_state?:
+            | Database["public"]["Enums"]["client_lifecycle_state"]
+            | null
+          id?: string
+          reason?: string | null
+          to_state?: Database["public"]["Enums"]["client_lifecycle_state"]
+          triggered_by?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "client_state_transitions_client_id_fkey"
+            columns: ["client_id"]
+            isOneToOne: false
+            referencedRelation: "client_registry"
             referencedColumns: ["id"]
           },
         ]
@@ -11065,6 +11638,7 @@ export type Database = {
         Returns: string
       }
       generate_fulfillment_number: { Args: never; Returns: string }
+      generate_health_id: { Args: never; Returns: string }
       generate_impilo_id: {
         Args: never
         Returns: {
@@ -11110,6 +11684,23 @@ export type Database = {
     Enums: {
       app_role: "admin" | "moderator" | "user"
       approval_status: "pending" | "approved" | "suspended" | "rejected"
+      client_lifecycle_state:
+        | "draft"
+        | "active"
+        | "inactive"
+        | "deceased"
+        | "merged"
+      client_relationship_type:
+        | "mother"
+        | "father"
+        | "guardian"
+        | "caregiver"
+        | "spouse"
+        | "child"
+        | "sibling"
+        | "proxy"
+        | "next_of_kin"
+        | "emergency_contact"
       clinical_role: "doctor" | "nurse" | "specialist" | "patient" | "admin"
       employment_type:
         | "permanent"
@@ -11131,6 +11722,11 @@ export type Database = {
         | "completed"
         | "cancelled"
         | "expired"
+      identifier_confidence:
+        | "verified"
+        | "self_reported"
+        | "derived"
+        | "uncertain"
       license_status:
         | "active"
         | "suspended"
@@ -11300,6 +11896,25 @@ export const Constants = {
     Enums: {
       app_role: ["admin", "moderator", "user"],
       approval_status: ["pending", "approved", "suspended", "rejected"],
+      client_lifecycle_state: [
+        "draft",
+        "active",
+        "inactive",
+        "deceased",
+        "merged",
+      ],
+      client_relationship_type: [
+        "mother",
+        "father",
+        "guardian",
+        "caregiver",
+        "spouse",
+        "child",
+        "sibling",
+        "proxy",
+        "next_of_kin",
+        "emergency_contact",
+      ],
       clinical_role: ["doctor", "nurse", "specialist", "patient", "admin"],
       employment_type: [
         "permanent",
@@ -11322,6 +11937,12 @@ export const Constants = {
         "completed",
         "cancelled",
         "expired",
+      ],
+      identifier_confidence: [
+        "verified",
+        "self_reported",
+        "derived",
+        "uncertain",
       ],
       license_status: [
         "active",
