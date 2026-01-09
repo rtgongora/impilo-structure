@@ -73,7 +73,7 @@ export const useFacilityData = (options: UseFacilityDataOptions = {}) => {
         throw fetchError;
       }
 
-      setFacilities((data || []) as Facility[]);
+      setFacilities((data || []) as unknown as Facility[]);
 
       // Get counts
       const { data: allData } = await supabase.from('facilities').select('workflow_status');
@@ -125,7 +125,7 @@ export const useFacilityData = (options: UseFacilityDataOptions = {}) => {
 
       toast.success('Facility created successfully');
       await fetchFacilities();
-      return newFacility as Facility;
+      return newFacility as unknown as Facility;
     } catch (err) {
       console.error('Error creating facility:', err);
       toast.error('Failed to create facility');

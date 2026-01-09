@@ -47,6 +47,8 @@ export interface FacilityInfo {
   level_of_care: LevelOfCare | null;
   category: string | null;
   capabilities: FacilityCapability[];
+  /** Services specifically configured for this facility (from registry) */
+  facilityServices: string[];
 }
 
 interface FacilityContextType {
@@ -134,6 +136,7 @@ export function FacilityProvider({ children }: { children: ReactNode }) {
         level_of_care: data.level_of_care as LevelOfCare,
         category: data.category,
         capabilities: (data.capabilities || []) as FacilityCapability[],
+        facilityServices: (data.facility_services || []) as string[],
       };
     } catch (err) {
       console.error('Error in fetchFacilityCapabilities:', err);
@@ -163,6 +166,7 @@ export function FacilityProvider({ children }: { children: ReactNode }) {
         level_of_care: f.level_of_care as LevelOfCare,
         category: f.category,
         capabilities: (f.capabilities || []) as FacilityCapability[],
+        facilityServices: (f.facility_services || []) as string[],
       }));
 
       setAvailableFacilities(facilities);
