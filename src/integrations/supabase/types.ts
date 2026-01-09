@@ -2490,12 +2490,19 @@ export type Database = {
       }
       health_providers: {
         Row: {
+          birth_country: string | null
           cadre: string
+          classification: string | null
           created_at: string
           created_by: string | null
+          current_address: string | null
           date_of_birth: string
+          disability_status: boolean | null
+          disability_type: string | null
           email: string | null
+          employee_number: string | null
           first_name: string
+          hire_date: string | null
           id: string
           is_master_record: boolean | null
           languages: string[] | null
@@ -2503,6 +2510,7 @@ export type Database = {
           lifecycle_state_changed_at: string | null
           lifecycle_state_changed_by: string | null
           lifecycle_state_reason: string | null
+          marital_status: string | null
           merge_reason: string | null
           merged_at: string | null
           merged_into_upid: string | null
@@ -2510,9 +2518,12 @@ export type Database = {
           nationality: string | null
           other_names: string | null
           passport_number: string | null
+          permanent_address: string | null
           phone: string | null
           photograph_url: string | null
           qualifications: Json | null
+          religion: string | null
+          residence_country: string | null
           sex: string
           specialty: string | null
           sub_specialty: string | null
@@ -2526,12 +2537,19 @@ export type Database = {
           user_linked_at: string | null
         }
         Insert: {
+          birth_country?: string | null
           cadre: string
+          classification?: string | null
           created_at?: string
           created_by?: string | null
+          current_address?: string | null
           date_of_birth: string
+          disability_status?: boolean | null
+          disability_type?: string | null
           email?: string | null
+          employee_number?: string | null
           first_name: string
+          hire_date?: string | null
           id?: string
           is_master_record?: boolean | null
           languages?: string[] | null
@@ -2539,6 +2557,7 @@ export type Database = {
           lifecycle_state_changed_at?: string | null
           lifecycle_state_changed_by?: string | null
           lifecycle_state_reason?: string | null
+          marital_status?: string | null
           merge_reason?: string | null
           merged_at?: string | null
           merged_into_upid?: string | null
@@ -2546,9 +2565,12 @@ export type Database = {
           nationality?: string | null
           other_names?: string | null
           passport_number?: string | null
+          permanent_address?: string | null
           phone?: string | null
           photograph_url?: string | null
           qualifications?: Json | null
+          religion?: string | null
+          residence_country?: string | null
           sex: string
           specialty?: string | null
           sub_specialty?: string | null
@@ -2562,12 +2584,19 @@ export type Database = {
           user_linked_at?: string | null
         }
         Update: {
+          birth_country?: string | null
           cadre?: string
+          classification?: string | null
           created_at?: string
           created_by?: string | null
+          current_address?: string | null
           date_of_birth?: string
+          disability_status?: boolean | null
+          disability_type?: string | null
           email?: string | null
+          employee_number?: string | null
           first_name?: string
+          hire_date?: string | null
           id?: string
           is_master_record?: boolean | null
           languages?: string[] | null
@@ -2575,6 +2604,7 @@ export type Database = {
           lifecycle_state_changed_at?: string | null
           lifecycle_state_changed_by?: string | null
           lifecycle_state_reason?: string | null
+          marital_status?: string | null
           merge_reason?: string | null
           merged_at?: string | null
           merged_into_upid?: string | null
@@ -2582,9 +2612,12 @@ export type Database = {
           nationality?: string | null
           other_names?: string | null
           passport_number?: string | null
+          permanent_address?: string | null
           phone?: string | null
           photograph_url?: string | null
           qualifications?: Json | null
+          religion?: string | null
+          residence_country?: string | null
           sex?: string
           specialty?: string | null
           sub_specialty?: string | null
@@ -5086,6 +5119,526 @@ export type Database = {
           },
         ]
       }
+      provider_dependents: {
+        Row: {
+          created_at: string
+          date_of_birth: string | null
+          disability_status: boolean | null
+          disability_type: string | null
+          email: string | null
+          full_name: string
+          id: string
+          is_beneficiary: boolean | null
+          is_dependent_on_tax: boolean | null
+          national_id: string | null
+          phone: string | null
+          provider_id: string
+          relationship: string
+          sex: string | null
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          date_of_birth?: string | null
+          disability_status?: boolean | null
+          disability_type?: string | null
+          email?: string | null
+          full_name: string
+          id?: string
+          is_beneficiary?: boolean | null
+          is_dependent_on_tax?: boolean | null
+          national_id?: string | null
+          phone?: string | null
+          provider_id: string
+          relationship: string
+          sex?: string | null
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          date_of_birth?: string | null
+          disability_status?: boolean | null
+          disability_type?: string | null
+          email?: string | null
+          full_name?: string
+          id?: string
+          is_beneficiary?: boolean | null
+          is_dependent_on_tax?: boolean | null
+          national_id?: string | null
+          phone?: string | null
+          provider_id?: string
+          relationship?: string
+          sex?: string | null
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "provider_dependents_provider_id_fkey"
+            columns: ["provider_id"]
+            isOneToOne: false
+            referencedRelation: "health_providers"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      provider_disciplinary: {
+        Row: {
+          action_date: string
+          action_duration_days: number | null
+          action_end_date: string | null
+          action_type: string
+          appeal_date: string | null
+          appeal_filed: boolean | null
+          appeal_outcome: string | null
+          created_at: string
+          created_by: string | null
+          description: string
+          disciplinary_letter_url: string | null
+          hearing_date: string | null
+          hearing_outcome: string | null
+          id: string
+          incident_date: string
+          incident_report_url: string | null
+          incident_type: string
+          investigated_by: string | null
+          investigation_notes: string | null
+          provider_id: string
+          reported_date: string | null
+          status: string | null
+          updated_at: string
+        }
+        Insert: {
+          action_date: string
+          action_duration_days?: number | null
+          action_end_date?: string | null
+          action_type: string
+          appeal_date?: string | null
+          appeal_filed?: boolean | null
+          appeal_outcome?: string | null
+          created_at?: string
+          created_by?: string | null
+          description: string
+          disciplinary_letter_url?: string | null
+          hearing_date?: string | null
+          hearing_outcome?: string | null
+          id?: string
+          incident_date: string
+          incident_report_url?: string | null
+          incident_type: string
+          investigated_by?: string | null
+          investigation_notes?: string | null
+          provider_id: string
+          reported_date?: string | null
+          status?: string | null
+          updated_at?: string
+        }
+        Update: {
+          action_date?: string
+          action_duration_days?: number | null
+          action_end_date?: string | null
+          action_type?: string
+          appeal_date?: string | null
+          appeal_filed?: boolean | null
+          appeal_outcome?: string | null
+          created_at?: string
+          created_by?: string | null
+          description?: string
+          disciplinary_letter_url?: string | null
+          hearing_date?: string | null
+          hearing_outcome?: string | null
+          id?: string
+          incident_date?: string
+          incident_report_url?: string | null
+          incident_type?: string
+          investigated_by?: string | null
+          investigation_notes?: string | null
+          provider_id?: string
+          reported_date?: string | null
+          status?: string | null
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "provider_disciplinary_provider_id_fkey"
+            columns: ["provider_id"]
+            isOneToOne: false
+            referencedRelation: "health_providers"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      provider_education: {
+        Row: {
+          certificate_url: string | null
+          created_at: string
+          created_by: string | null
+          degree_name: string
+          education_level: string
+          end_date: string | null
+          gpa: string | null
+          graduation_date: string | null
+          honors: string | null
+          id: string
+          institution_country: string | null
+          institution_name: string
+          institution_type: string | null
+          major: string | null
+          minor: string | null
+          provider_id: string
+          start_date: string | null
+          status: string | null
+          updated_at: string
+          verified: boolean | null
+          verified_at: string | null
+          verified_by: string | null
+        }
+        Insert: {
+          certificate_url?: string | null
+          created_at?: string
+          created_by?: string | null
+          degree_name: string
+          education_level: string
+          end_date?: string | null
+          gpa?: string | null
+          graduation_date?: string | null
+          honors?: string | null
+          id?: string
+          institution_country?: string | null
+          institution_name: string
+          institution_type?: string | null
+          major?: string | null
+          minor?: string | null
+          provider_id: string
+          start_date?: string | null
+          status?: string | null
+          updated_at?: string
+          verified?: boolean | null
+          verified_at?: string | null
+          verified_by?: string | null
+        }
+        Update: {
+          certificate_url?: string | null
+          created_at?: string
+          created_by?: string | null
+          degree_name?: string
+          education_level?: string
+          end_date?: string | null
+          gpa?: string | null
+          graduation_date?: string | null
+          honors?: string | null
+          id?: string
+          institution_country?: string | null
+          institution_name?: string
+          institution_type?: string | null
+          major?: string | null
+          minor?: string | null
+          provider_id?: string
+          start_date?: string | null
+          status?: string | null
+          updated_at?: string
+          verified?: boolean | null
+          verified_at?: string | null
+          verified_by?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "provider_education_provider_id_fkey"
+            columns: ["provider_id"]
+            isOneToOne: false
+            referencedRelation: "health_providers"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      provider_emergency_contacts: {
+        Row: {
+          address: string | null
+          city: string | null
+          contact_name: string
+          country: string | null
+          created_at: string
+          email: string | null
+          id: string
+          is_primary: boolean | null
+          phone_primary: string
+          phone_secondary: string | null
+          priority_order: number | null
+          provider_id: string
+          relationship: string
+          updated_at: string
+        }
+        Insert: {
+          address?: string | null
+          city?: string | null
+          contact_name: string
+          country?: string | null
+          created_at?: string
+          email?: string | null
+          id?: string
+          is_primary?: boolean | null
+          phone_primary: string
+          phone_secondary?: string | null
+          priority_order?: number | null
+          provider_id: string
+          relationship: string
+          updated_at?: string
+        }
+        Update: {
+          address?: string | null
+          city?: string | null
+          contact_name?: string
+          country?: string | null
+          created_at?: string
+          email?: string | null
+          id?: string
+          is_primary?: boolean | null
+          phone_primary?: string
+          phone_secondary?: string | null
+          priority_order?: number | null
+          provider_id?: string
+          relationship?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "provider_emergency_contacts_provider_id_fkey"
+            columns: ["provider_id"]
+            isOneToOne: false
+            referencedRelation: "health_providers"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      provider_employment_history: {
+        Row: {
+          country: string | null
+          created_at: string
+          created_by: string | null
+          department: string | null
+          departure_reason: string | null
+          departure_type: string | null
+          employer_name: string
+          employer_type: string | null
+          end_date: string | null
+          facility_id: string | null
+          id: string
+          is_current: boolean | null
+          location: string | null
+          position_title: string
+          provider_id: string
+          reference_letter_url: string | null
+          start_date: string
+          supervisor_contact: string | null
+          supervisor_name: string | null
+          updated_at: string
+          verified: boolean | null
+          verified_at: string | null
+          verified_by: string | null
+        }
+        Insert: {
+          country?: string | null
+          created_at?: string
+          created_by?: string | null
+          department?: string | null
+          departure_reason?: string | null
+          departure_type?: string | null
+          employer_name: string
+          employer_type?: string | null
+          end_date?: string | null
+          facility_id?: string | null
+          id?: string
+          is_current?: boolean | null
+          location?: string | null
+          position_title: string
+          provider_id: string
+          reference_letter_url?: string | null
+          start_date: string
+          supervisor_contact?: string | null
+          supervisor_name?: string | null
+          updated_at?: string
+          verified?: boolean | null
+          verified_at?: string | null
+          verified_by?: string | null
+        }
+        Update: {
+          country?: string | null
+          created_at?: string
+          created_by?: string | null
+          department?: string | null
+          departure_reason?: string | null
+          departure_type?: string | null
+          employer_name?: string
+          employer_type?: string | null
+          end_date?: string | null
+          facility_id?: string | null
+          id?: string
+          is_current?: boolean | null
+          location?: string | null
+          position_title?: string
+          provider_id?: string
+          reference_letter_url?: string | null
+          start_date?: string
+          supervisor_contact?: string | null
+          supervisor_name?: string | null
+          updated_at?: string
+          verified?: boolean | null
+          verified_at?: string | null
+          verified_by?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "provider_employment_history_facility_id_fkey"
+            columns: ["facility_id"]
+            isOneToOne: false
+            referencedRelation: "facilities"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "provider_employment_history_provider_id_fkey"
+            columns: ["provider_id"]
+            isOneToOne: false
+            referencedRelation: "health_providers"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      provider_identifiers: {
+        Row: {
+          created_at: string
+          expiry_date: string | null
+          id: string
+          identifier_type: string
+          identifier_value: string
+          issue_date: string | null
+          issuing_authority: string | null
+          issuing_country: string | null
+          provider_id: string
+          updated_at: string
+          verified: boolean | null
+          verified_at: string | null
+          verified_by: string | null
+        }
+        Insert: {
+          created_at?: string
+          expiry_date?: string | null
+          id?: string
+          identifier_type: string
+          identifier_value: string
+          issue_date?: string | null
+          issuing_authority?: string | null
+          issuing_country?: string | null
+          provider_id: string
+          updated_at?: string
+          verified?: boolean | null
+          verified_at?: string | null
+          verified_by?: string | null
+        }
+        Update: {
+          created_at?: string
+          expiry_date?: string | null
+          id?: string
+          identifier_type?: string
+          identifier_value?: string
+          issue_date?: string | null
+          issuing_authority?: string | null
+          issuing_country?: string | null
+          provider_id?: string
+          updated_at?: string
+          verified?: boolean | null
+          verified_at?: string | null
+          verified_by?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "provider_identifiers_provider_id_fkey"
+            columns: ["provider_id"]
+            isOneToOne: false
+            referencedRelation: "health_providers"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      provider_leave: {
+        Row: {
+          acting_replacement_id: string | null
+          approved_at: string | null
+          approved_by: string | null
+          created_at: string
+          created_by: string | null
+          days_approved: number | null
+          days_requested: number
+          end_date: string
+          id: string
+          leave_type: string
+          notes: string | null
+          provider_id: string
+          reason: string | null
+          rejection_reason: string | null
+          requested_at: string | null
+          start_date: string
+          status: string | null
+          supporting_document_url: string | null
+          updated_at: string
+        }
+        Insert: {
+          acting_replacement_id?: string | null
+          approved_at?: string | null
+          approved_by?: string | null
+          created_at?: string
+          created_by?: string | null
+          days_approved?: number | null
+          days_requested: number
+          end_date: string
+          id?: string
+          leave_type: string
+          notes?: string | null
+          provider_id: string
+          reason?: string | null
+          rejection_reason?: string | null
+          requested_at?: string | null
+          start_date: string
+          status?: string | null
+          supporting_document_url?: string | null
+          updated_at?: string
+        }
+        Update: {
+          acting_replacement_id?: string | null
+          approved_at?: string | null
+          approved_by?: string | null
+          created_at?: string
+          created_by?: string | null
+          days_approved?: number | null
+          days_requested?: number
+          end_date?: string
+          id?: string
+          leave_type?: string
+          notes?: string | null
+          provider_id?: string
+          reason?: string | null
+          rejection_reason?: string | null
+          requested_at?: string | null
+          start_date?: string
+          status?: string | null
+          supporting_document_url?: string | null
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "provider_leave_acting_replacement_id_fkey"
+            columns: ["acting_replacement_id"]
+            isOneToOne: false
+            referencedRelation: "health_providers"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "provider_leave_provider_id_fkey"
+            columns: ["provider_id"]
+            isOneToOne: false
+            referencedRelation: "health_providers"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       provider_licenses: {
         Row: {
           council_id: string
@@ -5153,6 +5706,215 @@ export type Database = {
         Relationships: [
           {
             foreignKeyName: "provider_licenses_provider_id_fkey"
+            columns: ["provider_id"]
+            isOneToOne: false
+            referencedRelation: "health_providers"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      provider_performance: {
+        Row: {
+          areas_for_improvement: string | null
+          attendance_score: number | null
+          comments: string | null
+          communication_score: number | null
+          created_at: string
+          created_by: string | null
+          employee_comments: string | null
+          employee_signed: boolean | null
+          employee_signed_at: string | null
+          end_date: string
+          evaluation_form_url: string | null
+          evaluation_period: string
+          evaluator_id: string | null
+          evaluator_name: string | null
+          evaluator_position: string | null
+          finalized_at: string | null
+          goals_achieved: string | null
+          goals_set: string | null
+          id: string
+          leadership_score: number | null
+          overall_score: number | null
+          productivity_score: number | null
+          provider_id: string
+          quality_score: number | null
+          start_date: string
+          status: string | null
+          strengths: string | null
+          teamwork_score: number | null
+          updated_at: string
+        }
+        Insert: {
+          areas_for_improvement?: string | null
+          attendance_score?: number | null
+          comments?: string | null
+          communication_score?: number | null
+          created_at?: string
+          created_by?: string | null
+          employee_comments?: string | null
+          employee_signed?: boolean | null
+          employee_signed_at?: string | null
+          end_date: string
+          evaluation_form_url?: string | null
+          evaluation_period: string
+          evaluator_id?: string | null
+          evaluator_name?: string | null
+          evaluator_position?: string | null
+          finalized_at?: string | null
+          goals_achieved?: string | null
+          goals_set?: string | null
+          id?: string
+          leadership_score?: number | null
+          overall_score?: number | null
+          productivity_score?: number | null
+          provider_id: string
+          quality_score?: number | null
+          start_date: string
+          status?: string | null
+          strengths?: string | null
+          teamwork_score?: number | null
+          updated_at?: string
+        }
+        Update: {
+          areas_for_improvement?: string | null
+          attendance_score?: number | null
+          comments?: string | null
+          communication_score?: number | null
+          created_at?: string
+          created_by?: string | null
+          employee_comments?: string | null
+          employee_signed?: boolean | null
+          employee_signed_at?: string | null
+          end_date?: string
+          evaluation_form_url?: string | null
+          evaluation_period?: string
+          evaluator_id?: string | null
+          evaluator_name?: string | null
+          evaluator_position?: string | null
+          finalized_at?: string | null
+          goals_achieved?: string | null
+          goals_set?: string | null
+          id?: string
+          leadership_score?: number | null
+          overall_score?: number | null
+          productivity_score?: number | null
+          provider_id?: string
+          quality_score?: number | null
+          start_date?: string
+          status?: string | null
+          strengths?: string | null
+          teamwork_score?: number | null
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "provider_performance_evaluator_id_fkey"
+            columns: ["evaluator_id"]
+            isOneToOne: false
+            referencedRelation: "health_providers"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "provider_performance_provider_id_fkey"
+            columns: ["provider_id"]
+            isOneToOne: false
+            referencedRelation: "health_providers"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      provider_position_changes: {
+        Row: {
+          affiliation_id: string | null
+          authorization_document_url: string | null
+          authorization_reference: string | null
+          authorized_by: string | null
+          change_type: string
+          created_at: string
+          created_by: string | null
+          effective_date: string
+          id: string
+          new_department: string | null
+          new_facility_id: string | null
+          new_position_title: string
+          new_salary_grade: string | null
+          previous_department: string | null
+          previous_facility_id: string | null
+          previous_position_title: string | null
+          previous_salary_grade: string | null
+          provider_id: string
+          reason: string | null
+          updated_at: string
+        }
+        Insert: {
+          affiliation_id?: string | null
+          authorization_document_url?: string | null
+          authorization_reference?: string | null
+          authorized_by?: string | null
+          change_type: string
+          created_at?: string
+          created_by?: string | null
+          effective_date: string
+          id?: string
+          new_department?: string | null
+          new_facility_id?: string | null
+          new_position_title: string
+          new_salary_grade?: string | null
+          previous_department?: string | null
+          previous_facility_id?: string | null
+          previous_position_title?: string | null
+          previous_salary_grade?: string | null
+          provider_id: string
+          reason?: string | null
+          updated_at?: string
+        }
+        Update: {
+          affiliation_id?: string | null
+          authorization_document_url?: string | null
+          authorization_reference?: string | null
+          authorized_by?: string | null
+          change_type?: string
+          created_at?: string
+          created_by?: string | null
+          effective_date?: string
+          id?: string
+          new_department?: string | null
+          new_facility_id?: string | null
+          new_position_title?: string
+          new_salary_grade?: string | null
+          previous_department?: string | null
+          previous_facility_id?: string | null
+          previous_position_title?: string | null
+          previous_salary_grade?: string | null
+          provider_id?: string
+          reason?: string | null
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "provider_position_changes_affiliation_id_fkey"
+            columns: ["affiliation_id"]
+            isOneToOne: false
+            referencedRelation: "provider_affiliations"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "provider_position_changes_new_facility_id_fkey"
+            columns: ["new_facility_id"]
+            isOneToOne: false
+            referencedRelation: "facilities"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "provider_position_changes_previous_facility_id_fkey"
+            columns: ["previous_facility_id"]
+            isOneToOne: false
+            referencedRelation: "facilities"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "provider_position_changes_provider_id_fkey"
             columns: ["provider_id"]
             isOneToOne: false
             referencedRelation: "health_providers"
@@ -5360,6 +6122,92 @@ export type Database = {
           },
         ]
       }
+      provider_salary: {
+        Row: {
+          account_number_masked: string | null
+          allowances: Json | null
+          bank_name: string | null
+          base_salary: number
+          created_at: string
+          created_by: string | null
+          currency: string | null
+          deductions: Json | null
+          effective_from: string
+          effective_until: string | null
+          funder_name: string | null
+          funding_project: string | null
+          funds_source: string
+          id: string
+          is_current: boolean | null
+          net_salary: number | null
+          pay_frequency: string | null
+          provider_id: string
+          salary_grade: string
+          salary_step: string | null
+          total_allowances: number | null
+          total_deductions: number | null
+          updated_at: string
+        }
+        Insert: {
+          account_number_masked?: string | null
+          allowances?: Json | null
+          bank_name?: string | null
+          base_salary: number
+          created_at?: string
+          created_by?: string | null
+          currency?: string | null
+          deductions?: Json | null
+          effective_from: string
+          effective_until?: string | null
+          funder_name?: string | null
+          funding_project?: string | null
+          funds_source: string
+          id?: string
+          is_current?: boolean | null
+          net_salary?: number | null
+          pay_frequency?: string | null
+          provider_id: string
+          salary_grade: string
+          salary_step?: string | null
+          total_allowances?: number | null
+          total_deductions?: number | null
+          updated_at?: string
+        }
+        Update: {
+          account_number_masked?: string | null
+          allowances?: Json | null
+          bank_name?: string | null
+          base_salary?: number
+          created_at?: string
+          created_by?: string | null
+          currency?: string | null
+          deductions?: Json | null
+          effective_from?: string
+          effective_until?: string | null
+          funder_name?: string | null
+          funding_project?: string | null
+          funds_source?: string
+          id?: string
+          is_current?: boolean | null
+          net_salary?: number | null
+          pay_frequency?: string | null
+          provider_id?: string
+          salary_grade?: string
+          salary_step?: string | null
+          total_allowances?: number | null
+          total_deductions?: number | null
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "provider_salary_provider_id_fkey"
+            columns: ["provider_id"]
+            isOneToOne: false
+            referencedRelation: "health_providers"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       provider_schedules: {
         Row: {
           created_at: string
@@ -5494,6 +6342,86 @@ export type Database = {
         }
         Relationships: []
       }
+      provider_training: {
+        Row: {
+          certificate_number: string | null
+          certificate_received: boolean | null
+          certificate_url: string | null
+          cost: number | null
+          created_at: string
+          created_by: string | null
+          description: string | null
+          duration_hours: number | null
+          end_date: string | null
+          expiry_date: string | null
+          id: string
+          location: string | null
+          provider_id: string
+          sponsored_by: string | null
+          start_date: string
+          status: string | null
+          training_category: string | null
+          training_name: string
+          training_provider: string
+          training_type: string
+          updated_at: string
+        }
+        Insert: {
+          certificate_number?: string | null
+          certificate_received?: boolean | null
+          certificate_url?: string | null
+          cost?: number | null
+          created_at?: string
+          created_by?: string | null
+          description?: string | null
+          duration_hours?: number | null
+          end_date?: string | null
+          expiry_date?: string | null
+          id?: string
+          location?: string | null
+          provider_id: string
+          sponsored_by?: string | null
+          start_date: string
+          status?: string | null
+          training_category?: string | null
+          training_name: string
+          training_provider: string
+          training_type: string
+          updated_at?: string
+        }
+        Update: {
+          certificate_number?: string | null
+          certificate_received?: boolean | null
+          certificate_url?: string | null
+          cost?: number | null
+          created_at?: string
+          created_by?: string | null
+          description?: string | null
+          duration_hours?: number | null
+          end_date?: string | null
+          expiry_date?: string | null
+          id?: string
+          location?: string | null
+          provider_id?: string
+          sponsored_by?: string | null
+          start_date?: string
+          status?: string | null
+          training_category?: string | null
+          training_name?: string
+          training_provider?: string
+          training_type?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "provider_training_provider_id_fkey"
+            columns: ["provider_id"]
+            isOneToOne: false
+            referencedRelation: "health_providers"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       providers: {
         Row: {
           biometric_enrolled: boolean | null
@@ -5596,6 +6524,159 @@ export type Database = {
           p256dh?: string
           updated_at?: string
           user_id?: string
+        }
+        Relationships: []
+      }
+      ref_classifications: {
+        Row: {
+          code: string
+          created_at: string
+          description: string | null
+          id: string
+          is_active: boolean | null
+          name: string
+        }
+        Insert: {
+          code: string
+          created_at?: string
+          description?: string | null
+          id?: string
+          is_active?: boolean | null
+          name: string
+        }
+        Update: {
+          code?: string
+          created_at?: string
+          description?: string | null
+          id?: string
+          is_active?: boolean | null
+          name?: string
+        }
+        Relationships: []
+      }
+      ref_education_levels: {
+        Row: {
+          code: string
+          created_at: string
+          description: string | null
+          id: string
+          is_active: boolean | null
+          name: string
+          sort_order: number | null
+        }
+        Insert: {
+          code: string
+          created_at?: string
+          description?: string | null
+          id?: string
+          is_active?: boolean | null
+          name: string
+          sort_order?: number | null
+        }
+        Update: {
+          code?: string
+          created_at?: string
+          description?: string | null
+          id?: string
+          is_active?: boolean | null
+          name?: string
+          sort_order?: number | null
+        }
+        Relationships: []
+      }
+      ref_leave_types: {
+        Row: {
+          code: string
+          created_at: string
+          default_days: number | null
+          description: string | null
+          id: string
+          is_active: boolean | null
+          is_paid: boolean | null
+          name: string
+        }
+        Insert: {
+          code: string
+          created_at?: string
+          default_days?: number | null
+          description?: string | null
+          id?: string
+          is_active?: boolean | null
+          is_paid?: boolean | null
+          name: string
+        }
+        Update: {
+          code?: string
+          created_at?: string
+          default_days?: number | null
+          description?: string | null
+          id?: string
+          is_active?: boolean | null
+          is_paid?: boolean | null
+          name?: string
+        }
+        Relationships: []
+      }
+      ref_salary_grades: {
+        Row: {
+          code: string
+          created_at: string
+          currency: string | null
+          description: string | null
+          id: string
+          is_active: boolean | null
+          max_salary: number | null
+          min_salary: number | null
+          name: string
+        }
+        Insert: {
+          code: string
+          created_at?: string
+          currency?: string | null
+          description?: string | null
+          id?: string
+          is_active?: boolean | null
+          max_salary?: number | null
+          min_salary?: number | null
+          name: string
+        }
+        Update: {
+          code?: string
+          created_at?: string
+          currency?: string | null
+          description?: string | null
+          id?: string
+          is_active?: boolean | null
+          max_salary?: number | null
+          min_salary?: number | null
+          name?: string
+        }
+        Relationships: []
+      }
+      ref_training_types: {
+        Row: {
+          code: string
+          created_at: string
+          description: string | null
+          id: string
+          is_active: boolean | null
+          name: string
+        }
+        Insert: {
+          code: string
+          created_at?: string
+          description?: string | null
+          id?: string
+          is_active?: boolean | null
+          name: string
+        }
+        Update: {
+          code?: string
+          created_at?: string
+          description?: string | null
+          id?: string
+          is_active?: boolean | null
+          name?: string
         }
         Relationships: []
       }
