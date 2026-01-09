@@ -152,6 +152,18 @@ const workModuleCategories: ModuleCategory[] = [
     ],
   },
   {
+    id: "identity",
+    title: "Identity Services",
+    description: "Generate, validate, and recover health IDs",
+    modules: [
+      { id: "id-services", label: "ID Services Hub", description: "Generate, validate & recover IDs", icon: Shield, path: "/id-services", color: "bg-primary" },
+      { id: "phid-generation", label: "Patient PHID", description: "Generate Patient Health IDs", icon: UserCog, path: "/id-services", color: "bg-blue-500" },
+      { id: "provider-id", label: "Provider ID (Varapi)", description: "Generate healthcare worker IDs", icon: Stethoscope, path: "/id-services", color: "bg-teal-500" },
+      { id: "facility-id", label: "Facility ID (Thuso)", description: "Generate facility identifiers", icon: Building2, path: "/id-services", color: "bg-purple-500" },
+      { id: "id-recovery", label: "ID Recovery", description: "Recover lost or forgotten IDs", icon: Shield, path: "/id-services", color: "bg-amber-500" },
+    ],
+  },
+  {
     id: "registries",
     title: "HIE Registries",
     description: "Health information exchange registries and services",
