@@ -7352,6 +7352,7 @@ export type Database = {
           is_active: boolean | null
           is_paid: boolean | null
           name: string
+          sort_order: number | null
         }
         Insert: {
           code: string
@@ -7362,6 +7363,7 @@ export type Database = {
           is_active?: boolean | null
           is_paid?: boolean | null
           name: string
+          sort_order?: number | null
         }
         Update: {
           code?: string
@@ -7372,6 +7374,7 @@ export type Database = {
           is_active?: boolean | null
           is_paid?: boolean | null
           name?: string
+          sort_order?: number | null
         }
         Relationships: []
       }
@@ -7485,6 +7488,7 @@ export type Database = {
           max_salary: number | null
           min_salary: number | null
           name: string
+          sort_order: number | null
         }
         Insert: {
           code: string
@@ -7496,6 +7500,7 @@ export type Database = {
           max_salary?: number | null
           min_salary?: number | null
           name: string
+          sort_order?: number | null
         }
         Update: {
           code?: string
@@ -7507,6 +7512,7 @@ export type Database = {
           max_salary?: number | null
           min_salary?: number | null
           name?: string
+          sort_order?: number | null
         }
         Relationships: []
       }
@@ -7554,6 +7560,7 @@ export type Database = {
           id: string
           is_active: boolean | null
           name: string
+          sort_order: number | null
         }
         Insert: {
           code: string
@@ -7562,6 +7569,7 @@ export type Database = {
           id?: string
           is_active?: boolean | null
           name: string
+          sort_order?: number | null
         }
         Update: {
           code?: string
@@ -7570,6 +7578,7 @@ export type Database = {
           id?: string
           is_active?: boolean | null
           name?: string
+          sort_order?: number | null
         }
         Relationships: []
       }
