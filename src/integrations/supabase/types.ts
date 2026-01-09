@@ -7351,6 +7351,7 @@ export type Database = {
           id: string
           is_active: boolean | null
           is_paid: boolean | null
+          max_days_per_year: number | null
           name: string
           sort_order: number | null
         }
@@ -7362,6 +7363,7 @@ export type Database = {
           id?: string
           is_active?: boolean | null
           is_paid?: boolean | null
+          max_days_per_year?: number | null
           name: string
           sort_order?: number | null
         }
@@ -7373,6 +7375,7 @@ export type Database = {
           id?: string
           is_active?: boolean | null
           is_paid?: boolean | null
+          max_days_per_year?: number | null
           name?: string
           sort_order?: number | null
         }
