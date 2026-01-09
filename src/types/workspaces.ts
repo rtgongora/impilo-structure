@@ -64,7 +64,9 @@ export type WorkspaceType =
   | "endoscopy"
   | "interventional_radiology"
   | "physiotherapy"
-  | "psychotherapy";
+  | "psychotherapy"
+  | "teleconsultation"
+  | "virtual_care";
 
 // ============= THEATRE WORKSPACE =============
 
