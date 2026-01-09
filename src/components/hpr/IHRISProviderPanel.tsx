@@ -10,6 +10,12 @@ import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { Separator } from '@/components/ui/separator';
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+} from '@/components/ui/dialog';
 import { toast } from 'sonner';
 import {
   User,
@@ -31,6 +37,7 @@ import {
   CheckCircle,
   XCircle,
   Loader2,
+  Edit,
 } from 'lucide-react';
 import type { HealthProvider } from '@/types/hpr';
 import { IHRISService } from '@/services/ihrisService';
@@ -47,6 +54,7 @@ import type {
   ProviderIdentifier,
 } from '@/types/ihris';
 import { format } from 'date-fns';
+import { ProviderEditForm } from './ProviderEditForm';
 
 interface IHRISProviderPanelProps {
   provider: HealthProvider;
@@ -58,6 +66,7 @@ type TabValue = 'overview' | 'education' | 'employment' | 'training' | 'leave' |
 export function IHRISProviderPanel({ provider, onProviderUpdated }: IHRISProviderPanelProps) {
   const [activeTab, setActiveTab] = useState<TabValue>('overview');
   const [loading, setLoading] = useState(false);
+  const [editDialogOpen, setEditDialogOpen] = useState(false);
   
   // Data state
   const [education, setEducation] = useState<ProviderEducation[]>([]);
@@ -144,7 +153,7 @@ export function IHRISProviderPanel({ provider, onProviderUpdated }: IHRISProvide
             </CardTitle>
             <CardDescription className="font-mono">{provider.upid}</CardDescription>
           </div>
-          <div className="flex gap-2">
+          <div className="flex items-center gap-2">
             {activeDisciplinary.length > 0 && (
               <Badge variant="destructive" className="gap-1">
                 <AlertTriangle className="h-3 w-3" />
@@ -157,6 +166,10 @@ export function IHRISProviderPanel({ provider, onProviderUpdated }: IHRISProvide
                 {pendingLeave.length} Pending Leave
               </Badge>
             )}
+            <Button size="sm" variant="outline" onClick={() => setEditDialogOpen(true)}>
+              <Edit className="h-4 w-4 mr-1" />
+              Edit
+            </Button>
           </div>
         </div>
       </CardHeader>
@@ -701,6 +714,23 @@ export function IHRISProviderPanel({ provider, onProviderUpdated }: IHRISProvide
           )}
         </CardContent>
       </Tabs>
+
+      {/* Edit Provider Dialog */}
+      <Dialog open={editDialogOpen} onOpenChange={setEditDialogOpen}>
+        <DialogContent className="max-w-4xl max-h-[90vh] overflow-y-auto">
+          <DialogHeader>
+            <DialogTitle>Edit Provider: {provider.first_name} {provider.surname}</DialogTitle>
+          </DialogHeader>
+          <ProviderEditForm 
+            provider={provider}
+            onSuccess={() => {
+              setEditDialogOpen(false);
+              onProviderUpdated?.();
+            }}
+            onCancel={() => setEditDialogOpen(false)}
+          />
+        </DialogContent>
+      </Dialog>
     </Card>
   );
 }
