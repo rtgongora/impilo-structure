@@ -6719,6 +6719,8 @@ export type Database = {
           id: string
           is_active: boolean | null
           name: string
+          sort_order: number | null
+          updated_at: string | null
         }
         Insert: {
           category?: string | null
@@ -6728,6 +6730,8 @@ export type Database = {
           id?: string
           is_active?: boolean | null
           name: string
+          sort_order?: number | null
+          updated_at?: string | null
         }
         Update: {
           category?: string | null
@@ -6737,6 +6741,8 @@ export type Database = {
           id?: string
           is_active?: boolean | null
           name?: string
+          sort_order?: number | null
+          updated_at?: string | null
         }
         Relationships: [
           {
@@ -6756,6 +6762,8 @@ export type Database = {
           id: string
           is_active: boolean | null
           name: string
+          sort_order: number | null
+          updated_at: string | null
         }
         Insert: {
           code: string
@@ -6764,6 +6772,8 @@ export type Database = {
           id?: string
           is_active?: boolean | null
           name: string
+          sort_order?: number | null
+          updated_at?: string | null
         }
         Update: {
           code?: string
@@ -6772,6 +6782,8 @@ export type Database = {
           id?: string
           is_active?: boolean | null
           name?: string
+          sort_order?: number | null
+          updated_at?: string | null
         }
         Relationships: []
       }
@@ -6955,6 +6967,8 @@ export type Database = {
           is_active: boolean | null
           name: string
           sort_order: number | null
+          updated_at: string | null
+          years_of_education: number | null
         }
         Insert: {
           code: string
@@ -6964,6 +6978,8 @@ export type Database = {
           is_active?: boolean | null
           name: string
           sort_order?: number | null
+          updated_at?: string | null
+          years_of_education?: number | null
         }
         Update: {
           code?: string
@@ -6973,6 +6989,8 @@ export type Database = {
           is_active?: boolean | null
           name?: string
           sort_order?: number | null
+          updated_at?: string | null
+          years_of_education?: number | null
         }
         Relationships: []
       }
@@ -7049,6 +7067,8 @@ export type Database = {
           id: string
           is_active: boolean | null
           name: string
+          sort_order: number | null
+          updated_at: string | null
         }
         Insert: {
           code: string
@@ -7056,6 +7076,8 @@ export type Database = {
           id?: string
           is_active?: boolean | null
           name: string
+          sort_order?: number | null
+          updated_at?: string | null
         }
         Update: {
           code?: string
@@ -7063,6 +7085,8 @@ export type Database = {
           id?: string
           is_active?: boolean | null
           name?: string
+          sort_order?: number | null
+          updated_at?: string | null
         }
         Relationships: []
       }
@@ -7110,6 +7134,8 @@ export type Database = {
           id: string
           is_active: boolean | null
           name: string
+          sort_order: number | null
+          updated_at: string | null
         }
         Insert: {
           code: string
@@ -7118,6 +7144,8 @@ export type Database = {
           id?: string
           is_active?: boolean | null
           name: string
+          sort_order?: number | null
+          updated_at?: string | null
         }
         Update: {
           code?: string
@@ -7126,6 +7154,8 @@ export type Database = {
           id?: string
           is_active?: boolean | null
           name?: string
+          sort_order?: number | null
+          updated_at?: string | null
         }
         Relationships: []
       }
@@ -7489,6 +7519,8 @@ export type Database = {
           id: string
           is_active: boolean | null
           name: string
+          sort_order: number | null
+          updated_at: string | null
         }
         Insert: {
           applicable_cadres?: string[] | null
@@ -7498,6 +7530,8 @@ export type Database = {
           id?: string
           is_active?: boolean | null
           name: string
+          sort_order?: number | null
+          updated_at?: string | null
         }
         Update: {
           applicable_cadres?: string[] | null
@@ -7507,6 +7541,8 @@ export type Database = {
           id?: string
           is_active?: boolean | null
           name?: string
+          sort_order?: number | null
+          updated_at?: string | null
         }
         Relationships: []
       }
