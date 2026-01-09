@@ -712,6 +712,128 @@ export type Database = {
           },
         ]
       }
+      client_registry_records: {
+        Row: {
+          address_line1: string | null
+          approved_at: string | null
+          approved_by: string | null
+          biometric_enrolled: boolean | null
+          biometric_facial_hash: string | null
+          biometric_fingerprint_hash: string | null
+          biometric_iris_hash: string | null
+          city: string | null
+          client_registry_id: string | null
+          country: string | null
+          created_at: string
+          created_by: string | null
+          date_of_birth: string
+          email: string | null
+          first_name: string
+          gender: string
+          id: string
+          impilo_id: string | null
+          last_modified_by: string | null
+          last_name: string
+          mosip_uin: string | null
+          national_id: string | null
+          other_names: string | null
+          passport_number: string | null
+          patient_id: string | null
+          phone: string | null
+          province: string | null
+          review_notes: string | null
+          reviewed_at: string | null
+          reviewed_by: string | null
+          shr_id: string | null
+          status: Database["public"]["Enums"]["registry_record_status"]
+          submitted_at: string | null
+          submitted_by: string | null
+          updated_at: string
+        }
+        Insert: {
+          address_line1?: string | null
+          approved_at?: string | null
+          approved_by?: string | null
+          biometric_enrolled?: boolean | null
+          biometric_facial_hash?: string | null
+          biometric_fingerprint_hash?: string | null
+          biometric_iris_hash?: string | null
+          city?: string | null
+          client_registry_id?: string | null
+          country?: string | null
+          created_at?: string
+          created_by?: string | null
+          date_of_birth: string
+          email?: string | null
+          first_name: string
+          gender: string
+          id?: string
+          impilo_id?: string | null
+          last_modified_by?: string | null
+          last_name: string
+          mosip_uin?: string | null
+          national_id?: string | null
+          other_names?: string | null
+          passport_number?: string | null
+          patient_id?: string | null
+          phone?: string | null
+          province?: string | null
+          review_notes?: string | null
+          reviewed_at?: string | null
+          reviewed_by?: string | null
+          shr_id?: string | null
+          status?: Database["public"]["Enums"]["registry_record_status"]
+          submitted_at?: string | null
+          submitted_by?: string | null
+          updated_at?: string
+        }
+        Update: {
+          address_line1?: string | null
+          approved_at?: string | null
+          approved_by?: string | null
+          biometric_enrolled?: boolean | null
+          biometric_facial_hash?: string | null
+          biometric_fingerprint_hash?: string | null
+          biometric_iris_hash?: string | null
+          city?: string | null
+          client_registry_id?: string | null
+          country?: string | null
+          created_at?: string
+          created_by?: string | null
+          date_of_birth?: string
+          email?: string | null
+          first_name?: string
+          gender?: string
+          id?: string
+          impilo_id?: string | null
+          last_modified_by?: string | null
+          last_name?: string
+          mosip_uin?: string | null
+          national_id?: string | null
+          other_names?: string | null
+          passport_number?: string | null
+          patient_id?: string | null
+          phone?: string | null
+          province?: string | null
+          review_notes?: string | null
+          reviewed_at?: string | null
+          reviewed_by?: string | null
+          shr_id?: string | null
+          status?: Database["public"]["Enums"]["registry_record_status"]
+          submitted_at?: string | null
+          submitted_by?: string | null
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "client_registry_records_patient_id_fkey"
+            columns: ["patient_id"]
+            isOneToOne: false
+            referencedRelation: "patients"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       clinical_alerts: {
         Row: {
           acknowledged_at: string | null
@@ -1796,6 +1918,122 @@ export type Database = {
           updated_at?: string | null
         }
         Relationships: []
+      }
+      facility_registry_records: {
+        Row: {
+          address_line1: string | null
+          approved_at: string | null
+          approved_by: string | null
+          bed_count: number | null
+          city: string | null
+          country: string | null
+          created_at: string
+          created_by: string | null
+          district: string | null
+          email: string | null
+          facility_id: string | null
+          facility_type: string
+          id: string
+          last_modified_by: string | null
+          latitude: number | null
+          level: string
+          longitude: number | null
+          name: string
+          operating_hours: string | null
+          ownership: string | null
+          phone: string | null
+          province: string
+          review_notes: string | null
+          reviewed_at: string | null
+          reviewed_by: string | null
+          services_offered: string[] | null
+          staff_count: number | null
+          status: Database["public"]["Enums"]["registry_record_status"]
+          submitted_at: string | null
+          submitted_by: string | null
+          thuso_id: string | null
+          updated_at: string
+          website: string | null
+        }
+        Insert: {
+          address_line1?: string | null
+          approved_at?: string | null
+          approved_by?: string | null
+          bed_count?: number | null
+          city?: string | null
+          country?: string | null
+          created_at?: string
+          created_by?: string | null
+          district?: string | null
+          email?: string | null
+          facility_id?: string | null
+          facility_type: string
+          id?: string
+          last_modified_by?: string | null
+          latitude?: number | null
+          level: string
+          longitude?: number | null
+          name: string
+          operating_hours?: string | null
+          ownership?: string | null
+          phone?: string | null
+          province: string
+          review_notes?: string | null
+          reviewed_at?: string | null
+          reviewed_by?: string | null
+          services_offered?: string[] | null
+          staff_count?: number | null
+          status?: Database["public"]["Enums"]["registry_record_status"]
+          submitted_at?: string | null
+          submitted_by?: string | null
+          thuso_id?: string | null
+          updated_at?: string
+          website?: string | null
+        }
+        Update: {
+          address_line1?: string | null
+          approved_at?: string | null
+          approved_by?: string | null
+          bed_count?: number | null
+          city?: string | null
+          country?: string | null
+          created_at?: string
+          created_by?: string | null
+          district?: string | null
+          email?: string | null
+          facility_id?: string | null
+          facility_type?: string
+          id?: string
+          last_modified_by?: string | null
+          latitude?: number | null
+          level?: string
+          longitude?: number | null
+          name?: string
+          operating_hours?: string | null
+          ownership?: string | null
+          phone?: string | null
+          province?: string
+          review_notes?: string | null
+          reviewed_at?: string | null
+          reviewed_by?: string | null
+          services_offered?: string[] | null
+          staff_count?: number | null
+          status?: Database["public"]["Enums"]["registry_record_status"]
+          submitted_at?: string | null
+          submitted_by?: string | null
+          thuso_id?: string | null
+          updated_at?: string
+          website?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "facility_registry_records_facility_id_fkey"
+            columns: ["facility_id"]
+            isOneToOne: false
+            referencedRelation: "facilities"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       five_rights_verification: {
         Row: {
@@ -4581,6 +4819,137 @@ export type Database = {
         }
         Relationships: []
       }
+      provider_registry_records: {
+        Row: {
+          approved_at: string | null
+          approved_by: string | null
+          biometric_enrolled: boolean | null
+          biometric_facial_hash: string | null
+          biometric_fingerprint_hash: string | null
+          biometric_iris_hash: string | null
+          created_at: string
+          created_by: string | null
+          date_of_birth: string | null
+          department: string | null
+          email: string
+          facility_id: string | null
+          first_name: string
+          gender: string | null
+          id: string
+          last_modified_by: string | null
+          last_name: string
+          license_expiry: string | null
+          license_issuing_body: string | null
+          license_number: string | null
+          national_id: string | null
+          other_names: string | null
+          phone: string | null
+          provider_id: string | null
+          qualification: string | null
+          qualification_institution: string | null
+          qualification_year: number | null
+          review_notes: string | null
+          reviewed_at: string | null
+          reviewed_by: string | null
+          role: string
+          specialty: string | null
+          status: Database["public"]["Enums"]["registry_record_status"]
+          submitted_at: string | null
+          submitted_by: string | null
+          updated_at: string
+          user_id: string | null
+          work_phone: string | null
+        }
+        Insert: {
+          approved_at?: string | null
+          approved_by?: string | null
+          biometric_enrolled?: boolean | null
+          biometric_facial_hash?: string | null
+          biometric_fingerprint_hash?: string | null
+          biometric_iris_hash?: string | null
+          created_at?: string
+          created_by?: string | null
+          date_of_birth?: string | null
+          department?: string | null
+          email: string
+          facility_id?: string | null
+          first_name: string
+          gender?: string | null
+          id?: string
+          last_modified_by?: string | null
+          last_name: string
+          license_expiry?: string | null
+          license_issuing_body?: string | null
+          license_number?: string | null
+          national_id?: string | null
+          other_names?: string | null
+          phone?: string | null
+          provider_id?: string | null
+          qualification?: string | null
+          qualification_institution?: string | null
+          qualification_year?: number | null
+          review_notes?: string | null
+          reviewed_at?: string | null
+          reviewed_by?: string | null
+          role: string
+          specialty?: string | null
+          status?: Database["public"]["Enums"]["registry_record_status"]
+          submitted_at?: string | null
+          submitted_by?: string | null
+          updated_at?: string
+          user_id?: string | null
+          work_phone?: string | null
+        }
+        Update: {
+          approved_at?: string | null
+          approved_by?: string | null
+          biometric_enrolled?: boolean | null
+          biometric_facial_hash?: string | null
+          biometric_fingerprint_hash?: string | null
+          biometric_iris_hash?: string | null
+          created_at?: string
+          created_by?: string | null
+          date_of_birth?: string | null
+          department?: string | null
+          email?: string
+          facility_id?: string | null
+          first_name?: string
+          gender?: string | null
+          id?: string
+          last_modified_by?: string | null
+          last_name?: string
+          license_expiry?: string | null
+          license_issuing_body?: string | null
+          license_number?: string | null
+          national_id?: string | null
+          other_names?: string | null
+          phone?: string | null
+          provider_id?: string | null
+          qualification?: string | null
+          qualification_institution?: string | null
+          qualification_year?: number | null
+          review_notes?: string | null
+          reviewed_at?: string | null
+          reviewed_by?: string | null
+          role?: string
+          specialty?: string | null
+          status?: Database["public"]["Enums"]["registry_record_status"]
+          submitted_at?: string | null
+          submitted_by?: string | null
+          updated_at?: string
+          user_id?: string | null
+          work_phone?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "provider_registry_records_facility_id_fkey"
+            columns: ["facility_id"]
+            isOneToOne: false
+            referencedRelation: "facilities"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       provider_schedules: {
         Row: {
           created_at: string
@@ -4850,6 +5219,96 @@ export type Database = {
             referencedColumns: ["id"]
           },
         ]
+      }
+      registry_admin_roles: {
+        Row: {
+          expires_at: string | null
+          granted_at: string
+          granted_by: string | null
+          id: string
+          is_active: boolean
+          notes: string | null
+          registry_role: Database["public"]["Enums"]["registry_role"]
+          user_id: string
+        }
+        Insert: {
+          expires_at?: string | null
+          granted_at?: string
+          granted_by?: string | null
+          id?: string
+          is_active?: boolean
+          notes?: string | null
+          registry_role: Database["public"]["Enums"]["registry_role"]
+          user_id: string
+        }
+        Update: {
+          expires_at?: string | null
+          granted_at?: string
+          granted_by?: string | null
+          id?: string
+          is_active?: boolean
+          notes?: string | null
+          registry_role?: Database["public"]["Enums"]["registry_role"]
+          user_id?: string
+        }
+        Relationships: []
+      }
+      registry_audit_log: {
+        Row: {
+          action: string
+          changes: Json | null
+          id: string
+          ip_address: string | null
+          new_status:
+            | Database["public"]["Enums"]["registry_record_status"]
+            | null
+          notes: string | null
+          old_status:
+            | Database["public"]["Enums"]["registry_record_status"]
+            | null
+          performed_at: string
+          performed_by: string
+          record_id: string
+          registry_type: string
+          user_agent: string | null
+        }
+        Insert: {
+          action: string
+          changes?: Json | null
+          id?: string
+          ip_address?: string | null
+          new_status?:
+            | Database["public"]["Enums"]["registry_record_status"]
+            | null
+          notes?: string | null
+          old_status?:
+            | Database["public"]["Enums"]["registry_record_status"]
+            | null
+          performed_at?: string
+          performed_by: string
+          record_id: string
+          registry_type: string
+          user_agent?: string | null
+        }
+        Update: {
+          action?: string
+          changes?: Json | null
+          id?: string
+          ip_address?: string | null
+          new_status?:
+            | Database["public"]["Enums"]["registry_record_status"]
+            | null
+          notes?: string | null
+          old_status?:
+            | Database["public"]["Enums"]["registry_record_status"]
+            | null
+          performed_at?: string
+          performed_by?: string
+          record_id?: string
+          registry_type?: string
+          user_agent?: string | null
+        }
+        Relationships: []
       }
       room_bookings: {
         Row: {
@@ -6688,6 +7147,13 @@ export type Database = {
         Args: { p_counter_type: string }
         Returns: number
       }
+      has_registry_role: {
+        Args: {
+          _registry_role: Database["public"]["Enums"]["registry_role"]
+          _user_id: string
+        }
+        Returns: boolean
+      }
       has_role: {
         Args: {
           _role: Database["public"]["Enums"]["app_role"]
@@ -6723,6 +7189,21 @@ export type Database = {
         | "diagnostic"
         | "nutritional"
         | "other"
+      registry_record_status:
+        | "draft"
+        | "pending_approval"
+        | "approved"
+        | "rejected"
+        | "suspended"
+        | "deactivated"
+      registry_role:
+        | "client_registry_admin"
+        | "provider_registry_admin"
+        | "facility_registry_admin"
+        | "terminology_admin"
+        | "shr_admin"
+        | "ndr_admin"
+        | "registry_super_admin"
     }
     CompositeTypes: {
       [_ in never]: never
@@ -6877,6 +7358,23 @@ export const Constants = {
         "diagnostic",
         "nutritional",
         "other",
+      ],
+      registry_record_status: [
+        "draft",
+        "pending_approval",
+        "approved",
+        "rejected",
+        "suspended",
+        "deactivated",
+      ],
+      registry_role: [
+        "client_registry_admin",
+        "provider_registry_admin",
+        "facility_registry_admin",
+        "terminology_admin",
+        "shr_admin",
+        "ndr_admin",
+        "registry_super_admin",
       ],
     },
   },
