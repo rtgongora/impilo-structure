@@ -401,6 +401,31 @@ export default function HealthProviderRegistry() {
             <IdPEventsPanel />
           </TabsContent>
 
+          {/* Reference Data Tab */}
+          <TabsContent value="reference" className="space-y-4">
+            <ReferenceDataManager />
+          </TabsContent>
+
+          {/* Professional Councils Tab */}
+          <TabsContent value="councils" className="space-y-4">
+            <ProfessionalCouncilsManager />
+          </TabsContent>
+
+          {/* Dashboard Tab */}
+          <TabsContent value="dashboard" className="space-y-4">
+            <HPRDashboard />
+          </TabsContent>
+
+          {/* Reports Tab */}
+          <TabsContent value="reports" className="space-y-4">
+            <HPRReports />
+          </TabsContent>
+
+          {/* Audit Log Tab */}
+          <TabsContent value="audit" className="space-y-4">
+            <HPRAuditLog />
+          </TabsContent>
+
           {/* Architecture Tab */}
           <TabsContent value="architecture" className="space-y-4">
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
