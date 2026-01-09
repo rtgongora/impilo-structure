@@ -160,7 +160,7 @@ export const MyCMEDashboard = () => {
               <CardContent>
                 {expiringLicenses.map(license => (
                   <div key={license.id} className="flex items-center justify-between">
-                    <span className="text-sm">{license.license_type}</span>
+                    <span className="text-sm">{license.license_category}</span>
                     <span className="text-sm text-muted-foreground">
                       Expires {format(new Date(license.expiry_date), 'PP')}
                     </span>
