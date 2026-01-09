@@ -420,6 +420,54 @@ export type Database = {
           },
         ]
       }
+      bulk_import_jobs: {
+        Row: {
+          completed_at: string | null
+          created_at: string
+          created_by: string | null
+          error_count: number
+          errors: Json | null
+          file_name: string
+          id: string
+          processed_rows: number
+          started_at: string | null
+          status: string
+          success_count: number
+          table_name: string
+          total_rows: number
+        }
+        Insert: {
+          completed_at?: string | null
+          created_at?: string
+          created_by?: string | null
+          error_count?: number
+          errors?: Json | null
+          file_name: string
+          id?: string
+          processed_rows?: number
+          started_at?: string | null
+          status?: string
+          success_count?: number
+          table_name: string
+          total_rows?: number
+        }
+        Update: {
+          completed_at?: string | null
+          created_at?: string
+          created_by?: string | null
+          error_count?: number
+          errors?: Json | null
+          file_name?: string
+          id?: string
+          processed_rows?: number
+          started_at?: string | null
+          status?: string
+          success_count?: number
+          table_name?: string
+          total_rows?: number
+        }
+        Relationships: []
+      }
       campaign_donations: {
         Row: {
           amount: number
@@ -1642,6 +1690,50 @@ export type Database = {
         Relationships: [
           {
             foreignKeyName: "council_administrators_council_id_fkey"
+            columns: ["council_id"]
+            isOneToOne: false
+            referencedRelation: "professional_councils"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      cpd_requirements: {
+        Row: {
+          cadre: string
+          categories: Json | null
+          council_id: string | null
+          created_at: string
+          cycle_years: number
+          id: string
+          is_active: boolean | null
+          points_required: number
+          updated_at: string
+        }
+        Insert: {
+          cadre: string
+          categories?: Json | null
+          council_id?: string | null
+          created_at?: string
+          cycle_years?: number
+          id?: string
+          is_active?: boolean | null
+          points_required?: number
+          updated_at?: string
+        }
+        Update: {
+          cadre?: string
+          categories?: Json | null
+          council_id?: string | null
+          created_at?: string
+          cycle_years?: number
+          id?: string
+          is_active?: boolean | null
+          points_required?: number
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "cpd_requirements_council_id_fkey"
             columns: ["council_id"]
             isOneToOne: false
             referencedRelation: "professional_councils"
@@ -3178,6 +3270,199 @@ export type Database = {
           updated_at?: string
         }
         Relationships: []
+      }
+      license_payments: {
+        Row: {
+          amount: number
+          created_at: string
+          currency: string
+          id: string
+          license_id: string | null
+          notes: string | null
+          payment_date: string
+          payment_method: string | null
+          payment_reference: string | null
+          payment_type: string
+          period_end: string | null
+          period_start: string | null
+          processed_at: string | null
+          processed_by: string | null
+          provider_id: string
+          receipt_number: string | null
+          status: string
+          transaction_id: string | null
+          updated_at: string
+        }
+        Insert: {
+          amount: number
+          created_at?: string
+          currency?: string
+          id?: string
+          license_id?: string | null
+          notes?: string | null
+          payment_date: string
+          payment_method?: string | null
+          payment_reference?: string | null
+          payment_type: string
+          period_end?: string | null
+          period_start?: string | null
+          processed_at?: string | null
+          processed_by?: string | null
+          provider_id: string
+          receipt_number?: string | null
+          status?: string
+          transaction_id?: string | null
+          updated_at?: string
+        }
+        Update: {
+          amount?: number
+          created_at?: string
+          currency?: string
+          id?: string
+          license_id?: string | null
+          notes?: string | null
+          payment_date?: string
+          payment_method?: string | null
+          payment_reference?: string | null
+          payment_type?: string
+          period_end?: string | null
+          period_start?: string | null
+          processed_at?: string | null
+          processed_by?: string | null
+          provider_id?: string
+          receipt_number?: string | null
+          status?: string
+          transaction_id?: string | null
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "license_payments_license_id_fkey"
+            columns: ["license_id"]
+            isOneToOne: false
+            referencedRelation: "provider_licenses"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "license_payments_provider_id_fkey"
+            columns: ["provider_id"]
+            isOneToOne: false
+            referencedRelation: "health_providers"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "license_payments_transaction_id_fkey"
+            columns: ["transaction_id"]
+            isOneToOne: false
+            referencedRelation: "payment_transactions"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      license_renewal_applications: {
+        Row: {
+          application_date: string
+          application_number: string | null
+          cpd_cycle_id: string | null
+          cpd_points_verified: boolean | null
+          created_at: string
+          current_expiry_date: string
+          decision_notes: string | null
+          documents_verified: boolean | null
+          id: string
+          license_id: string | null
+          new_expiry_date: string | null
+          new_license_id: string | null
+          payment_id: string | null
+          provider_id: string
+          requested_period_years: number
+          reviewed_at: string | null
+          reviewed_by: string | null
+          status: string
+          submitted_at: string | null
+          updated_at: string
+        }
+        Insert: {
+          application_date?: string
+          application_number?: string | null
+          cpd_cycle_id?: string | null
+          cpd_points_verified?: boolean | null
+          created_at?: string
+          current_expiry_date: string
+          decision_notes?: string | null
+          documents_verified?: boolean | null
+          id?: string
+          license_id?: string | null
+          new_expiry_date?: string | null
+          new_license_id?: string | null
+          payment_id?: string | null
+          provider_id: string
+          requested_period_years?: number
+          reviewed_at?: string | null
+          reviewed_by?: string | null
+          status?: string
+          submitted_at?: string | null
+          updated_at?: string
+        }
+        Update: {
+          application_date?: string
+          application_number?: string | null
+          cpd_cycle_id?: string | null
+          cpd_points_verified?: boolean | null
+          created_at?: string
+          current_expiry_date?: string
+          decision_notes?: string | null
+          documents_verified?: boolean | null
+          id?: string
+          license_id?: string | null
+          new_expiry_date?: string | null
+          new_license_id?: string | null
+          payment_id?: string | null
+          provider_id?: string
+          requested_period_years?: number
+          reviewed_at?: string | null
+          reviewed_by?: string | null
+          status?: string
+          submitted_at?: string | null
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "license_renewal_applications_cpd_cycle_id_fkey"
+            columns: ["cpd_cycle_id"]
+            isOneToOne: false
+            referencedRelation: "provider_cpd_cycles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "license_renewal_applications_license_id_fkey"
+            columns: ["license_id"]
+            isOneToOne: false
+            referencedRelation: "provider_licenses"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "license_renewal_applications_new_license_id_fkey"
+            columns: ["new_license_id"]
+            isOneToOne: false
+            referencedRelation: "provider_licenses"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "license_renewal_applications_payment_id_fkey"
+            columns: ["payment_id"]
+            isOneToOne: false
+            referencedRelation: "license_payments"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "license_renewal_applications_provider_id_fkey"
+            columns: ["provider_id"]
+            isOneToOne: false
+            referencedRelation: "health_providers"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       login_attempts: {
         Row: {
@@ -5302,6 +5587,140 @@ export type Database = {
           },
         ]
       }
+      provider_cpd_activities: {
+        Row: {
+          activity_date: string
+          activity_type_id: string | null
+          approved_at: string | null
+          approved_by: string | null
+          category: string
+          certificate_document_id: string | null
+          certificate_number: string | null
+          created_at: string
+          description: string | null
+          id: string
+          metadata: Json | null
+          points_awarded: number | null
+          points_claimed: number
+          provider_id: string
+          provider_name: string | null
+          rejection_reason: string | null
+          status: string
+          title: string
+          updated_at: string
+        }
+        Insert: {
+          activity_date: string
+          activity_type_id?: string | null
+          approved_at?: string | null
+          approved_by?: string | null
+          category: string
+          certificate_document_id?: string | null
+          certificate_number?: string | null
+          created_at?: string
+          description?: string | null
+          id?: string
+          metadata?: Json | null
+          points_awarded?: number | null
+          points_claimed: number
+          provider_id: string
+          provider_name?: string | null
+          rejection_reason?: string | null
+          status?: string
+          title: string
+          updated_at?: string
+        }
+        Update: {
+          activity_date?: string
+          activity_type_id?: string | null
+          approved_at?: string | null
+          approved_by?: string | null
+          category?: string
+          certificate_document_id?: string | null
+          certificate_number?: string | null
+          created_at?: string
+          description?: string | null
+          id?: string
+          metadata?: Json | null
+          points_awarded?: number | null
+          points_claimed?: number
+          provider_id?: string
+          provider_name?: string | null
+          rejection_reason?: string | null
+          status?: string
+          title?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "provider_cpd_activities_activity_type_id_fkey"
+            columns: ["activity_type_id"]
+            isOneToOne: false
+            referencedRelation: "ref_cpd_activity_types"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "provider_cpd_activities_provider_id_fkey"
+            columns: ["provider_id"]
+            isOneToOne: false
+            referencedRelation: "health_providers"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      provider_cpd_cycles: {
+        Row: {
+          completed_at: string | null
+          created_at: string
+          cycle_end: string
+          cycle_start: string
+          extended_to: string | null
+          extension_reason: string | null
+          id: string
+          points_earned: number
+          points_required: number
+          provider_id: string
+          status: string
+          updated_at: string
+        }
+        Insert: {
+          completed_at?: string | null
+          created_at?: string
+          cycle_end: string
+          cycle_start: string
+          extended_to?: string | null
+          extension_reason?: string | null
+          id?: string
+          points_earned?: number
+          points_required: number
+          provider_id: string
+          status?: string
+          updated_at?: string
+        }
+        Update: {
+          completed_at?: string | null
+          created_at?: string
+          cycle_end?: string
+          cycle_start?: string
+          extended_to?: string | null
+          extension_reason?: string | null
+          id?: string
+          points_earned?: number
+          points_required?: number
+          provider_id?: string
+          status?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "provider_cpd_cycles_provider_id_fkey"
+            columns: ["provider_id"]
+            isOneToOne: false
+            referencedRelation: "health_providers"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       provider_dependents: {
         Row: {
           created_at: string
@@ -5443,6 +5862,109 @@ export type Database = {
         Relationships: [
           {
             foreignKeyName: "provider_disciplinary_provider_id_fkey"
+            columns: ["provider_id"]
+            isOneToOne: false
+            referencedRelation: "health_providers"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      provider_documents: {
+        Row: {
+          created_at: string
+          document_number: string | null
+          document_type_code: string
+          document_type_id: string | null
+          expiry_date: string | null
+          file_name: string
+          file_path: string
+          file_size: number | null
+          id: string
+          is_current: boolean | null
+          is_verified: boolean | null
+          issue_date: string | null
+          issuing_authority: string | null
+          metadata: Json | null
+          mime_type: string | null
+          previous_version_id: string | null
+          provider_id: string
+          title: string
+          updated_at: string
+          uploaded_by: string | null
+          verification_notes: string | null
+          verified_at: string | null
+          verified_by: string | null
+          version: number
+        }
+        Insert: {
+          created_at?: string
+          document_number?: string | null
+          document_type_code: string
+          document_type_id?: string | null
+          expiry_date?: string | null
+          file_name: string
+          file_path: string
+          file_size?: number | null
+          id?: string
+          is_current?: boolean | null
+          is_verified?: boolean | null
+          issue_date?: string | null
+          issuing_authority?: string | null
+          metadata?: Json | null
+          mime_type?: string | null
+          previous_version_id?: string | null
+          provider_id: string
+          title: string
+          updated_at?: string
+          uploaded_by?: string | null
+          verification_notes?: string | null
+          verified_at?: string | null
+          verified_by?: string | null
+          version?: number
+        }
+        Update: {
+          created_at?: string
+          document_number?: string | null
+          document_type_code?: string
+          document_type_id?: string | null
+          expiry_date?: string | null
+          file_name?: string
+          file_path?: string
+          file_size?: number | null
+          id?: string
+          is_current?: boolean | null
+          is_verified?: boolean | null
+          issue_date?: string | null
+          issuing_authority?: string | null
+          metadata?: Json | null
+          mime_type?: string | null
+          previous_version_id?: string | null
+          provider_id?: string
+          title?: string
+          updated_at?: string
+          uploaded_by?: string | null
+          verification_notes?: string | null
+          verified_at?: string | null
+          verified_by?: string | null
+          version?: number
+        }
+        Relationships: [
+          {
+            foreignKeyName: "provider_documents_document_type_id_fkey"
+            columns: ["document_type_id"]
+            isOneToOne: false
+            referencedRelation: "ref_document_types"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "provider_documents_previous_version_id_fkey"
+            columns: ["previous_version_id"]
+            isOneToOne: false
+            referencedRelation: "provider_documents"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "provider_documents_provider_id_fkey"
             columns: ["provider_id"]
             isOneToOne: false
             referencedRelation: "health_providers"
@@ -6820,6 +7342,48 @@ export type Database = {
         }
         Relationships: []
       }
+      ref_cpd_activity_types: {
+        Row: {
+          category: string
+          code: string
+          created_at: string
+          default_points: number
+          description: string | null
+          id: string
+          is_active: boolean | null
+          max_points_per_activity: number | null
+          name: string
+          requires_approval: boolean | null
+          requires_certificate: boolean | null
+        }
+        Insert: {
+          category: string
+          code: string
+          created_at?: string
+          default_points?: number
+          description?: string | null
+          id?: string
+          is_active?: boolean | null
+          max_points_per_activity?: number | null
+          name: string
+          requires_approval?: boolean | null
+          requires_certificate?: boolean | null
+        }
+        Update: {
+          category?: string
+          code?: string
+          created_at?: string
+          default_points?: number
+          description?: string | null
+          id?: string
+          is_active?: boolean | null
+          max_points_per_activity?: number | null
+          name?: string
+          requires_approval?: boolean | null
+          requires_certificate?: boolean | null
+        }
+        Relationships: []
+      }
       ref_degrees: {
         Row: {
           code: string
@@ -6955,6 +7519,45 @@ export type Database = {
           region_id?: string | null
           sort_order?: number | null
           updated_at?: string | null
+        }
+        Relationships: []
+      }
+      ref_document_types: {
+        Row: {
+          category: string
+          code: string
+          created_at: string
+          description: string | null
+          id: string
+          is_active: boolean | null
+          is_mandatory: boolean | null
+          name: string
+          requires_expiry: boolean | null
+          requires_verification: boolean | null
+        }
+        Insert: {
+          category: string
+          code: string
+          created_at?: string
+          description?: string | null
+          id?: string
+          is_active?: boolean | null
+          is_mandatory?: boolean | null
+          name: string
+          requires_expiry?: boolean | null
+          requires_verification?: boolean | null
+        }
+        Update: {
+          category?: string
+          code?: string
+          created_at?: string
+          description?: string | null
+          id?: string
+          is_active?: boolean | null
+          is_mandatory?: boolean | null
+          name?: string
+          requires_expiry?: boolean | null
+          requires_verification?: boolean | null
         }
         Relationships: []
       }
@@ -9603,6 +10206,7 @@ export type Database = {
         Returns: string
       }
       generate_referral_number: { Args: never; Returns: string }
+      generate_renewal_application_number: { Args: never; Returns: string }
       generate_shr_id: { Args: never; Returns: string }
       generate_specimen_id: { Args: never; Returns: string }
       generate_theatre_booking_number: { Args: never; Returns: string }
