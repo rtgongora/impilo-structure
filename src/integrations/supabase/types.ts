@@ -11704,6 +11704,7 @@ export type Database = {
           facility_code: string | null
           facility_id: string | null
           facility_name: string | null
+          facility_services: string[] | null
           facility_type_code: string | null
           facility_type_name: string | null
           level_of_care: string | null
