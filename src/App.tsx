@@ -47,6 +47,7 @@ import IdServices from "./pages/IdServices";
 import Communication from "./pages/Communication";
 import Social from "./pages/Social";
 import Kiosk from "./pages/Kiosk";
+import RegistryManagement from "./pages/RegistryManagement";
 const queryClient = new QueryClient();
 
 const App = () => (
@@ -235,6 +236,11 @@ const App = () => (
               </ProtectedRoute>
             } />
             <Route path="/kiosk" element={<Kiosk />} />
+            <Route path="/registry-management" element={
+              <ProtectedRoute>
+                <RegistryManagement />
+              </ProtectedRoute>
+            } />
             {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
             <Route path="*" element={<NotFound />} />
           </Routes>
