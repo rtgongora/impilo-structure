@@ -49,6 +49,7 @@ import Social from "./pages/Social";
 import Kiosk from "./pages/Kiosk";
 import RegistryManagement from "./pages/RegistryManagement";
 import HealthProviderRegistry from "./pages/HealthProviderRegistry";
+import FacilityRegistry from "./pages/FacilityRegistry";
 const queryClient = new QueryClient();
 
 const App = () => (
@@ -245,6 +246,11 @@ const App = () => (
             <Route path="/hpr" element={
               <ProtectedRoute>
                 <HealthProviderRegistry />
+              </ProtectedRoute>
+            } />
+            <Route path="/facility-registry" element={
+              <ProtectedRoute>
+                <FacilityRegistry />
               </ProtectedRoute>
             } />
             {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
