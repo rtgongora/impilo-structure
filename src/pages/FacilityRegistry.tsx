@@ -228,23 +228,23 @@ const FacilityRegistry = () => {
                         className="pl-9"
                       />
                     </div>
-                    <Select value={provinceFilter} onValueChange={setProvinceFilter}>
+                    <Select value={provinceFilter || "all"} onValueChange={(v) => setProvinceFilter(v === "all" ? "" : v)}>
                       <SelectTrigger className="w-[180px]">
                         <SelectValue placeholder="All Provinces" />
                       </SelectTrigger>
                       <SelectContent>
-                        <SelectItem value="">All Provinces</SelectItem>
+                        <SelectItem value="all">All Provinces</SelectItem>
                         {provinces.map(p => (
                           <SelectItem key={p.id} value={p.id}>{p.name}</SelectItem>
                         ))}
                       </SelectContent>
                     </Select>
-                    <Select value={typeFilter} onValueChange={setTypeFilter}>
+                    <Select value={typeFilter || "all"} onValueChange={(v) => setTypeFilter(v === "all" ? "" : v)}>
                       <SelectTrigger className="w-[180px]">
                         <SelectValue placeholder="All Types" />
                       </SelectTrigger>
                       <SelectContent>
-                        <SelectItem value="">All Types</SelectItem>
+                        <SelectItem value="all">All Types</SelectItem>
                         {facilityTypes.map(t => (
                           <SelectItem key={t.id} value={t.id}>{t.name}</SelectItem>
                         ))}
