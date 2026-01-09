@@ -1,6 +1,7 @@
 /**
  * Reference Data Manager
- * Manage lookup lists: cadres, specializations, education levels, salary grades, etc.
+ * Manage lookup lists organized by iHRIS categories:
+ * Job Lists, Education Lists, Position Lists, Other Lists, Geography, Facility Data
  */
 
 import { useState, useEffect } from 'react';
@@ -10,7 +11,7 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Badge } from '@/components/ui/badge';
 import { Switch } from '@/components/ui/switch';
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import { ScrollArea } from '@/components/ui/scroll-area';
 import {
   Table,
   TableBody,
@@ -39,6 +40,11 @@ import {
   Stethoscope,
   Users,
   RefreshCw,
+  MapPin,
+  Building2,
+  Settings2,
+  ChevronRight,
+  Search,
 } from 'lucide-react';
 import { supabase } from '@/integrations/supabase/client';
 
@@ -46,47 +52,93 @@ interface RefItem {
   id: string;
   code: string;
   name: string;
-  category?: string;
-  description?: string;
-  is_active: boolean;
+  is_active?: boolean;
+  [key: string]: any;
 }
 
-type RefTableType = 
-  | 'ref_education_levels'
-  | 'ref_training_types'
-  | 'ref_salary_grades'
-  | 'ref_leave_types'
-  | 'ref_classifications'
-  | 'ref_specializations'
-  | 'ref_funds_sources'
-  | 'ref_employment_types'
-  | 'ref_cadres';
+// Define reference data categories matching iHRIS structure
+const referenceCategories = {
+  job: {
+    label: 'Job Lists',
+    icon: Briefcase,
+    tables: [
+      { name: 'ref_cadres', label: 'Cadres', columns: ['code', 'name', 'category'] },
+      { name: 'ref_classifications', label: 'Classifications', columns: ['code', 'name', 'description'] },
+      { name: 'ref_salary_grades', label: 'Salary Grades', columns: ['code', 'name', 'min_salary', 'max_salary'] },
+      { name: 'ref_funds_sources', label: 'Salary Sources', columns: ['code', 'name'] },
+      { name: 'ref_job_titles', label: 'Job Titles', columns: ['code', 'name', 'description'] },
+      { name: 'ref_job_types', label: 'Job Types', columns: ['code', 'name'] },
+    ]
+  },
+  education: {
+    label: 'Education Lists',
+    icon: GraduationCap,
+    tables: [
+      { name: 'ref_education_majors', label: 'Educational Majors', columns: ['code', 'name', 'field_of_study'] },
+      { name: 'ref_degrees', label: 'Degrees/Courses', columns: ['code', 'name', 'duration_years'] },
+      { name: 'ref_education_levels', label: 'Education Levels', columns: ['code', 'name'] },
+      { name: 'ref_institution_types', label: 'Institution Types', columns: ['code', 'name'] },
+      { name: 'ref_institutions', label: 'Institutions', columns: ['code', 'name', 'country', 'city'] },
+    ]
+  },
+  position: {
+    label: 'Position Lists',
+    icon: Users,
+    tables: [
+      { name: 'ref_employment_statuses', label: 'Employment Status', columns: ['code', 'name'] },
+      { name: 'ref_departure_reasons', label: 'Departure Reasons', columns: ['code', 'name', 'category'] },
+      { name: 'ref_employment_types', label: 'Employment Types', columns: ['code', 'name'] },
+      { name: 'ref_pay_frequencies', label: 'Pay Frequencies', columns: ['code', 'name', 'periods_per_year'] },
+    ]
+  },
+  other: {
+    label: 'Other Lists',
+    icon: Settings2,
+    tables: [
+      { name: 'ref_identifier_types', label: 'Identifier Types', columns: ['code', 'name', 'is_required'] },
+      { name: 'ref_leave_types', label: 'Leave Types', columns: ['code', 'name', 'max_days_per_year', 'is_paid'] },
+      { name: 'ref_discipline_actions', label: 'Discipline Actions', columns: ['code', 'name', 'severity'] },
+      { name: 'ref_training_types', label: 'Training Types', columns: ['code', 'name', 'category'] },
+      { name: 'ref_specializations', label: 'Specializations', columns: ['code', 'name'] },
+    ]
+  },
+  geography: {
+    label: 'Geographical Info',
+    icon: MapPin,
+    tables: [
+      { name: 'ref_countries', label: 'Countries', columns: ['code', 'name', 'iso_code'] },
+      { name: 'ref_regions', label: 'Regions/Provinces', columns: ['code', 'name'] },
+      { name: 'ref_districts', label: 'Districts', columns: ['code', 'name'] },
+      { name: 'ref_nationalities', label: 'Nationalities', columns: ['code', 'name'] },
+    ]
+  },
+  facility: {
+    label: 'Facility Data',
+    icon: Building2,
+    tables: [
+      { name: 'ref_facility_types', label: 'Facility Types', columns: ['code', 'name', 'level'] },
+    ]
+  },
+};
 
-const REF_TABLES: { type: RefTableType; label: string; icon: any }[] = [
-  { type: 'ref_cadres', label: 'Cadres', icon: Users },
-  { type: 'ref_specializations', label: 'Specializations', icon: Stethoscope },
-  { type: 'ref_education_levels', label: 'Education Levels', icon: GraduationCap },
-  { type: 'ref_training_types', label: 'Training Types', icon: GraduationCap },
-  { type: 'ref_salary_grades', label: 'Salary Grades', icon: DollarSign },
-  { type: 'ref_funds_sources', label: 'Funds Sources', icon: DollarSign },
-  { type: 'ref_leave_types', label: 'Leave Types', icon: Calendar },
-  { type: 'ref_employment_types', label: 'Employment Types', icon: Briefcase },
-  { type: 'ref_classifications', label: 'Classifications', icon: Briefcase },
-];
+type CategoryKey = keyof typeof referenceCategories;
 
 export function ReferenceDataManager() {
-  const [activeTable, setActiveTable] = useState<RefTableType>('ref_cadres');
+  const [activeCategory, setActiveCategory] = useState<CategoryKey>('job');
+  const [activeTable, setActiveTable] = useState(referenceCategories.job.tables[0].name);
   const [items, setItems] = useState<RefItem[]>([]);
   const [loading, setLoading] = useState(true);
+  const [searchTerm, setSearchTerm] = useState('');
   const [dialogOpen, setDialogOpen] = useState(false);
   const [selectedItem, setSelectedItem] = useState<RefItem | null>(null);
-  const [formData, setFormData] = useState({
+  const [formData, setFormData] = useState<Record<string, any>>({
     code: '',
     name: '',
-    category: '',
-    description: '',
     is_active: true,
   });
+
+  const currentCategory = referenceCategories[activeCategory];
+  const currentTableConfig = currentCategory.tables.find(t => t.name === activeTable) || currentCategory.tables[0];
 
   useEffect(() => {
     loadItems();
@@ -96,15 +148,14 @@ export function ReferenceDataManager() {
     setLoading(true);
     try {
       const { data, error } = await supabase
-        .from(activeTable)
+        .from(activeTable as any)
         .select('*')
-        .order('name');
+        .order('code');
       
       if (error) throw error;
-      setItems(data || []);
+      setItems((data as unknown as RefItem[]) || []);
     } catch (error) {
       console.error(`Failed to load ${activeTable}:`, error);
-      // Table might not exist yet
       setItems([]);
     } finally {
       setLoading(false);
@@ -113,22 +164,15 @@ export function ReferenceDataManager() {
 
   const openDialog = (item?: RefItem) => {
     if (item) {
-      setFormData({
-        code: item.code,
-        name: item.name,
-        category: (item as any).category || '',
-        description: (item as any).description || '',
-        is_active: item.is_active,
-      });
+      const data: Record<string, any> = { ...item };
+      setFormData(data);
       setSelectedItem(item);
     } else {
-      setFormData({
-        code: '',
-        name: '',
-        category: '',
-        description: '',
-        is_active: true,
+      const initialData: Record<string, any> = { code: '', name: '', is_active: true };
+      currentTableConfig.columns.forEach(col => {
+        if (!initialData[col]) initialData[col] = '';
       });
+      setFormData(initialData);
       setSelectedItem(null);
     }
     setDialogOpen(true);
@@ -136,26 +180,26 @@ export function ReferenceDataManager() {
 
   const handleSave = async () => {
     try {
-      const payload: any = {
-        code: formData.code.toLowerCase().replace(/\s+/g, '_'),
-        name: formData.name,
-        is_active: formData.is_active,
-      };
+      const payload: any = { ...formData };
+      delete payload.id;
+      delete payload.created_at;
+      delete payload.updated_at;
       
-      // Add optional fields if they exist for this table
-      if (formData.category) payload.category = formData.category;
-      if (formData.description) payload.description = formData.description;
+      // Ensure code is uppercase
+      if (payload.code) {
+        payload.code = payload.code.toUpperCase().replace(/\s+/g, '_');
+      }
 
       if (selectedItem) {
         const { error } = await supabase
-          .from(activeTable)
+          .from(activeTable as any)
           .update(payload)
           .eq('id', selectedItem.id);
         if (error) throw error;
         toast.success('Item updated successfully');
       } else {
         const { error } = await supabase
-          .from(activeTable)
+          .from(activeTable as any)
           .insert(payload);
         if (error) throw error;
         toast.success('Item created successfully');
@@ -169,28 +213,12 @@ export function ReferenceDataManager() {
     }
   };
 
-  const handleToggleActive = async (item: RefItem) => {
-    try {
-      const { error } = await supabase
-        .from(activeTable)
-        .update({ is_active: !item.is_active })
-        .eq('id', item.id);
-      
-      if (error) throw error;
-      toast.success(`Item ${item.is_active ? 'deactivated' : 'activated'}`);
-      loadItems();
-    } catch (error: any) {
-      console.error('Failed to toggle item:', error);
-      toast.error(error.message || 'Failed to update item');
-    }
-  };
-
   const handleDelete = async (item: RefItem) => {
     if (!confirm(`Delete "${item.name}"? This cannot be undone.`)) return;
     
     try {
       const { error } = await supabase
-        .from(activeTable)
+        .from(activeTable as any)
         .delete()
         .eq('id', item.id);
       
@@ -203,179 +231,266 @@ export function ReferenceDataManager() {
     }
   };
 
-  const currentTableConfig = REF_TABLES.find(t => t.type === activeTable);
-  const IconComponent = currentTableConfig?.icon || Database;
+  const handleCategoryChange = (category: CategoryKey) => {
+    setActiveCategory(category);
+    setActiveTable(referenceCategories[category].tables[0].name);
+    setSearchTerm('');
+  };
+
+  const filteredItems = items.filter(item => 
+    item.name?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+    item.code?.toLowerCase().includes(searchTerm.toLowerCase())
+  );
+
+  const IconComponent = currentCategory.icon;
 
   return (
     <div className="space-y-6">
       {/* Header */}
       <div className="flex items-center justify-between">
         <div>
-          <h2 className="text-xl font-semibold flex items-center gap-2">
-            <Database className="h-5 w-5" />
-            Reference Data
+          <h2 className="text-2xl font-bold flex items-center gap-2">
+            <Database className="h-6 w-6" />
+            Reference Data Manager
           </h2>
-          <p className="text-sm text-muted-foreground">
-            Manage lookup lists and configuration values
+          <p className="text-muted-foreground">
+            Manage system reference lists and lookup values (iHRIS-style)
           </p>
         </div>
-        <div className="flex gap-2">
-          <Button variant="outline" onClick={loadItems}>
-            <RefreshCw className="h-4 w-4 mr-2" />
-            Refresh
-          </Button>
-          <Button onClick={() => openDialog()}>
-            <Plus className="h-4 w-4 mr-2" />
-            Add Item
-          </Button>
+        <Badge variant="outline" className="flex items-center gap-2">
+          <Database className="h-4 w-4" />
+          {Object.values(referenceCategories).reduce((acc, cat) => acc + cat.tables.length, 0)} Tables
+        </Badge>
+      </div>
+
+      <div className="grid grid-cols-12 gap-6">
+        {/* Categories Sidebar */}
+        <div className="col-span-3">
+          <Card>
+            <CardHeader className="pb-3">
+              <CardTitle className="text-sm font-medium">Categories</CardTitle>
+            </CardHeader>
+            <CardContent className="p-0">
+              <ScrollArea className="h-[500px]">
+                <div className="space-y-1 p-2">
+                  {(Object.entries(referenceCategories) as [CategoryKey, typeof referenceCategories[CategoryKey]][]).map(([key, category]) => {
+                    const Icon = category.icon;
+                    const isActive = activeCategory === key;
+                    return (
+                      <div key={key}>
+                        <button
+                          onClick={() => handleCategoryChange(key)}
+                          className={`w-full flex items-center justify-between p-2 rounded-lg text-sm transition-colors ${
+                            isActive ? 'bg-primary text-primary-foreground' : 'hover:bg-muted'
+                          }`}
+                        >
+                          <span className="flex items-center gap-2">
+                            <Icon className="h-4 w-4" />
+                            {category.label}
+                          </span>
+                          <Badge variant={isActive ? 'secondary' : 'outline'} className="text-xs">
+                            {category.tables.length}
+                          </Badge>
+                        </button>
+                        {isActive && (
+                          <div className="ml-4 mt-1 space-y-1">
+                            {category.tables.map(table => (
+                              <button
+                                key={table.name}
+                                onClick={() => setActiveTable(table.name)}
+                                className={`w-full flex items-center gap-2 p-2 rounded text-xs transition-colors ${
+                                  activeTable === table.name 
+                                    ? 'bg-muted font-medium' 
+                                    : 'hover:bg-muted/50 text-muted-foreground'
+                                }`}
+                              >
+                                <ChevronRight className="h-3 w-3" />
+                                {table.label}
+                              </button>
+                            ))}
+                          </div>
+                        )}
+                      </div>
+                    );
+                  })}
+                </div>
+              </ScrollArea>
+            </CardContent>
+          </Card>
+        </div>
+
+        {/* Main Content */}
+        <div className="col-span-9">
+          <Card>
+            <CardHeader>
+              <div className="flex items-center justify-between">
+                <div>
+                  <CardTitle className="flex items-center gap-2">
+                    <IconComponent className="h-5 w-5" />
+                    {currentTableConfig.label}
+                  </CardTitle>
+                  <CardDescription>
+                    {items.length} items configured
+                  </CardDescription>
+                </div>
+                <div className="flex items-center gap-2">
+                  <div className="relative">
+                    <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+                    <Input
+                      placeholder="Search..."
+                      value={searchTerm}
+                      onChange={(e) => setSearchTerm(e.target.value)}
+                      className="pl-9 w-[200px]"
+                    />
+                  </div>
+                  <Button variant="outline" size="sm" onClick={loadItems}>
+                    <RefreshCw className="h-4 w-4" />
+                  </Button>
+                  <Button onClick={() => openDialog()} size="sm">
+                    <Plus className="h-4 w-4 mr-1" />
+                    Add New
+                  </Button>
+                </div>
+              </div>
+            </CardHeader>
+            <CardContent>
+              {loading ? (
+                <div className="flex items-center justify-center h-64">
+                  <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div>
+                </div>
+              ) : filteredItems.length === 0 ? (
+                <div className="flex flex-col items-center justify-center h-64 text-muted-foreground">
+                  <Database className="h-12 w-12 mb-4 opacity-50" />
+                  <p>No items found</p>
+                  <Button variant="link" onClick={() => openDialog()}>Add the first item</Button>
+                </div>
+              ) : (
+                <ScrollArea className="h-[400px]">
+                  <Table>
+                    <TableHeader>
+                      <TableRow>
+                        <TableHead>Code</TableHead>
+                        <TableHead>Name</TableHead>
+                        {currentTableConfig.columns.slice(2).map(col => (
+                          <TableHead key={col} className="capitalize">
+                            {col.replace(/_/g, ' ')}
+                          </TableHead>
+                        ))}
+                        <TableHead>Status</TableHead>
+                        <TableHead className="text-right">Actions</TableHead>
+                      </TableRow>
+                    </TableHeader>
+                    <TableBody>
+                      {filteredItems.map((item) => (
+                        <TableRow key={item.id} className={item.is_active === false ? 'opacity-50' : ''}>
+                          <TableCell className="font-mono text-sm">{item.code}</TableCell>
+                          <TableCell className="font-medium">{item.name}</TableCell>
+                          {currentTableConfig.columns.slice(2).map(col => (
+                            <TableCell key={col}>
+                              {typeof item[col] === 'boolean' 
+                                ? (item[col] ? 'Yes' : 'No')
+                                : item[col] || '-'
+                              }
+                            </TableCell>
+                          ))}
+                          <TableCell>
+                            <Badge variant={item.is_active !== false ? 'default' : 'secondary'}>
+                              {item.is_active !== false ? 'Active' : 'Inactive'}
+                            </Badge>
+                          </TableCell>
+                          <TableCell className="text-right">
+                            <div className="flex items-center justify-end gap-1">
+                              <Button 
+                                variant="ghost" 
+                                size="icon"
+                                onClick={() => openDialog(item)}
+                              >
+                                <Edit2 className="h-4 w-4" />
+                              </Button>
+                              <Button 
+                                variant="ghost" 
+                                size="icon"
+                                className="text-destructive"
+                                onClick={() => handleDelete(item)}
+                              >
+                                <Trash2 className="h-4 w-4" />
+                              </Button>
+                            </div>
+                          </TableCell>
+                        </TableRow>
+                      ))}
+                    </TableBody>
+                  </Table>
+                </ScrollArea>
+              )}
+            </CardContent>
+          </Card>
         </div>
       </div>
 
-      {/* Table Selector */}
-      <div className="flex flex-wrap gap-2">
-        {REF_TABLES.map(table => (
-          <Button
-            key={table.type}
-            variant={activeTable === table.type ? 'default' : 'outline'}
-            size="sm"
-            onClick={() => setActiveTable(table.type)}
-          >
-            <table.icon className="h-4 w-4 mr-2" />
-            {table.label}
-          </Button>
-        ))}
-      </div>
-
-      {/* Items Table */}
-      <Card>
-        <CardHeader className="pb-3">
-          <CardTitle className="text-lg flex items-center gap-2">
-            <IconComponent className="h-5 w-5" />
-            {currentTableConfig?.label}
-          </CardTitle>
-          <CardDescription>
-            {items.length} items configured
-          </CardDescription>
-        </CardHeader>
-        <CardContent>
-          {loading ? (
-            <div className="flex justify-center py-8">
-              <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary" />
-            </div>
-          ) : items.length === 0 ? (
-            <div className="text-center py-8 text-muted-foreground">
-              No items configured for this reference table
-            </div>
-          ) : (
-            <Table>
-              <TableHeader>
-                <TableRow>
-                  <TableHead>Code</TableHead>
-                  <TableHead>Name</TableHead>
-                  <TableHead>Category</TableHead>
-                  <TableHead>Status</TableHead>
-                  <TableHead className="text-right">Actions</TableHead>
-                </TableRow>
-              </TableHeader>
-              <TableBody>
-                {items.map(item => (
-                  <TableRow key={item.id} className={!item.is_active ? 'opacity-50' : ''}>
-                    <TableCell className="font-mono text-sm">{item.code}</TableCell>
-                    <TableCell>{item.name}</TableCell>
-                    <TableCell className="text-muted-foreground">
-                      {(item as any).category || '-'}
-                    </TableCell>
-                    <TableCell>
-                      <Badge variant={item.is_active ? 'default' : 'secondary'}>
-                        {item.is_active ? 'Active' : 'Inactive'}
-                      </Badge>
-                    </TableCell>
-                    <TableCell className="text-right">
-                      <div className="flex justify-end gap-1">
-                        <Button variant="ghost" size="icon" onClick={() => openDialog(item)}>
-                          <Edit2 className="h-4 w-4" />
-                        </Button>
-                        <Button 
-                          variant="ghost" 
-                          size="icon"
-                          onClick={() => handleToggleActive(item)}
-                        >
-                          <Switch checked={item.is_active} />
-                        </Button>
-                        <Button 
-                          variant="ghost" 
-                          size="icon" 
-                          className="text-destructive"
-                          onClick={() => handleDelete(item)}
-                        >
-                          <Trash2 className="h-4 w-4" />
-                        </Button>
-                      </div>
-                    </TableCell>
-                  </TableRow>
-                ))}
-              </TableBody>
-            </Table>
-          )}
-        </CardContent>
-      </Card>
-
-      {/* Edit/Create Dialog */}
+      {/* Edit/Add Dialog */}
       <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>
         <DialogContent>
           <DialogHeader>
             <DialogTitle>
-              {selectedItem ? 'Edit Item' : 'Add Item'}
+              {selectedItem ? 'Edit' : 'Add'} {currentTableConfig.label.replace(/s$/, '')}
             </DialogTitle>
           </DialogHeader>
-          
-          <div className="space-y-4">
+          <div className="space-y-4 py-4">
             <div className="grid grid-cols-2 gap-4">
               <div className="space-y-2">
-                <Label>Code *</Label>
+                <Label htmlFor="code">Code *</Label>
                 <Input
-                  value={formData.code}
-                  onChange={e => setFormData({ ...formData, code: e.target.value })}
-                  placeholder="e.g., medical_doctor"
+                  id="code"
+                  value={formData.code || ''}
+                  onChange={(e) => setFormData({ ...formData, code: e.target.value.toUpperCase() })}
+                  placeholder="Unique code"
                 />
               </div>
               <div className="space-y-2">
-                <Label>Category</Label>
+                <Label htmlFor="name">Name *</Label>
                 <Input
-                  value={formData.category}
-                  onChange={e => setFormData({ ...formData, category: e.target.value })}
-                  placeholder="e.g., Medical"
+                  id="name"
+                  value={formData.name || ''}
+                  onChange={(e) => setFormData({ ...formData, name: e.target.value })}
+                  placeholder="Display name"
                 />
               </div>
             </div>
-
-            <div className="space-y-2">
-              <Label>Name *</Label>
-              <Input
-                value={formData.name}
-                onChange={e => setFormData({ ...formData, name: e.target.value })}
-                placeholder="e.g., Medical Doctor"
-              />
-            </div>
-
-            <div className="space-y-2">
-              <Label>Description</Label>
-              <Input
-                value={formData.description}
-                onChange={e => setFormData({ ...formData, description: e.target.value })}
-                placeholder="Brief description..."
-              />
-            </div>
-
+            {currentTableConfig.columns.slice(2).map(col => (
+              <div key={col} className="space-y-2">
+                <Label htmlFor={col} className="capitalize">{col.replace(/_/g, ' ')}</Label>
+                {col.startsWith('is_') ? (
+                  <div className="flex items-center gap-2">
+                    <Switch
+                      id={col}
+                      checked={formData[col] || false}
+                      onCheckedChange={(checked) => setFormData({ ...formData, [col]: checked })}
+                    />
+                    <span className="text-sm text-muted-foreground">
+                      {formData[col] ? 'Yes' : 'No'}
+                    </span>
+                  </div>
+                ) : (
+                  <Input
+                    id={col}
+                    value={formData[col] || ''}
+                    onChange={(e) => setFormData({ ...formData, [col]: e.target.value })}
+                    placeholder={`Enter ${col.replace(/_/g, ' ')}`}
+                    type={col.includes('_year') || col.includes('salary') || col.includes('periods') ? 'number' : 'text'}
+                  />
+                )}
+              </div>
+            ))}
             <div className="flex items-center gap-2">
               <Switch
-                checked={formData.is_active}
-                onCheckedChange={checked => setFormData({ ...formData, is_active: checked })}
+                id="is_active"
+                checked={formData.is_active !== false}
+                onCheckedChange={(checked) => setFormData({ ...formData, is_active: checked })}
               />
-              <Label>Active</Label>
+              <Label htmlFor="is_active">Active</Label>
             </div>
           </div>
-
           <DialogFooter>
             <Button variant="outline" onClick={() => setDialogOpen(false)}>Cancel</Button>
             <Button onClick={handleSave}>

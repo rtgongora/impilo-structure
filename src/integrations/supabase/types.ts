@@ -7557,6 +7557,7 @@ export type Database = {
       }
       ref_training_types: {
         Row: {
+          category: string | null
           code: string
           created_at: string
           description: string | null
@@ -7566,6 +7567,7 @@ export type Database = {
           sort_order: number | null
         }
         Insert: {
+          category?: string | null
           code: string
           created_at?: string
           description?: string | null
@@ -7575,6 +7577,7 @@ export type Database = {
           sort_order?: number | null
         }
         Update: {
+          category?: string | null
           code?: string
           created_at?: string
           description?: string | null
