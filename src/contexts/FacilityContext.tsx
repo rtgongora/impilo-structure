@@ -111,13 +111,36 @@ export function FacilityProvider({ children }: { children: ReactNode }) {
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
+  // Helper to check if a string is a valid UUID
+  const isUUID = (str: string): boolean => {
+    const uuidRegex = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
+    return uuidRegex.test(str);
+  };
+
   // Fetch facility capabilities from the view
-  const fetchFacilityCapabilities = useCallback(async (facilityId: string): Promise<FacilityInfo | null> => {
+  const fetchFacilityCapabilities = useCallback(async (facilityIdOrCode: string): Promise<FacilityInfo | null> => {
     try {
+      let facilityUUID = facilityIdOrCode;
+
+      // If the facilityId is not a UUID, it's likely a GOFR code - look up the actual UUID
+      if (!isUUID(facilityIdOrCode)) {
+        const { data: facilityData, error: lookupError } = await supabase
+          .from('facilities')
+          .select('id')
+          .eq('gofr_id', facilityIdOrCode)
+          .maybeSingle();
+
+        if (lookupError || !facilityData) {
+          console.warn(`Could not find facility with GOFR ID: ${facilityIdOrCode}`);
+          return null;
+        }
+        facilityUUID = facilityData.id;
+      }
+
       const { data, error: queryError } = await supabase
         .from('facility_capabilities')
         .select('*')
-        .eq('facility_id', facilityId)
+        .eq('facility_id', facilityUUID)
         .maybeSingle();
 
       if (queryError) {
