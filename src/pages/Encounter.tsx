@@ -53,6 +53,9 @@ function EncounterContent() {
 
   // Error state with navigation options
   if (contextError) {
+    const queueId = searchParams.get("queueId");
+    const returnToQueue = queueId ? `/queue?queueId=${queueId}` : "/queue";
+    
     return (
       <div className="min-h-screen bg-background flex items-center justify-center">
         <div className="text-center space-y-6 max-w-md px-4">
@@ -67,9 +70,9 @@ function EncounterContent() {
               <ArrowLeft className="h-4 w-4 mr-2" />
               Go Back
             </Button>
-            <Button variant="outline" onClick={() => navigate("/queue")}>
+            <Button variant="outline" onClick={() => navigate(returnToQueue)}>
               <Users className="h-4 w-4 mr-2" />
-              Queue
+              Back to Queue
             </Button>
             <Button onClick={() => navigate("/")}>
               <Home className="h-4 w-4 mr-2" />
