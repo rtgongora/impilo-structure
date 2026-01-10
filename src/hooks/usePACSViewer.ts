@@ -26,6 +26,13 @@ export interface ImagingStudy {
   is_archived: boolean;
   created_at: string;
   updated_at: string;
+  // Joined patient data
+  patient?: {
+    id: string;
+    mrn: string;
+    first_name: string;
+    last_name: string;
+  };
 }
 
 export interface ImagingSeries {
@@ -157,7 +164,10 @@ export function usePACSViewer() {
     try {
       let query = supabase
         .from('imaging_studies')
-        .select('*')
+        .select(`
+          *,
+          patient:patients(id, mrn, first_name, last_name)
+        `)
         .order('study_date', { ascending: false });
 
       if (patientId) {
