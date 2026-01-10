@@ -26,13 +26,11 @@ import {
   LayoutGrid,
   Fingerprint,
   MessageSquare,
-  Database,
   Shield,
   GitMerge,
   FileCheck,
   BookOpen,
   Network,
-  Globe,
   UserCheck,
   Heart,
   Store,
@@ -53,43 +51,36 @@ interface NavItem {
   icon: React.ComponentType<{ className?: string }>;
   path: string;
   description?: string;
-  roles?: string[]; // Which roles can see this item
+  roles?: string[];
 }
 
-// Map routes to page contexts
 function getPageContextFromPath(pathname: string): PageContext {
-  // Registry pages
   if (pathname.startsWith('/facility-registry') || 
       pathname.startsWith('/hpr') || 
       pathname.startsWith('/client-registry') ||
       pathname.startsWith('/registry')) {
     return "registry";
   }
-  // Clinical pages
   if (pathname.startsWith('/encounter') || 
       pathname.startsWith('/beds') || 
       pathname.startsWith('/queue') ||
       pathname.startsWith('/patients')) {
     return "clinical";
   }
-  // Operations pages
   if (pathname.startsWith('/stock') || 
       pathname.startsWith('/consumables') ||
       pathname.startsWith('/charges') ||
       pathname.startsWith('/payments')) {
     return "operations";
   }
-  // Scheduling pages
   if (pathname.startsWith('/scheduling') || 
       pathname.startsWith('/appointments') ||
       pathname.startsWith('/theatre')) {
     return "scheduling";
   }
-  // Admin pages
   if (pathname.startsWith('/admin')) {
     return "admin";
   }
-  // Portal pages
   if (pathname.startsWith('/portal') || 
       pathname.startsWith('/social')) {
     return "portal";
@@ -97,7 +88,6 @@ function getPageContextFromPath(pathname: string): PageContext {
   return "home";
 }
 
-// Registry-specific navigation
 const registryNavItems: NavItem[] = [
   { label: "Back to Home", icon: Home, path: "/", description: "Return to dashboard" },
   { label: "Client Registry", icon: Users, path: "/client-registry", description: "National Health ID Registry" },
@@ -106,97 +96,91 @@ const registryNavItems: NavItem[] = [
 ];
 
 const registryToolsItems: NavItem[] = [
-  { label: "Data Reconciliation", icon: GitMerge, path: "/facility-registry?tab=reconciliation", description: "Merge & deduplicate" },
-  { label: "Change Requests", icon: FileCheck, path: "/facility-registry?tab=changes", description: "Pending approvals" },
-  { label: "Reference Data", icon: BookOpen, path: "/facility-registry?tab=reference", description: "Lookup tables" },
-  { label: "Reports", icon: BarChart3, path: "/facility-registry?tab=reports", description: "Registry analytics" },
+  { label: "Data Reconciliation", icon: GitMerge, path: "/facility-registry?tab=reconciliation" },
+  { label: "Change Requests", icon: FileCheck, path: "/facility-registry?tab=changes" },
+  { label: "Reference Data", icon: BookOpen, path: "/facility-registry?tab=reference" },
+  { label: "Reports", icon: BarChart3, path: "/facility-registry?tab=reports" },
 ];
 
 const registryAdminItems: NavItem[] = [
-  { label: "Access Control", icon: Shield, path: "/admin", description: "Permissions & roles" },
-  { label: "API & Integrations", icon: Network, path: "/admin?tab=integrations", description: "External systems" },
-  { label: "Audit Log", icon: FileText, path: "/admin?tab=audit", description: "Activity history" },
+  { label: "Access Control", icon: Shield, path: "/admin" },
+  { label: "API & Integrations", icon: Network, path: "/admin?tab=integrations" },
+  { label: "Audit Log", icon: FileText, path: "/admin?tab=audit" },
 ];
 
-// Clinical navigation
 const clinicalPriorityItems: NavItem[] = [
-  { label: "Dashboard", icon: Home, path: "/", description: "Overview & worklist" },
-  { label: "My Worklist", icon: ClipboardList, path: "/queue", description: "Your assigned work" },
-  { label: "Communication", icon: MessageSquare, path: "/communication", description: "Messages & pages" },
+  { label: "Dashboard", icon: Home, path: "/" },
+  { label: "My Worklist", icon: ClipboardList, path: "/queue" },
+  { label: "Communication", icon: MessageSquare, path: "/communication" },
 ];
 
 const clinicalNavItems: NavItem[] = [
-  { label: "Clinical EHR", icon: Stethoscope, path: "/encounter", description: "Patient encounters" },
-  { label: "Bed Management", icon: Bed, path: "/beds", description: "Ward & bed status" },
-  { label: "Appointments", icon: Calendar, path: "/appointments", description: "Scheduling" },
-  { label: "Patients", icon: Users, path: "/patients", description: "Patient registry" },
+  { label: "Clinical EHR", icon: Stethoscope, path: "/encounter" },
+  { label: "Bed Management", icon: Bed, path: "/beds" },
+  { label: "Appointments", icon: Calendar, path: "/appointments" },
+  { label: "Patients", icon: Users, path: "/patients" },
 ];
 
 const ordersNavItems: NavItem[] = [
-  { label: "Order Entry", icon: ShoppingCart, path: "/orders", description: "Clinical orders" },
-  { label: "Pharmacy", icon: Syringe, path: "/pharmacy", description: "Medication dispensing" },
-  { label: "Laboratory", icon: FlaskConical, path: "/lims", description: "Lab results" },
-  { label: "PACS Imaging", icon: FileText, path: "/pacs", description: "Medical imaging" },
-  { label: "Shift Handoff", icon: ArrowRightLeft, path: "/handoff", description: "Handoff reports" },
+  { label: "Order Entry", icon: ShoppingCart, path: "/orders" },
+  { label: "Pharmacy", icon: Syringe, path: "/pharmacy" },
+  { label: "Laboratory", icon: FlaskConical, path: "/lims" },
+  { label: "PACS Imaging", icon: FileText, path: "/pacs" },
+  { label: "Shift Handoff", icon: ArrowRightLeft, path: "/handoff" },
 ];
 
-// Operations navigation
 const operationsNavItems: NavItem[] = [
-  { label: "Dashboard", icon: Home, path: "/", description: "Return to home" },
-  { label: "Stock Management", icon: Package, path: "/stock", description: "Inventory" },
-  { label: "Consumables", icon: Syringe, path: "/consumables", description: "Usage tracking" },
-  { label: "Charges", icon: Receipt, path: "/charges", description: "Encounter charges" },
-  { label: "Payments", icon: DollarSign, path: "/payments", description: "Billing & payments" },
-  { label: "Theatre", icon: Building2, path: "/theatre", description: "Surgical scheduling" },
+  { label: "Dashboard", icon: Home, path: "/" },
+  { label: "Stock Management", icon: Package, path: "/stock" },
+  { label: "Consumables", icon: Syringe, path: "/consumables" },
+  { label: "Charges", icon: Receipt, path: "/charges" },
+  { label: "Payments", icon: DollarSign, path: "/payments" },
+  { label: "Theatre", icon: Building2, path: "/theatre" },
 ];
 
-// Scheduling navigation
 const schedulingNavItems: NavItem[] = [
-  { label: "Dashboard", icon: Home, path: "/", description: "Return to home" },
-  { label: "Appointments", icon: CalendarDays, path: "/scheduling", description: "Clinic scheduling" },
-  { label: "Theatre Booking", icon: Building2, path: "/scheduling/theatre", description: "OR scheduling" },
-  { label: "Noticeboard", icon: Megaphone, path: "/scheduling/noticeboard", description: "Announcements" },
-  { label: "Resources", icon: LayoutGrid, path: "/scheduling/resources", description: "Room & equipment" },
+  { label: "Dashboard", icon: Home, path: "/" },
+  { label: "Appointments", icon: CalendarDays, path: "/scheduling" },
+  { label: "Theatre Booking", icon: Building2, path: "/scheduling/theatre" },
+  { label: "Noticeboard", icon: Megaphone, path: "/scheduling/noticeboard" },
+  { label: "Resources", icon: LayoutGrid, path: "/scheduling/resources" },
 ];
 
-// Portal navigation
 const portalNavItems: NavItem[] = [
-  { label: "Dashboard", icon: Home, path: "/", description: "Return to home" },
-  { label: "My Health", icon: Heart, path: "/portal", description: "Personal health portal" },
-  { label: "Social Hub", icon: Users, path: "/social", description: "Communities & timeline" },
-  { label: "Marketplace", icon: Store, path: "/marketplace", description: "Health marketplace" },
-  { label: "Communication", icon: MessageSquare, path: "/communication", description: "Messages" },
+  { label: "Dashboard", icon: Home, path: "/" },
+  { label: "My Health", icon: Heart, path: "/portal" },
+  { label: "Social Hub", icon: Users, path: "/social" },
+  { label: "Marketplace", icon: Store, path: "/marketplace" },
+  { label: "Communication", icon: MessageSquare, path: "/communication" },
 ];
 
-// Admin navigation
 const adminNavItems: NavItem[] = [
-  { label: "Dashboard", icon: Home, path: "/", description: "Return to home" },
-  { label: "System Settings", icon: Settings, path: "/admin", description: "Configuration" },
-  { label: "User Management", icon: Users, path: "/admin?tab=users", description: "Users & roles" },
-  { label: "Security", icon: Shield, path: "/admin?tab=security", description: "Access control" },
-  { label: "Audit Logs", icon: FileText, path: "/admin?tab=audit", description: "Activity history" },
-  { label: "Integrations", icon: Network, path: "/admin?tab=integrations", description: "External systems" },
+  { label: "Dashboard", icon: Home, path: "/" },
+  { label: "System Settings", icon: Settings, path: "/admin" },
+  { label: "User Management", icon: Users, path: "/admin?tab=users" },
+  { label: "Security", icon: Shield, path: "/admin?tab=security" },
+  { label: "Audit Logs", icon: FileText, path: "/admin?tab=audit" },
+  { label: "Integrations", icon: Network, path: "/admin?tab=integrations" },
 ];
 
-// Home/general navigation
 const homePriorityItems: NavItem[] = [
-  { label: "Dashboard", icon: Home, path: "/", description: "Overview & worklist" },
-  { label: "My Worklist", icon: ClipboardList, path: "/queue", description: "Your assigned work" },
-  { label: "Communication", icon: MessageSquare, path: "/communication", description: "Messages, pages & calls" },
-  { label: "Social Hub", icon: Users, path: "/social", description: "Timeline & communities" },
+  { label: "Dashboard", icon: Home, path: "/" },
+  { label: "My Worklist", icon: ClipboardList, path: "/queue" },
+  { label: "Communication", icon: MessageSquare, path: "/communication" },
+  { label: "Social Hub", icon: Users, path: "/social" },
 ];
 
 const homeQuickAccessItems: NavItem[] = [
-  { label: "Clinical EHR", icon: Stethoscope, path: "/encounter", description: "Patient encounters" },
-  { label: "Appointments", icon: Calendar, path: "/appointments", description: "Scheduling" },
-  { label: "Patients", icon: Users, path: "/patients", description: "Patient registry" },
-  { label: "Pharmacy", icon: Syringe, path: "/pharmacy", description: "Medications" },
+  { label: "Clinical EHR", icon: Stethoscope, path: "/encounter" },
+  { label: "Appointments", icon: Calendar, path: "/appointments" },
+  { label: "Patients", icon: Users, path: "/patients" },
+  { label: "Pharmacy", icon: Syringe, path: "/pharmacy" },
 ];
 
 const homeSystemItems: NavItem[] = [
-  { label: "ID Services", icon: Fingerprint, path: "/id-services", description: "ID Generation" },
-  { label: "Reports", icon: BarChart3, path: "/reports", description: "Analytics" },
-  { label: "Help Desk", icon: HelpCircle, path: "/help", description: "Support" },
+  { label: "ID Services", icon: Fingerprint, path: "/id-services" },
+  { label: "Reports", icon: BarChart3, path: "/reports" },
+  { label: "Help Desk", icon: HelpCircle, path: "/help" },
 ];
 
 interface NavSectionProps {
@@ -209,7 +193,6 @@ interface NavSectionProps {
 function NavSection({ title, items, collapsed, userRole }: NavSectionProps) {
   const location = useLocation();
 
-  // Filter items by role
   const visibleItems = items.filter((item) => {
     if (!item.roles) return true;
     return userRole && item.roles.includes(userRole);
@@ -218,13 +201,13 @@ function NavSection({ title, items, collapsed, userRole }: NavSectionProps) {
   if (visibleItems.length === 0) return null;
 
   return (
-    <div className="mb-3 md:mb-4">
+    <div className="mb-2">
       {!collapsed && (
-        <h3 className="px-3 mb-1.5 md:mb-2 text-xs font-semibold text-sidebar-foreground/50 uppercase tracking-wider">
+        <h3 className="px-2 mb-1 text-[10px] font-semibold text-sidebar-foreground/50 uppercase tracking-wider">
           {title}
         </h3>
       )}
-      <nav className="space-y-0.5 md:space-y-1">
+      <nav className="space-y-0.5">
         {visibleItems.map((item) => {
           const isActive = location.pathname === item.path || 
             (item.path !== "/" && location.pathname.startsWith(item.path.split('?')[0]));
@@ -233,16 +216,15 @@ function NavSection({ title, items, collapsed, userRole }: NavSectionProps) {
             <NavLink
               to={item.path}
               className={cn(
-                "flex items-center gap-3 px-3 py-2.5 md:py-2 rounded-lg text-sm font-medium transition-colors min-h-[44px]",
+                "flex items-center gap-2 px-2 py-1.5 rounded-md text-xs font-medium transition-colors",
                 "hover:bg-sidebar-accent hover:text-sidebar-accent-foreground",
-                "active:bg-sidebar-accent/80",
                 isActive 
                   ? "bg-sidebar-primary text-sidebar-primary-foreground" 
                   : "text-sidebar-foreground"
               )}
             >
-              <item.icon className={cn("h-5 w-5 md:h-4 md:w-4 shrink-0", collapsed && "mx-auto")} />
-              {!collapsed && <span className="text-sm">{item.label}</span>}
+              <item.icon className={cn("h-3.5 w-3.5 shrink-0", collapsed && "mx-auto")} />
+              {!collapsed && <span>{item.label}</span>}
             </NavLink>
           );
 
@@ -252,11 +234,8 @@ function NavSection({ title, items, collapsed, userRole }: NavSectionProps) {
                 <TooltipTrigger asChild>
                   {linkContent}
                 </TooltipTrigger>
-                <TooltipContent side="right" className="flex flex-col">
+                <TooltipContent side="right" className="text-xs">
                   <span className="font-medium">{item.label}</span>
-                  {item.description && (
-                    <span className="text-xs text-muted-foreground">{item.description}</span>
-                  )}
                 </TooltipContent>
               </Tooltip>
             );
@@ -276,7 +255,6 @@ export function AppSidebar() {
   const { profile } = useAuth();
   const userRole = profile?.role || "nurse";
 
-  // Update page context based on current route
   useEffect(() => {
     const newContext = getPageContextFromPath(location.pathname);
     if (newContext !== pageContext) {
@@ -284,7 +262,6 @@ export function AppSidebar() {
     }
   }, [location.pathname, pageContext, setPageContext]);
 
-  // Render context-specific navigation
   const renderNavigation = () => {
     switch (pageContext) {
       case "registry":
@@ -292,47 +269,25 @@ export function AppSidebar() {
           <>
             <NavSection title="Registry" items={registryNavItems} collapsed={collapsed} userRole={userRole} />
             <NavSection title="Tools" items={registryToolsItems} collapsed={collapsed} userRole={userRole} />
-            <NavSection title="Administration" items={registryAdminItems} collapsed={collapsed} userRole={userRole} />
+            <NavSection title="Admin" items={registryAdminItems} collapsed={collapsed} userRole={userRole} />
           </>
         );
-      
       case "clinical":
         return (
           <>
             <NavSection title="Quick Access" items={clinicalPriorityItems} collapsed={collapsed} userRole={userRole} />
             <NavSection title="Clinical" items={clinicalNavItems} collapsed={collapsed} userRole={userRole} />
-            <NavSection title="Orders & Results" items={ordersNavItems} collapsed={collapsed} userRole={userRole} />
+            <NavSection title="Orders" items={ordersNavItems} collapsed={collapsed} userRole={userRole} />
           </>
         );
-      
       case "operations":
-        return (
-          <>
-            <NavSection title="Operations" items={operationsNavItems} collapsed={collapsed} userRole={userRole} />
-          </>
-        );
-      
+        return <NavSection title="Operations" items={operationsNavItems} collapsed={collapsed} userRole={userRole} />;
       case "scheduling":
-        return (
-          <>
-            <NavSection title="Scheduling" items={schedulingNavItems} collapsed={collapsed} userRole={userRole} />
-          </>
-        );
-      
+        return <NavSection title="Scheduling" items={schedulingNavItems} collapsed={collapsed} userRole={userRole} />;
       case "portal":
-        return (
-          <>
-            <NavSection title="Portal" items={portalNavItems} collapsed={collapsed} userRole={userRole} />
-          </>
-        );
-      
+        return <NavSection title="Portal" items={portalNavItems} collapsed={collapsed} userRole={userRole} />;
       case "admin":
-        return (
-          <>
-            <NavSection title="Administration" items={adminNavItems} collapsed={collapsed} userRole={userRole} />
-          </>
-        );
-      
+        return <NavSection title="Admin" items={adminNavItems} collapsed={collapsed} userRole={userRole} />;
       case "home":
       default:
         return (
@@ -345,29 +300,26 @@ export function AppSidebar() {
     }
   };
 
-  // Only show workspace selector for clinical contexts
   const showWorkspaceSelector = pageContext === "clinical" || pageContext === "home";
 
   return (
     <aside
       className={cn(
-        "h-full bg-sidebar border-r border-sidebar-border flex flex-col transition-all duration-300",
-        collapsed ? "w-16" : "w-56 md:w-60"
+        "h-full bg-sidebar border-r border-sidebar-border flex flex-col transition-all duration-200",
+        collapsed ? "w-12" : "w-48"
       )}
     >
       {/* Logo */}
-      <div className="h-14 md:h-16 flex items-center justify-between px-3 border-b border-sidebar-border">
+      <div className="h-12 flex items-center justify-between px-2 border-b border-sidebar-border">
         {!collapsed && (
-          <div className="flex items-center gap-2">
-            <img src={impiloLogo} alt="Impilo" className="h-7 md:h-8 w-auto" />
-          </div>
+          <img src={impiloLogo} alt="Impilo" className="h-6 w-auto" />
         )}
         {collapsed && (
-          <img src={impiloLogo} alt="Impilo" className="h-6 w-auto mx-auto" />
+          <img src={impiloLogo} alt="Impilo" className="h-5 w-auto mx-auto" />
         )}
       </div>
 
-      {/* Workspace Selector - only for clinical/home contexts */}
+      {/* Workspace Selector */}
       {showWorkspaceSelector && (
         <WorkspaceSelector
           currentView={currentView}
@@ -376,38 +328,38 @@ export function AppSidebar() {
         />
       )}
 
-      {/* Context indicator for non-home pages */}
+      {/* Context indicator */}
       {!showWorkspaceSelector && !collapsed && (
-        <div className="px-3 py-3 border-b border-sidebar-border">
-          <div className="text-xs font-semibold text-sidebar-foreground/50 uppercase tracking-wider">
-            {pageContext === "registry" && "Registry Management"}
+        <div className="px-2 py-2 border-b border-sidebar-border">
+          <div className="text-[10px] font-semibold text-sidebar-foreground/50 uppercase tracking-wider">
+            {pageContext === "registry" && "Registry"}
             {pageContext === "operations" && "Operations"}
             {pageContext === "scheduling" && "Scheduling"}
-            {pageContext === "portal" && "Health Portal"}
-            {pageContext === "admin" && "Administration"}
+            {pageContext === "portal" && "Portal"}
+            {pageContext === "admin" && "Admin"}
           </div>
         </div>
       )}
 
       {/* Navigation */}
-      <ScrollArea className="flex-1 py-3 md:py-4 px-2">
+      <ScrollArea className="flex-1 py-2 px-1.5">
         {renderNavigation()}
       </ScrollArea>
 
-      {/* Collapse Toggle - Touch-friendly */}
-      <div className="p-2 border-t border-sidebar-border">
+      {/* Collapse Toggle */}
+      <div className="p-1.5 border-t border-sidebar-border">
         <Button
           variant="ghost"
           size="sm"
-          className="w-full justify-center min-h-[44px] text-sidebar-foreground/70 hover:text-sidebar-foreground hover:bg-sidebar-accent"
+          className="w-full justify-center h-7 text-sidebar-foreground/70 hover:text-sidebar-foreground"
           onClick={() => setCollapsed(!collapsed)}
         >
           {collapsed ? (
-            <ChevronRight className="h-5 w-5" />
+            <ChevronRight className="h-3.5 w-3.5" />
           ) : (
             <>
-              <ChevronLeft className="h-5 w-5 mr-2" />
-              <span>Collapse</span>
+              <ChevronLeft className="h-3.5 w-3.5 mr-1" />
+              <span className="text-[10px]">Collapse</span>
             </>
           )}
         </Button>

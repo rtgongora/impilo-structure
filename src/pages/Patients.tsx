@@ -99,180 +99,183 @@ const Patients = () => {
   }
 
   return (
-    <AppLayout title="Patient Management">
-      <div className="p-6">
-        {/* Stats Cards */}
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-6">
+    <AppLayout title="Patients">
+      <div className="h-[calc(100vh-48px)] flex flex-col p-3">
+        {/* Stats */}
+        <div className="grid grid-cols-4 gap-2 mb-3 shrink-0">
           <Card>
-            <CardContent className="p-4 flex items-center gap-3">
-              <div className="p-2 bg-primary/10 rounded-lg">
-                <Users className="h-5 w-5 text-primary" />
+            <CardContent className="p-2 flex items-center gap-2">
+              <div className="p-1.5 rounded-md bg-primary/10">
+                <Users className="h-3.5 w-3.5 text-primary" />
               </div>
               <div>
-                <p className="text-2xl font-bold">{patients.length}</p>
-                <p className="text-xs text-muted-foreground">Total Patients</p>
+                <p className="text-lg font-bold leading-none">{patients.length}</p>
+                <p className="text-[9px] text-muted-foreground">Total</p>
               </div>
             </CardContent>
           </Card>
           <Card>
-            <CardContent className="p-4 flex items-center gap-3">
-              <div className="p-2 bg-success/10 rounded-lg">
-                <Activity className="h-5 w-5 text-success" />
+            <CardContent className="p-2 flex items-center gap-2">
+              <div className="p-1.5 rounded-md bg-success/10">
+                <Activity className="h-3.5 w-3.5 text-success" />
               </div>
               <div>
-                <p className="text-2xl font-bold">{patients.filter(p => p.is_active).length}</p>
-                <p className="text-xs text-muted-foreground">Active Patients</p>
+                <p className="text-lg font-bold leading-none">{patients.filter(p => p.is_active).length}</p>
+                <p className="text-[9px] text-muted-foreground">Active</p>
               </div>
             </CardContent>
           </Card>
           <Card>
-            <CardContent className="p-4 flex items-center gap-3">
-              <div className="p-2 bg-warning/10 rounded-lg">
-                <Calendar className="h-5 w-5 text-warning" />
+            <CardContent className="p-2 flex items-center gap-2">
+              <div className="p-1.5 rounded-md bg-warning/10">
+                <Calendar className="h-3.5 w-3.5 text-warning" />
               </div>
               <div>
-                <p className="text-2xl font-bold">
+                <p className="text-lg font-bold leading-none">
                   {patients.filter(p => {
                     const created = new Date(p.created_at);
                     const today = new Date();
                     return created.toDateString() === today.toDateString();
                   }).length}
                 </p>
-                <p className="text-xs text-muted-foreground">Today's Registrations</p>
+                <p className="text-[9px] text-muted-foreground">Today</p>
               </div>
             </CardContent>
           </Card>
           <Card>
-            <CardContent className="p-4 flex items-center gap-3">
-              <div className="p-2 bg-critical/10 rounded-lg">
-                <AlertCircle className="h-5 w-5 text-critical" />
+            <CardContent className="p-2 flex items-center gap-2">
+              <div className="p-1.5 rounded-md bg-critical/10">
+                <AlertCircle className="h-3.5 w-3.5 text-critical" />
               </div>
               <div>
-                <p className="text-2xl font-bold">
+                <p className="text-lg font-bold leading-none">
                   {patients.filter(p => p.allergies && p.allergies.length > 0).length}
                 </p>
-                <p className="text-xs text-muted-foreground">With Allergies</p>
+                <p className="text-[9px] text-muted-foreground">Allergies</p>
               </div>
             </CardContent>
           </Card>
         </div>
 
-        {/* Search and Filters */}
-        <Card className="mb-6">
-          <CardContent className="p-4">
-            <div className="flex flex-col md:flex-row gap-4">
+        {/* Search */}
+        <Card className="mb-3 shrink-0">
+          <CardContent className="p-2">
+            <div className="flex gap-2">
               <div className="relative flex-1">
-                <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-                <Input placeholder="Search by name, MRN, or phone..." value={searchQuery} onChange={(e) => setSearchQuery(e.target.value)} className="pl-10" />
+                <Search className="absolute left-2.5 top-1/2 transform -translate-y-1/2 h-3.5 w-3.5 text-muted-foreground" />
+                <Input 
+                  placeholder="Search by name, MRN, or phone..." 
+                  value={searchQuery} 
+                  onChange={(e) => setSearchQuery(e.target.value)} 
+                  className="pl-8 h-8 text-xs" 
+                />
               </div>
-              <div className="flex gap-2">
-                <Button variant="outline" size="icon"><Filter className="h-4 w-4" /></Button>
-                <Button variant="outline" size="icon"><Download className="h-4 w-4" /></Button>
-                <Dialog open={isRegisterOpen} onOpenChange={setIsRegisterOpen}>
-                  <DialogTrigger asChild>
-                    <Button><UserPlus className="h-4 w-4 mr-2" />Register Patient</Button>
-                  </DialogTrigger>
-                  <DialogContent className="max-w-4xl max-h-[90vh] overflow-y-auto">
-                    <DialogHeader>
-                      <DialogTitle>Register New Patient</DialogTitle>
-                      <DialogDescription>Enter the patient's demographic and contact information</DialogDescription>
-                    </DialogHeader>
-                    <PatientRegistrationForm onSuccess={handlePatientRegistered} onCancel={() => setIsRegisterOpen(false)} />
-                  </DialogContent>
-                </Dialog>
-              </div>
+              <Button variant="outline" size="icon" className="h-8 w-8"><Filter className="h-3.5 w-3.5" /></Button>
+              <Button variant="outline" size="icon" className="h-8 w-8"><Download className="h-3.5 w-3.5" /></Button>
+              <Dialog open={isRegisterOpen} onOpenChange={setIsRegisterOpen}>
+                <DialogTrigger asChild>
+                  <Button size="sm"><UserPlus className="h-3.5 w-3.5 mr-1" />Register</Button>
+                </DialogTrigger>
+                <DialogContent className="max-w-4xl max-h-[90vh] overflow-y-auto">
+                  <DialogHeader>
+                    <DialogTitle className="text-sm">Register New Patient</DialogTitle>
+                    <DialogDescription className="text-xs">Enter patient demographics</DialogDescription>
+                  </DialogHeader>
+                  <PatientRegistrationForm onSuccess={handlePatientRegistered} onCancel={() => setIsRegisterOpen(false)} />
+                </DialogContent>
+              </Dialog>
             </div>
           </CardContent>
         </Card>
 
         {/* Patient List */}
-        <Card>
-          <CardHeader className="pb-3">
+        <Card className="flex-1 flex flex-col min-h-0">
+          <CardHeader className="p-2.5 pb-2 shrink-0">
             <div className="flex items-center justify-between">
               <CardTitle>Patient Directory</CardTitle>
-              <Tabs value={activeTab} onValueChange={setActiveTab}>
-                <TabsList>
-                  <TabsTrigger value="all">All ({patients.length})</TabsTrigger>
-                  <TabsTrigger value="active">Active ({patients.filter(p => p.is_active).length})</TabsTrigger>
-                  <TabsTrigger value="inactive">Inactive ({patients.filter(p => !p.is_active).length})</TabsTrigger>
-                </TabsList>
-              </Tabs>
+              <TabsList className="h-7">
+                <TabsTrigger value="all" onClick={() => setActiveTab("all")} className={activeTab === "all" ? "bg-background" : ""}>
+                  All ({patients.length})
+                </TabsTrigger>
+                <TabsTrigger value="active" onClick={() => setActiveTab("active")} className={activeTab === "active" ? "bg-background" : ""}>
+                  Active ({patients.filter(p => p.is_active).length})
+                </TabsTrigger>
+                <TabsTrigger value="inactive" onClick={() => setActiveTab("inactive")} className={activeTab === "inactive" ? "bg-background" : ""}>
+                  Inactive ({patients.filter(p => !p.is_active).length})
+                </TabsTrigger>
+              </TabsList>
             </div>
           </CardHeader>
-          <CardContent>
+          <CardContent className="flex-1 p-0 min-h-0">
             {loading ? (
               <div className="flex items-center justify-center py-8">
-                <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div>
+                <div className="animate-spin rounded-full h-6 w-6 border-b-2 border-primary"></div>
               </div>
             ) : filteredPatients.length === 0 ? (
-              <div className="text-center py-8 text-muted-foreground">
-                {searchQuery ? "No patients found matching your search" : "No patients registered yet"}
+              <div className="text-center py-8 text-muted-foreground text-xs">
+                {searchQuery ? "No patients found" : "No patients registered yet"}
               </div>
             ) : (
-              <ScrollArea className="h-[500px]">
+              <ScrollArea className="h-full">
                 <Table>
                   <TableHeader>
-                    <TableRow>
-                      <TableHead>MRN</TableHead>
-                      <TableHead>Patient Name</TableHead>
-                      <TableHead>Age/Gender</TableHead>
-                      <TableHead>Contact</TableHead>
-                      <TableHead>Location</TableHead>
-                      <TableHead>Status</TableHead>
-                      <TableHead className="w-[50px]"></TableHead>
+                    <TableRow className="text-[10px]">
+                      <TableHead className="py-1.5 px-2">MRN</TableHead>
+                      <TableHead className="py-1.5 px-2">Patient Name</TableHead>
+                      <TableHead className="py-1.5 px-2">Age/Gender</TableHead>
+                      <TableHead className="py-1.5 px-2">Contact</TableHead>
+                      <TableHead className="py-1.5 px-2">Location</TableHead>
+                      <TableHead className="py-1.5 px-2">Status</TableHead>
+                      <TableHead className="py-1.5 px-2 w-8"></TableHead>
                     </TableRow>
                   </TableHeader>
                   <TableBody>
                     {filteredPatients.map((patient) => (
-                      <TableRow key={patient.id} className="cursor-pointer hover:bg-accent" onClick={() => setSelectedPatient(patient)}>
-                        <TableCell className="font-mono text-sm">{patient.mrn}</TableCell>
-                        <TableCell>
+                      <TableRow 
+                        key={patient.id} 
+                        className="cursor-pointer hover:bg-accent text-xs"
+                        onClick={() => setSelectedPatient(patient)}
+                      >
+                        <TableCell className="py-1.5 px-2 font-mono text-[10px]">{patient.mrn}</TableCell>
+                        <TableCell className="py-1.5 px-2">
                           <div>
-                            <p className="font-medium">{patient.first_name} {patient.middle_name ? patient.middle_name + " " : ""}{patient.last_name}</p>
+                            <p className="font-medium text-xs">{patient.first_name} {patient.last_name}</p>
                             {patient.allergies && patient.allergies.length > 0 && (
-                              <div className="flex items-center gap-1 mt-1">
-                                <AlertCircle className="h-3 w-3 text-critical" />
-                                <span className="text-xs text-critical">Allergies</span>
+                              <div className="flex items-center gap-0.5 mt-0.5">
+                                <AlertCircle className="h-2.5 w-2.5 text-critical" />
+                                <span className="text-[9px] text-critical">Allergies</span>
                               </div>
                             )}
                           </div>
                         </TableCell>
-                        <TableCell>
-                          <span>{calculateAge(patient.date_of_birth)}y</span>
-                          <span className="text-muted-foreground"> / </span>
-                          <span className="capitalize">{patient.gender.charAt(0).toUpperCase()}</span>
+                        <TableCell className="py-1.5 px-2 text-[10px]">
+                          {calculateAge(patient.date_of_birth)}y / {patient.gender.charAt(0).toUpperCase()}
                         </TableCell>
-                        <TableCell>
-                          <div className="flex flex-col gap-1">
-                            {patient.phone_primary && (
-                              <div className="flex items-center gap-1 text-sm">
-                                <Phone className="h-3 w-3" />
-                                {patient.phone_primary}
-                              </div>
-                            )}
-                            {patient.email && (
-                              <div className="flex items-center gap-1 text-sm text-muted-foreground">
-                                <Mail className="h-3 w-3" />
-                                {patient.email}
-                              </div>
-                            )}
-                          </div>
+                        <TableCell className="py-1.5 px-2">
+                          {patient.phone_primary && (
+                            <div className="flex items-center gap-1 text-[10px]">
+                              <Phone className="h-2.5 w-2.5" />
+                              {patient.phone_primary}
+                            </div>
+                          )}
                         </TableCell>
-                        <TableCell>
+                        <TableCell className="py-1.5 px-2">
                           {patient.city && (
-                            <div className="flex items-center gap-1 text-sm">
-                              <MapPin className="h-3 w-3" />
+                            <div className="flex items-center gap-1 text-[10px]">
+                              <MapPin className="h-2.5 w-2.5" />
                               {patient.city}
                             </div>
                           )}
                         </TableCell>
-                        <TableCell>
-                          <Badge variant={patient.is_active ? "default" : "secondary"}>
+                        <TableCell className="py-1.5 px-2">
+                          <Badge variant={patient.is_active ? "default" : "secondary"} className="text-[9px] h-4">
                             {patient.is_active ? "Active" : "Inactive"}
                           </Badge>
                         </TableCell>
-                        <TableCell>
-                          <Button variant="ghost" size="icon"><MoreHorizontal className="h-4 w-4" /></Button>
+                        <TableCell className="py-1.5 px-2">
+                          <Button variant="ghost" size="icon" className="h-6 w-6">
+                            <MoreHorizontal className="h-3 w-3" />
+                          </Button>
                         </TableCell>
                       </TableRow>
                     ))}
