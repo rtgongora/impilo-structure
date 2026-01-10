@@ -1,4 +1,4 @@
-import { Bell, Settings, LogOut, Search, ArrowLeft, Home } from "lucide-react";
+import { Bell, Settings, LogOut, ArrowLeft, Home } from "lucide-react";
 import { useNavigate, useLocation } from "react-router-dom";
 import { useAuth } from "@/contexts/AuthContext";
 import { Button } from "@/components/ui/button";
@@ -44,100 +44,92 @@ export function AppHeader({ title }: AppHeaderProps) {
   };
 
   return (
-    <header className="h-14 md:h-16 bg-card border-b flex items-center justify-between px-3 md:px-4 shrink-0">
+    <header className="h-12 bg-card border-b flex items-center justify-between px-2 shrink-0">
       {/* Left: Home Button & Navigation */}
-      <div className="flex items-center gap-1.5 md:gap-2">
-        {/* Always show Home button (except on home page) */}
+      <div className="flex items-center gap-1">
         {!isHomePage && (
           <Button
             variant="default"
             size="sm"
             onClick={() => navigate("/")}
-            className="gap-1.5 min-h-[40px] md:min-h-[36px] px-3"
+            className="gap-1"
           >
-            <Home className="w-4 h-4" />
-            <span className="hidden sm:inline">Home</span>
+            <Home className="w-3.5 h-3.5" />
+            <span className="hidden sm:inline text-xs">Home</span>
           </Button>
         )}
         
-        {/* Back button for deeper navigation (not on home or dashboard) */}
         {!isHomePage && !isDashboard && (
           <Button
             variant="ghost"
             size="sm"
             onClick={() => navigate(-1)}
-            className="text-muted-foreground hover:text-foreground min-h-[40px] md:min-h-[36px]"
+            className="text-muted-foreground hover:text-foreground"
           >
-            <ArrowLeft className="w-4 h-4 mr-1" />
-            <span className="hidden sm:inline">Back</span>
+            <ArrowLeft className="w-3.5 h-3.5" />
+            <span className="hidden sm:inline text-xs">Back</span>
           </Button>
         )}
         
         {title && (
           <>
-            <div className="h-5 w-px bg-border mx-1.5 md:mx-2 hidden sm:block" />
-            <h1 className="text-base md:text-lg font-semibold truncate max-w-[150px] md:max-w-none">{title}</h1>
+            <div className="h-4 w-px bg-border mx-1 hidden sm:block" />
+            <h1 className="text-xs font-semibold truncate max-w-[120px] md:max-w-none">{title}</h1>
           </>
         )}
       </div>
 
       {/* Center: Patient Search */}
-      <div className="flex-1 max-w-xs md:max-w-md mx-2 md:mx-4">
+      <div className="flex-1 max-w-xs mx-2">
         <PatientSearch />
       </div>
 
       {/* Right: Actions & User */}
-      <div className="flex items-center gap-1.5 md:gap-2">
-        {/* Facility Selector - hide on very small screens */}
+      <div className="flex items-center gap-1">
         <div className="hidden md:block">
           <FacilitySelector />
         </div>
         
-        <div className="h-5 w-px bg-border hidden md:block" />
-
-        {/* Active Workspace Indicator - hide on small screens */}
         <div className="hidden lg:block">
           <ActiveWorkspaceIndicator />
         </div>
-
-        <div className="h-5 w-px bg-border hidden lg:block" />
 
         <VoiceCommandButton onCommand={(cmd, action) => console.log(action, cmd)} />
         
         <HandoffNotifications />
 
-        <Button variant="ghost" size="icon" className="relative min-h-[40px] min-w-[40px]">
-          <Bell className="h-5 w-5" />
-          <span className="absolute -top-1 -right-1 h-4 w-4 bg-destructive text-destructive-foreground text-xs rounded-full flex items-center justify-center">
+        <Button variant="ghost" size="icon" className="relative h-7 w-7">
+          <Bell className="h-3.5 w-3.5" />
+          <span className="absolute -top-0.5 -right-0.5 h-3.5 w-3.5 bg-destructive text-destructive-foreground text-[9px] rounded-full flex items-center justify-center">
             3
           </span>
         </Button>
 
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
-            <Button variant="ghost" className="flex items-center gap-2 px-2 min-h-[40px]">
-              <Avatar className="h-8 w-8">
+            <Button variant="ghost" className="flex items-center gap-1.5 px-1.5 h-8">
+              <Avatar className="h-6 w-6">
                 <AvatarImage src={profile?.avatar_url || ""} />
-                <AvatarFallback className="bg-primary text-primary-foreground text-sm">
+                <AvatarFallback className="bg-primary text-primary-foreground text-[10px]">
                   {profile?.display_name ? getInitials(profile.display_name) : "U"}
                 </AvatarFallback>
               </Avatar>
               <div className="hidden lg:block text-left">
-                <p className="text-sm font-medium">{profile?.display_name}</p>
-                <p className="text-xs text-muted-foreground capitalize">{profile?.role}</p>
+                <p className="text-xs font-medium leading-none">{profile?.display_name}</p>
+                <p className="text-[10px] text-muted-foreground capitalize">{profile?.role}</p>
               </div>
             </Button>
           </DropdownMenuTrigger>
-          <DropdownMenuContent align="end" className="w-56">
-            <DropdownMenuLabel>My Account</DropdownMenuLabel>
+          <DropdownMenuContent align="end" className="w-48">
+            <DropdownMenuLabel className="text-xs">My Account</DropdownMenuLabel>
             <DropdownMenuSeparator />
-            <DropdownMenuItem onClick={() => navigate("/profile")} className="min-h-[44px]">
-              <Settings className="mr-2 h-4 w-4" />
+            <DropdownMenuItem onClick={() => navigate("/profile")} className="text-xs">
+              <Settings className="mr-2 h-3.5 w-3.5" />
               Profile Settings
             </DropdownMenuItem>
             <DropdownMenuSeparator />
-            <DropdownMenuItem onClick={handleSignOut} className="text-destructive min-h-[44px]">
-              <LogOut className="mr-2 h-4 w-4" />
+            <DropdownMenuItem onClick={handleSignOut} className="text-xs text-destructive">
+              <LogOut className="mr-2 h-3.5 w-3.5" />
               Sign Out
             </DropdownMenuItem>
           </DropdownMenuContent>

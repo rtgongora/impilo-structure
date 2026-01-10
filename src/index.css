@@ -4,6 +4,7 @@
 
 /* Impilo EHR Design System
    Clinical/Medical Interface - Professional, Clean, High-Contrast
+   Optimized for 10.1" tablets (1280x800)
    All colors in HSL
 */
 
@@ -70,7 +71,7 @@
     --input: 0 0% 83%;
     --ring: 161 93% 30%;
 
-    --radius: 0.75rem;
+    --radius: 0.5rem;
 
     /* Sidebar/Nav */
     --sidebar-background: 0 0% 100%;
@@ -129,6 +130,10 @@
     --shadow-2xl: 0 1px 3px 0px hsl(0 0% 0% / 0.25);
     --tracking-normal: 0em;
     --spacing: 0.25rem;
+
+    /* Info - Blue tint */
+    --info: 200 80% 50%;
+    --info-foreground: 0 0% 100%;
   }
 
   .dark {
@@ -219,6 +224,9 @@
     --shadow-lg: 0 1px 3px 0px hsl(0 0% 0% / 0.1), 0 4px 6px -1px hsl(0 0% 0% / 0.1);
     --shadow-xl: 0 1px 3px 0px hsl(0 0% 0% / 0.1), 0 8px 10px -1px hsl(0 0% 0% / 0.1);
     --shadow-2xl: 0 1px 3px 0px hsl(0 0% 0% / 0.25);
+
+    --info: 200 80% 55%;
+    --info-foreground: 0 0% 100%;
   }
 }
 
@@ -229,6 +237,7 @@
 
   html {
     font-family: var(--font-sans);
+    font-size: 13px; /* Compact base for tablets */
   }
 
   body {
@@ -236,35 +245,35 @@
     font-feature-settings: "cv02", "cv03", "cv04", "cv11";
   }
 
-  /* Scrollbar Styling */
+  /* Scrollbar Styling - Thin for tablets */
   ::-webkit-scrollbar {
-    width: 8px;
-    height: 8px;
+    width: 6px;
+    height: 6px;
   }
 
   ::-webkit-scrollbar-track {
-    @apply bg-muted;
+    @apply bg-transparent;
   }
 
   ::-webkit-scrollbar-thumb {
-    @apply bg-muted-foreground/30 rounded-full;
+    @apply bg-muted-foreground/20 rounded-full;
   }
 
   ::-webkit-scrollbar-thumb:hover {
-    @apply bg-muted-foreground/50;
+    @apply bg-muted-foreground/40;
   }
 
-  /* Tablet optimization - 10.1" tablets (1280x800 to 1920x1200) */
-  @media (min-width: 768px) and (max-width: 1366px) {
+  /* Desktop - larger screens */
+  @media (min-width: 1440px) {
     html {
-      font-size: 14px; /* Compact for tablets */
+      font-size: 14px;
     }
   }
 
-  /* Reduce spacing on tablets */
-  @media (max-height: 900px) {
+  /* Large desktop */
+  @media (min-width: 1920px) {
     html {
-      --spacing: 0.2rem;
+      font-size: 16px;
     }
   }
 }
@@ -280,7 +289,7 @@
       box-shadow: 0 0 0 0 hsl(var(--critical) / 0.5);
     }
     50% {
-      box-shadow: 0 0 0 8px hsl(var(--critical) / 0);
+      box-shadow: 0 0 0 6px hsl(var(--critical) / 0);
     }
   }
 
@@ -300,7 +309,7 @@
 
   /* Smooth transitions */
   .transition-clinical {
-    @apply transition-all duration-200 ease-out;
+    @apply transition-all duration-150 ease-out;
   }
 
   /* Elapsed time display */
@@ -309,61 +318,146 @@
     font-variant-numeric: tabular-nums;
   }
 
-  /* Tablet-optimized containers */
-  .tablet-container {
-    @apply px-3 md:px-4;
+  /* Page container - full height minus header */
+  .page-container {
+    @apply h-[calc(100vh-48px)] flex flex-col overflow-hidden;
   }
 
-  /* Compact cards for tablets */
-  .touch-card {
+  /* Scrollable content area */
+  .content-scroll {
+    @apply flex-1 overflow-y-auto overscroll-contain;
+  }
+
+  /* Compact page padding */
+  .page-padding {
     @apply p-3;
   }
 
-  /* Tablet grids - compact */
-  .tablet-grid-2 {
-    @apply grid grid-cols-2 gap-2;
+  /* Compact section spacing */
+  .section-gap {
+    @apply space-y-3;
   }
 
-  .tablet-grid-3 {
+  /* Compact card */
+  .card-compact {
+    @apply rounded-md;
+  }
+
+  .card-compact .card-header-compact {
+    @apply p-3 pb-2;
+  }
+
+  .card-compact .card-content-compact {
+    @apply p-3 pt-0;
+  }
+
+  /* Stat card - compact */
+  .stat-card {
+    @apply p-2.5 flex items-center gap-2;
+  }
+
+  .stat-icon {
+    @apply p-1.5 rounded-md;
+  }
+
+  .stat-value {
+    @apply text-lg font-bold leading-none;
+  }
+
+  .stat-label {
+    @apply text-[10px] text-muted-foreground leading-tight;
+  }
+
+  /* Compact grid layouts */
+  .grid-2 { @apply grid grid-cols-2 gap-2; }
+  .grid-3 { @apply grid grid-cols-3 gap-2; }
+  .grid-4 { @apply grid grid-cols-4 gap-2; }
+  .grid-5 { @apply grid grid-cols-5 gap-2; }
+  .grid-6 { @apply grid grid-cols-6 gap-2; }
+
+  /* Action button - touch friendly but compact */
+  .action-btn {
+    @apply h-12 flex flex-col items-center justify-center gap-1 rounded-md border;
+  }
+
+  .action-btn-icon {
+    @apply p-1.5 rounded-md;
+  }
+
+  .action-btn-label {
+    @apply text-[10px] font-medium;
+  }
+
+  /* List item - compact touch target */
+  .list-item {
+    @apply py-2 px-2.5 flex items-center gap-2 rounded-md hover:bg-accent cursor-pointer;
+  }
+
+  /* Table compact */
+  .table-compact th,
+  .table-compact td {
+    @apply py-1.5 px-2 text-xs;
+  }
+
+  /* Tabs compact */
+  .tabs-compact {
+    @apply h-8;
+  }
+
+  .tabs-compact [role="tab"] {
+    @apply h-7 px-2 text-xs;
+  }
+
+  /* Badge compact */
+  .badge-sm {
+    @apply text-[10px] px-1.5 py-0.5;
+  }
+
+  /* Header compact */
+  .header-compact {
+    @apply h-10 px-3 flex items-center justify-between border-b shrink-0;
+  }
+
+  .header-title {
+    @apply text-sm font-semibold;
+  }
+
+  /* Welcome section compact */
+  .welcome-compact {
+    @apply mb-3;
+  }
+
+  .welcome-compact h2 {
+    @apply text-base font-bold;
+  }
+
+  .welcome-compact p {
+    @apply text-xs text-muted-foreground;
+  }
+
+  /* Quick action grid */
+  .quick-actions {
+    @apply grid grid-cols-5 gap-2 mb-3;
+  }
+
+  /* Communication hub compact */
+  .comm-hub {
+    @apply p-2.5 mb-3 border rounded-md;
+  }
+
+  .comm-hub-header {
+    @apply flex items-center justify-between mb-2;
+  }
+
+  .comm-hub-title {
+    @apply text-xs font-semibold flex items-center gap-1.5;
+  }
+
+  .comm-hub-grid {
     @apply grid grid-cols-3 gap-2;
   }
 
-  .tablet-grid-4 {
-    @apply grid grid-cols-4 gap-2;
-  }
-
-  /* Compact list items */
-  .touch-list-item {
-    @apply py-2 px-3 min-h-[44px] flex items-center;
-  }
-
-  /* Touch-friendly navigation */
-  .touch-nav-item {
-    @apply min-h-[40px] px-2 py-1.5 rounded-md flex items-center gap-2;
-  }
-
-  /* Touch buttons */
-  .btn-touch {
-    @apply min-h-[40px] px-3 py-2;
-  }
-
-  /* Touch tabs */
-  .touch-tabs {
-    @apply min-h-[40px];
-  }
-
-  /* Compact inputs */
-  .input-touch {
-    @apply min-h-[40px] text-sm px-3;
-  }
-
-  /* Viewport-height utilities for tablet */
-  .tablet-vh-full {
-    height: calc(100vh - 56px); /* Account for header */
-  }
-
-  .tablet-vh-content {
-    max-height: calc(100vh - 120px);
-    overflow-y: auto;
+  .comm-btn {
+    @apply h-14 flex flex-col items-center justify-center gap-1 relative;
   }
 }

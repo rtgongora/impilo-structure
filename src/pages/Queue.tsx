@@ -21,61 +21,65 @@ const Queue = () => {
 
   return (
     <AppLayout title="Queue Management">
-      <div className="p-6">
-        <div className="flex items-center justify-between mb-6">
+      <div className="h-[calc(100vh-48px)] flex flex-col p-3">
+        {/* Header */}
+        <div className="flex items-center justify-between mb-2 shrink-0">
           <div>
-            <h1 className="text-2xl font-bold">Queue Management</h1>
-            <p className="text-muted-foreground">Manage patient queues across service points</p>
+            <h1 className="text-sm font-bold">Queue Management</h1>
+            <p className="text-[10px] text-muted-foreground">Manage patient queues across service points</p>
           </div>
           <AddToQueueDialog queues={queues} onSuccess={refetch} />
         </div>
 
-        <Tabs value={activeTab} onValueChange={(v) => setActiveTab(v as TabValue)}>
-          <TabsList className="flex-wrap">
-            <TabsTrigger value="workstation" className="flex items-center gap-2">
-              <Users className="h-4 w-4" />
-              Workstation
+        {/* Tabs */}
+        <Tabs value={activeTab} onValueChange={(v) => setActiveTab(v as TabValue)} className="flex-1 flex flex-col min-h-0">
+          <TabsList className="shrink-0">
+            <TabsTrigger value="workstation" className="flex items-center gap-1">
+              <Users className="h-3 w-3" />
+              <span className="hidden sm:inline">Workstation</span>
             </TabsTrigger>
-            <TabsTrigger value="supervisor" className="flex items-center gap-2">
-              <LayoutDashboard className="h-4 w-4" />
-              Supervisor
+            <TabsTrigger value="supervisor" className="flex items-center gap-1">
+              <LayoutDashboard className="h-3 w-3" />
+              <span className="hidden sm:inline">Supervisor</span>
             </TabsTrigger>
-            <TabsTrigger value="check-in" className="flex items-center gap-2">
-              <QrCode className="h-4 w-4" />
-              Self Check-In
+            <TabsTrigger value="check-in" className="flex items-center gap-1">
+              <QrCode className="h-3 w-3" />
+              <span className="hidden sm:inline">Check-In</span>
             </TabsTrigger>
-            <TabsTrigger value="config" className="flex items-center gap-2">
-              <Settings className="h-4 w-4" />
-              Configuration
+            <TabsTrigger value="config" className="flex items-center gap-1">
+              <Settings className="h-3 w-3" />
+              <span className="hidden sm:inline">Config</span>
             </TabsTrigger>
-            <TabsTrigger value="pathways" className="flex items-center gap-2">
-              <GitBranch className="h-4 w-4" />
-              Pathways
+            <TabsTrigger value="pathways" className="flex items-center gap-1">
+              <GitBranch className="h-3 w-3" />
+              <span className="hidden sm:inline">Pathways</span>
             </TabsTrigger>
           </TabsList>
 
-          <TabsContent value="workstation" className="mt-4">
-            <QueueWorkstation initialQueueId={selectedQueueId} />
-          </TabsContent>
-          <TabsContent value="supervisor" className="mt-4">
-            <SupervisorDashboard 
-              onSelectQueue={(queueId) => {
-                setSelectedQueueId(queueId);
-                setActiveTab('workstation');
-              }} 
-            />
-          </TabsContent>
-          <TabsContent value="check-in" className="mt-4">
-            <div className="max-w-lg mx-auto">
-              <SelfCheckInKiosk facilityName="Impilo Health" />
-            </div>
-          </TabsContent>
-          <TabsContent value="config" className="mt-4">
-            <QueueConfigManager />
-          </TabsContent>
-          <TabsContent value="pathways" className="mt-4">
-            <QueuePathwayEditor />
-          </TabsContent>
+          <div className="flex-1 overflow-auto mt-2">
+            <TabsContent value="workstation" className="h-full mt-0">
+              <QueueWorkstation initialQueueId={selectedQueueId} />
+            </TabsContent>
+            <TabsContent value="supervisor" className="h-full mt-0">
+              <SupervisorDashboard 
+                onSelectQueue={(queueId) => {
+                  setSelectedQueueId(queueId);
+                  setActiveTab('workstation');
+                }} 
+              />
+            </TabsContent>
+            <TabsContent value="check-in" className="h-full mt-0">
+              <div className="max-w-md mx-auto">
+                <SelfCheckInKiosk facilityName="Impilo Health" />
+              </div>
+            </TabsContent>
+            <TabsContent value="config" className="h-full mt-0">
+              <QueueConfigManager />
+            </TabsContent>
+            <TabsContent value="pathways" className="h-full mt-0">
+              <QueuePathwayEditor />
+            </TabsContent>
+          </div>
         </Tabs>
       </div>
     </AppLayout>

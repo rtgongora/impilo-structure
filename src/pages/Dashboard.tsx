@@ -52,29 +52,28 @@ const Dashboard = () => {
 
   const getStatusBadge = (status: string) => {
     switch (status) {
-      case "Active": return <Badge variant="default">Active</Badge>;
-      case "In Progress": return <Badge variant="secondary">In Progress</Badge>;
-      case "Pending Review": return <Badge variant="outline">Pending Review</Badge>;
-      case "Discharge Pending": return <Badge className="bg-success/20 text-success">Discharge Pending</Badge>;
-      default: return <Badge variant="outline">{status}</Badge>;
+      case "Active": return <Badge variant="default" className="text-[10px]">Active</Badge>;
+      case "In Progress": return <Badge variant="secondary" className="text-[10px]">In Progress</Badge>;
+      case "Pending Review": return <Badge variant="outline" className="text-[10px]">Pending</Badge>;
+      case "Discharge Pending": return <Badge className="bg-success/20 text-success text-[10px]">Discharge</Badge>;
+      default: return <Badge variant="outline" className="text-[10px]">{status}</Badge>;
     }
   };
 
   const quickActions = [
-    { label: "Patient Queue", icon: Users, path: "/queue", color: "bg-primary" },
-    { label: "Bed Management", icon: Bed, path: "/beds", color: "bg-secondary" },
-    { label: "New Registration", icon: UserPlus, path: "/registration", color: "bg-success" },
+    { label: "Queue", icon: Users, path: "/queue", color: "bg-primary" },
+    { label: "Beds", icon: Bed, path: "/beds", color: "bg-secondary" },
+    { label: "Register", icon: UserPlus, path: "/registration", color: "bg-success" },
     { label: "Appointments", icon: Calendar, path: "/appointments", color: "bg-warning" },
-    { label: "Provider Inbox", icon: Inbox, path: "/orders", color: "bg-info" },
+    { label: "Inbox", icon: Inbox, path: "/orders", color: "bg-info" },
   ];
 
   const communicationActions = [
     { label: "Messages", icon: MessageSquare, path: "/communication", tab: "messages", color: "bg-primary", count: 5 },
     { label: "Pages", icon: Bell, path: "/communication", tab: "pages", color: "bg-warning", count: 2 },
-    { label: "Voice Call", icon: Phone, path: "/communication", tab: "calls", color: "bg-success", count: 0 },
+    { label: "Calls", icon: Phone, path: "/communication", tab: "calls", color: "bg-success", count: 0 },
   ];
 
-  // Render different content based on workspace view
   const renderWorkspaceContent = () => {
     switch (currentView) {
       case "department":
@@ -87,36 +86,33 @@ const Dashboard = () => {
   };
 
   const renderPersonalView = () => (
-    <>
-      {/* Communication Hub - Prominent Section */}
-      <Card className="mb-6 border-2 border-primary/20 bg-gradient-to-r from-primary/5 to-transparent">
-        <CardHeader className="pb-3">
-          <div className="flex items-center justify-between">
-            <div className="flex items-center gap-2">
-              <MessageSquare className="h-5 w-5 text-primary" />
-              <CardTitle className="text-lg">Communication Hub</CardTitle>
+    <div className="section-gap">
+      {/* Communication Hub - Compact */}
+      <Card className="border-primary/20">
+        <CardContent className="p-2.5">
+          <div className="flex items-center justify-between mb-2">
+            <div className="flex items-center gap-1.5">
+              <MessageSquare className="h-3.5 w-3.5 text-primary" />
+              <span className="text-xs font-semibold">Communication</span>
             </div>
-            <Button variant="outline" size="sm" onClick={() => navigate("/communication")}>
-              View All
-              <ChevronRight className="h-4 w-4 ml-1" />
+            <Button variant="ghost" size="sm" onClick={() => navigate("/communication")} className="h-6 px-2 text-[10px]">
+              View All <ChevronRight className="h-3 w-3 ml-0.5" />
             </Button>
           </div>
-        </CardHeader>
-        <CardContent>
-          <div className="grid grid-cols-3 gap-4">
+          <div className="grid grid-cols-3 gap-2">
             {communicationActions.map((action) => (
               <Button
                 key={action.label}
                 variant="outline"
-                className="h-auto py-6 flex flex-col items-center gap-3 hover:bg-accent relative"
+                className="h-12 flex flex-col items-center justify-center gap-1 relative p-1"
                 onClick={() => navigate(`${action.path}?tab=${action.tab}`)}
               >
-                <div className={`p-3 rounded-full ${action.color}`}>
-                  <action.icon className="h-6 w-6 text-primary-foreground" />
+                <div className={`p-1.5 rounded-md ${action.color}`}>
+                  <action.icon className="h-3.5 w-3.5 text-primary-foreground" />
                 </div>
-                <span className="text-sm font-medium">{action.label}</span>
+                <span className="text-[10px] font-medium">{action.label}</span>
                 {action.count > 0 && (
-                  <Badge className="absolute -top-2 -right-2 bg-destructive text-destructive-foreground">
+                  <Badge className="absolute -top-1 -right-1 h-4 w-4 p-0 flex items-center justify-center text-[9px] bg-destructive">
                     {action.count}
                   </Badge>
                 )}
@@ -126,227 +122,150 @@ const Dashboard = () => {
         </CardContent>
       </Card>
 
-      {/* Quick Stats */}
-      <div className="grid grid-cols-2 md:grid-cols-6 gap-4 mb-6">
-        <Card>
-          <CardContent className="p-4 flex items-center gap-3">
-            <div className="p-2 bg-primary/10 rounded-lg">
-              <Users className="h-5 w-5 text-primary" />
-            </div>
-            <div>
-              {loading ? (
-                <Skeleton className="h-8 w-8" />
-              ) : (
-                <p className="text-2xl font-bold">{stats.myPatients}</p>
-              )}
-              <p className="text-xs text-muted-foreground">My Patients</p>
-            </div>
-          </CardContent>
-        </Card>
-        <Card>
-          <CardContent className="p-4 flex items-center gap-3">
-            <div className="p-2 bg-warning/10 rounded-lg">
-              <ClipboardList className="h-5 w-5 text-warning" />
-            </div>
-            <div>
-              {loading ? (
-                <Skeleton className="h-8 w-8" />
-              ) : (
-                <p className="text-2xl font-bold">{stats.pendingTasks}</p>
-              )}
-              <p className="text-xs text-muted-foreground">Pending Orders</p>
-            </div>
-          </CardContent>
-        </Card>
-        <Card>
-          <CardContent className="p-4 flex items-center gap-3">
-            <div className="p-2 bg-info/10 rounded-lg">
-              <Send className="h-5 w-5 text-info" />
-            </div>
-            <div>
-              {loading ? (
-                <Skeleton className="h-8 w-8" />
-              ) : (
-                <p className="text-2xl font-bold">{stats.activeReferrals}</p>
-              )}
-              <p className="text-xs text-muted-foreground">Active Referrals</p>
-            </div>
-          </CardContent>
-        </Card>
-        <Card>
-          <CardContent className="p-4 flex items-center gap-3">
-            <div className="p-2 bg-secondary/10 rounded-lg">
-              <TestTube2 className="h-5 w-5 text-secondary" />
-            </div>
-            <div>
-              {loading ? (
-                <Skeleton className="h-8 w-8" />
-              ) : (
-                <p className="text-2xl font-bold">{stats.pendingResults}</p>
-              )}
-              <p className="text-xs text-muted-foreground">Pending Results</p>
-            </div>
-          </CardContent>
-        </Card>
-        <Card>
-          <CardContent className="p-4 flex items-center gap-3">
-            <div className="p-2 bg-critical/10 rounded-lg">
-              <AlertCircle className="h-5 w-5 text-critical" />
-            </div>
-            <div>
-              {loading ? (
-                <Skeleton className="h-8 w-8" />
-              ) : (
-                <p className="text-2xl font-bold">{stats.criticalAlerts}</p>
-              )}
-              <p className="text-xs text-muted-foreground">Critical Alerts</p>
-            </div>
-          </CardContent>
-        </Card>
-        <Card>
-          <CardContent className="p-4 flex items-center gap-3">
-            <div className="p-2 bg-success/10 rounded-lg">
-              <CheckCircle2 className="h-5 w-5 text-success" />
-            </div>
-            <div>
-              {loading ? (
-                <Skeleton className="h-8 w-8" />
-              ) : (
-                <p className="text-2xl font-bold">{stats.completedToday}</p>
-              )}
-              <p className="text-xs text-muted-foreground">Completed Today</p>
-            </div>
-          </CardContent>
-        </Card>
+      {/* Quick Stats - 6 columns */}
+      <div className="grid grid-cols-6 gap-2">
+        {[
+          { icon: Users, value: stats.myPatients, label: "My Patients", color: "bg-primary/10 text-primary" },
+          { icon: ClipboardList, value: stats.pendingTasks, label: "Pending", color: "bg-warning/10 text-warning" },
+          { icon: Send, value: stats.activeReferrals, label: "Referrals", color: "bg-info/10 text-info" },
+          { icon: TestTube2, value: stats.pendingResults, label: "Results", color: "bg-secondary/10 text-secondary" },
+          { icon: AlertCircle, value: stats.criticalAlerts, label: "Critical", color: "bg-critical/10 text-critical" },
+          { icon: CheckCircle2, value: stats.completedToday, label: "Done Today", color: "bg-success/10 text-success" },
+        ].map((stat, i) => (
+          <Card key={i}>
+            <CardContent className="p-2 flex items-center gap-2">
+              <div className={`p-1.5 rounded-md ${stat.color}`}>
+                <stat.icon className="h-3.5 w-3.5" />
+              </div>
+              <div>
+                {loading ? (
+                  <Skeleton className="h-5 w-6" />
+                ) : (
+                  <p className="text-lg font-bold leading-none">{stat.value}</p>
+                )}
+                <p className="text-[9px] text-muted-foreground">{stat.label}</p>
+              </div>
+            </CardContent>
+          </Card>
+        ))}
       </div>
 
       {/* Quick Actions */}
-      <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-6">
+      <div className="grid grid-cols-5 gap-2">
         {quickActions.map((action) => (
           <Button
             key={action.label}
             variant="outline"
-            className="h-auto py-4 flex flex-col items-center gap-2 hover:bg-accent"
+            className="h-14 flex flex-col items-center justify-center gap-1"
             onClick={() => navigate(action.path)}
           >
-            <div className={`p-2 rounded-lg ${action.color}`}>
-              <action.icon className="h-5 w-5 text-primary-foreground" />
+            <div className={`p-1.5 rounded-md ${action.color}`}>
+              <action.icon className="h-3.5 w-3.5 text-primary-foreground" />
             </div>
-            <span className="text-sm font-medium">{action.label}</span>
+            <span className="text-[10px] font-medium">{action.label}</span>
           </Button>
         ))}
       </div>
 
-      <div className="grid lg:grid-cols-3 gap-6">
-        {/* Main Worklist Area */}
+      {/* Main Content Grid */}
+      <div className="grid lg:grid-cols-3 gap-3">
+        {/* Worklist */}
         <div className="lg:col-span-2">
           <Card>
-            <CardHeader className="pb-3">
+            <CardHeader className="p-2.5 pb-2">
               <div className="flex items-center justify-between">
-                <div className="flex items-center gap-2">
-                  <User className="h-5 w-5 text-primary" />
-                  <CardTitle className="text-lg">My Worklist</CardTitle>
+                <div className="flex items-center gap-1.5">
+                  <User className="h-3.5 w-3.5 text-primary" />
+                  <CardTitle>My Worklist</CardTitle>
                 </div>
-                <Tabs value={activeTab} onValueChange={setActiveTab}>
-                  <TabsList>
-                    <TabsTrigger value="worklist">Patients</TabsTrigger>
-                    <TabsTrigger value="tasks">Tasks</TabsTrigger>
-                  </TabsList>
-                </Tabs>
+                <TabsList className="h-7">
+                  <TabsTrigger value="worklist" onClick={() => setActiveTab("worklist")} className={activeTab === "worklist" ? "bg-background" : ""}>Patients</TabsTrigger>
+                  <TabsTrigger value="tasks" onClick={() => setActiveTab("tasks")} className={activeTab === "tasks" ? "bg-background" : ""}>Tasks</TabsTrigger>
+                </TabsList>
               </div>
             </CardHeader>
-            <CardContent>
-              <Tabs value={activeTab} onValueChange={setActiveTab}>
-                <TabsContent value="worklist" className="mt-0">
-                  <ScrollArea className="h-[400px]">
-                    <div className="space-y-3">
-                      {loading ? (
-                        [1, 2, 3].map((i) => <Skeleton key={i} className="h-20 w-full" />)
-                      ) : patients.length === 0 ? (
-                        <div className="text-center py-8 text-muted-foreground">
-                          <Users className="w-12 h-12 mx-auto mb-4 opacity-50" />
-                          <p>No assigned patients</p>
-                        </div>
-                      ) : (
-                        patients.map((patient) => (
-                          <div
-                            key={patient.id}
-                            className="flex items-center justify-between p-3 rounded-lg border hover:bg-accent cursor-pointer transition-colors"
-                            onClick={() => patient.encounterId && navigate(`/encounter?id=${patient.encounterId}`)}
-                          >
-                            <div className="flex items-center gap-3">
-                              <div className={`w-1 h-12 rounded-full ${getPriorityColor(patient.priority)}`} />
-                              <div>
-                                <p className="font-medium">{patient.name}</p>
-                                <p className="text-sm text-muted-foreground">{patient.mrn}</p>
-                              </div>
+            <CardContent className="p-2.5 pt-0">
+              <ScrollArea className="h-[280px]">
+                {activeTab === "worklist" ? (
+                  <div className="space-y-1.5">
+                    {loading ? (
+                      [1, 2, 3].map((i) => <Skeleton key={i} className="h-14 w-full" />)
+                    ) : patients.length === 0 ? (
+                      <div className="text-center py-6 text-muted-foreground text-xs">
+                        <Users className="w-8 h-8 mx-auto mb-2 opacity-50" />
+                        No assigned patients
+                      </div>
+                    ) : (
+                      patients.map((patient) => (
+                        <div
+                          key={patient.id}
+                          className="flex items-center justify-between p-2 rounded-md border hover:bg-accent cursor-pointer"
+                          onClick={() => patient.encounterId && navigate(`/encounter?id=${patient.encounterId}`)}
+                        >
+                          <div className="flex items-center gap-2">
+                            <div className={`w-0.5 h-10 rounded-full ${getPriorityColor(patient.priority)}`} />
+                            <div>
+                              <p className="text-xs font-medium">{patient.name}</p>
+                              <p className="text-[10px] text-muted-foreground">{patient.mrn}</p>
                             </div>
-                            <div className="text-right">
-                              <div className="flex items-center gap-2 mb-1">
-                                <Bed className="h-3 w-3 text-muted-foreground" />
-                                <span className="text-sm">{patient.ward || "—"} • {patient.bed || "—"}</span>
+                          </div>
+                          <div className="text-right flex items-center gap-2">
+                            <div>
+                              <div className="flex items-center gap-1 text-[10px] text-muted-foreground mb-0.5">
+                                <Bed className="h-2.5 w-2.5" />
+                                {patient.ward || "—"} • {patient.bed || "—"}
                               </div>
                               {getStatusBadge(patient.status)}
                             </div>
-                            <div className="flex items-center gap-1 text-xs text-muted-foreground">
-                              <Clock className="h-3 w-3" />
-                              {patient.lastUpdate}
-                            </div>
-                            <ChevronRight className="h-4 w-4 text-muted-foreground" />
+                            <ChevronRight className="h-3.5 w-3.5 text-muted-foreground" />
                           </div>
-                        ))
-                      )}
-                    </div>
-                  </ScrollArea>
-                </TabsContent>
-                <TabsContent value="tasks" className="mt-0">
-                  <ScrollArea className="h-[400px]">
-                    <div className="space-y-3">
-                      {loading ? (
-                        [1, 2, 3].map((i) => <Skeleton key={i} className="h-16 w-full" />)
-                      ) : tasks.length === 0 ? (
-                        <div className="text-center py-8 text-muted-foreground">
-                          <ClipboardList className="w-12 h-12 mx-auto mb-4 opacity-50" />
-                          <p>No pending tasks</p>
                         </div>
-                      ) : (
-                        tasks.map((task) => (
-                          <div
-                            key={task.id}
-                            className="flex items-center justify-between p-3 rounded-lg border hover:bg-accent cursor-pointer transition-colors"
-                          >
-                            <div className="flex items-center gap-3">
-                              <div className={`w-1 h-10 rounded-full ${getPriorityColor(task.priority)}`} />
-                              <div>
-                                <p className="font-medium text-sm">{task.title}</p>
-                                <Badge variant="outline" className="text-xs">{task.type}</Badge>
-                              </div>
+                      ))
+                    )}
+                  </div>
+                ) : (
+                  <div className="space-y-1.5">
+                    {loading ? (
+                      [1, 2, 3].map((i) => <Skeleton key={i} className="h-12 w-full" />)
+                    ) : tasks.length === 0 ? (
+                      <div className="text-center py-6 text-muted-foreground text-xs">
+                        <ClipboardList className="w-8 h-8 mx-auto mb-2 opacity-50" />
+                        No pending tasks
+                      </div>
+                    ) : (
+                      tasks.map((task) => (
+                        <div
+                          key={task.id}
+                          className="flex items-center justify-between p-2 rounded-md border hover:bg-accent cursor-pointer"
+                        >
+                          <div className="flex items-center gap-2">
+                            <div className={`w-0.5 h-8 rounded-full ${getPriorityColor(task.priority)}`} />
+                            <div>
+                              <p className="text-xs font-medium">{task.title}</p>
+                              <Badge variant="outline" className="text-[9px] h-4">{task.type}</Badge>
                             </div>
-                            <Badge 
-                              variant={task.due === "Overdue" ? "destructive" : "secondary"}
-                              className="text-xs"
-                            >
-                              {task.due}
-                            </Badge>
                           </div>
-                        ))
-                      )}
-                    </div>
-                  </ScrollArea>
-                </TabsContent>
-              </Tabs>
+                          <Badge variant={task.due === "Overdue" ? "destructive" : "secondary"} className="text-[10px]">
+                            {task.due}
+                          </Badge>
+                        </div>
+                      ))
+                    )}
+                  </div>
+                )}
+              </ScrollArea>
             </CardContent>
           </Card>
         </div>
 
-        {/* Right Sidebar - Medications & Alerts */}
-        <div className="space-y-6">
+        {/* Right Sidebar */}
+        <div className="space-y-3">
           <MedicationDueAlerts />
           <NurseMedDashboard />
         </div>
       </div>
 
-      {/* Clinical Overview Tabs - All Patients */}
+      {/* Clinical Overview */}
       <ProviderDashboardTabs
         orders={orders}
         referrals={referrals}
@@ -354,19 +273,19 @@ const Dashboard = () => {
         stats={stats}
         loading={loading}
       />
-    </>
+    </div>
   );
 
   return (
     <AppLayout>
-      <div className="p-6">
-        {/* Welcome Section */}
-        <div className="mb-6">
-          <h2 className="text-2xl font-bold">
+      <div className="p-3">
+        {/* Welcome - Compact */}
+        <div className="mb-3">
+          <h2 className="text-base font-bold">
             Good {new Date().getHours() < 12 ? "morning" : new Date().getHours() < 17 ? "afternoon" : "evening"}, {profile?.display_name?.split(" ")[0]}
           </h2>
-          <p className="text-muted-foreground">
-            {new Date().toLocaleDateString("en-US", { weekday: "long", year: "numeric", month: "long", day: "numeric" })}
+          <p className="text-[10px] text-muted-foreground">
+            {new Date().toLocaleDateString("en-US", { weekday: "long", month: "short", day: "numeric" })}
           </p>
         </div>
 
