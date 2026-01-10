@@ -1,4 +1,4 @@
-import { useState, useCallback, useEffect } from "react";
+import { useState, useCallback, useEffect, useRef } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -11,6 +11,8 @@ import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { toast } from "sonner";
 import { usePACSViewer, WINDOW_PRESETS } from "@/hooks/usePACSViewer";
+import { DicomCanvas, DicomCanvasRef, Annotation, ViewerState } from "./DicomCanvas";
+import { fetchDicomImage, DicomImage } from "@/services/dicomService";
 import {
   Search,
   ZoomIn,
@@ -46,7 +48,11 @@ import {
   Triangle,
   Type,
   Save,
-  Loader2
+  Loader2,
+  Upload,
+  RefreshCw,
+  Star,
+  AlertTriangle
 } from "lucide-react";
 
 // Mock DICOM studies (fallback when no database data)
@@ -114,6 +120,7 @@ const mockSeries = [
 
 export function PACSViewer() {
   const pacs = usePACSViewer();
+  const canvasRef = useRef<DicomCanvasRef>(null);
   
   // Local state for mock data fallback
   const [localStudy, setLocalStudy] = useState(mockStudies[0]);
@@ -124,6 +131,23 @@ export function PACSViewer() {
   const [viewMode, setViewMode] = useState<"1x1" | "2x2" | "1x2" | "mpr">("1x1");
   const [reportFindings, setReportFindings] = useState("");
   const [reportImpression, setReportImpression] = useState("");
+  
+  // DICOM rendering state
+  const [dicomImage, setDicomImage] = useState<DicomImage | null>(null);
+  const [localAnnotations, setLocalAnnotations] = useState<Annotation[]>([]);
+  const [pixelInfo, setPixelInfo] = useState<{ x: number; y: number; value: number } | null>(null);
+
+  // Viewer state for DicomCanvas
+  const viewerState: ViewerState = {
+    zoom: pacs.zoom,
+    pan: pacs.pan,
+    rotation: pacs.rotation,
+    flipH: pacs.flipH,
+    flipV: pacs.flipV,
+    windowWidth: pacs.windowWidth,
+    windowCenter: pacs.windowLevel,
+    invert: pacs.invert,
+  };
 
   // Derive data - use hook data if available, otherwise mock
   const hasDbData = pacs.studies.length > 0;
@@ -141,6 +165,15 @@ export function PACSViewer() {
     pacs.fetchStudies();
   }, []);
 
+  // Load DICOM image when instance changes
+  useEffect(() => {
+    if (pacs.currentInstance?.storage_path) {
+      fetchDicomImage(pacs.currentInstance.storage_path).then((img) => {
+        if (img) setDicomImage(img);
+      });
+    }
+  }, [pacs.currentInstance]);
+
   // Populate report form when report loads
   useEffect(() => {
     if (pacs.report) {
@@ -148,6 +181,24 @@ export function PACSViewer() {
       setReportImpression(pacs.report.impression || "");
     }
   }, [pacs.report]);
+
+  // Handle viewer state changes from canvas
+  const handleViewerStateChange = useCallback((state: Partial<ViewerState>) => {
+    if (state.zoom !== undefined) pacs.setZoom(state.zoom);
+    if (state.pan !== undefined) pacs.setPan(state.pan);
+    if (state.windowWidth !== undefined) pacs.setWindowWidth(state.windowWidth);
+    if (state.windowCenter !== undefined) pacs.setWindowLevel(state.windowCenter);
+  }, [pacs]);
+
+  // Handle annotation add
+  const handleAnnotationAdd = useCallback((annotation: Omit<Annotation, 'id'>) => {
+    const newAnnotation: Annotation = {
+      ...annotation,
+      id: `ann-${Date.now()}`,
+    };
+    setLocalAnnotations((prev) => [...prev, newAnnotation]);
+    toast.success(`${annotation.type} measurement added`);
+  }, []);
 
   const getModalityBadgeColor = (modality: string) => {
     switch (modality) {
@@ -414,54 +465,67 @@ export function PACSViewer() {
           </div>
 
           {/* Viewer Area */}
-          <div className="flex-1 relative flex items-center justify-center">
-            {/* Simulated DICOM Image */}
-            <div 
-              className="relative bg-zinc-800 rounded-lg overflow-hidden"
-              style={{
-                width: viewMode === "1x1" ? "80%" : viewMode === "1x2" ? "45%" : "45%",
-                height: viewMode === "1x1" ? "85%" : "45%",
-                filter: `brightness(${(pacs.windowLevel + 1000) / 1000}) contrast(${pacs.windowWidth / 400}) ${pacs.invert ? 'invert(1)' : ''}`,
-                transform: `scale(${pacs.zoom / 100}) rotate(${pacs.rotation}deg) scaleX(${pacs.flipH ? -1 : 1}) scaleY(${pacs.flipV ? -1 : 1})`,
-                translate: `${pacs.pan.x}px ${pacs.pan.y}px`
-              }}
-            >
-              {/* Loading state */}
-              {pacs.loading && (
-                <div className="absolute inset-0 flex items-center justify-center bg-zinc-900/80 z-10">
-                  <Loader2 className="w-8 h-8 animate-spin text-primary" />
-                </div>
-              )}
-              
-              {/* Placeholder for actual DICOM rendering */}
-              <div className="absolute inset-0 flex items-center justify-center">
-                <div className="text-center text-zinc-500">
-                  <FileImage className="w-24 h-24 mx-auto mb-4 opacity-50" />
-                  <p className="text-lg font-medium">{displayStudy.description}</p>
-                  <p className="text-sm">{displaySeries.name} - Image {currentImageIndex}/{totalImages}</p>
-                </div>
-              </div>
+          <div className="flex-1 relative">
+            {/* Real DICOM Canvas */}
+            <DicomCanvas
+              ref={canvasRef}
+              image={dicomImage}
+              viewerState={viewerState}
+              activeTool={pacs.activeTool}
+              showAnnotations={pacs.showAnnotations}
+              annotations={localAnnotations}
+              onAnnotationAdd={handleAnnotationAdd}
+              onViewerStateChange={handleViewerStateChange}
+              onPixelProbe={(x, y, value) => setPixelInfo({ x, y, value })}
+              className="absolute inset-0"
+            />
 
-              {/* DICOM Overlay Info */}
-              <div className="absolute top-4 left-4 text-xs text-green-400 font-mono space-y-1">
-                <p>{displayStudy.patientName}</p>
-                <p>{displayStudy.patientId}</p>
-                <p>{displayStudy.studyDate}</p>
+            {/* Loading state */}
+            {pacs.loading && (
+              <div className="absolute inset-0 flex items-center justify-center bg-zinc-900/80 z-10">
+                <Loader2 className="w-8 h-8 animate-spin text-primary" />
               </div>
-              <div className="absolute top-4 right-4 text-xs text-green-400 font-mono text-right space-y-1">
-                <p>{displayStudy.modality}</p>
-                <p>{displayStudy.bodyPart}</p>
-                <p>ACC: {displayStudy.accession}</p>
-              </div>
-              <div className="absolute bottom-4 left-4 text-xs text-green-400 font-mono space-y-1">
-                <p>W: {pacs.windowWidth} L: {pacs.windowLevel}</p>
-                <p>Zoom: {pacs.zoom}%</p>
-              </div>
-              <div className="absolute bottom-4 right-4 text-xs text-green-400 font-mono text-right">
-                <p>Im: {currentImageIndex}/{totalImages}</p>
-                <p>Se: {displaySeries.name}</p>
-              </div>
+            )}
+
+            {/* DICOM Overlay Info */}
+            <div className="absolute top-4 left-4 text-xs text-green-400 font-mono space-y-1 pointer-events-none z-20">
+              <p>{displayStudy.patientName}</p>
+              <p>{displayStudy.patientId}</p>
+              <p>{displayStudy.studyDate}</p>
             </div>
+            <div className="absolute top-4 right-4 text-xs text-green-400 font-mono text-right space-y-1 pointer-events-none z-20">
+              <p>{displayStudy.modality}</p>
+              <p>{displayStudy.bodyPart}</p>
+              <p>ACC: {displayStudy.accession}</p>
+            </div>
+            <div className="absolute bottom-4 left-4 text-xs text-green-400 font-mono space-y-1 pointer-events-none z-20">
+              <p>W: {pacs.windowWidth} L: {pacs.windowLevel}</p>
+              <p>Zoom: {pacs.zoom}%</p>
+              {pixelInfo && (
+                <p>Pixel ({pixelInfo.x}, {pixelInfo.y}): {pixelInfo.value.toFixed(0)} HU</p>
+              )}
+            </div>
+            <div className="absolute bottom-4 right-4 text-xs text-green-400 font-mono text-right pointer-events-none z-20">
+              <p>Im: {currentImageIndex}/{totalImages}</p>
+              <p>Se: {displaySeries.name}</p>
+            </div>
+
+            {/* Tool indicators */}
+            <div className="absolute top-4 left-1/2 -translate-x-1/2 pointer-events-none z-20">
+              <Badge variant="secondary" className="bg-zinc-800/80 text-green-400 border-green-400/30">
+                {pacs.activeTool.charAt(0).toUpperCase() + pacs.activeTool.slice(1)}
+              </Badge>
+            </div>
+
+            {/* Annotations count */}
+            {localAnnotations.length > 0 && (
+              <div className="absolute top-12 right-4 pointer-events-none z-20">
+                <Badge variant="outline" className="bg-zinc-800/80 text-yellow-400 border-yellow-400/30">
+                  <Ruler className="w-3 h-3 mr-1" />
+                  {localAnnotations.length} measurements
+                </Badge>
+              </div>
+            )}
           </div>
 
           {/* Bottom Controls */}
