@@ -1,29 +1,36 @@
 import { useState } from "react";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Users, Bed, Stethoscope, QrCode } from "lucide-react";
-import { QueueManagementLive } from "@/components/ehr/queue/QueueManagementLive";
+import { Users, LayoutDashboard, QrCode } from "lucide-react";
+import { QueueWorkstation, SupervisorDashboard, AddToQueueDialog } from "@/components/queue";
 import { SelfCheckInKiosk } from "@/components/booking/SelfCheckInKiosk";
 import { AppLayout } from "@/components/layout/AppLayout";
+import { useQueueManagement } from "@/hooks/useQueueManagement";
 
 const Queue = () => {
-  const [workspace, setWorkspace] = useState<'my-queue' | 'ward' | 'department' | 'check-in'>('my-queue');
+  const [activeTab, setActiveTab] = useState<'workstation' | 'supervisor' | 'check-in'>('workstation');
+  const [selectedQueueId, setSelectedQueueId] = useState<string | undefined>();
+  const { queues } = useQueueManagement();
 
   return (
-    <AppLayout title="Patient Queue">
+    <AppLayout title="Queue Management">
       <div className="p-6">
-        <Tabs value={workspace} onValueChange={(v) => setWorkspace(v as typeof workspace)}>
+        <div className="flex items-center justify-between mb-6">
+          <div>
+            <h1 className="text-2xl font-bold">Queue Management</h1>
+            <p className="text-muted-foreground">Manage patient queues across service points</p>
+          </div>
+          <AddToQueueDialog queues={queues} onSuccess={() => {}} />
+        </div>
+
+        <Tabs value={activeTab} onValueChange={(v) => setActiveTab(v as typeof activeTab)}>
           <TabsList>
-            <TabsTrigger value="my-queue" className="flex items-center gap-2">
+            <TabsTrigger value="workstation" className="flex items-center gap-2">
               <Users className="h-4 w-4" />
-              My Queue
+              Queue Workstation
             </TabsTrigger>
-            <TabsTrigger value="ward" className="flex items-center gap-2">
-              <Bed className="h-4 w-4" />
-              Ward View
-            </TabsTrigger>
-            <TabsTrigger value="department" className="flex items-center gap-2">
-              <Stethoscope className="h-4 w-4" />
-              Department
+            <TabsTrigger value="supervisor" className="flex items-center gap-2">
+              <LayoutDashboard className="h-4 w-4" />
+              Supervisor View
             </TabsTrigger>
             <TabsTrigger value="check-in" className="flex items-center gap-2">
               <QrCode className="h-4 w-4" />
@@ -31,14 +38,16 @@ const Queue = () => {
             </TabsTrigger>
           </TabsList>
 
-          <TabsContent value="my-queue" className="mt-4">
-            <QueueManagementLive workspace="my-queue" />
+          <TabsContent value="workstation" className="mt-4">
+            <QueueWorkstation initialQueueId={selectedQueueId} />
           </TabsContent>
-          <TabsContent value="ward" className="mt-4">
-            <QueueManagementLive workspace="ward" wardFilter="Ward 3A" />
-          </TabsContent>
-          <TabsContent value="department" className="mt-4">
-            <QueueManagementLive workspace="department" />
+          <TabsContent value="supervisor" className="mt-4">
+            <SupervisorDashboard 
+              onSelectQueue={(queueId) => {
+                setSelectedQueueId(queueId);
+                setActiveTab('workstation');
+              }} 
+            />
           </TabsContent>
           <TabsContent value="check-in" className="mt-4">
             <div className="max-w-lg mx-auto">

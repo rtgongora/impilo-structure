@@ -11908,6 +11908,568 @@ export type Database = {
         }
         Relationships: []
       }
+      queue_daily_stats: {
+        Row: {
+          appointments: number | null
+          avg_service_minutes: number | null
+          avg_wait_minutes: number | null
+          cancelled: number | null
+          completed: number | null
+          created_at: string | null
+          id: string
+          max_wait_minutes: number | null
+          no_shows: number | null
+          peak_queue_length: number | null
+          peak_time: string | null
+          queue_id: string
+          sla_breached_count: number | null
+          sla_met_count: number | null
+          stat_date: string
+          total_arrivals: number | null
+          transfers_in: number | null
+          transfers_out: number | null
+          updated_at: string | null
+          walk_ins: number | null
+        }
+        Insert: {
+          appointments?: number | null
+          avg_service_minutes?: number | null
+          avg_wait_minutes?: number | null
+          cancelled?: number | null
+          completed?: number | null
+          created_at?: string | null
+          id?: string
+          max_wait_minutes?: number | null
+          no_shows?: number | null
+          peak_queue_length?: number | null
+          peak_time?: string | null
+          queue_id: string
+          sla_breached_count?: number | null
+          sla_met_count?: number | null
+          stat_date?: string
+          total_arrivals?: number | null
+          transfers_in?: number | null
+          transfers_out?: number | null
+          updated_at?: string | null
+          walk_ins?: number | null
+        }
+        Update: {
+          appointments?: number | null
+          avg_service_minutes?: number | null
+          avg_wait_minutes?: number | null
+          cancelled?: number | null
+          completed?: number | null
+          created_at?: string | null
+          id?: string
+          max_wait_minutes?: number | null
+          no_shows?: number | null
+          peak_queue_length?: number | null
+          peak_time?: string | null
+          queue_id?: string
+          sla_breached_count?: number | null
+          sla_met_count?: number | null
+          stat_date?: string
+          total_arrivals?: number | null
+          transfers_in?: number | null
+          transfers_out?: number | null
+          updated_at?: string | null
+          walk_ins?: number | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "queue_daily_stats_queue_id_fkey"
+            columns: ["queue_id"]
+            isOneToOne: false
+            referencedRelation: "queue_definitions"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      queue_definitions: {
+        Row: {
+          allowed_cadres: string[] | null
+          color_code: string | null
+          created_at: string | null
+          created_by: string | null
+          default_next_queue_id: string | null
+          default_priority: Database["public"]["Enums"]["queue_priority"] | null
+          description: string | null
+          display_order: number | null
+          escalation_threshold_minutes: number | null
+          facility_id: string
+          icon: string | null
+          id: string
+          is_active: boolean | null
+          is_virtual: boolean | null
+          name: string
+          operating_days: number[] | null
+          operating_hours_end: string | null
+          operating_hours_start: string | null
+          pool_id: string | null
+          service_type: Database["public"]["Enums"]["queue_service_type"]
+          sla_target_minutes: number | null
+          updated_at: string | null
+          updated_by: string | null
+          version: number | null
+          walk_in_appointment_ratio: string | null
+          workspace_id: string | null
+        }
+        Insert: {
+          allowed_cadres?: string[] | null
+          color_code?: string | null
+          created_at?: string | null
+          created_by?: string | null
+          default_next_queue_id?: string | null
+          default_priority?:
+            | Database["public"]["Enums"]["queue_priority"]
+            | null
+          description?: string | null
+          display_order?: number | null
+          escalation_threshold_minutes?: number | null
+          facility_id: string
+          icon?: string | null
+          id?: string
+          is_active?: boolean | null
+          is_virtual?: boolean | null
+          name: string
+          operating_days?: number[] | null
+          operating_hours_end?: string | null
+          operating_hours_start?: string | null
+          pool_id?: string | null
+          service_type: Database["public"]["Enums"]["queue_service_type"]
+          sla_target_minutes?: number | null
+          updated_at?: string | null
+          updated_by?: string | null
+          version?: number | null
+          walk_in_appointment_ratio?: string | null
+          workspace_id?: string | null
+        }
+        Update: {
+          allowed_cadres?: string[] | null
+          color_code?: string | null
+          created_at?: string | null
+          created_by?: string | null
+          default_next_queue_id?: string | null
+          default_priority?:
+            | Database["public"]["Enums"]["queue_priority"]
+            | null
+          description?: string | null
+          display_order?: number | null
+          escalation_threshold_minutes?: number | null
+          facility_id?: string
+          icon?: string | null
+          id?: string
+          is_active?: boolean | null
+          is_virtual?: boolean | null
+          name?: string
+          operating_days?: number[] | null
+          operating_hours_end?: string | null
+          operating_hours_start?: string | null
+          pool_id?: string | null
+          service_type?: Database["public"]["Enums"]["queue_service_type"]
+          sla_target_minutes?: number | null
+          updated_at?: string | null
+          updated_by?: string | null
+          version?: number | null
+          walk_in_appointment_ratio?: string | null
+          workspace_id?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "queue_definitions_facility_id_fkey"
+            columns: ["facility_id"]
+            isOneToOne: false
+            referencedRelation: "facilities"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "queue_definitions_facility_id_fkey"
+            columns: ["facility_id"]
+            isOneToOne: false
+            referencedRelation: "facility_capabilities"
+            referencedColumns: ["facility_id"]
+          },
+          {
+            foreignKeyName: "queue_definitions_pool_id_fkey"
+            columns: ["pool_id"]
+            isOneToOne: false
+            referencedRelation: "virtual_pools"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "queue_definitions_workspace_id_fkey"
+            columns: ["workspace_id"]
+            isOneToOne: false
+            referencedRelation: "workspaces"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      queue_facility_config: {
+        Row: {
+          created_at: string | null
+          default_sla_consultation_minutes: number | null
+          default_sla_imaging_minutes: number | null
+          default_sla_lab_minutes: number | null
+          default_sla_pharmacy_minutes: number | null
+          default_sla_triage_minutes: number | null
+          enable_overflow_queues: boolean | null
+          enable_patient_display: boolean | null
+          enable_priority_escalation: boolean | null
+          enable_self_checkin: boolean | null
+          enable_sla_tracking: boolean | null
+          enable_sms_notifications: boolean | null
+          enable_tokens: boolean | null
+          facility_id: string
+          id: string
+          max_overflow_queues: number | null
+          queue_mode: Database["public"]["Enums"]["queue_facility_mode"]
+          updated_at: string | null
+        }
+        Insert: {
+          created_at?: string | null
+          default_sla_consultation_minutes?: number | null
+          default_sla_imaging_minutes?: number | null
+          default_sla_lab_minutes?: number | null
+          default_sla_pharmacy_minutes?: number | null
+          default_sla_triage_minutes?: number | null
+          enable_overflow_queues?: boolean | null
+          enable_patient_display?: boolean | null
+          enable_priority_escalation?: boolean | null
+          enable_self_checkin?: boolean | null
+          enable_sla_tracking?: boolean | null
+          enable_sms_notifications?: boolean | null
+          enable_tokens?: boolean | null
+          facility_id: string
+          id?: string
+          max_overflow_queues?: number | null
+          queue_mode?: Database["public"]["Enums"]["queue_facility_mode"]
+          updated_at?: string | null
+        }
+        Update: {
+          created_at?: string | null
+          default_sla_consultation_minutes?: number | null
+          default_sla_imaging_minutes?: number | null
+          default_sla_lab_minutes?: number | null
+          default_sla_pharmacy_minutes?: number | null
+          default_sla_triage_minutes?: number | null
+          enable_overflow_queues?: boolean | null
+          enable_patient_display?: boolean | null
+          enable_priority_escalation?: boolean | null
+          enable_self_checkin?: boolean | null
+          enable_sla_tracking?: boolean | null
+          enable_sms_notifications?: boolean | null
+          enable_tokens?: boolean | null
+          facility_id?: string
+          id?: string
+          max_overflow_queues?: number | null
+          queue_mode?: Database["public"]["Enums"]["queue_facility_mode"]
+          updated_at?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "queue_facility_config_facility_id_fkey"
+            columns: ["facility_id"]
+            isOneToOne: true
+            referencedRelation: "facilities"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "queue_facility_config_facility_id_fkey"
+            columns: ["facility_id"]
+            isOneToOne: true
+            referencedRelation: "facility_capabilities"
+            referencedColumns: ["facility_id"]
+          },
+        ]
+      }
+      queue_items: {
+        Row: {
+          appointment_id: string | null
+          arrival_date: string
+          arrival_time: string
+          assigned_provider_id: string | null
+          assigned_team_id: string | null
+          called_at: string | null
+          completed_at: string | null
+          created_at: string | null
+          encounter_id: string | null
+          entry_type: Database["public"]["Enums"]["queue_entry_type"]
+          escalated_at: string | null
+          escalated_by: string | null
+          escalation_reason: string | null
+          health_id: string | null
+          id: string
+          in_service_at: string | null
+          is_escalated: boolean | null
+          notes: string | null
+          ordering_provider_id: string | null
+          patient_id: string | null
+          paused_at: string | null
+          priority: Database["public"]["Enums"]["queue_priority"]
+          priority_change_reason: string | null
+          priority_changed_at: string | null
+          priority_changed_by: string | null
+          queue_id: string
+          reason_code: string | null
+          reason_for_visit: string | null
+          referral_id: string | null
+          resumed_at: string | null
+          sequence_number: number
+          service_time_minutes: number | null
+          status: Database["public"]["Enums"]["queue_item_status"]
+          temp_identity_id: string | null
+          ticket_number: string | null
+          transfer_reason: string | null
+          transfer_request_id: string | null
+          transferred_from_item_id: string | null
+          transferred_from_queue_id: string | null
+          updated_at: string | null
+          wait_time_minutes: number | null
+        }
+        Insert: {
+          appointment_id?: string | null
+          arrival_date?: string
+          arrival_time?: string
+          assigned_provider_id?: string | null
+          assigned_team_id?: string | null
+          called_at?: string | null
+          completed_at?: string | null
+          created_at?: string | null
+          encounter_id?: string | null
+          entry_type?: Database["public"]["Enums"]["queue_entry_type"]
+          escalated_at?: string | null
+          escalated_by?: string | null
+          escalation_reason?: string | null
+          health_id?: string | null
+          id?: string
+          in_service_at?: string | null
+          is_escalated?: boolean | null
+          notes?: string | null
+          ordering_provider_id?: string | null
+          patient_id?: string | null
+          paused_at?: string | null
+          priority?: Database["public"]["Enums"]["queue_priority"]
+          priority_change_reason?: string | null
+          priority_changed_at?: string | null
+          priority_changed_by?: string | null
+          queue_id: string
+          reason_code?: string | null
+          reason_for_visit?: string | null
+          referral_id?: string | null
+          resumed_at?: string | null
+          sequence_number?: number
+          service_time_minutes?: number | null
+          status?: Database["public"]["Enums"]["queue_item_status"]
+          temp_identity_id?: string | null
+          ticket_number?: string | null
+          transfer_reason?: string | null
+          transfer_request_id?: string | null
+          transferred_from_item_id?: string | null
+          transferred_from_queue_id?: string | null
+          updated_at?: string | null
+          wait_time_minutes?: number | null
+        }
+        Update: {
+          appointment_id?: string | null
+          arrival_date?: string
+          arrival_time?: string
+          assigned_provider_id?: string | null
+          assigned_team_id?: string | null
+          called_at?: string | null
+          completed_at?: string | null
+          created_at?: string | null
+          encounter_id?: string | null
+          entry_type?: Database["public"]["Enums"]["queue_entry_type"]
+          escalated_at?: string | null
+          escalated_by?: string | null
+          escalation_reason?: string | null
+          health_id?: string | null
+          id?: string
+          in_service_at?: string | null
+          is_escalated?: boolean | null
+          notes?: string | null
+          ordering_provider_id?: string | null
+          patient_id?: string | null
+          paused_at?: string | null
+          priority?: Database["public"]["Enums"]["queue_priority"]
+          priority_change_reason?: string | null
+          priority_changed_at?: string | null
+          priority_changed_by?: string | null
+          queue_id?: string
+          reason_code?: string | null
+          reason_for_visit?: string | null
+          referral_id?: string | null
+          resumed_at?: string | null
+          sequence_number?: number
+          service_time_minutes?: number | null
+          status?: Database["public"]["Enums"]["queue_item_status"]
+          temp_identity_id?: string | null
+          ticket_number?: string | null
+          transfer_reason?: string | null
+          transfer_request_id?: string | null
+          transferred_from_item_id?: string | null
+          transferred_from_queue_id?: string | null
+          updated_at?: string | null
+          wait_time_minutes?: number | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "queue_items_appointment_id_fkey"
+            columns: ["appointment_id"]
+            isOneToOne: false
+            referencedRelation: "appointments"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "queue_items_encounter_id_fkey"
+            columns: ["encounter_id"]
+            isOneToOne: false
+            referencedRelation: "encounters"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "queue_items_patient_id_fkey"
+            columns: ["patient_id"]
+            isOneToOne: false
+            referencedRelation: "patients"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "queue_items_queue_id_fkey"
+            columns: ["queue_id"]
+            isOneToOne: false
+            referencedRelation: "queue_definitions"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "queue_items_referral_id_fkey"
+            columns: ["referral_id"]
+            isOneToOne: false
+            referencedRelation: "referrals"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "queue_items_transferred_from_queue_id_fkey"
+            columns: ["transferred_from_queue_id"]
+            isOneToOne: false
+            referencedRelation: "queue_definitions"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      queue_pathways: {
+        Row: {
+          created_at: string | null
+          description: string | null
+          facility_id: string
+          id: string
+          is_active: boolean | null
+          name: string
+          pathway_steps: Json
+          updated_at: string | null
+        }
+        Insert: {
+          created_at?: string | null
+          description?: string | null
+          facility_id: string
+          id?: string
+          is_active?: boolean | null
+          name: string
+          pathway_steps: Json
+          updated_at?: string | null
+        }
+        Update: {
+          created_at?: string | null
+          description?: string | null
+          facility_id?: string
+          id?: string
+          is_active?: boolean | null
+          name?: string
+          pathway_steps?: Json
+          updated_at?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "queue_pathways_facility_id_fkey"
+            columns: ["facility_id"]
+            isOneToOne: false
+            referencedRelation: "facilities"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "queue_pathways_facility_id_fkey"
+            columns: ["facility_id"]
+            isOneToOne: false
+            referencedRelation: "facility_capabilities"
+            referencedColumns: ["facility_id"]
+          },
+        ]
+      }
+      queue_transitions: {
+        Row: {
+          from_queue_id: string | null
+          from_status: Database["public"]["Enums"]["queue_item_status"] | null
+          id: string
+          notes: string | null
+          performed_by: string
+          queue_item_id: string
+          reason: string | null
+          to_queue_id: string | null
+          to_status: Database["public"]["Enums"]["queue_item_status"]
+          transition_at: string | null
+          workspace_id: string | null
+        }
+        Insert: {
+          from_queue_id?: string | null
+          from_status?: Database["public"]["Enums"]["queue_item_status"] | null
+          id?: string
+          notes?: string | null
+          performed_by: string
+          queue_item_id: string
+          reason?: string | null
+          to_queue_id?: string | null
+          to_status: Database["public"]["Enums"]["queue_item_status"]
+          transition_at?: string | null
+          workspace_id?: string | null
+        }
+        Update: {
+          from_queue_id?: string | null
+          from_status?: Database["public"]["Enums"]["queue_item_status"] | null
+          id?: string
+          notes?: string | null
+          performed_by?: string
+          queue_item_id?: string
+          reason?: string | null
+          to_queue_id?: string | null
+          to_status?: Database["public"]["Enums"]["queue_item_status"]
+          transition_at?: string | null
+          workspace_id?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "queue_transitions_from_queue_id_fkey"
+            columns: ["from_queue_id"]
+            isOneToOne: false
+            referencedRelation: "queue_definitions"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "queue_transitions_queue_item_id_fkey"
+            columns: ["queue_item_id"]
+            isOneToOne: false
+            referencedRelation: "queue_items"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "queue_transitions_to_queue_id_fkey"
+            columns: ["to_queue_id"]
+            isOneToOne: false
+            referencedRelation: "queue_definitions"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       ref_cadres: {
         Row: {
           category: string | null
@@ -15823,6 +16385,10 @@ export type Database = {
         Args: { p_province_code?: string }
         Returns: string
       }
+      generate_queue_ticket: {
+        Args: { p_prefix?: string; p_queue_id: string }
+        Returns: string
+      }
       generate_referral_number: { Args: never; Returns: string }
       generate_renewal_application_number: { Args: never; Returns: string }
       generate_shr_id: { Args: never; Returns: string }
@@ -15861,6 +16427,17 @@ export type Database = {
       get_next_id_sequence: {
         Args: { p_counter_type: string }
         Returns: number
+      }
+      get_next_queue_sequence: { Args: { p_queue_id: string }; Returns: number }
+      get_queue_metrics: {
+        Args: { p_queue_id: string }
+        Returns: {
+          avg_wait_minutes: number
+          completed_today: number
+          in_service_count: number
+          longest_wait_minutes: number
+          queue_length: number
+        }[]
       }
       get_todays_roster_assignment: {
         Args: { _facility_id?: string; _user_id: string }
@@ -16019,6 +16596,49 @@ export type Database = {
         | "revoked"
         | "retired"
         | "deceased"
+      queue_entry_type:
+        | "walk_in"
+        | "appointment"
+        | "referral"
+        | "internal_transfer"
+        | "callback"
+      queue_facility_mode: "simple" | "standard" | "advanced"
+      queue_item_status:
+        | "waiting"
+        | "called"
+        | "in_service"
+        | "paused"
+        | "completed"
+        | "transferred"
+        | "escalated"
+        | "no_show"
+        | "cancelled"
+      queue_priority:
+        | "emergency"
+        | "very_urgent"
+        | "urgent"
+        | "routine"
+        | "scheduled"
+      queue_service_type:
+        | "opd_triage"
+        | "opd_consultation"
+        | "specialist_clinic"
+        | "anc_clinic"
+        | "hiv_clinic"
+        | "tb_clinic"
+        | "ncd_clinic"
+        | "child_welfare_clinic"
+        | "dialysis"
+        | "imaging"
+        | "lab_reception"
+        | "lab_sample_collection"
+        | "pharmacy"
+        | "theatre_preop"
+        | "theatre_recovery"
+        | "procedure_room"
+        | "telecare"
+        | "specialist_pool"
+        | "general_reception"
       registry_record_status:
         | "draft"
         | "pending_approval"
@@ -16301,6 +16921,53 @@ export const Constants = {
         "revoked",
         "retired",
         "deceased",
+      ],
+      queue_entry_type: [
+        "walk_in",
+        "appointment",
+        "referral",
+        "internal_transfer",
+        "callback",
+      ],
+      queue_facility_mode: ["simple", "standard", "advanced"],
+      queue_item_status: [
+        "waiting",
+        "called",
+        "in_service",
+        "paused",
+        "completed",
+        "transferred",
+        "escalated",
+        "no_show",
+        "cancelled",
+      ],
+      queue_priority: [
+        "emergency",
+        "very_urgent",
+        "urgent",
+        "routine",
+        "scheduled",
+      ],
+      queue_service_type: [
+        "opd_triage",
+        "opd_consultation",
+        "specialist_clinic",
+        "anc_clinic",
+        "hiv_clinic",
+        "tb_clinic",
+        "ncd_clinic",
+        "child_welfare_clinic",
+        "dialysis",
+        "imaging",
+        "lab_reception",
+        "lab_sample_collection",
+        "pharmacy",
+        "theatre_preop",
+        "theatre_recovery",
+        "procedure_room",
+        "telecare",
+        "specialist_pool",
+        "general_reception",
       ],
       registry_record_status: [
         "draft",
