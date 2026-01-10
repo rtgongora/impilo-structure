@@ -1,16 +1,18 @@
 import { useState } from "react";
-import { useParams, useSearchParams } from "react-router-dom";
+import { useParams, useSearchParams, useNavigate } from "react-router-dom";
 import { EHRProvider, useEHR } from "@/contexts/EHRContext";
 import { ProviderContextProvider } from "@/contexts/ProviderContext";
 import { EHRLayout } from "@/components/layout/EHRLayout";
 import { NoPatientSelected } from "@/components/ehr/NoPatientSelected";
 import { ChartAccessDialog } from "@/components/ehr/ChartAccessDialog";
-import { Loader2 } from "lucide-react";
+import { Button } from "@/components/ui/button";
+import { Loader2, Home, ArrowLeft, Users } from "lucide-react";
 import { ChartAccessReason, PatientContextSource } from "@/types/patientContext";
 
 function EncounterContent() {
   const { encounterId } = useParams<{ encounterId?: string }>();
   const [searchParams] = useSearchParams();
+  const navigate = useNavigate();
   const { 
     hasActivePatient, 
     isLoadingContext, 
@@ -49,16 +51,31 @@ function EncounterContent() {
     );
   }
 
-  // Error state
+  // Error state with navigation options
   if (contextError) {
     return (
       <div className="min-h-screen bg-background flex items-center justify-center">
-        <div className="text-center space-y-4 max-w-md">
+        <div className="text-center space-y-6 max-w-md px-4">
           <div className="w-16 h-16 rounded-full bg-destructive/10 flex items-center justify-center mx-auto">
             <span className="text-destructive text-2xl">!</span>
           </div>
           <h2 className="text-xl font-semibold">Unable to Load Chart</h2>
           <p className="text-muted-foreground">{contextError}</p>
+          
+          <div className="flex flex-col sm:flex-row gap-3 justify-center pt-4">
+            <Button variant="outline" onClick={() => navigate(-1)}>
+              <ArrowLeft className="h-4 w-4 mr-2" />
+              Go Back
+            </Button>
+            <Button variant="outline" onClick={() => navigate("/queue")}>
+              <Users className="h-4 w-4 mr-2" />
+              Queue
+            </Button>
+            <Button onClick={() => navigate("/")}>
+              <Home className="h-4 w-4 mr-2" />
+              Home
+            </Button>
+          </div>
         </div>
       </div>
     );
