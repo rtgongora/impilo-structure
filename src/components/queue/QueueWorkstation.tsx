@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
@@ -26,12 +27,13 @@ import {
   Plus, 
   RefreshCw,
   Users,
+  FileText,
 } from 'lucide-react';
 import { QueueItemCard } from './QueueItemCard';
 import { QueueMetricsBar } from './QueueMetricsBar';
 import { useQueueManagement, useQueueItems } from '@/hooks/useQueueManagement';
 import { Skeleton } from '@/components/ui/skeleton';
-import type { QueueDefinition, QueuePriority } from '@/types/queue';
+import type { QueueDefinition, QueuePriority, QueueItem } from '@/types/queue';
 import { QUEUE_SERVICE_TYPE_LABELS, QUEUE_PRIORITY_LABELS } from '@/types/queue';
 
 interface QueueWorkstationProps {
@@ -40,6 +42,7 @@ interface QueueWorkstationProps {
 }
 
 export function QueueWorkstation({ facilityId, initialQueueId }: QueueWorkstationProps) {
+  const navigate = useNavigate();
   const { queues, loading: queuesLoading } = useQueueManagement(facilityId);
   const [selectedQueueId, setSelectedQueueId] = useState<string | undefined>(initialQueueId);
   const [activeTab, setActiveTab] = useState('waiting');
@@ -97,6 +100,20 @@ export function QueueWorkstation({ facilityId, initialQueueId }: QueueWorkstatio
       setSelectedItemId(null);
       setEscalateReason('');
     }
+  };
+
+  // Navigate to encounter and start service
+  const handleStartServiceAndOpenChart = async (item: QueueItem) => {
+    await startService(item.id);
+    // Navigate to encounter with queue source for pre-authorization
+    const encounterId = item.encounter_id || item.id; // Use encounter_id if exists, else use item id
+    navigate(`/encounter/${encounterId}?source=queue`);
+  };
+
+  // Open patient chart for in-service items
+  const handleOpenChart = (item: QueueItem) => {
+    const encounterId = item.encounter_id || item.id;
+    navigate(`/encounter/${encounterId}?source=queue`);
   };
 
   const waitingItems = items.filter(i => i.status === 'waiting');
@@ -209,12 +226,11 @@ export function QueueWorkstation({ facilityId, initialQueueId }: QueueWorkstatio
                     <QueueItemCard
                       key={item.id}
                       item={item}
-                      onCall={() => {
-                        startService(item.id);
-                      }}
+                      onCall={() => callNext()}
                       onTransfer={() => handleTransfer(item.id)}
                       onEscalate={() => handleEscalate(item.id)}
                       onNoShow={() => markNoShow(item.id)}
+                      onOpenPatient={() => handleOpenChart(item)}
                     />
                   ))
                 )}
@@ -236,9 +252,10 @@ export function QueueWorkstation({ facilityId, initialQueueId }: QueueWorkstatio
                     <QueueItemCard
                       key={item.id}
                       item={item}
-                      onStartService={() => startService(item.id)}
+                      onStartService={() => handleStartServiceAndOpenChart(item)}
                       onNoShow={() => markNoShow(item.id)}
                       onTransfer={() => handleTransfer(item.id)}
+                      onOpenPatient={() => handleOpenChart(item)}
                     />
                   ))
                 )}
@@ -263,6 +280,7 @@ export function QueueWorkstation({ facilityId, initialQueueId }: QueueWorkstatio
                       onPause={() => pauseService(item.id)}
                       onComplete={() => completeService(item.id)}
                       onTransfer={() => handleTransfer(item.id)}
+                      onOpenPatient={() => handleOpenChart(item)}
                     />
                   ))
                 )}

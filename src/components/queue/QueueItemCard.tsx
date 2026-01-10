@@ -255,14 +255,20 @@ export function QueueItemCard({
           )}
           {item.status === 'in_service' && (
             <>
+              {onOpenPatient && (
+                <Button size="sm" variant="default" onClick={onOpenPatient}>
+                  <User className="h-4 w-4 mr-1" />
+                  Open Chart
+                </Button>
+              )}
               {onComplete && (
-                <Button size="sm" onClick={onComplete}>
+                <Button size="sm" variant="outline" onClick={onComplete}>
                   <CheckCircle2 className="h-4 w-4 mr-1" />
                   Complete
                 </Button>
               )}
               {onPause && (
-                <Button size="sm" variant="outline" onClick={onPause}>
+                <Button size="sm" variant="ghost" onClick={onPause}>
                   <Pause className="h-4 w-4 mr-1" />
                   Pause
                 </Button>
