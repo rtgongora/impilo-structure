@@ -1,52 +1,35 @@
+import { useState, useEffect } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { 
   Video, Phone, MessageSquare, Clock, Calendar, 
-  ExternalLink, Plus, User
+  ExternalLink, Plus, User, Users
 } from "lucide-react";
+import { supabase } from "@/integrations/supabase/client";
+import { Skeleton } from "@/components/ui/skeleton";
 
 interface TeleconsultsTabProps {
+  patientId?: string;
+  encounterId?: string;
   onJoinTeleconsult: (consultId: string) => void;
   onNewReferral: () => void;
 }
 
-const MOCK_TELECONSULTS = [
-  {
-    id: "T1",
-    specialty: "Dermatology",
-    consultant: "Dr. Wanjiku",
-    mode: "video",
-    status: "scheduled",
-    scheduledDate: "2024-12-21 14:00",
-    duration: "30 min",
-    reason: "Chronic skin lesion evaluation",
-    referralId: "R-001",
-  },
-  {
-    id: "T2",
-    specialty: "Nephrology",
-    consultant: "Dr. Kimani",
-    mode: "audio",
-    status: "completed",
-    completedDate: "2024-12-20 10:00",
-    duration: "25 min",
-    reason: "CKD staging and management",
-    summary: "Stage 3b CKD confirmed. Recommend dietary counseling, ACEi optimization, and 3-monthly monitoring.",
-    referralId: "R-002",
-  },
-  {
-    id: "T3",
-    specialty: "Psychiatry",
-    consultant: "Dr. Omondi",
-    mode: "video",
-    status: "in-progress",
-    startedAt: "2024-12-21 11:30",
-    duration: "45 min",
-    reason: "Depression follow-up and medication review",
-    referralId: "R-003",
-  },
-];
+interface Teleconsult {
+  id: string;
+  specialty: string;
+  consultant: string;
+  mode: string;
+  status: string;
+  scheduledDate?: string;
+  completedDate?: string;
+  startedAt?: string;
+  duration: string;
+  reason: string;
+  summary?: string;
+  referralId: string;
+}
 
 const getModeIcon = (mode: string) => {
   switch (mode) {
@@ -60,16 +43,75 @@ const getModeIcon = (mode: string) => {
 const getStatusBadge = (status: string) => {
   switch (status) {
     case "scheduled": return <Badge variant="default">Scheduled</Badge>;
-    case "in-progress": return <Badge className="bg-success text-success-foreground animate-pulse">In Progress</Badge>;
+    case "in-progress": 
+    case "in_progress": 
+      return <Badge className="bg-success text-success-foreground animate-pulse">In Progress</Badge>;
     case "completed": return <Badge variant="outline">Completed</Badge>;
     case "cancelled": return <Badge variant="destructive">Cancelled</Badge>;
     default: return <Badge variant="secondary">{status}</Badge>;
   }
 };
 
-export function TeleconsultsTab({ onJoinTeleconsult, onNewReferral }: TeleconsultsTabProps) {
-  const activeSession = MOCK_TELECONSULTS.find(t => t.status === "in-progress");
-  const upcomingSessions = MOCK_TELECONSULTS.filter(t => t.status === "scheduled");
+export function TeleconsultsTab({ patientId, encounterId, onJoinTeleconsult, onNewReferral }: TeleconsultsTabProps) {
+  const [teleconsults, setTeleconsults] = useState<Teleconsult[]>([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    const fetchTeleconsults = async () => {
+      if (!patientId) {
+        setTeleconsults([]);
+        setLoading(false);
+        return;
+      }
+
+      try {
+        setLoading(true);
+        // Fetch teleconsult-type referrals for this patient
+        const { data, error } = await supabase
+          .from("referrals")
+          .select("*")
+          .eq("patient_id", patientId)
+          .eq("referral_type", "teleconsult")
+          .order("created_at", { ascending: false });
+
+        if (error) throw error;
+
+        const mapped: Teleconsult[] = (data || []).map((ref) => ({
+          id: ref.id,
+          specialty: ref.to_department,
+          consultant: ref.to_provider_name || "Pending assignment",
+          mode: "video",
+          status: ref.status,
+          scheduledDate: ref.accepted_at || undefined,
+          completedDate: ref.completed_at || undefined,
+          duration: "30 min",
+          reason: ref.reason,
+          summary: ref.completion_notes || undefined,
+          referralId: ref.referral_number,
+        }));
+
+        setTeleconsults(mapped);
+      } catch (err) {
+        console.error("Error fetching teleconsults:", err);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchTeleconsults();
+  }, [patientId]);
+
+  const activeSession = teleconsults.find(t => t.status === "in-progress" || t.status === "in_progress");
+  const upcomingSessions = teleconsults.filter(t => t.status === "scheduled" || t.status === "accepted");
+
+  if (loading) {
+    return (
+      <div className="space-y-4">
+        <Skeleton className="h-24 w-full" />
+        <Skeleton className="h-48 w-full" />
+      </div>
+    );
+  }
 
   return (
     <div className="space-y-4">
@@ -87,9 +129,11 @@ export function TeleconsultsTab({ onJoinTeleconsult, onNewReferral }: Teleconsul
                   <p className="text-sm text-muted-foreground">
                     {activeSession.specialty} with {activeSession.consultant}
                   </p>
-                  <p className="text-xs text-muted-foreground">
-                    Started at {activeSession.startedAt}
-                  </p>
+                  {activeSession.startedAt && (
+                    <p className="text-xs text-muted-foreground">
+                      Started at {activeSession.startedAt}
+                    </p>
+                  )}
                 </div>
               </div>
               <Button onClick={() => onJoinTeleconsult(activeSession.id)}>
@@ -123,7 +167,7 @@ export function TeleconsultsTab({ onJoinTeleconsult, onNewReferral }: Teleconsul
                   <div>
                     <p className="font-medium">{session.specialty}</p>
                     <p className="text-xs text-muted-foreground">
-                      {session.consultant} • {session.scheduledDate}
+                      {session.consultant} {session.scheduledDate && `• ${new Date(session.scheduledDate).toLocaleDateString()}`}
                     </p>
                   </div>
                 </div>
@@ -146,88 +190,98 @@ export function TeleconsultsTab({ onJoinTeleconsult, onNewReferral }: Teleconsul
           </Button>
         </CardHeader>
         <CardContent className="space-y-4">
-          {MOCK_TELECONSULTS.map((teleconsult) => (
-            <div
-              key={teleconsult.id}
-              className="p-4 border rounded-lg hover:bg-muted/50 transition-colors"
-            >
-              <div className="flex items-start justify-between gap-4">
-                <div className="flex-1 space-y-2">
-                  <div className="flex items-center gap-3">
-                    <div className={`p-2 rounded-full ${
-                      teleconsult.status === "in-progress" ? "bg-success/10" : 
-                      teleconsult.status === "scheduled" ? "bg-primary/10" : "bg-muted"
-                    }`}>
-                      {getModeIcon(teleconsult.mode)}
-                    </div>
-                    <div className="flex-1">
-                      <h4 className="font-semibold">{teleconsult.specialty}</h4>
-                      <p className="text-xs text-muted-foreground flex items-center gap-1">
-                        <User className="w-3 h-3" />
-                        {teleconsult.consultant}
-                      </p>
-                    </div>
-                    <div className="flex items-center gap-2">
-                      <Badge variant="outline" className="capitalize">
-                        {teleconsult.mode}
-                      </Badge>
-                      {getStatusBadge(teleconsult.status)}
-                    </div>
-                  </div>
-
-                  <div className="pl-11 space-y-2">
-                    <p className="text-sm text-muted-foreground">{teleconsult.reason}</p>
-
-                    <div className="flex items-center gap-4 text-xs text-muted-foreground">
-                      <span className="flex items-center gap-1">
-                        <Clock className="w-3 h-3" />
-                        {teleconsult.duration}
-                      </span>
-                      {teleconsult.scheduledDate && (
-                        <span className="flex items-center gap-1">
-                          <Calendar className="w-3 h-3" />
-                          {teleconsult.scheduledDate}
-                        </span>
-                      )}
-                      {teleconsult.completedDate && (
-                        <span className="text-success">
-                          Completed: {teleconsult.completedDate}
-                        </span>
-                      )}
-                    </div>
-
-                    {teleconsult.summary && (
-                      <div className="p-3 bg-success/5 border border-success/20 rounded-md">
-                        <p className="text-xs font-medium text-success mb-1">Session Summary:</p>
-                        <p className="text-sm">{teleconsult.summary}</p>
-                      </div>
-                    )}
-                  </div>
-                </div>
-              </div>
-
-              {teleconsult.status !== "completed" && (
-                <div className="flex items-center gap-2 mt-3 pt-3 border-t">
-                  {teleconsult.status === "scheduled" && (
-                    <Button size="sm" onClick={() => onJoinTeleconsult(teleconsult.id)}>
-                      <Video className="w-3 h-3 mr-1" />
-                      Join Session
-                    </Button>
-                  )}
-                  {teleconsult.status === "in-progress" && (
-                    <Button size="sm" onClick={() => onJoinTeleconsult(teleconsult.id)}>
-                      <Video className="w-3 h-3 mr-1" />
-                      Rejoin Session
-                    </Button>
-                  )}
-                  <Button variant="outline" size="sm">
-                    <ExternalLink className="w-3 h-3 mr-1" />
-                    View Referral
-                  </Button>
-                </div>
-              )}
+          {teleconsults.length === 0 ? (
+            <div className="text-center py-8 text-muted-foreground">
+              <Video className="w-12 h-12 mx-auto mb-4 opacity-50" />
+              <p>No teleconsultations for this patient</p>
+              <Button variant="outline" size="sm" className="mt-4" onClick={onNewReferral}>
+                Schedule first teleconsult
+              </Button>
             </div>
-          ))}
+          ) : (
+            teleconsults.map((teleconsult) => (
+              <div
+                key={teleconsult.id}
+                className="p-4 border rounded-lg hover:bg-muted/50 transition-colors"
+              >
+                <div className="flex items-start justify-between gap-4">
+                  <div className="flex-1 space-y-2">
+                    <div className="flex items-center gap-3">
+                      <div className={`p-2 rounded-full ${
+                        teleconsult.status === "in-progress" || teleconsult.status === "in_progress" ? "bg-success/10" : 
+                        teleconsult.status === "scheduled" || teleconsult.status === "accepted" ? "bg-primary/10" : "bg-muted"
+                      }`}>
+                        {getModeIcon(teleconsult.mode)}
+                      </div>
+                      <div className="flex-1">
+                        <h4 className="font-semibold">{teleconsult.specialty}</h4>
+                        <p className="text-xs text-muted-foreground flex items-center gap-1">
+                          <User className="w-3 h-3" />
+                          {teleconsult.consultant}
+                        </p>
+                      </div>
+                      <div className="flex items-center gap-2">
+                        <Badge variant="outline" className="capitalize">
+                          {teleconsult.mode}
+                        </Badge>
+                        {getStatusBadge(teleconsult.status)}
+                      </div>
+                    </div>
+
+                    <div className="pl-11 space-y-2">
+                      <p className="text-sm text-muted-foreground">{teleconsult.reason}</p>
+
+                      <div className="flex items-center gap-4 text-xs text-muted-foreground">
+                        <span className="flex items-center gap-1">
+                          <Clock className="w-3 h-3" />
+                          {teleconsult.duration}
+                        </span>
+                        {teleconsult.scheduledDate && (
+                          <span className="flex items-center gap-1">
+                            <Calendar className="w-3 h-3" />
+                            {new Date(teleconsult.scheduledDate).toLocaleDateString()}
+                          </span>
+                        )}
+                        {teleconsult.completedDate && (
+                          <span className="text-success">
+                            Completed: {new Date(teleconsult.completedDate).toLocaleDateString()}
+                          </span>
+                        )}
+                      </div>
+
+                      {teleconsult.summary && (
+                        <div className="p-3 bg-success/5 border border-success/20 rounded-md">
+                          <p className="text-xs font-medium text-success mb-1">Session Summary:</p>
+                          <p className="text-sm">{teleconsult.summary}</p>
+                        </div>
+                      )}
+                    </div>
+                  </div>
+                </div>
+
+                {teleconsult.status !== "completed" && (
+                  <div className="flex items-center gap-2 mt-3 pt-3 border-t">
+                    {(teleconsult.status === "scheduled" || teleconsult.status === "accepted") && (
+                      <Button size="sm" onClick={() => onJoinTeleconsult(teleconsult.id)}>
+                        <Video className="w-3 h-3 mr-1" />
+                        Join Session
+                      </Button>
+                    )}
+                    {(teleconsult.status === "in-progress" || teleconsult.status === "in_progress") && (
+                      <Button size="sm" onClick={() => onJoinTeleconsult(teleconsult.id)}>
+                        <Video className="w-3 h-3 mr-1" />
+                        Rejoin Session
+                      </Button>
+                    )}
+                    <Button variant="outline" size="sm">
+                      <ExternalLink className="w-3 h-3 mr-1" />
+                      View Referral
+                    </Button>
+                  </div>
+                )}
+              </div>
+            ))
+          )}
 
           {/* Quick Connect Section */}
           <div className="pt-4 border-t">
