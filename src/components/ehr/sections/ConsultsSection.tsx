@@ -1,10 +1,12 @@
 import { useState } from "react";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Users, Send, Video, LayoutDashboard } from "lucide-react";
+import { Users, Send, Video, LayoutDashboard, FileText } from "lucide-react";
 import { ConsultsDashboard } from "../consults/ConsultsDashboard";
 import { ReferralBuilder } from "../consults/ReferralBuilder";
 import { TeleconsultSession } from "../consults/TeleconsultSession";
 import { CompletionNoteForm } from "../consults/CompletionNote";
+import { TelehealthDashboard } from "../consults/TelehealthDashboard";
+import { AsynchronousReviewPane } from "../consults/AsynchronousReviewPane";
 import { ConsultationsTab } from "./consults/ConsultationsTab";
 import { ReferralsTab } from "./consults/ReferralsTab";
 import { TeleconsultsTab } from "./consults/TeleconsultsTab";
@@ -12,6 +14,8 @@ import { WorklistItem } from "@/contexts/ProviderContext";
 import { useEHR } from "@/contexts/EHRContext";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
+import type { ReferralPackage } from "@/types/telehealth";
 
 export type ConsultView = 
   | "dashboard"
@@ -20,7 +24,9 @@ export type ConsultView =
   | "teleconsults"
   | "new-referral"
   | "teleconsult-session"
-  | "completion-note";
+  | "completion-note"
+  | "telehealth-dashboard"
+  | "async-review";
 
 // Mock referral for demo purposes
 const MOCK_WORKLIST_ITEM: WorklistItem = {
@@ -46,6 +52,7 @@ const MOCK_WORKLIST_ITEM: WorklistItem = {
 export function ConsultsSection() {
   const [activeView, setActiveView] = useState<ConsultView>("dashboard");
   const [activeReferral, setActiveReferral] = useState<WorklistItem | null>(null);
+  const [activeReferralPackage, setActiveReferralPackage] = useState<ReferralPackage | null>(null);
   const { patientContext, currentEncounter } = useEHR();
 
   // Get current patient info for filtering
@@ -76,9 +83,19 @@ export function ConsultsSection() {
     setActiveView("completion-note");
   };
 
+  const handleOpenTelehealthDashboard = () => {
+    setActiveView("telehealth-dashboard");
+  };
+
+  const handleOpenAsyncReview = (referral: ReferralPackage) => {
+    setActiveReferralPackage(referral);
+    setActiveView("async-review");
+  };
+
   const handleBack = () => {
     setActiveView("dashboard");
     setActiveReferral(null);
+    setActiveReferralPackage(null);
   };
 
   // Render specialized workflow views
@@ -111,6 +128,26 @@ export function ConsultsSection() {
     );
   }
 
+  if (activeView === "telehealth-dashboard") {
+    return (
+      <TelehealthDashboard
+        onBack={handleBack}
+        onOpenAsyncReview={handleOpenAsyncReview}
+        onJoinSession={handleJoinTeleconsult}
+      />
+    );
+  }
+
+  if (activeView === "async-review" && activeReferralPackage) {
+    return (
+      <AsynchronousReviewPane
+        referral={activeReferralPackage}
+        onBack={handleBack}
+        onSubmitResponse={handleBack}
+      />
+    );
+  }
+
   // Main tabbed view - showing patient-specific data
   return (
     <div className="space-y-6">
@@ -137,6 +174,18 @@ export function ConsultsSection() {
           </CardContent>
         </Card>
       )}
+
+      {/* Quick Access to Telehealth Dashboard */}
+      <div className="flex justify-end">
+        <Button 
+          variant="outline" 
+          onClick={handleOpenTelehealthDashboard}
+          className="flex items-center gap-2"
+        >
+          <LayoutDashboard className="w-4 h-4" />
+          Open Telehealth Worklist
+        </Button>
+      </div>
 
       <Tabs defaultValue="referrals" className="w-full">
         <TabsList className="grid w-full grid-cols-3">

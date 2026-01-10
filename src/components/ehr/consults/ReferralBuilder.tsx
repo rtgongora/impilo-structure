@@ -21,6 +21,7 @@ import {
   Upload,
   Eye,
   ScanLine,
+  Video,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -38,16 +39,18 @@ import { format } from "date-fns";
 import { cn } from "@/lib/utils";
 import { toast } from "sonner";
 import { ClinicalDocumentScanner, ScannedDocument } from "@/components/documents/ClinicalDocumentScanner";
+import { TelemedicineModeSelection } from "./TelemedicineModeSelection";
+import type { TelemedicineMode, ReferralUrgency } from "@/types/telehealth";
 
 // Stage 1 & 2: Building the Referral Package
-type ReferralStep = "letter" | "patient-summary" | "visit-summary" | "attachments" | "routing" | "consent";
+type ReferralStep = "letter" | "patient-summary" | "visit-summary" | "attachments" | "routing" | "modality" | "consent";
 
 interface ReferralPackage {
   // Step 1: Referral Letter
   letterContent: string;
   presentingProblems: string[];
   clinicalQuestion: string;
-  urgency: "routine" | "urgent" | "stat" | "emergency";
+  urgency: ReferralUrgency;
   
   // Step 2: Patient Summary (auto-generated)
   patientSummary: {
@@ -74,7 +77,12 @@ interface ReferralPackage {
   routingTarget: string;
   routingTargetName: string;
   
-  // Step 6: Consent
+  // Step 6: Telemedicine Modality
+  requestedModes: TelemedicineMode[];
+  preferredMode: TelemedicineMode | null;
+  scheduledAt?: string;
+  
+  // Step 7: Consent
   consentType: "digital" | "verbal" | "proxy" | "emergency";
   consentObtained: boolean;
   consentToken?: string;
@@ -86,6 +94,7 @@ const STEPS: { id: ReferralStep; label: string; icon: React.ComponentType<{ clas
   { id: "visit-summary", label: "Visit Summary", icon: Calendar },
   { id: "attachments", label: "Attachments", icon: Paperclip },
   { id: "routing", label: "Routing", icon: Route },
+  { id: "modality", label: "Consultation Mode", icon: Video },
   { id: "consent", label: "Consent", icon: Shield },
 ];
 
@@ -143,6 +152,9 @@ export function ReferralBuilder({ onSubmit, onCancel }: ReferralBuilderProps) {
     routingType: "practitioner",
     routingTarget: "",
     routingTargetName: "",
+    requestedModes: [],
+    preferredMode: null,
+    scheduledAt: undefined,
     consentType: "digital",
     consentObtained: false,
   });
@@ -164,6 +176,8 @@ export function ReferralBuilder({ onSubmit, onCancel }: ReferralBuilderProps) {
         return true; // Optional
       case "routing":
         return referralPackage.routingTarget.length > 0;
+      case "modality":
+        return referralPackage.requestedModes.length > 0 && referralPackage.preferredMode !== null;
       case "consent":
         return referralPackage.consentObtained;
       default:
@@ -528,6 +542,21 @@ export function ReferralBuilder({ onSubmit, onCancel }: ReferralBuilderProps) {
                 </div>
               </div>
             )}
+          </div>
+        );
+
+      case "modality":
+        return (
+          <div className="space-y-4">
+            <TelemedicineModeSelection
+              urgency={referralPackage.urgency}
+              selectedModes={referralPackage.requestedModes}
+              preferredMode={referralPackage.preferredMode}
+              onModesChange={(modes) => setReferralPackage(prev => ({ ...prev, requestedModes: modes }))}
+              onPreferredModeChange={(mode) => setReferralPackage(prev => ({ ...prev, preferredMode: mode }))}
+              scheduledAt={referralPackage.scheduledAt}
+              onScheduleChange={(date) => setReferralPackage(prev => ({ ...prev, scheduledAt: date }))}
+            />
           </div>
         );
 

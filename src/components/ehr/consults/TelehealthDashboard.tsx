@@ -24,6 +24,7 @@ import {
   Inbox,
   PhoneCall,
   Timer,
+  ArrowLeft,
 } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { format, formatDistanceToNow } from "date-fns";
@@ -33,8 +34,11 @@ import type { TelehealthWorkItem, TelemedicineMode, ReferralUrgency } from "@/ty
 interface TelehealthDashboardProps {
   providerId?: string;
   facilityId?: string;
-  onAcceptCase: (workItem: TelehealthWorkItem) => void;
-  onViewCase: (workItem: TelehealthWorkItem) => void;
+  onBack?: () => void;
+  onAcceptCase?: (workItem: TelehealthWorkItem) => void;
+  onViewCase?: (workItem: TelehealthWorkItem) => void;
+  onOpenAsyncReview?: (referral: any) => void;
+  onJoinSession?: (consultId: string) => void;
 }
 
 const MODE_ICONS: Record<TelemedicineMode, React.ComponentType<{ className?: string }>> = {
@@ -56,8 +60,11 @@ const URGENCY_STYLES: Record<ReferralUrgency, { badge: string; text: string }> =
 export function TelehealthDashboard({ 
   providerId, 
   facilityId, 
+  onBack,
   onAcceptCase, 
-  onViewCase 
+  onViewCase,
+  onOpenAsyncReview,
+  onJoinSession,
 }: TelehealthDashboardProps) {
   const [workItems, setWorkItems] = useState<TelehealthWorkItem[]>([]);
   const [loading, setLoading] = useState(true);
@@ -217,14 +224,21 @@ export function TelehealthDashboard({
     <Card className="h-full flex flex-col">
       <CardHeader className="pb-3">
         <div className="flex items-center justify-between">
-          <div>
-            <CardTitle className="flex items-center gap-2">
-              <Inbox className="h-5 w-5 text-primary" />
-              Telehealth Dashboard
-            </CardTitle>
-            <CardDescription>
-              Manage incoming referrals and consultations
-            </CardDescription>
+          <div className="flex items-center gap-3">
+            {onBack && (
+              <Button variant="ghost" size="sm" onClick={onBack}>
+                <ArrowLeft className="h-4 w-4" />
+              </Button>
+            )}
+            <div>
+              <CardTitle className="flex items-center gap-2">
+                <Inbox className="h-5 w-5 text-primary" />
+                Telehealth Dashboard
+              </CardTitle>
+              <CardDescription>
+                Manage incoming referrals and consultations
+              </CardDescription>
+            </div>
           </div>
           <Button variant="outline" size="sm" onClick={loadWorkItems} disabled={loading}>
             <RefreshCw className={cn("h-4 w-4 mr-2", loading && "animate-spin")} />
