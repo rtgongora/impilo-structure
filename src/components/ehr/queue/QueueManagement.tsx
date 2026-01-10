@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-import { Plus, RefreshCw, Filter, Building2, Stethoscope, Video, Calendar, Users, Bed, AlertCircle } from "lucide-react";
+import { Plus, RefreshCw, Filter, Building2, Stethoscope, Video, Calendar, Users, Bed, AlertCircle, ShieldCheck, Eye, EyeOff } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { ScrollArea } from "@/components/ui/scroll-area";
@@ -9,13 +9,19 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Input } from "@/components/ui/input";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Alert, AlertDescription } from "@/components/ui/alert";
-import { QueuePatientCard, type QueuePatient, type VisitType } from "./QueuePatientCard";
+import { SecureQueueCard, type SecureQueuePatient, type VisitType } from "@/components/queue/SecureQueueCard";
 import { AddPatientDialog } from "./AddPatientDialog";
 import { QueueStats } from "./QueueStats";
 import { useWorkspace, CareSetting } from "@/contexts/WorkspaceContext";
+import { 
+  SecureChartAccessFlow, 
+  useSecureChartAccess,
+  type PendingChartAccess,
+} from "@/components/ehr/SecureChartAccessFlow";
+import { toast } from "sonner";
 
-// Mock data with enhanced types
-const mockPatients: QueuePatient[] = [
+// Mock data with enhanced types - PII will be masked by SecureQueueCard
+const mockPatients: SecureQueuePatient[] = [
   { id: '1', name: 'John Mwangi', mrn: 'MRN-2024-001', age: 45, gender: 'M', chiefComplaint: 'Chest pain, shortness of breath', triageLevel: 'red', arrivalTime: new Date(Date.now() - 5 * 60000), ticketNumber: 'CAS-101', status: 'waiting', visitType: 'in-person', careContext: 'emergency' },
   { id: '2', name: 'Grace Wanjiku', mrn: 'MRN-2024-002', age: 32, gender: 'F', chiefComplaint: 'Severe abdominal pain', triageLevel: 'orange', arrivalTime: new Date(Date.now() - 15 * 60000), ticketNumber: 'CAS-102', status: 'waiting', visitType: 'in-person', careContext: 'emergency' },
   { id: '3', name: 'Peter Ochieng', mrn: 'MRN-2024-003', age: 28, gender: 'M', chiefComplaint: 'Road traffic accident - leg injury', triageLevel: 'yellow', arrivalTime: new Date(Date.now() - 25 * 60000), ticketNumber: 'CAS-103', status: 'in-consultation', visitType: 'in-person', provider: 'Mwangi', ward: 'Casualty', bed: 'Bed 3', careContext: 'emergency' },
@@ -26,7 +32,6 @@ const mockPatients: QueuePatient[] = [
   { id: '8', name: 'Anne Wambui', mrn: 'MRN-2024-008', age: 42, gender: 'F', chiefComplaint: 'Cardiology consult - CHF management', triageLevel: 'yellow', arrivalTime: new Date(Date.now() - 120 * 60000), ticketNumber: 'CON-001', status: 'waiting', visitType: 'consultation', ward: 'Ward 3A', bed: 'Bed 12', careContext: 'inpatient' },
   { id: '9', name: 'Joseph Otieno', mrn: 'MRN-2024-009', age: 58, gender: 'M', chiefComplaint: 'Endocrinology referral - Thyroid nodule', triageLevel: 'green', arrivalTime: new Date(Date.now() - 180 * 60000), ticketNumber: 'REF-001', status: 'waiting', visitType: 'referral', careContext: 'outpatient' },
   { id: '10', name: 'Faith Muthoni', mrn: 'MRN-2024-010', age: 35, gender: 'F', chiefComplaint: 'Antenatal checkup', triageLevel: 'green', arrivalTime: new Date(Date.now() - 30 * 60000), ticketNumber: 'OPD-204', status: 'completed', visitType: 'appointment', provider: 'Kamau', careContext: 'outpatient' },
-  // Inpatient-specific queue items
   { id: '11', name: 'Robert Mutua', mrn: 'MRN-2024-011', age: 72, gender: 'M', chiefComplaint: 'Post-op day 2 - wound review', triageLevel: 'green', arrivalTime: new Date(Date.now() - 240 * 60000), ticketNumber: 'IPD-001', status: 'waiting', visitType: 'in-person', ward: 'Surgical Ward', bed: 'Bed 5', careContext: 'inpatient' },
   { id: '12', name: 'Elizabeth Ngugi', mrn: 'MRN-2024-012', age: 48, gender: 'F', chiefComplaint: 'Pending discharge - medication counseling', triageLevel: 'blue', arrivalTime: new Date(Date.now() - 300 * 60000), ticketNumber: 'IPD-002', status: 'waiting', visitType: 'in-person', ward: 'Medical Ward', bed: 'Bed 8', careContext: 'inpatient' },
 ];
@@ -41,12 +46,22 @@ interface QueueManagementProps {
 export function QueueManagement({ workspace = 'my-queue', wardFilter }: QueueManagementProps) {
   const navigate = useNavigate();
   const { careSetting, currentDepartment, isInpatientContext, isOutpatientContext, isEmergencyContext } = useWorkspace();
-  const [patients, setPatients] = useState<QueuePatient[]>(mockPatients);
+  const [patients, setPatients] = useState<SecureQueuePatient[]>(mockPatients);
   const [activeTab, setActiveTab] = useState<string>('all');
   const [addDialogOpen, setAddDialogOpen] = useState(false);
   const [filterTriage, setFilterTriage] = useState<string>('all');
   const [searchTerm, setSearchTerm] = useState('');
   const [, setTick] = useState(0);
+  
+  // Secure chart access flow
+  const {
+    pendingAccess,
+    isAuthorizing,
+    initiateChartAccess,
+    cancelChartAccess,
+    authorizeAndOpen,
+    quickAccessFromQueue,
+  } = useSecureChartAccess();
 
   // Update wait times every minute
   useEffect(() => {
@@ -63,13 +78,13 @@ export function QueueManagement({ workspace = 'my-queue', wardFilter }: QueueMan
     return true;
   });
 
-  const handleAddPatient = (patientData: Omit<QueuePatient, 'id' | 'arrivalTime' | 'ticketNumber' | 'status'>) => {
+  const handleAddPatient = (patientData: Omit<SecureQueuePatient, 'id' | 'arrivalTime' | 'ticketNumber' | 'status'>) => {
     const prefix = patientData.visitType === 'consultation' ? 'CON' : 
                    patientData.visitType === 'referral' ? 'REF' :
                    patientData.visitType === 'virtual' ? 'VIR' :
                    careSetting === 'inpatient' ? 'IPD' :
                    careSetting === 'emergency' ? 'CAS' : 'OPD';
-    const newPatient: QueuePatient = {
+    const newPatient: SecureQueuePatient = {
       ...patientData,
       id: Date.now().toString(),
       arrivalTime: new Date(),
@@ -80,11 +95,17 @@ export function QueueManagement({ workspace = 'my-queue', wardFilter }: QueueMan
     setPatients(prev => [...prev, newPatient]);
   };
 
-  const handleCallPatient = (id: string) => {
+  // Attend patient - immediate access from queue (pre-authorized)
+  const handleAttendPatient = (id: string) => {
     setPatients(prev => prev.map(p => 
       p.id === id ? { ...p, status: 'in-consultation' as const } : p
     ));
-    navigate(`/encounter/${id}`);
+    
+    // Queue-based access is pre-authorized
+    quickAccessFromQueue(id, id);
+    toast.info("Starting consultation", {
+      description: "Chart access authorized via queue assignment",
+    });
   };
 
   const handleCompletePatient = (id: string) => {
@@ -93,8 +114,20 @@ export function QueueManagement({ workspace = 'my-queue', wardFilter }: QueueMan
     ));
   };
 
-  const handleOpenChart = (id: string) => {
-    navigate(`/encounter/${id}?view=chart`);
+  // Secure chart access - requires authorization dialog
+  const handleOpenSecureChart = (id: string) => {
+    const patient = patients.find(p => p.id === id);
+    if (!patient) return;
+
+    // Initiate secure access flow
+    initiateChartAccess({
+      patientId: id,
+      encounterId: id, // In real app, would look up or create encounter
+      patientName: patient.name,
+      patientMrn: patient.mrn || 'Unknown',
+      patientDob: '1980-01-01', // Would come from patient data
+      source: 'search', // Requires authorization since not from queue
+    });
   };
 
   // Filter patients based on search and filters
@@ -138,16 +171,16 @@ export function QueueManagement({ workspace = 'my-queue', wardFilter }: QueueMan
     pendingDischarge: contextFilteredPatients.filter(p => p.chiefComplaint?.toLowerCase().includes('discharge') && p.status === 'waiting').length,
   };
 
-  const renderPatientList = (filteredPatients: QueuePatient[]) => (
+  const renderPatientList = (filteredPatients: SecureQueuePatient[]) => (
     <ScrollArea className="h-[500px]">
       <div className="space-y-2 pr-4">
         {filteredPatients.map(patient => (
-          <QueuePatientCard
+          <SecureQueueCard
             key={patient.id}
             patient={patient}
-            onCall={handleCallPatient}
+            onAttend={handleAttendPatient}
             onComplete={handleCompletePatient}
-            onOpenChart={handleOpenChart}
+            onOpenSecureChart={handleOpenSecureChart}
           />
         ))}
         {filteredPatients.length === 0 && (
@@ -391,6 +424,14 @@ export function QueueManagement({ workspace = 'my-queue', wardFilter }: QueueMan
         onOpenChange={setAddDialogOpen}
         onAdd={handleAddPatient}
         queueType={careSetting === "inpatient" ? "inpatient" : careSetting === "emergency" ? "casualty" : "opd"}
+      />
+
+      {/* Secure Chart Access Authorization Dialog */}
+      <SecureChartAccessFlow
+        pendingAccess={pendingAccess}
+        isAuthorizing={isAuthorizing}
+        onAuthorize={authorizeAndOpen}
+        onCancel={cancelChartAccess}
       />
     </div>
   );
