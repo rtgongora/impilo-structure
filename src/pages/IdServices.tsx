@@ -1,3 +1,5 @@
+import { useEffect, useState } from "react";
+import { useSearchParams } from "react-router-dom";
 import { AppLayout } from "@/components/layout/AppLayout";
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
@@ -23,7 +25,27 @@ import { ProviderIdService } from "@/services/providerIdService";
 import { IdGenerationService } from "@/services/idGenerationService";
 import { supabase } from "@/integrations/supabase/client";
 
+type TabValue = "generate" | "validate" | "batch" | "recovery" | "architecture";
+
 export default function IdServices() {
+  const [searchParams, setSearchParams] = useSearchParams();
+  const tabFromUrl = searchParams.get("tab") as TabValue | null;
+  const [activeTab, setActiveTab] = useState<TabValue>(tabFromUrl || "generate");
+
+  // Sync tab from URL on mount and when URL changes
+  useEffect(() => {
+    const validTabs: TabValue[] = ["generate", "validate", "batch", "recovery", "architecture"];
+    if (tabFromUrl && validTabs.includes(tabFromUrl)) {
+      setActiveTab(tabFromUrl);
+    }
+  }, [tabFromUrl]);
+
+  // Update URL when tab changes
+  const handleTabChange = (value: string) => {
+    const newTab = value as TabValue;
+    setActiveTab(newTab);
+    setSearchParams({ tab: newTab });
+  };
   // Generate PHID with linked IDs
   const handleGeneratePHID = async () => {
     const result = await PHIDService.generatePHID();
@@ -110,7 +132,7 @@ export default function IdServices() {
         </Card>
 
         {/* Main Tabs */}
-        <Tabs defaultValue="generate" className="space-y-4">
+        <Tabs value={activeTab} onValueChange={handleTabChange} className="space-y-4">
           <TabsList className="grid w-full grid-cols-5">
             <TabsTrigger value="generate" className="gap-2">
               <Key className="w-4 h-4" />
