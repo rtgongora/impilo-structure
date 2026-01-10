@@ -27,11 +27,10 @@ export function CoverRequestWorkflow({ facilityId, providerId }: CoverRequestWor
     reviewCoverRequest,
     checkIsSupervisor
   } = useRosterData();
-  const { fetchWorkspaces } = useWorkspaceData();
+  const { workspaces, fetchWorkspaces } = useWorkspaceData();
 
   const [requests, setRequests] = useState<CoverRequest[]>([]);
   const [shiftDefinitions, setShiftDefinitions] = useState<ShiftDefinition[]>([]);
-  const [workspaces, setWorkspaces] = useState<any[]>([]);
   const [isSupervisor, setIsSupervisor] = useState(false);
   const [showCreateDialog, setShowCreateDialog] = useState(false);
   const [activeTab, setActiveTab] = useState('pending');
@@ -57,9 +56,8 @@ export function CoverRequestWorkflow({ facilityId, providerId }: CoverRequestWor
     setShiftDefinitions(shifts);
     setIsSupervisor(supervisor);
     
-    // Fetch workspaces separately
-    const ws = await fetchWorkspaces(facilityId);
-    if (ws) setWorkspaces(ws);
+    // Fetch workspaces - this updates internal state in the hook
+    await fetchWorkspaces(facilityId);
   };
 
   const handleCreateRequest = async () => {
