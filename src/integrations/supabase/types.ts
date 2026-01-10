@@ -4952,6 +4952,484 @@ export type Database = {
           },
         ]
       }
+      imaging_assignments: {
+        Row: {
+          assigned_at: string
+          assigned_by: string | null
+          assigned_to: string | null
+          completed_at: string | null
+          created_at: string
+          id: string
+          is_current: boolean
+          notes: string | null
+          priority: string
+          reassign_reason: string | null
+          started_at: string | null
+          status: string
+          study_id: string
+          worklist_id: string | null
+        }
+        Insert: {
+          assigned_at?: string
+          assigned_by?: string | null
+          assigned_to?: string | null
+          completed_at?: string | null
+          created_at?: string
+          id?: string
+          is_current?: boolean
+          notes?: string | null
+          priority?: string
+          reassign_reason?: string | null
+          started_at?: string | null
+          status?: string
+          study_id: string
+          worklist_id?: string | null
+        }
+        Update: {
+          assigned_at?: string
+          assigned_by?: string | null
+          assigned_to?: string | null
+          completed_at?: string | null
+          created_at?: string
+          id?: string
+          is_current?: boolean
+          notes?: string | null
+          priority?: string
+          reassign_reason?: string | null
+          started_at?: string | null
+          status?: string
+          study_id?: string
+          worklist_id?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "imaging_assignments_study_id_fkey"
+            columns: ["study_id"]
+            isOneToOne: false
+            referencedRelation: "imaging_studies"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "imaging_assignments_worklist_id_fkey"
+            columns: ["worklist_id"]
+            isOneToOne: false
+            referencedRelation: "imaging_worklists"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      imaging_audit_log: {
+        Row: {
+          access_method: string | null
+          action: string
+          actor_facility_id: string | null
+          actor_id: string
+          client_ip: string | null
+          created_at: string
+          de_identified: boolean | null
+          emergency_justification: string | null
+          export_format: string | null
+          id: string
+          instance_id: string | null
+          is_emergency_access: boolean | null
+          purpose_of_use: string | null
+          report_id: string | null
+          series_id: string | null
+          shared_with: string | null
+          study_id: string | null
+          user_agent: string | null
+        }
+        Insert: {
+          access_method?: string | null
+          action: string
+          actor_facility_id?: string | null
+          actor_id: string
+          client_ip?: string | null
+          created_at?: string
+          de_identified?: boolean | null
+          emergency_justification?: string | null
+          export_format?: string | null
+          id?: string
+          instance_id?: string | null
+          is_emergency_access?: boolean | null
+          purpose_of_use?: string | null
+          report_id?: string | null
+          series_id?: string | null
+          shared_with?: string | null
+          study_id?: string | null
+          user_agent?: string | null
+        }
+        Update: {
+          access_method?: string | null
+          action?: string
+          actor_facility_id?: string | null
+          actor_id?: string
+          client_ip?: string | null
+          created_at?: string
+          de_identified?: boolean | null
+          emergency_justification?: string | null
+          export_format?: string | null
+          id?: string
+          instance_id?: string | null
+          is_emergency_access?: boolean | null
+          purpose_of_use?: string | null
+          report_id?: string | null
+          series_id?: string | null
+          shared_with?: string | null
+          study_id?: string | null
+          user_agent?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "imaging_audit_log_actor_facility_id_fkey"
+            columns: ["actor_facility_id"]
+            isOneToOne: false
+            referencedRelation: "facilities"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "imaging_audit_log_actor_facility_id_fkey"
+            columns: ["actor_facility_id"]
+            isOneToOne: false
+            referencedRelation: "facility_capabilities"
+            referencedColumns: ["facility_id"]
+          },
+          {
+            foreignKeyName: "imaging_audit_log_instance_id_fkey"
+            columns: ["instance_id"]
+            isOneToOne: false
+            referencedRelation: "imaging_instances"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "imaging_audit_log_report_id_fkey"
+            columns: ["report_id"]
+            isOneToOne: false
+            referencedRelation: "imaging_reports"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "imaging_audit_log_series_id_fkey"
+            columns: ["series_id"]
+            isOneToOne: false
+            referencedRelation: "imaging_series"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "imaging_audit_log_study_id_fkey"
+            columns: ["study_id"]
+            isOneToOne: false
+            referencedRelation: "imaging_studies"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      imaging_consults: {
+        Row: {
+          accepted_at: string | null
+          clinical_question: string | null
+          consult_type: string
+          consulting_facility_id: string | null
+          consulting_provider_id: string | null
+          created_at: string
+          declined_reason: string | null
+          id: string
+          requesting_facility_id: string | null
+          requesting_provider_id: string | null
+          responded_at: string | null
+          response_findings: string | null
+          response_impression: string | null
+          response_recommendations: string | null
+          status: string
+          study_id: string
+          turnaround_minutes: number | null
+          updated_at: string
+          urgency: string
+        }
+        Insert: {
+          accepted_at?: string | null
+          clinical_question?: string | null
+          consult_type?: string
+          consulting_facility_id?: string | null
+          consulting_provider_id?: string | null
+          created_at?: string
+          declined_reason?: string | null
+          id?: string
+          requesting_facility_id?: string | null
+          requesting_provider_id?: string | null
+          responded_at?: string | null
+          response_findings?: string | null
+          response_impression?: string | null
+          response_recommendations?: string | null
+          status?: string
+          study_id: string
+          turnaround_minutes?: number | null
+          updated_at?: string
+          urgency?: string
+        }
+        Update: {
+          accepted_at?: string | null
+          clinical_question?: string | null
+          consult_type?: string
+          consulting_facility_id?: string | null
+          consulting_provider_id?: string | null
+          created_at?: string
+          declined_reason?: string | null
+          id?: string
+          requesting_facility_id?: string | null
+          requesting_provider_id?: string | null
+          responded_at?: string | null
+          response_findings?: string | null
+          response_impression?: string | null
+          response_recommendations?: string | null
+          status?: string
+          study_id?: string
+          turnaround_minutes?: number | null
+          updated_at?: string
+          urgency?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "imaging_consults_consulting_facility_id_fkey"
+            columns: ["consulting_facility_id"]
+            isOneToOne: false
+            referencedRelation: "facilities"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "imaging_consults_consulting_facility_id_fkey"
+            columns: ["consulting_facility_id"]
+            isOneToOne: false
+            referencedRelation: "facility_capabilities"
+            referencedColumns: ["facility_id"]
+          },
+          {
+            foreignKeyName: "imaging_consults_requesting_facility_id_fkey"
+            columns: ["requesting_facility_id"]
+            isOneToOne: false
+            referencedRelation: "facilities"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "imaging_consults_requesting_facility_id_fkey"
+            columns: ["requesting_facility_id"]
+            isOneToOne: false
+            referencedRelation: "facility_capabilities"
+            referencedColumns: ["facility_id"]
+          },
+          {
+            foreignKeyName: "imaging_consults_study_id_fkey"
+            columns: ["study_id"]
+            isOneToOne: false
+            referencedRelation: "imaging_studies"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      imaging_critical_findings: {
+        Row: {
+          confirmation_details: string | null
+          created_at: string
+          escalated_at: string | null
+          escalated_to: string | null
+          finding_description: string
+          first_notified_at: string | null
+          id: string
+          notification_attempts: number | null
+          notification_confirmed_at: string | null
+          notification_method: string | null
+          notification_required: boolean
+          notified_by: string | null
+          notified_to: string | null
+          report_id: string | null
+          severity: string
+          status: string
+          study_id: string
+          updated_at: string
+        }
+        Insert: {
+          confirmation_details?: string | null
+          created_at?: string
+          escalated_at?: string | null
+          escalated_to?: string | null
+          finding_description: string
+          first_notified_at?: string | null
+          id?: string
+          notification_attempts?: number | null
+          notification_confirmed_at?: string | null
+          notification_method?: string | null
+          notification_required?: boolean
+          notified_by?: string | null
+          notified_to?: string | null
+          report_id?: string | null
+          severity?: string
+          status?: string
+          study_id: string
+          updated_at?: string
+        }
+        Update: {
+          confirmation_details?: string | null
+          created_at?: string
+          escalated_at?: string | null
+          escalated_to?: string | null
+          finding_description?: string
+          first_notified_at?: string | null
+          id?: string
+          notification_attempts?: number | null
+          notification_confirmed_at?: string | null
+          notification_method?: string | null
+          notification_required?: boolean
+          notified_by?: string | null
+          notified_to?: string | null
+          report_id?: string | null
+          severity?: string
+          status?: string
+          study_id?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "imaging_critical_findings_report_id_fkey"
+            columns: ["report_id"]
+            isOneToOne: false
+            referencedRelation: "imaging_reports"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "imaging_critical_findings_study_id_fkey"
+            columns: ["study_id"]
+            isOneToOne: false
+            referencedRelation: "imaging_studies"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      imaging_deidentification_jobs: {
+        Row: {
+          approved_at: string | null
+          approved_by: string | null
+          completed_at: string | null
+          created_at: string
+          custom_tag_removals: string[] | null
+          date_shift_days: number | null
+          error_message: string | null
+          id: string
+          output_format: string | null
+          output_location: string | null
+          project_name: string | null
+          purpose: string
+          rejection_reason: string | null
+          remove_dates: boolean | null
+          remove_institution: boolean | null
+          remove_patient_id: boolean | null
+          remove_patient_name: boolean | null
+          remove_physician_names: boolean | null
+          requested_by: string
+          status: string
+          study_ids: string[]
+        }
+        Insert: {
+          approved_at?: string | null
+          approved_by?: string | null
+          completed_at?: string | null
+          created_at?: string
+          custom_tag_removals?: string[] | null
+          date_shift_days?: number | null
+          error_message?: string | null
+          id?: string
+          output_format?: string | null
+          output_location?: string | null
+          project_name?: string | null
+          purpose: string
+          rejection_reason?: string | null
+          remove_dates?: boolean | null
+          remove_institution?: boolean | null
+          remove_patient_id?: boolean | null
+          remove_patient_name?: boolean | null
+          remove_physician_names?: boolean | null
+          requested_by: string
+          status?: string
+          study_ids: string[]
+        }
+        Update: {
+          approved_at?: string | null
+          approved_by?: string | null
+          completed_at?: string | null
+          created_at?: string
+          custom_tag_removals?: string[] | null
+          date_shift_days?: number | null
+          error_message?: string | null
+          id?: string
+          output_format?: string | null
+          output_location?: string | null
+          project_name?: string | null
+          purpose?: string
+          rejection_reason?: string | null
+          remove_dates?: boolean | null
+          remove_institution?: boolean | null
+          remove_patient_id?: boolean | null
+          remove_patient_name?: boolean | null
+          remove_physician_names?: boolean | null
+          requested_by?: string
+          status?: string
+          study_ids?: string[]
+        }
+        Relationships: []
+      }
+      imaging_hanging_protocols: {
+        Row: {
+          auto_compare_priors: boolean | null
+          auto_link_scrolling: boolean | null
+          body_part: string | null
+          created_at: string
+          created_by: string | null
+          description: string | null
+          id: string
+          initial_window_preset: string | null
+          is_active: boolean
+          is_default: boolean | null
+          layout_type: string
+          modality: string
+          name: string
+          sort_order: number | null
+          viewport_config: Json
+        }
+        Insert: {
+          auto_compare_priors?: boolean | null
+          auto_link_scrolling?: boolean | null
+          body_part?: string | null
+          created_at?: string
+          created_by?: string | null
+          description?: string | null
+          id?: string
+          initial_window_preset?: string | null
+          is_active?: boolean
+          is_default?: boolean | null
+          layout_type?: string
+          modality: string
+          name: string
+          sort_order?: number | null
+          viewport_config?: Json
+        }
+        Update: {
+          auto_compare_priors?: boolean | null
+          auto_link_scrolling?: boolean | null
+          body_part?: string | null
+          created_at?: string
+          created_by?: string | null
+          description?: string | null
+          id?: string
+          initial_window_preset?: string | null
+          is_active?: boolean
+          is_default?: boolean | null
+          layout_type?: string
+          modality?: string
+          name?: string
+          sort_order?: number | null
+          viewport_config?: Json
+        }
+        Relationships: []
+      }
       imaging_instances: {
         Row: {
           bits_allocated: number | null
@@ -5010,6 +5488,160 @@ export type Database = {
             columns: ["series_id"]
             isOneToOne: false
             referencedRelation: "imaging_series"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      imaging_lifecycle_policies: {
+        Row: {
+          cold_storage_days: number
+          created_at: string
+          deletion_after_days: number | null
+          description: string | null
+          facility_id: string | null
+          hot_storage_days: number
+          id: string
+          is_active: boolean
+          legal_hold_category: string | null
+          modality: string[] | null
+          name: string
+          patient_age_category: string | null
+          warm_storage_days: number
+        }
+        Insert: {
+          cold_storage_days?: number
+          created_at?: string
+          deletion_after_days?: number | null
+          description?: string | null
+          facility_id?: string | null
+          hot_storage_days?: number
+          id?: string
+          is_active?: boolean
+          legal_hold_category?: string | null
+          modality?: string[] | null
+          name: string
+          patient_age_category?: string | null
+          warm_storage_days?: number
+        }
+        Update: {
+          cold_storage_days?: number
+          created_at?: string
+          deletion_after_days?: number | null
+          description?: string | null
+          facility_id?: string | null
+          hot_storage_days?: number
+          id?: string
+          is_active?: boolean
+          legal_hold_category?: string | null
+          modality?: string[] | null
+          name?: string
+          patient_age_category?: string | null
+          warm_storage_days?: number
+        }
+        Relationships: [
+          {
+            foreignKeyName: "imaging_lifecycle_policies_facility_id_fkey"
+            columns: ["facility_id"]
+            isOneToOne: false
+            referencedRelation: "facilities"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "imaging_lifecycle_policies_facility_id_fkey"
+            columns: ["facility_id"]
+            isOneToOne: false
+            referencedRelation: "facility_capabilities"
+            referencedColumns: ["facility_id"]
+          },
+        ]
+      }
+      imaging_prefetch_rules: {
+        Row: {
+          body_part: string[] | null
+          created_at: string
+          id: string
+          is_active: boolean
+          lookback_days: number
+          max_priors: number | null
+          modality: string[] | null
+          name: string
+          same_body_part_only: boolean | null
+          same_modality_only: boolean | null
+        }
+        Insert: {
+          body_part?: string[] | null
+          created_at?: string
+          id?: string
+          is_active?: boolean
+          lookback_days?: number
+          max_priors?: number | null
+          modality?: string[] | null
+          name: string
+          same_body_part_only?: boolean | null
+          same_modality_only?: boolean | null
+        }
+        Update: {
+          body_part?: string[] | null
+          created_at?: string
+          id?: string
+          is_active?: boolean
+          lookback_days?: number
+          max_priors?: number | null
+          modality?: string[] | null
+          name?: string
+          same_body_part_only?: boolean | null
+          same_modality_only?: boolean | null
+        }
+        Relationships: []
+      }
+      imaging_prefetched_priors: {
+        Row: {
+          created_at: string
+          current_study_id: string
+          fetched_at: string | null
+          id: string
+          prefetch_rule_id: string | null
+          prior_study_id: string
+          status: string
+        }
+        Insert: {
+          created_at?: string
+          current_study_id: string
+          fetched_at?: string | null
+          id?: string
+          prefetch_rule_id?: string | null
+          prior_study_id: string
+          status?: string
+        }
+        Update: {
+          created_at?: string
+          current_study_id?: string
+          fetched_at?: string | null
+          id?: string
+          prefetch_rule_id?: string | null
+          prior_study_id?: string
+          status?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "imaging_prefetched_priors_current_study_id_fkey"
+            columns: ["current_study_id"]
+            isOneToOne: false
+            referencedRelation: "imaging_studies"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "imaging_prefetched_priors_prefetch_rule_id_fkey"
+            columns: ["prefetch_rule_id"]
+            isOneToOne: false
+            referencedRelation: "imaging_prefetch_rules"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "imaging_prefetched_priors_prior_study_id_fkey"
+            columns: ["prior_study_id"]
+            isOneToOne: false
+            referencedRelation: "imaging_studies"
             referencedColumns: ["id"]
           },
         ]
@@ -5094,6 +5726,102 @@ export type Database = {
           },
         ]
       }
+      imaging_routing_rules: {
+        Row: {
+          auto_assign_to: string | null
+          body_part_match: string[] | null
+          created_at: string
+          created_by: string | null
+          description: string | null
+          id: string
+          is_active: boolean
+          modality_match: string[] | null
+          name: string
+          notify_providers: string[] | null
+          priority: number
+          set_priority: string | null
+          source_facility_id: string | null
+          study_description_pattern: string | null
+          target_facility_id: string | null
+          target_worklist_id: string | null
+          updated_at: string
+        }
+        Insert: {
+          auto_assign_to?: string | null
+          body_part_match?: string[] | null
+          created_at?: string
+          created_by?: string | null
+          description?: string | null
+          id?: string
+          is_active?: boolean
+          modality_match?: string[] | null
+          name: string
+          notify_providers?: string[] | null
+          priority?: number
+          set_priority?: string | null
+          source_facility_id?: string | null
+          study_description_pattern?: string | null
+          target_facility_id?: string | null
+          target_worklist_id?: string | null
+          updated_at?: string
+        }
+        Update: {
+          auto_assign_to?: string | null
+          body_part_match?: string[] | null
+          created_at?: string
+          created_by?: string | null
+          description?: string | null
+          id?: string
+          is_active?: boolean
+          modality_match?: string[] | null
+          name?: string
+          notify_providers?: string[] | null
+          priority?: number
+          set_priority?: string | null
+          source_facility_id?: string | null
+          study_description_pattern?: string | null
+          target_facility_id?: string | null
+          target_worklist_id?: string | null
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "imaging_routing_rules_source_facility_id_fkey"
+            columns: ["source_facility_id"]
+            isOneToOne: false
+            referencedRelation: "facilities"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "imaging_routing_rules_source_facility_id_fkey"
+            columns: ["source_facility_id"]
+            isOneToOne: false
+            referencedRelation: "facility_capabilities"
+            referencedColumns: ["facility_id"]
+          },
+          {
+            foreignKeyName: "imaging_routing_rules_target_facility_id_fkey"
+            columns: ["target_facility_id"]
+            isOneToOne: false
+            referencedRelation: "facilities"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "imaging_routing_rules_target_facility_id_fkey"
+            columns: ["target_facility_id"]
+            isOneToOne: false
+            referencedRelation: "facility_capabilities"
+            referencedColumns: ["facility_id"]
+          },
+          {
+            foreignKeyName: "imaging_routing_rules_target_worklist_id_fkey"
+            columns: ["target_worklist_id"]
+            isOneToOne: false
+            referencedRelation: "imaging_worklists"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       imaging_series: {
         Row: {
           body_part_examined: string | null
@@ -5150,12 +5878,21 @@ export type Database = {
       imaging_studies: {
         Row: {
           accession_number: string | null
+          archive_location: string | null
+          archived_at: string | null
           body_part: string | null
           created_at: string
+          deleted_at: string | null
           encounter_id: string | null
+          facility_id: string | null
+          health_id: string | null
           id: string
           institution_name: string | null
           is_archived: boolean | null
+          legal_hold_reason: string | null
+          legal_hold_until: string | null
+          lifecycle_policy_id: string | null
+          lifecycle_status: string | null
           modality: string
           number_of_instances: number | null
           number_of_series: number | null
@@ -5172,15 +5909,25 @@ export type Database = {
           study_instance_uid: string
           study_time: string | null
           updated_at: string
+          workflow_status: string | null
         }
         Insert: {
           accession_number?: string | null
+          archive_location?: string | null
+          archived_at?: string | null
           body_part?: string | null
           created_at?: string
+          deleted_at?: string | null
           encounter_id?: string | null
+          facility_id?: string | null
+          health_id?: string | null
           id?: string
           institution_name?: string | null
           is_archived?: boolean | null
+          legal_hold_reason?: string | null
+          legal_hold_until?: string | null
+          lifecycle_policy_id?: string | null
+          lifecycle_status?: string | null
           modality: string
           number_of_instances?: number | null
           number_of_series?: number | null
@@ -5197,15 +5944,25 @@ export type Database = {
           study_instance_uid: string
           study_time?: string | null
           updated_at?: string
+          workflow_status?: string | null
         }
         Update: {
           accession_number?: string | null
+          archive_location?: string | null
+          archived_at?: string | null
           body_part?: string | null
           created_at?: string
+          deleted_at?: string | null
           encounter_id?: string | null
+          facility_id?: string | null
+          health_id?: string | null
           id?: string
           institution_name?: string | null
           is_archived?: boolean | null
+          legal_hold_reason?: string | null
+          legal_hold_until?: string | null
+          lifecycle_policy_id?: string | null
+          lifecycle_status?: string | null
           modality?: string
           number_of_instances?: number | null
           number_of_series?: number | null
@@ -5222,6 +5979,7 @@ export type Database = {
           study_instance_uid?: string
           study_time?: string | null
           updated_at?: string
+          workflow_status?: string | null
         }
         Relationships: [
           {
@@ -5229,6 +5987,27 @@ export type Database = {
             columns: ["encounter_id"]
             isOneToOne: false
             referencedRelation: "encounters"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "imaging_studies_facility_id_fkey"
+            columns: ["facility_id"]
+            isOneToOne: false
+            referencedRelation: "facilities"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "imaging_studies_facility_id_fkey"
+            columns: ["facility_id"]
+            isOneToOne: false
+            referencedRelation: "facility_capabilities"
+            referencedColumns: ["facility_id"]
+          },
+          {
+            foreignKeyName: "imaging_studies_lifecycle_policy_id_fkey"
+            columns: ["lifecycle_policy_id"]
+            isOneToOne: false
+            referencedRelation: "imaging_lifecycle_policies"
             referencedColumns: ["id"]
           },
           {
@@ -5244,6 +6023,154 @@ export type Database = {
             isOneToOne: false
             referencedRelation: "patients"
             referencedColumns: ["id"]
+          },
+        ]
+      }
+      imaging_tat_metrics: {
+        Row: {
+          acquired_at: string | null
+          acquisition_to_report: number | null
+          assigned_at: string | null
+          created_at: string
+          facility_id: string | null
+          final_reported_at: string | null
+          id: string
+          modality: string
+          order_to_acquisition: number | null
+          ordered_at: string | null
+          prelim_reported_at: string | null
+          priority: string
+          read_started_at: string | null
+          received_at: string | null
+          sla_met: boolean | null
+          sla_target_minutes: number | null
+          study_id: string
+          total_tat: number | null
+        }
+        Insert: {
+          acquired_at?: string | null
+          acquisition_to_report?: number | null
+          assigned_at?: string | null
+          created_at?: string
+          facility_id?: string | null
+          final_reported_at?: string | null
+          id?: string
+          modality: string
+          order_to_acquisition?: number | null
+          ordered_at?: string | null
+          prelim_reported_at?: string | null
+          priority: string
+          read_started_at?: string | null
+          received_at?: string | null
+          sla_met?: boolean | null
+          sla_target_minutes?: number | null
+          study_id: string
+          total_tat?: number | null
+        }
+        Update: {
+          acquired_at?: string | null
+          acquisition_to_report?: number | null
+          assigned_at?: string | null
+          created_at?: string
+          facility_id?: string | null
+          final_reported_at?: string | null
+          id?: string
+          modality?: string
+          order_to_acquisition?: number | null
+          ordered_at?: string | null
+          prelim_reported_at?: string | null
+          priority?: string
+          read_started_at?: string | null
+          received_at?: string | null
+          sla_met?: boolean | null
+          sla_target_minutes?: number | null
+          study_id?: string
+          total_tat?: number | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "imaging_tat_metrics_facility_id_fkey"
+            columns: ["facility_id"]
+            isOneToOne: false
+            referencedRelation: "facilities"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "imaging_tat_metrics_facility_id_fkey"
+            columns: ["facility_id"]
+            isOneToOne: false
+            referencedRelation: "facility_capabilities"
+            referencedColumns: ["facility_id"]
+          },
+          {
+            foreignKeyName: "imaging_tat_metrics_study_id_fkey"
+            columns: ["study_id"]
+            isOneToOne: false
+            referencedRelation: "imaging_studies"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      imaging_worklists: {
+        Row: {
+          auto_assign_provider_id: string | null
+          body_part_filter: string[] | null
+          created_at: string
+          description: string | null
+          facility_id: string | null
+          id: string
+          is_active: boolean
+          modality_filter: string[] | null
+          name: string
+          pool_providers: string[] | null
+          priority_filter: string[] | null
+          sort_order: number | null
+          updated_at: string
+        }
+        Insert: {
+          auto_assign_provider_id?: string | null
+          body_part_filter?: string[] | null
+          created_at?: string
+          description?: string | null
+          facility_id?: string | null
+          id?: string
+          is_active?: boolean
+          modality_filter?: string[] | null
+          name: string
+          pool_providers?: string[] | null
+          priority_filter?: string[] | null
+          sort_order?: number | null
+          updated_at?: string
+        }
+        Update: {
+          auto_assign_provider_id?: string | null
+          body_part_filter?: string[] | null
+          created_at?: string
+          description?: string | null
+          facility_id?: string | null
+          id?: string
+          is_active?: boolean
+          modality_filter?: string[] | null
+          name?: string
+          pool_providers?: string[] | null
+          priority_filter?: string[] | null
+          sort_order?: number | null
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "imaging_worklists_facility_id_fkey"
+            columns: ["facility_id"]
+            isOneToOne: false
+            referencedRelation: "facilities"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "imaging_worklists_facility_id_fkey"
+            columns: ["facility_id"]
+            isOneToOne: false
+            referencedRelation: "facility_capabilities"
+            referencedColumns: ["facility_id"]
           },
         ]
       }
