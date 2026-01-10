@@ -54,6 +54,7 @@ import HealthProviderRegistry from "./pages/HealthProviderRegistry";
 import FacilityRegistry from "./pages/FacilityRegistry";
 import ClientRegistry from "./pages/ClientRegistry";
 import Operations from "./pages/Operations";
+import AboveSiteDashboard from "./pages/AboveSiteDashboard";
 const queryClient = new QueryClient();
 
 const App = () => (
@@ -267,6 +268,11 @@ const App = () => (
             <Route path="/operations" element={
               <ProtectedRoute>
                 <Operations />
+              </ProtectedRoute>
+            } />
+            <Route path="/above-site" element={
+              <ProtectedRoute>
+                <AboveSiteDashboard />
               </ProtectedRoute>
             } />
             {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
