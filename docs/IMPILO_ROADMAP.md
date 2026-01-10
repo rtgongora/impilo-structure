@@ -2,17 +2,19 @@
 
 ## Executive Summary
 
-This roadmap consolidates all development phases for the Impilo ecosystem, merging the original foundation phases with advanced platform capabilities extracted from strategic documents including Impilo Connect, Impilo Engage, MusheX Payment Gateway, and CBZ Bank Partnership proposals.
+This roadmap defines the full-stack implementation path for Impilo as a comprehensive Health Information Exchange (HIE) and ERP platform. **All features require production-ready implementations** with real data flows, not UI mockups. The platform encompasses clinical EHR, telemedicine, imaging, laboratory, pharmacy, billing, and enterprise operations.
+
+**Architecture Principle**: Every module writes back to core clinical records (Encounters, Orders, Results, Charges) - no orphaned data stores.
 
 ---
 
-## PHASE 1: FOUNDATION & CLINICAL CORE ✅ (Current - Complete)
+## PHASE 1: FOUNDATION & CLINICAL CORE ✅ (Complete)
 
 ### 1.1 Patient Management ✅
 - [x] Patient Registration with biometrics
 - [x] Patient Search (⌘K global search)
 - [x] Patient Profile & Demographics
-- [x] MRN Generation
+- [x] MRN Generation (auto-generated)
 - [x] Emergency Contact Management
 - [x] Insurance Information
 
@@ -51,9 +53,9 @@ This roadmap consolidates all development phases for the Impilo ecosystem, mergi
 - [x] Bed Management Dashboard
 - [x] Ward Statistics
 - [x] Patient Queue Management
-- [x] Queue Statistics
+- [x] Queue Statistics & Voice Announcements
 
-### 1.7 Specialized Workspaces ✅
+### 1.7 Specialized Clinical Workspaces ✅
 - [x] Resuscitation Workspace
 - [x] Trauma Workspace
 - [x] Theatre Workspace
@@ -69,6 +71,8 @@ This roadmap consolidates all development phases for the Impilo ecosystem, mergi
 - [x] Physiotherapy Workspace
 - [x] Minor Procedure Workspace
 - [x] Anaesthesia Pre-Op Workspace
+- [x] Teleconsultation Workspace
+- [x] Virtual Care Workspace
 
 ---
 
@@ -87,424 +91,555 @@ This roadmap consolidates all development phases for the Impilo ecosystem, mergi
 - [x] Results Display
 - [x] Critical Value Alerts
 - [x] Historical Results View
-- [x] Status Filtering (Pending, Processing, Completed, Critical)
+- [x] Status Filtering
 
 ### 2.3 Patient Timeline ✅
 - [x] Chronological Event View
 - [x] Event Type Filtering
-- [x] Expandable Details
-- [x] Multiple Event Categories (Vitals, Labs, Medications, Notes, Orders)
+- [x] Multiple Event Categories
 
 ### 2.4 Shift Handoff ✅
 - [x] Handoff Report Generation
 - [x] Patient Summary Cards
-- [x] Acuity Indicators
-- [x] Key Events Tracking
 - [x] Pending Tasks List
-- [x] Medication Summary
 
 ### 2.5 Discharge Workflow ✅
-- [x] Discharge Planning
 - [x] Multi-step Discharge Process
 - [x] Discharge Summary
-- [x] Follow-up Instructions
 - [x] Prescription at Discharge
 
 ### 2.6 Medication Dispensing ✅
 - [x] Pharmacy Queue
-- [x] Medication Verification (5 Rights)
+- [x] 5 Rights Verification
 - [x] Barcode Scanning
 - [x] Dispensing Workflow
-- [x] Patient Counseling Checklist
-- [x] Controlled Substance Tracking
 
 ### 2.7 ePrescriptions ✅
 - [x] Electronic Prescription Generation
 - [x] Drug Interaction Checking
-- [x] Formulary Integration
 - [x] Prescription History
-- [x] Refill Management
-- [x] Pharmacy Network Integration
-
-### 2.8 Pathology Procedures ✅
-- [x] Specimen Collection Workflow
-- [x] Sample Tracking
-- [x] Barcode/QR Labeling
-- [x] Chain of Custody
-- [x] Result Entry Interface
-- [x] Quality Control Checks
 
 ---
 
-## PHASE 3: SCHEDULING & BOOKING 📋 (Planned)
+## PHASE 3: OPERATIONAL INFRASTRUCTURE 🔄 (In Progress)
 
-### 3.1 Clinic Booking System
-- [ ] Appointment Scheduling
-- [ ] Provider Availability Calendar
-- [ ] Slot Management
-- [ ] Appointment Types Configuration
+### 3.1 Roster & Duty Management ✅
+- [x] Shift Definitions (AM/PM/Night/On-call)
+- [x] Roster Plan Creation & Publishing
+- [x] Shift Assignments
+- [x] Cover Request Workflow
+- [x] Attendance Reconciliation
+- [x] Supervisor Dashboards
+
+### 3.2 Virtual Care Pools ✅
+- [x] Pool Creation & Configuration
+- [x] Provider Membership
+- [x] Case Assignment & Queue
+- [x] SLA Tracking
+- [x] Facility-anchored & Independent Pools
+
+### 3.3 Scheduling & Booking 📋
+- [ ] Appointment Scheduling (real booking engine)
+- [ ] Provider Availability Calendar (database-driven)
+- [ ] Slot Management with conflict detection
 - [ ] Recurring Appointments
-- [ ] Wait List Management
+- [ ] Wait List Management with notifications
+- [ ] SMS/Email appointment confirmations
 
-### 3.2 Theatre/Procedure Booking
-- [ ] Operating Room Scheduling
-- [ ] Equipment Reservation
-- [ ] Team Assignment
-- [ ] Pre-operative Checklist
-- [ ] Post-operative Handoff
-- [ ] Theatre Utilization Reports
+### 3.4 Theatre/Procedure Booking 📋
+- [ ] Operating Room Scheduling (real-time)
+- [ ] Equipment Reservation System
+- [ ] Team Assignment & Notification
+- [ ] Pre-operative Checklist Completion
+- [ ] Theatre Utilization Analytics
 
-### 3.3 Provider Noticeboard
-- [ ] Announcements System
-- [ ] Shift Schedules Display
-- [ ] Policy Updates
-- [ ] Training Notifications
-- [ ] Emergency Broadcasts
-- [ ] Department-specific Notices
-
-### 3.4 Resource Calendar
-- [ ] Room Booking
+### 3.5 Resource Calendar 📋
+- [ ] Room Booking System
 - [ ] Equipment Scheduling
-- [ ] Staff Rostering
 - [ ] Leave Management
-- [ ] On-call Schedules
+- [ ] On-call Schedule Generation
 
 ---
 
-## PHASE 4: PATIENT PORTAL (Impilo Connect) 📋 (Planned)
+## PHASE 4: REAL-TIME COMMUNICATION 🔴 (Priority - Full Implementation)
 
-*Reference: Impilo Connect Scope Document*
+### 4.1 Clinical Messaging ✅
+- [x] Real-time Chat (Supabase Realtime)
+- [x] Channel-based Messaging
+- [x] Read Receipts
+- [x] Typing Indicators
 
-### 4.1 Personal Health Record Access
-- [ ] View Medical History
-- [ ] Lab Results Access
-- [ ] Medication List
-- [ ] Allergy Information
+### 4.2 Clinical Paging System ✅
+- [x] Priority-based Paging
+- [x] Escalation Rules
+- [x] Acknowledgment Tracking
+- [x] Auto-escalation on Timeout
+
+### 4.3 Voice Calling 🔴 (Full Implementation Required)
+**Current**: UI shell with mock data
+**Required**: Real peer-to-peer audio calls
+
+```
+Implementation Architecture:
+┌─────────────────────────────────────────────────────┐
+│                  Voice Call System                   │
+├─────────────────────────────────────────────────────┤
+│  WebRTC Peer Connection                             │
+│  ├─ ICE Candidate Exchange (Supabase Realtime)      │
+│  ├─ STUN Server (Google/Twilio)                     │
+│  ├─ TURN Server (Self-hosted/Twilio)                │
+│  └─ Audio-only MediaStream                          │
+├─────────────────────────────────────────────────────┤
+│  Signaling Layer                                    │
+│  ├─ call_sessions table (offer/answer SDP)          │
+│  ├─ call_ice_candidates table                       │
+│  └─ Realtime subscriptions for call events          │
+├─────────────────────────────────────────────────────┤
+│  Call Features                                      │
+│  ├─ Mute/Unmute                                     │
+│  ├─ Hold/Resume                                     │
+│  ├─ Call Transfer                                   │
+│  ├─ Conference Calls (3+ participants)              │
+│  └─ Call Recording (with consent)                   │
+└─────────────────────────────────────────────────────┘
+```
+
+**Database Tables Required**:
+- `call_sessions` (caller_id, callee_id, status, started_at, ended_at, recording_url)
+- `call_ice_candidates` (session_id, candidate, created_at)
+- `call_recordings` (session_id, storage_path, duration, consent_given)
+
+### 4.4 Video Telemedicine 🔴 (Full Implementation Required)
+**Current**: Basic WebRTC structure
+**Required**: Production-grade teleconsultation
+
+```
+Teleconsultation Architecture:
+┌─────────────────────────────────────────────────────┐
+│              Telemedicine Platform                   │
+├─────────────────────────────────────────────────────┤
+│  Video Infrastructure                               │
+│  ├─ WebRTC with Simulcast (multi-quality)           │
+│  ├─ Adaptive Bitrate (network-aware)                │
+│  ├─ Screen Sharing                                  │
+│  ├─ Picture-in-Picture                              │
+│  └─ Virtual Background (optional)                   │
+├─────────────────────────────────────────────────────┤
+│  Clinical Integration                               │
+│  ├─ Patient context visible during call             │
+│  ├─ Real-time note-taking (SOAP)                    │
+│  ├─ Prescription writing during call                │
+│  ├─ Document/Image sharing                          │
+│  └─ Referral initiation                             │
+├─────────────────────────────────────────────────────┤
+│  7-Stage Consultation Workflow                      │
+│  1. Referral Package Building                       │
+│  2. Routing & Scheduling                            │
+│  3. Pre-consultation Review                         │
+│  4. Waiting Room                                    │
+│  5. Live Teleconsult Session                        │
+│  6. Post-consult Documentation                      │
+│  7. Completion Note & Follow-up                     │
+├─────────────────────────────────────────────────────┤
+│  Recording & Compliance                             │
+│  ├─ Consent capture before recording                │
+│  ├─ Encrypted storage (Supabase Storage)            │
+│  ├─ Audit trail                                     │
+│  └─ Retention policies                              │
+└─────────────────────────────────────────────────────┘
+```
+
+**Database Tables Required**:
+- `teleconsult_sessions` (referral_id, provider_id, patient_id, status, sdp_offer, sdp_answer)
+- `teleconsult_ice_candidates` (session_id, candidate_data)
+- `teleconsult_recordings` (session_id, storage_path, consent_timestamp)
+- `teleconsult_notes` (session_id, content, created_by)
+
+### 4.5 Push Notifications ✅
+- [x] Service Worker Registration
+- [x] Permission Prompting
+- [x] Notification Preferences
+- [x] Delivery Tracking
+
+---
+
+## PHASE 5: MEDICAL IMAGING (PACS) 🔴 (Full Implementation Required)
+
+### 5.1 DICOM Viewer Implementation
+**Current**: UI placeholder
+**Required**: Full DICOM viewing capability
+
+```
+PACS Architecture:
+┌─────────────────────────────────────────────────────┐
+│                 PACS Implementation                  │
+├─────────────────────────────────────────────────────┤
+│  DICOM Parsing (cornerstone.js or dwv.js)           │
+│  ├─ Multi-frame Support                             │
+│  ├─ Windowing/Leveling                              │
+│  ├─ Zoom/Pan/Rotate                                 │
+│  ├─ Measurement Tools (length, angle, area)         │
+│  ├─ Annotations (arrows, text, ROI)                 │
+│  └─ DICOM Header Display                            │
+├─────────────────────────────────────────────────────┤
+│  Study Management                                   │
+│  ├─ Study List with Search                          │
+│  ├─ Series Navigation                               │
+│  ├─ Comparison Mode (prior studies)                 │
+│  ├─ Hanging Protocols                               │
+│  └─ Key Image Selection                             │
+├─────────────────────────────────────────────────────┤
+│  Integration                                        │
+│  ├─ DICOMweb (WADO-RS, STOW-RS, QIDO-RS)           │
+│  ├─ Orthanc Server (self-hosted PACS)               │
+│  ├─ Cloud PACS (Ambra, Sectra, Google Healthcare)   │
+│  └─ Order-to-Image linking                          │
+├─────────────────────────────────────────────────────┤
+│  Reporting                                          │
+│  ├─ Structured Reporting                            │
+│  ├─ Voice Dictation Integration                     │
+│  ├─ Critical Finding Alerts                         │
+│  └─ Report Signing Workflow                         │
+└─────────────────────────────────────────────────────┘
+```
+
+**NPM Dependencies**: `cornerstone-core`, `cornerstone-wado-image-loader`, `dicom-parser`
+
+**Database Tables Required**:
+- `imaging_studies` (patient_id, order_id, study_instance_uid, modality, study_date, status)
+- `imaging_series` (study_id, series_instance_uid, series_description, num_instances)
+- `imaging_instances` (series_id, sop_instance_uid, storage_path)
+- `imaging_reports` (study_id, findings, impression, reported_by, signed_at)
+- `imaging_annotations` (instance_id, annotation_data, created_by)
+
+### 5.2 Radiology Workflow
+- [ ] Worklist Management
+- [ ] Protocol Assignment
+- [ ] Technologist Interface
+- [ ] Radiologist Reading Workflow
+- [ ] Peer Review System
+
+---
+
+## PHASE 6: LABORATORY (LIMS) 🔴 (Full Implementation Required)
+
+### 6.1 Laboratory Information System
+**Current**: Basic order/result UI
+**Required**: Complete LIMS functionality
+
+```
+LIMS Architecture:
+┌─────────────────────────────────────────────────────┐
+│                LIMS Implementation                   │
+├─────────────────────────────────────────────────────┤
+│  Sample Management                                  │
+│  ├─ Specimen Collection (barcode generation)        │
+│  ├─ Sample Tracking (chain of custody)              │
+│  ├─ Aliquoting & Splitting                          │
+│  ├─ Storage Location Tracking                       │
+│  └─ Sample Rejection Workflow                       │
+├─────────────────────────────────────────────────────┤
+│  Analyzer Integration                               │
+│  ├─ HL7 v2 Message Parsing                          │
+│  ├─ ASTM Protocol Support                           │
+│  ├─ Bi-directional Interface                        │
+│  ├─ Result Auto-verification                        │
+│  └─ QC Result Handling                              │
+├─────────────────────────────────────────────────────┤
+│  Quality Control                                    │
+│  ├─ Levey-Jennings Charts                           │
+│  ├─ Westgard Rules                                  │
+│  ├─ Control Lot Management                          │
+│  ├─ Calibration Tracking                            │
+│  └─ Proficiency Testing                             │
+├─────────────────────────────────────────────────────┤
+│  Result Management                                  │
+│  ├─ Delta Checks                                    │
+│  ├─ Reflex Testing Rules                            │
+│  ├─ Critical Value Notification                     │
+│  ├─ Result Validation Workflow                      │
+│  └─ Amended Result Tracking                         │
+├─────────────────────────────────────────────────────┤
+│  Reporting                                          │
+│  ├─ Cumulative Reports                              │
+│  ├─ Trend Analysis                                  │
+│  ├─ TAT Monitoring                                  │
+│  └─ Workload Statistics                             │
+└─────────────────────────────────────────────────────┘
+```
+
+**Database Tables Required**:
+- `lab_specimens` (order_id, specimen_id, collection_time, collector_id, status, rejection_reason)
+- `lab_analyzer_results` (specimen_id, test_code, raw_value, unit, flags, received_at)
+- `lab_qc_results` (lot_id, level, value, mean, sd, status)
+- `lab_reference_ranges` (test_code, age_min, age_max, sex, low, high)
+
+---
+
+## PHASE 7: PATIENT PORTAL (Impilo Connect) 📋
+
+### 7.1 Personal Health Record Access
+- [ ] View Medical History (real encounters)
+- [ ] Lab Results Access (with interpretations)
+- [ ] Medication List (active/historical)
 - [ ] Immunization Records
-- [ ] Download Health Records (PDF)
+- [ ] Download Health Records (PDF generation)
 
-### 4.2 Appointments & Scheduling
-- [ ] Book Appointments Online
-- [ ] View Upcoming Appointments
-- [ ] Appointment Reminders (SMS/Push)
-- [ ] Reschedule/Cancel Appointments
+### 7.2 Appointments & Scheduling
+- [ ] Book Appointments Online (real-time availability)
+- [ ] SMS/Email Reminders (Edge Function + SMS gateway)
 - [ ] Virtual Queue Check-in
+- [ ] Appointment History
 
-### 4.3 Tele-appointments
+### 7.3 Telehealth for Patients
 - [ ] Video Consultation Booking
-- [ ] WebRTC Video Calls
-- [ ] In-call Chat/Messaging
-- [ ] Document/Image Sharing
-- [ ] Post-consultation Notes
-- [ ] Recording (with consent)
+- [ ] WebRTC Patient Interface (simplified UI)
+- [ ] Document Upload during Call
+- [ ] Post-consultation Summary View
 
-### 4.4 Prescriptions & Orders
+### 7.4 Prescriptions & Orders
 - [ ] View Active Prescriptions
 - [ ] Prescription Refill Requests
-- [ ] Order Status Tracking
-- [ ] Pharmacy Selection
-- [ ] Delivery Options
+- [ ] Pharmacy Selection & Routing
+- [ ] Delivery Tracking Integration
 
-### 4.5 Notifications & Reminders
-- [ ] Appointment Reminders
-- [ ] Medication Reminders
-- [ ] Lab Result Notifications
-- [ ] Vaccination Schedules
-- [ ] Health Tips & Education
-
-### 4.6 Health Wallet (Impilo Connect)
-- [ ] Wallet Balance Management
-- [ ] Transaction History
-- [ ] Top-up Options
+### 7.5 Health Wallet
+- [ ] Wallet Balance (real transactions)
+- [ ] Top-up via Mobile Money
 - [ ] Payment for Services
-- [ ] Receipt Generation
+- [ ] Transaction History
 
 ---
 
-## PHASE 5: PAYMENTS & CLAIMS (MusheX Gateway) 📋 (Planned)
+## PHASE 8: PAYMENTS & BILLING (MusheX) 📋
 
-*Reference: Integrated Payment and Remittance Gateway Document*
+### 8.1 Payment Gateway Integration
+**Required**: Real payment processing
 
-### 5.1 Payment Integration
-- [ ] Cash Payments
-- [ ] Mobile Money (EcoCash, OneMoney, InnBucks)
-- [ ] Card Payments (VISA, Mastercard)
-- [ ] Bank Transfers (ZIPIT, RTGS)
-- [ ] QR Code Payments
-- [ ] Payment Receipts
+```
+Payment Architecture:
+┌─────────────────────────────────────────────────────┐
+│               Payment Integration                    │
+├─────────────────────────────────────────────────────┤
+│  Mobile Money                                       │
+│  ├─ Paynow Zimbabwe Integration                     │
+│  ├─ EcoCash API                                     │
+│  ├─ OneMoney API                                    │
+│  └─ InnBucks API                                    │
+├─────────────────────────────────────────────────────┤
+│  Card Payments                                      │
+│  ├─ Stripe Integration                              │
+│  ├─ DPO PayGate                                     │
+│  └─ PCI-DSS Compliance                              │
+├─────────────────────────────────────────────────────┤
+│  Bank Transfers                                     │
+│  ├─ ZIPIT Integration                               │
+│  ├─ RTGS Settlement                                 │
+│  └─ CBZ Bank API                                    │
+├─────────────────────────────────────────────────────┤
+│  Virtual Wallet                                     │
+│  ├─ Health Wallet (pre-paid)                        │
+│  ├─ Family Wallets                                  │
+│  ├─ Corporate Accounts                              │
+│  └─ Subscription Billing                            │
+└─────────────────────────────────────────────────────┘
+```
 
-### 5.2 Virtual Payments
-- [ ] Health Wallet Integration
-- [ ] Prepaid Health Credits
-- [ ] Family/Corporate Wallets
-- [ ] Auto-debit for Subscriptions
-- [ ] Payment Plans/Installments
-
-### 5.3 Remittances
-- [ ] Diaspora Remittance Integration
-- [ ] WorldRemit Integration
-- [ ] Western Union Integration
-- [ ] Bank-to-Health-Wallet
-- [ ] Real-time Exchange Rates
-
-### 5.4 Insurance Claims
-- [ ] Claim Submission
-- [ ] Claim Status Tracking
+### 8.2 Insurance Claims
+- [ ] Claim Submission (real submission)
 - [ ] Pre-authorization Requests
-- [ ] Benefit Verification
-- [ ] EOB (Explanation of Benefits)
-
-### 5.5 Claim Switching
-- [ ] Multi-payer Support
-- [ ] Medical Aid Integration
-- [ ] Insurance Pool Management
-- [ ] Claim Adjudication
+- [ ] Benefit Verification API
+- [ ] Claim Status Tracking
 - [ ] Settlement Reconciliation
 
-### 5.6 CBZ Bank Partnership
-*Reference: CBZ Partnership Proposal*
-- [ ] CBZ Wallet Integration
-- [ ] Health Savings Accounts
-- [ ] Medical Loans/Financing
-- [ ] Corporate Health Accounts
-- [ ] Zimswitch/ZIPIT Integration
-
 ---
 
-## PHASE 6: ADVANCED CLINICAL 📋 (Planned)
+## PHASE 9: AI & CLINICAL INTELLIGENCE 🔴 (Priority)
 
-### 6.1 PACS & DICOM Viewer
-- [ ] DICOM Image Viewer
-- [ ] Multi-series Support
-- [ ] Windowing/Leveling
-- [ ] Measurement Tools
-- [ ] Annotation Tools
-- [ ] Report Integration
-- [ ] PACS Server Integration
+### 9.1 AI Diagnostic Assistant ✅ (Using Lovable AI)
+- [x] Symptom Analysis (Gemini 3 Flash)
+- [x] Differential Diagnosis Suggestions
+- [x] Evidence-based Recommendations
 
-### 6.2 LIMS Integration
-- [ ] Laboratory Information Management
-- [ ] Analyzer Interfaces
-- [ ] Sample Tracking
-- [ ] Quality Control
-- [ ] Result Validation
-- [ ] Delta Checks
-- [ ] Reflex Testing
+### 9.2 Voice Dictation 📋
+```
+Voice Dictation Architecture:
+┌─────────────────────────────────────────────────────┐
+│              Voice Dictation System                  │
+├─────────────────────────────────────────────────────┤
+│  Speech Recognition                                 │
+│  ├─ Web Speech API (browser native)                 │
+│  ├─ Whisper API (OpenAI via Lovable AI)             │
+│  └─ Medical Vocabulary Enhancement                  │
+├─────────────────────────────────────────────────────┤
+│  Transcription Pipeline                             │
+│  ├─ Real-time Streaming                             │
+│  ├─ Punctuation & Formatting                        │
+│  ├─ Medical Term Recognition                        │
+│  └─ Speaker Diarization (multi-party)               │
+├─────────────────────────────────────────────────────┤
+│  Integration                                        │
+│  ├─ SOAP Note Auto-population                       │
+│  ├─ Template-guided Dictation                       │
+│  ├─ Command Recognition ("new paragraph")           │
+│  └─ Review & Edit Workflow                          │
+└─────────────────────────────────────────────────────┘
+```
 
-### 6.3 Note Dictation
-- [ ] Voice-to-Text Transcription
-- [ ] Medical Speech Recognition
-- [ ] Template-based Dictation
-- [ ] Review & Edit Workflow
-- [ ] Multi-language Support
+### 9.3 Document OCR 📋
+- [ ] Camera Capture Integration
+- [ ] Document Type Recognition
+- [ ] Data Extraction (AI-powered)
+- [ ] Form Auto-fill
 
-### 6.4 Document Scanning & OCR
-- [ ] Document Scanner Integration
-- [ ] OCR Processing
-- [ ] AI-powered Data Extraction
-- [ ] Form Recognition
-- [ ] Automatic Filing
-- [ ] Quality Verification
-
-### 6.5 Clinical Decision Support (Enhanced)
-- [ ] Drug-Drug Interactions
-- [ ] Allergy Checking
-- [ ] Dosage Calculations
+### 9.4 Clinical Decision Support (Enhanced)
+- [ ] Drug Interaction Checking (real database)
+- [ ] Allergy Cross-checking
+- [ ] Dosage Calculations (weight-based)
+- [ ] Sepsis Early Warning (NEWS2/qSOFA)
 - [ ] Clinical Pathways
-- [ ] Evidence-based Alerts
-- [ ] Sepsis Early Warning
-- [ ] Deterioration Scoring
 
 ---
 
-## PHASE 7: ENTERPRISE & ANALYTICS 📋 (Planned)
+## PHASE 10: ENTERPRISE & ANALYTICS 📋
 
-### 7.1 Management Dashboards
+### 10.1 Management Dashboards
+- [ ] Facility-level Metrics
+- [ ] District Aggregation
+- [ ] Provincial/National Views
+- [ ] Real-time Occupancy
 
-#### Facility Level
-- [ ] Occupancy Rates
-- [ ] Patient Flow Metrics
-- [ ] Revenue Dashboard
-- [ ] Staff Utilization
-- [ ] Quality Indicators
-- [ ] Incident Reports
-
-#### District Level
-- [ ] Multi-facility Overview
-- [ ] Resource Allocation
-- [ ] Outbreak Detection
-- [ ] Referral Patterns
-- [ ] Comparative Analytics
-
-#### Provincial/National Level
-- [ ] Population Health Metrics
-- [ ] Disease Surveillance
-- [ ] Resource Planning
-- [ ] Policy Impact Analysis
-- [ ] Epidemiological Reports
-
-### 7.2 Reporting Engine
+### 10.2 Reporting Engine
 - [ ] Custom Report Builder
-- [ ] Scheduled Reports
+- [ ] Scheduled Reports (Edge Function cron)
 - [ ] Export (PDF, Excel, CSV)
-- [ ] Data Visualization
-- [ ] KPI Dashboards
-- [ ] Regulatory Reports
+- [ ] DHIS2 Integration
 
-### 7.3 Health Marketplace & Catalogue
-- [ ] Service Catalogue
-- [ ] Provider Directory
-- [ ] Price Transparency
-- [ ] Quality Ratings
-- [ ] Online Booking
-- [ ] Package Deals
-
-### 7.4 Distributed System Architecture
-- [ ] Multi-tenant Support
-- [ ] Regional Data Centers
-- [ ] Data Synchronization
-- [ ] Offline-first Architecture
-- [ ] Edge Computing Support
-- [ ] Federated Queries
+### 10.3 Audit & Compliance
+- [ ] Full Audit Trail
+- [ ] Access Logs
+- [ ] Data Export for Regulators
+- [ ] HIPAA/POPIA Compliance Tools
 
 ---
 
-## PHASE 8: INTEGRATIONS 📋 (Planned)
+## PHASE 11: INTEGRATIONS 📋
 
-### 8.1 Odoo Integration
-- [ ] Financial Accounting Sync
-- [ ] Procurement Integration
-- [ ] HR Management Link
-- [ ] Asset Management
-- [ ] Reporting Consolidation
-- [ ] API Gateway Setup
+### 11.1 HIE Infrastructure
+- [ ] Client Registry (MOSIP) - Health ID Issuance
+- [ ] Provider Registry (Varapi/iHRIS)
+- [ ] Facility Registry (Thuso/GOFR)
+- [ ] Terminology Service (OCL)
+- [ ] Shared Health Record (HAPI FHIR)
 
-### 8.2 External APIs
-- [ ] HL7 FHIR Support
-- [ ] National Health ID
+### 11.2 ERP Integration
+- [ ] Odoo Connector (full bi-directional)
+  - Finance Module Sync
+  - Procurement Integration
+  - HR/Payroll Link
+  - Asset Management
+
+### 11.3 External Systems
+- [ ] HL7 FHIR R4 API
+- [ ] National Health ID API
 - [ ] MoH Reporting APIs
-- [ ] Laboratory Networks
+- [ ] Laboratory Networks (HL7 v2)
 - [ ] Pharmacy Networks
-- [ ] Insurance APIs
-
-### 8.3 Logistics Integration
-- [ ] Supply Chain Management
-- [ ] Vendor Management
-- [ ] Purchase Orders
-- [ ] Delivery Tracking
-- [ ] Warehouse Management
-
-### 8.4 Mobile Apps
-
-#### PWA Lite Version
-- [ ] Responsive Web App
-- [ ] Offline Capability
-- [ ] Push Notifications
-- [ ] Home Screen Install
-- [ ] Camera/Barcode Access
-
-#### PHR Mobile App
-- [ ] Native iOS/Android
-- [ ] Biometric Login
-- [ ] Health Tracking
-- [ ] Wearable Integration
-- [ ] Emergency Mode
-
-### 8.5 Offline Sync
-- [ ] Local Data Storage
-- [ ] Conflict Resolution
-- [ ] Background Sync
-- [ ] Queue Management
-- [ ] Connection Awareness
-
----
-
-## PHASE 9: IMPILO ENGAGE (Wellness Platform) 📋 (Future)
-
-*Reference: Impilo Engage - From Fitness App to National Health On-ramp*
-
-### 9.1 Wellness Features
-- [ ] Activity Tracking
-- [ ] Nutrition Logging
-- [ ] Sleep Monitoring
-- [ ] Mental Wellness
-- [ ] Fitness Programs
-
-### 9.2 Health Risk Assessment
-- [ ] Health Questionnaires
-- [ ] Risk Calculators
-- [ ] Personalized Recommendations
-- [ ] Preventive Care Reminders
-
-### 9.3 Gamification
-- [ ] Health Challenges
-- [ ] Points/Rewards System
-- [ ] Leaderboards
-- [ ] Achievement Badges
-- [ ] Social Features
-
-### 9.4 Corporate Wellness
-- [ ] Employer Programs
-- [ ] Group Challenges
-- [ ] Health Incentives
-- [ ] Productivity Metrics
 
 ---
 
 ## Implementation Priority Matrix
 
-| Phase | Priority | Complexity | Dependencies | Timeline |
-|-------|----------|------------|--------------|----------|
-| Phase 1 | ✅ Complete | - | - | Done |
-| Phase 2 | 🔴 High | Medium | Phase 1 | Q1 2025 |
-| Phase 3 | 🔴 High | Medium | Phase 1 | Q1 2025 |
-| Phase 4 | 🟡 Medium | High | Phase 1-3 | Q2 2025 |
-| Phase 5 | 🟡 Medium | High | Phase 4 | Q2-Q3 2025 |
-| Phase 6 | 🟡 Medium | Very High | Phase 2 | Q3 2025 |
-| Phase 7 | 🟢 Low | High | All Phases | Q4 2025 |
-| Phase 8 | 🟢 Low | Very High | All Phases | Q4 2025+ |
-| Phase 9 | 🟢 Low | Medium | Phase 4-5 | 2026 |
+| Phase | Status | Priority | Complexity | Dependencies | Target |
+|-------|--------|----------|------------|--------------|--------|
+| Phase 1-2 | ✅ Done | - | - | - | Complete |
+| Phase 3 | 🔄 Active | 🔴 High | Medium | Phase 1-2 | Q1 2025 |
+| Phase 4 | 🔴 Next | 🔴 Critical | High | WebRTC, Realtime | Q1 2025 |
+| Phase 5 | 📋 Planned | 🔴 High | Very High | DICOM libs | Q2 2025 |
+| Phase 6 | 📋 Planned | 🟡 Medium | Very High | HL7 parsing | Q2 2025 |
+| Phase 7 | 📋 Planned | 🟡 Medium | Medium | Auth, Portal | Q2 2025 |
+| Phase 8 | 📋 Planned | 🟡 Medium | High | Payment APIs | Q3 2025 |
+| Phase 9 | 📋 Planned | 🟡 Medium | Medium | Lovable AI | Q3 2025 |
+| Phase 10 | 📋 Planned | 🟢 Low | Medium | All phases | Q4 2025 |
+| Phase 11 | 📋 Planned | 🟢 Low | Very High | External APIs | Q4 2025+ |
 
 ---
 
 ## Technology Stack
 
 ### Frontend
-- React 18 with TypeScript
+- React 19 with TypeScript
 - Tailwind CSS + shadcn/ui
 - Framer Motion (animations)
 - TanStack Query (data fetching)
 - React Router (navigation)
 
 ### Backend (Lovable Cloud)
-- Supabase (PostgreSQL)
+- PostgreSQL (Supabase)
 - Edge Functions (Deno)
 - Row Level Security (RLS)
 - Realtime Subscriptions
-- Storage (files, images)
+- Storage (files, DICOM, recordings)
+
+### Real-time Communication
+- WebRTC (peer-to-peer audio/video)
+- Supabase Realtime (signaling)
+- STUN/TURN Servers
+
+### Medical Standards
+- DICOM (cornerstone.js)
+- HL7 v2 (parsing)
+- HL7 FHIR R4 (interoperability)
+- ICD-10, SNOMED CT, LOINC
+
+### AI Integration
+- Lovable AI Gateway (Gemini, GPT-5)
+- Web Speech API (voice)
+- OCR (document processing)
 
 ### Mobile
 - Progressive Web App (PWA)
-- Capacitor (native wrapper)
-- WebRTC (video calls)
+- Service Worker (offline)
+- Push Notifications
 
-### Integrations
-- HL7 FHIR
-- REST APIs
-- WebSockets
-- DICOM
+---
+
+## Data Residency & Self-Hosting
+
+For jurisdictions requiring data residency, the entire stack can be self-hosted:
+
+```
+Self-Hosted Architecture:
+┌─────────────────────────────────────────────────────┐
+│           Sovereign Infrastructure                   │
+├─────────────────────────────────────────────────────┤
+│  Frontend: nginx/Caddy (static files)               │
+│  Backend: Supabase Self-Hosted (Docker/K8s)         │
+│  ├─ PostgreSQL                                      │
+│  ├─ GoTrue (Auth)                                   │
+│  ├─ PostgREST (API)                                 │
+│  ├─ Realtime                                        │
+│  └─ Storage (S3-compatible)                         │
+│  PACS: Orthanc (DICOM server)                       │
+│  TURN: coturn (WebRTC relay)                        │
+└─────────────────────────────────────────────────────┘
+```
 
 ---
 
 ## Document References
 
-1. **Impilo Connect Scope** - Patient Portal specifications
-2. **Impilo Engage** - Wellness platform strategy
-3. **MusheX Payment Gateway** - Payment integration details
-4. **CBZ Bank Partnership** - Banking integration proposal
-5. **System Architecture** - Technical specifications
+1. Impilo Connect Scope Document
+2. Impilo Engage - Wellness Platform
+3. MusheX Payment Gateway Specification
+4. CBZ Bank Partnership Proposal
+5. PHID Functional Requirements (docs/PHID_Functional_Requirements.docx)
 
 ---
 
-*Last Updated: December 2024*
-*Version: 2.0*
+## Revision History
+
+| Version | Date | Changes |
+|---------|------|---------|
+| 1.0 | 2024-12 | Initial roadmap |
+| 2.0 | 2025-01-10 | Full implementation revision - all features must be production-ready |
