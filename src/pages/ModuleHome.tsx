@@ -115,6 +115,17 @@ const workModuleCategories: ModuleCategory[] = [
     ],
   },
   {
+    id: "consults-referrals",
+    title: "Consults & Referrals",
+    description: "Telemedicine, specialist consults, and inter-facility referrals",
+    modules: [
+      { id: "telemedicine-hub", label: "Telemedicine Hub", description: "Full-circle teleconsultation workflow", icon: Video, path: "/telemedicine", color: "bg-primary" },
+      { id: "referrals", label: "Referrals", description: "Outgoing & incoming referrals", icon: ArrowRightLeft, path: "/telemedicine?tab=referrals", color: "bg-blue-500", roles: ["doctor", "nurse", "specialist", "admin"] },
+      { id: "consults", label: "Consultations", description: "Specialist consultations & reviews", icon: Stethoscope, path: "/telemedicine?tab=consults", color: "bg-teal-500", roles: ["doctor", "specialist", "admin"] },
+      { id: "case-reviews", label: "Case Reviews & Boards", description: "M&M and specialist boards", icon: Users, path: "/telemedicine?tab=boards", color: "bg-purple-500", roles: ["doctor", "specialist", "admin"] },
+    ],
+  },
+  {
     id: "orders",
     title: "Orders & Diagnostics",
     description: "Lab, imaging, pharmacy, and clinical orders",
