@@ -56,25 +56,41 @@ function EncounterContent() {
     const queueId = searchParams.get("queueId");
     const returnToQueue = queueId ? `/queue?queueId=${queueId}` : "/queue";
     
+    const handleGoBack = () => {
+      if (window.history.length > 1) {
+        navigate(-1);
+      } else {
+        navigate("/");
+      }
+    };
+
+    const handleBackToQueue = () => {
+      navigate(returnToQueue);
+    };
+
+    const handleGoHome = () => {
+      navigate("/");
+    };
+    
     return (
       <div className="min-h-screen bg-background flex items-center justify-center">
         <div className="text-center space-y-6 max-w-md px-4">
           <div className="w-16 h-16 rounded-full bg-destructive/10 flex items-center justify-center mx-auto">
             <span className="text-destructive text-2xl">!</span>
           </div>
-          <h2 className="text-xl font-semibold">Unable to Load Chart</h2>
+          <h2 className="text-xl font-semibold text-foreground">Unable to Load Chart</h2>
           <p className="text-muted-foreground">{contextError}</p>
           
           <div className="flex flex-col sm:flex-row gap-3 justify-center pt-4">
-            <Button variant="outline" onClick={() => navigate(-1)}>
+            <Button type="button" variant="outline" onClick={handleGoBack}>
               <ArrowLeft className="h-4 w-4 mr-2" />
               Go Back
             </Button>
-            <Button variant="outline" onClick={() => navigate(returnToQueue)}>
+            <Button type="button" variant="outline" onClick={handleBackToQueue}>
               <Users className="h-4 w-4 mr-2" />
               Back to Queue
             </Button>
-            <Button onClick={() => navigate("/")}>
+            <Button type="button" onClick={handleGoHome}>
               <Home className="h-4 w-4 mr-2" />
               Home
             </Button>
