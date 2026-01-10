@@ -9230,6 +9230,134 @@ export type Database = {
           },
         ]
       }
+      patient_summaries: {
+        Row: {
+          access_level: string | null
+          advance_directives: Json | null
+          allergies: Json | null
+          authoring_organization: string | null
+          care_plans: Json | null
+          conditions: Json | null
+          consent_reference: string | null
+          created_at: string
+          data_recency_notes: Json | null
+          devices: Json | null
+          diagnostic_results: Json | null
+          expires_at: string | null
+          fhir_bundle: Json | null
+          fhir_composition_id: string | null
+          generated_at: string
+          generated_by: string | null
+          generation_trigger: string | null
+          health_id: string | null
+          id: string
+          imaging_summary: Json | null
+          immunizations: Json | null
+          last_accessed_at: string | null
+          medications: Json | null
+          patient_id: string
+          pregnancy_status: Json | null
+          procedures: Json | null
+          qr_code_data: string | null
+          redacted_sections: string[] | null
+          redaction_applied: boolean | null
+          share_token: string | null
+          share_token_expires_at: string | null
+          social_history: Json | null
+          source_systems: string[] | null
+          status: string
+          summary_type: string
+          updated_at: string
+          vital_signs: Json | null
+        }
+        Insert: {
+          access_level?: string | null
+          advance_directives?: Json | null
+          allergies?: Json | null
+          authoring_organization?: string | null
+          care_plans?: Json | null
+          conditions?: Json | null
+          consent_reference?: string | null
+          created_at?: string
+          data_recency_notes?: Json | null
+          devices?: Json | null
+          diagnostic_results?: Json | null
+          expires_at?: string | null
+          fhir_bundle?: Json | null
+          fhir_composition_id?: string | null
+          generated_at?: string
+          generated_by?: string | null
+          generation_trigger?: string | null
+          health_id?: string | null
+          id?: string
+          imaging_summary?: Json | null
+          immunizations?: Json | null
+          last_accessed_at?: string | null
+          medications?: Json | null
+          patient_id: string
+          pregnancy_status?: Json | null
+          procedures?: Json | null
+          qr_code_data?: string | null
+          redacted_sections?: string[] | null
+          redaction_applied?: boolean | null
+          share_token?: string | null
+          share_token_expires_at?: string | null
+          social_history?: Json | null
+          source_systems?: string[] | null
+          status?: string
+          summary_type?: string
+          updated_at?: string
+          vital_signs?: Json | null
+        }
+        Update: {
+          access_level?: string | null
+          advance_directives?: Json | null
+          allergies?: Json | null
+          authoring_organization?: string | null
+          care_plans?: Json | null
+          conditions?: Json | null
+          consent_reference?: string | null
+          created_at?: string
+          data_recency_notes?: Json | null
+          devices?: Json | null
+          diagnostic_results?: Json | null
+          expires_at?: string | null
+          fhir_bundle?: Json | null
+          fhir_composition_id?: string | null
+          generated_at?: string
+          generated_by?: string | null
+          generation_trigger?: string | null
+          health_id?: string | null
+          id?: string
+          imaging_summary?: Json | null
+          immunizations?: Json | null
+          last_accessed_at?: string | null
+          medications?: Json | null
+          patient_id?: string
+          pregnancy_status?: Json | null
+          procedures?: Json | null
+          qr_code_data?: string | null
+          redacted_sections?: string[] | null
+          redaction_applied?: boolean | null
+          share_token?: string | null
+          share_token_expires_at?: string | null
+          social_history?: Json | null
+          source_systems?: string[] | null
+          status?: string
+          summary_type?: string
+          updated_at?: string
+          vital_signs?: Json | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "patient_summaries_patient_id_fkey"
+            columns: ["patient_id"]
+            isOneToOne: false
+            referencedRelation: "patients"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       patients: {
         Row: {
           address_line1: string | null
@@ -15169,6 +15297,148 @@ export type Database = {
           },
         ]
       }
+      summary_access_log: {
+        Row: {
+          access_type: string
+          accessed_by: string | null
+          accessed_by_role: string | null
+          accessed_via: string | null
+          created_at: string
+          id: string
+          ip_address: unknown
+          is_break_glass: boolean | null
+          justification: string | null
+          patient_id: string
+          purpose_of_use: string | null
+          share_expires_at: string | null
+          share_recipient: string | null
+          summary_id: string
+          summary_type: string
+          user_agent: string | null
+        }
+        Insert: {
+          access_type: string
+          accessed_by?: string | null
+          accessed_by_role?: string | null
+          accessed_via?: string | null
+          created_at?: string
+          id?: string
+          ip_address?: unknown
+          is_break_glass?: boolean | null
+          justification?: string | null
+          patient_id: string
+          purpose_of_use?: string | null
+          share_expires_at?: string | null
+          share_recipient?: string | null
+          summary_id: string
+          summary_type: string
+          user_agent?: string | null
+        }
+        Update: {
+          access_type?: string
+          accessed_by?: string | null
+          accessed_by_role?: string | null
+          accessed_via?: string | null
+          created_at?: string
+          id?: string
+          ip_address?: unknown
+          is_break_glass?: boolean | null
+          justification?: string | null
+          patient_id?: string
+          purpose_of_use?: string | null
+          share_expires_at?: string | null
+          share_recipient?: string | null
+          summary_id?: string
+          summary_type?: string
+          user_agent?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "summary_access_log_patient_id_fkey"
+            columns: ["patient_id"]
+            isOneToOne: false
+            referencedRelation: "patients"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      summary_share_tokens: {
+        Row: {
+          access_level: string | null
+          allowed_actions: string[] | null
+          created_at: string
+          created_by: string
+          created_by_role: string | null
+          current_access_count: number | null
+          expires_at: string
+          id: string
+          max_access_count: number | null
+          patient_id: string
+          qr_code_url: string | null
+          recipient_identifier: string | null
+          recipient_type: string | null
+          revoke_reason: string | null
+          revoked_at: string | null
+          revoked_by: string | null
+          summary_id: string
+          summary_type: string
+          token: string
+          valid_from: string
+        }
+        Insert: {
+          access_level?: string | null
+          allowed_actions?: string[] | null
+          created_at?: string
+          created_by: string
+          created_by_role?: string | null
+          current_access_count?: number | null
+          expires_at: string
+          id?: string
+          max_access_count?: number | null
+          patient_id: string
+          qr_code_url?: string | null
+          recipient_identifier?: string | null
+          recipient_type?: string | null
+          revoke_reason?: string | null
+          revoked_at?: string | null
+          revoked_by?: string | null
+          summary_id: string
+          summary_type: string
+          token: string
+          valid_from?: string
+        }
+        Update: {
+          access_level?: string | null
+          allowed_actions?: string[] | null
+          created_at?: string
+          created_by?: string
+          created_by_role?: string | null
+          current_access_count?: number | null
+          expires_at?: string
+          id?: string
+          max_access_count?: number | null
+          patient_id?: string
+          qr_code_url?: string | null
+          recipient_identifier?: string | null
+          recipient_type?: string | null
+          revoke_reason?: string | null
+          revoked_at?: string | null
+          revoked_by?: string | null
+          summary_id?: string
+          summary_type?: string
+          token?: string
+          valid_from?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "summary_share_tokens_patient_id_fkey"
+            columns: ["patient_id"]
+            isOneToOne: false
+            referencedRelation: "patients"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       suppliers: {
         Row: {
           address: string | null
@@ -16236,6 +16506,211 @@ export type Database = {
           },
         ]
       }
+      visit_summaries: {
+        Row: {
+          allergies_verified: Json | null
+          amendment_reason: string | null
+          attachments: Json | null
+          attending_providers: Json | null
+          chief_complaint_coded: Json | null
+          co_signers: Json | null
+          created_at: string
+          diagnoses: Json | null
+          disposition: string | null
+          disposition_details: string | null
+          encounter_id: string
+          encounter_note_link: string | null
+          facility_id: string | null
+          facility_name: string | null
+          fhir_composition: Json | null
+          fhir_document_reference: string | null
+          finalized_at: string | null
+          follow_up_appointments: Json | null
+          follow_up_plan: string | null
+          id: string
+          imaging_link: string | null
+          imaging_performed: Json | null
+          investigations_ordered: Json | null
+          investigations_pending: Json | null
+          key_findings: string | null
+          lab_results_link: string | null
+          medications_changed: Json | null
+          medications_prescribed: Json | null
+          patient_id: string
+          patient_summary_html: string | null
+          patient_summary_pdf_path: string | null
+          presenting_complaint: string | null
+          previous_version_id: string | null
+          procedures_performed: Json | null
+          provider_summary_html: string | null
+          provider_summary_pdf_path: string | null
+          qr_code_data: string | null
+          referrals_made: Json | null
+          return_precautions: string | null
+          service_point: string | null
+          share_token: string | null
+          share_token_expires_at: string | null
+          shr_bundle_id: string | null
+          signed_at: string | null
+          signed_by: string | null
+          status: string
+          updated_at: string
+          version: number
+          visit_end: string | null
+          visit_start: string | null
+          visit_type: string | null
+        }
+        Insert: {
+          allergies_verified?: Json | null
+          amendment_reason?: string | null
+          attachments?: Json | null
+          attending_providers?: Json | null
+          chief_complaint_coded?: Json | null
+          co_signers?: Json | null
+          created_at?: string
+          diagnoses?: Json | null
+          disposition?: string | null
+          disposition_details?: string | null
+          encounter_id: string
+          encounter_note_link?: string | null
+          facility_id?: string | null
+          facility_name?: string | null
+          fhir_composition?: Json | null
+          fhir_document_reference?: string | null
+          finalized_at?: string | null
+          follow_up_appointments?: Json | null
+          follow_up_plan?: string | null
+          id?: string
+          imaging_link?: string | null
+          imaging_performed?: Json | null
+          investigations_ordered?: Json | null
+          investigations_pending?: Json | null
+          key_findings?: string | null
+          lab_results_link?: string | null
+          medications_changed?: Json | null
+          medications_prescribed?: Json | null
+          patient_id: string
+          patient_summary_html?: string | null
+          patient_summary_pdf_path?: string | null
+          presenting_complaint?: string | null
+          previous_version_id?: string | null
+          procedures_performed?: Json | null
+          provider_summary_html?: string | null
+          provider_summary_pdf_path?: string | null
+          qr_code_data?: string | null
+          referrals_made?: Json | null
+          return_precautions?: string | null
+          service_point?: string | null
+          share_token?: string | null
+          share_token_expires_at?: string | null
+          shr_bundle_id?: string | null
+          signed_at?: string | null
+          signed_by?: string | null
+          status?: string
+          updated_at?: string
+          version?: number
+          visit_end?: string | null
+          visit_start?: string | null
+          visit_type?: string | null
+        }
+        Update: {
+          allergies_verified?: Json | null
+          amendment_reason?: string | null
+          attachments?: Json | null
+          attending_providers?: Json | null
+          chief_complaint_coded?: Json | null
+          co_signers?: Json | null
+          created_at?: string
+          diagnoses?: Json | null
+          disposition?: string | null
+          disposition_details?: string | null
+          encounter_id?: string
+          encounter_note_link?: string | null
+          facility_id?: string | null
+          facility_name?: string | null
+          fhir_composition?: Json | null
+          fhir_document_reference?: string | null
+          finalized_at?: string | null
+          follow_up_appointments?: Json | null
+          follow_up_plan?: string | null
+          id?: string
+          imaging_link?: string | null
+          imaging_performed?: Json | null
+          investigations_ordered?: Json | null
+          investigations_pending?: Json | null
+          key_findings?: string | null
+          lab_results_link?: string | null
+          medications_changed?: Json | null
+          medications_prescribed?: Json | null
+          patient_id?: string
+          patient_summary_html?: string | null
+          patient_summary_pdf_path?: string | null
+          presenting_complaint?: string | null
+          previous_version_id?: string | null
+          procedures_performed?: Json | null
+          provider_summary_html?: string | null
+          provider_summary_pdf_path?: string | null
+          qr_code_data?: string | null
+          referrals_made?: Json | null
+          return_precautions?: string | null
+          service_point?: string | null
+          share_token?: string | null
+          share_token_expires_at?: string | null
+          shr_bundle_id?: string | null
+          signed_at?: string | null
+          signed_by?: string | null
+          status?: string
+          updated_at?: string
+          version?: number
+          visit_end?: string | null
+          visit_start?: string | null
+          visit_type?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "visit_summaries_encounter_id_fkey"
+            columns: ["encounter_id"]
+            isOneToOne: false
+            referencedRelation: "encounters"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "visit_summaries_facility_id_fkey"
+            columns: ["facility_id"]
+            isOneToOne: false
+            referencedRelation: "facilities"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "visit_summaries_facility_id_fkey"
+            columns: ["facility_id"]
+            isOneToOne: false
+            referencedRelation: "facility_capabilities"
+            referencedColumns: ["facility_id"]
+          },
+          {
+            foreignKeyName: "visit_summaries_patient_id_fkey"
+            columns: ["patient_id"]
+            isOneToOne: false
+            referencedRelation: "patients"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "visit_summaries_previous_version_id_fkey"
+            columns: ["previous_version_id"]
+            isOneToOne: false
+            referencedRelation: "visit_summaries"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "visit_summaries_shr_bundle_id_fkey"
+            columns: ["shr_bundle_id"]
+            isOneToOne: false
+            referencedRelation: "shr_bundles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       vital_signs: {
         Row: {
           blood_glucose: number | null
@@ -16687,6 +17162,7 @@ export type Database = {
       generate_renewal_application_number: { Args: never; Returns: string }
       generate_shr_id: { Args: never; Returns: string }
       generate_specimen_id: { Args: never; Returns: string }
+      generate_summary_share_token: { Args: never; Returns: string }
       generate_theatre_booking_number: { Args: never; Returns: string }
       generate_transaction_number: { Args: never; Returns: string }
       generate_upid: { Args: never; Returns: string }
