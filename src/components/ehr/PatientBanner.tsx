@@ -81,8 +81,13 @@ const MOCK_ACTIVE_EPISODES: ActiveEpisode[] = [
 export function PatientBanner() {
   const { currentEncounter } = useEHR();
   const [isExpanded, setIsExpanded] = useState(false);
-  const patient = currentEncounter.patient;
 
+  // Guard: Don't render if no encounter is loaded
+  if (!currentEncounter || !currentEncounter.patient) {
+    return null;
+  }
+
+  const patient = currentEncounter.patient;
   const age = differenceInYears(new Date(), new Date(patient.dateOfBirth));
   const formattedDob = format(new Date(patient.dateOfBirth), "dd MMM yyyy");
   const admissionDate = format(currentEncounter.admissionDate, "dd MMM yyyy, HH:mm");
