@@ -1,5 +1,5 @@
-import { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useState, useEffect } from 'react';
+import { useNavigate, useSearchParams } from 'react-router-dom';
 import { toast } from 'sonner';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -44,9 +44,19 @@ interface QueueWorkstationProps {
 
 export function QueueWorkstation({ facilityId, initialQueueId }: QueueWorkstationProps) {
   const navigate = useNavigate();
+  const [searchParams] = useSearchParams();
+  const urlQueueId = searchParams.get('queueId');
+  
   const { queues, loading: queuesLoading } = useQueueManagement(facilityId);
-  const [selectedQueueId, setSelectedQueueId] = useState<string | undefined>(initialQueueId);
+  const [selectedQueueId, setSelectedQueueId] = useState<string | undefined>(initialQueueId || urlQueueId || undefined);
   const [activeTab, setActiveTab] = useState('waiting');
+
+  // Auto-select queue from URL if provided
+  useEffect(() => {
+    if (urlQueueId && !selectedQueueId) {
+      setSelectedQueueId(urlQueueId);
+    }
+  }, [urlQueueId]);
   
   const {
     items,
@@ -107,15 +117,15 @@ export function QueueWorkstation({ facilityId, initialQueueId }: QueueWorkstatio
   const handleStartServiceAndOpenChart = async (item: QueueItem) => {
     const result = await startService(item.id);
     if (result.success && result.encounterId) {
-      // Navigate to encounter with queue source for pre-authorization
-      navigate(`/encounter/${result.encounterId}?source=queue`);
+      // Navigate to encounter with queue source and queue ID for context preservation
+      navigate(`/encounter/${result.encounterId}?source=queue&queueId=${selectedQueueId}`);
     }
   };
 
   // Open patient chart for in-service items
   const handleOpenChart = (item: QueueItem) => {
     if (item.encounter_id) {
-      navigate(`/encounter/${item.encounter_id}?source=queue`);
+      navigate(`/encounter/${item.encounter_id}?source=queue&queueId=${selectedQueueId}`);
     } else {
       toast.error('No encounter linked to this queue item');
     }
