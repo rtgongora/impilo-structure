@@ -266,14 +266,16 @@ export function useTeleconsultation(sessionId?: string) {
         }
       };
 
-      // Handle ICE candidates
+      // Handle ICE candidates - use call_ice_candidates table with proper typing
       pc.onicecandidate = async (event) => {
         if (event.candidate && user?.id) {
-          await (supabase.from('teleconsult_ice_candidates') as any).insert({
+          // Store ICE candidates for teleconsult in call_ice_candidates table
+          const { error } = await (supabase.from('call_ice_candidates') as any).insert({
             session_id: session.id,
             sender_id: user.id,
             candidate_data: event.candidate.toJSON(),
           });
+          if (error) console.error('Error sending ICE candidate:', error);
         }
       };
 

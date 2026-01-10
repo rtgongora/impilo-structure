@@ -4,19 +4,18 @@ import { Badge } from "@/components/ui/badge";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import {
   Phone, PhoneOff, Mic, MicOff, Volume2, VolumeX,
-  UserCircle, Clock
+  UserCircle, Clock, Pause, Play
 } from "lucide-react";
-import { supabase } from "@/integrations/supabase/client";
-import { useAuth } from "@/contexts/AuthContext";
+import { useVoiceCalling, formatCallDuration, CallSession } from "@/hooks/useVoiceCalling";
 import { toast } from "sonner";
 
 interface VoiceCallProps {
-  recipientId?: string;
+  recipientId: string;
   recipientName?: string;
   recipientAvatar?: string;
   onEnd?: () => void;
   incoming?: boolean;
-  callId?: string;
+  session?: CallSession;
 }
 
 export function VoiceCall({
@@ -25,129 +24,61 @@ export function VoiceCall({
   recipientAvatar,
   onEnd,
   incoming = false,
-  callId,
+  session,
 }: VoiceCallProps) {
-  const { user } = useAuth();
-  const [callState, setCallState] = useState<"idle" | "ringing" | "connected" | "ended">(
-    incoming ? "ringing" : "idle"
-  );
-  const [isMuted, setIsMuted] = useState(false);
+  const {
+    currentCall,
+    callState,
+    isMuted,
+    duration,
+    initiateCall,
+    answerCall,
+    declineCall,
+    endCall,
+    toggleMute,
+    holdCall,
+    resumeCall,
+  } = useVoiceCalling();
+
   const [isSpeakerOn, setIsSpeakerOn] = useState(false);
-  const [duration, setDuration] = useState(0);
-  const [localStream, setLocalStream] = useState<MediaStream | null>(null);
   const audioRef = useRef<HTMLAudioElement>(null);
+  
+  const isOnHold = currentCall?.status === 'on_hold';
 
-  // Start duration timer when connected
-  useEffect(() => {
-    if (callState !== "connected") return;
-    const interval = setInterval(() => {
-      setDuration((prev) => prev + 1);
-    }, 1000);
-    return () => clearInterval(interval);
-  }, [callState]);
-
-  // Request audio when initiating call
-  const startCall = async () => {
+  const handleStartCall = async () => {
     try {
-      const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
-      setLocalStream(stream);
-      setCallState("ringing");
-
-      // Log call initiation
-      if (user && recipientId) {
-        await supabase.from("voice_calls").insert({
-          caller_id: user.id,
-          recipient_id: recipientId,
-          call_type: "audio",
-          status: "ringing",
-          started_at: new Date().toISOString(),
-        });
-      }
-
-      // Simulate connection after 2 seconds (in production, use WebRTC signaling)
-      setTimeout(() => {
-        setCallState("connected");
-        toast.success("Call connected");
-      }, 2000);
+      await initiateCall(recipientId);
     } catch (error) {
-      console.error("Error starting call:", error);
-      toast.error("Failed to access microphone");
+      toast.error("Failed to start call");
     }
   };
 
-  const answerCall = async () => {
+  const handleAnswerCall = async () => {
+    if (!session) return;
     try {
-      const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
-      setLocalStream(stream);
-      setCallState("connected");
-
-      if (callId) {
-        await supabase
-          .from("voice_calls")
-          .update({
-            status: "connected",
-            answered_at: new Date().toISOString(),
-          })
-          .eq("id", callId);
-      }
-
-      toast.success("Call connected");
+      await answerCall(session);
     } catch (error) {
-      console.error("Error answering call:", error);
-      toast.error("Failed to access microphone");
+      toast.error("Failed to answer call");
     }
   };
 
-  const endCall = async () => {
-    // Stop all tracks
-    if (localStream) {
-      localStream.getTracks().forEach((track) => track.stop());
-      setLocalStream(null);
-    }
-
-    setCallState("ended");
-
-    // Update call record
-    if (callId && user) {
-      await supabase
-        .from("voice_calls")
-        .update({
-          status: "ended",
-          ended_at: new Date().toISOString(),
-          duration_seconds: duration,
-        })
-        .eq("id", callId);
-    }
-
+  const handleDeclineCall = async () => {
+    if (!session) return;
+    await declineCall(session);
     onEnd?.();
   };
 
-  const declineCall = async () => {
-    if (callId) {
-      await supabase
-        .from("voice_calls")
-        .update({
-          status: "declined",
-          ended_at: new Date().toISOString(),
-        })
-        .eq("id", callId);
-    }
+  const handleEndCall = async () => {
+    await endCall();
     onEnd?.();
   };
 
-  const toggleMute = () => {
-    if (localStream) {
-      localStream.getAudioTracks().forEach((track) => {
-        track.enabled = isMuted;
-      });
-      setIsMuted(!isMuted);
+  const handleToggleHold = async () => {
+    if (isOnHold) {
+      await resumeCall();
+    } else {
+      await holdCall();
     }
-  };
-
-  const formatDuration = (seconds: number) => {
-    const mins = Math.floor(seconds / 60);
-    const secs = seconds % 60;
-    return `${mins.toString().padStart(2, "0")}:${secs.toString().padStart(2, "0")}`;
   };
 
   return (
@@ -174,9 +105,10 @@ export function VoiceCall({
               </Badge>
             )}
             {callState === "connected" && (
-              <div className="flex items-center justify-center gap-2 text-success">
+              <div className="flex items-center justify-center gap-2 text-green-500">
                 <Clock className="w-4 h-4" />
-                <span className="font-mono">{formatDuration(duration)}</span>
+                <span className="font-mono">{formatCallDuration(duration)}</span>
+                {isOnHold && <Badge variant="secondary">On Hold</Badge>}
               </div>
             )}
             {callState === "ended" && (
@@ -186,7 +118,7 @@ export function VoiceCall({
         </div>
 
         {/* Audio visualization placeholder */}
-        {callState === "connected" && (
+        {callState === "connected" && !isOnHold && (
           <div className="flex items-center justify-center gap-1 h-12 mb-6">
             {[...Array(5)].map((_, i) => (
               <div
@@ -206,8 +138,8 @@ export function VoiceCall({
           {callState === "idle" && (
             <Button
               size="lg"
-              className="rounded-full w-16 h-16 bg-success hover:bg-success/90"
-              onClick={startCall}
+              className="rounded-full w-16 h-16 bg-green-600 hover:bg-green-700"
+              onClick={handleStartCall}
             >
               <Phone className="w-6 h-6" />
             </Button>
@@ -219,14 +151,14 @@ export function VoiceCall({
                 size="lg"
                 variant="destructive"
                 className="rounded-full w-16 h-16"
-                onClick={declineCall}
+                onClick={handleDeclineCall}
               >
                 <PhoneOff className="w-6 h-6" />
               </Button>
               <Button
                 size="lg"
-                className="rounded-full w-16 h-16 bg-success hover:bg-success/90"
-                onClick={answerCall}
+                className="rounded-full w-16 h-16 bg-green-600 hover:bg-green-700"
+                onClick={handleAnswerCall}
               >
                 <Phone className="w-6 h-6" />
               </Button>
@@ -238,7 +170,7 @@ export function VoiceCall({
               size="lg"
               variant="destructive"
               className="rounded-full w-16 h-16"
-              onClick={endCall}
+              onClick={handleEndCall}
             >
               <PhoneOff className="w-6 h-6" />
             </Button>
@@ -257,9 +189,18 @@ export function VoiceCall({
 
               <Button
                 size="lg"
+                variant={isOnHold ? "secondary" : "outline"}
+                className="rounded-full w-14 h-14"
+                onClick={handleToggleHold}
+              >
+                {isOnHold ? <Play className="w-5 h-5" /> : <Pause className="w-5 h-5" />}
+              </Button>
+
+              <Button
+                size="lg"
                 variant="destructive"
                 className="rounded-full w-16 h-16"
-                onClick={endCall}
+                onClick={handleEndCall}
               >
                 <PhoneOff className="w-6 h-6" />
               </Button>
