@@ -55,6 +55,7 @@ import FacilityRegistry from "./pages/FacilityRegistry";
 import ClientRegistry from "./pages/ClientRegistry";
 import Operations from "./pages/Operations";
 import AboveSiteDashboard from "./pages/AboveSiteDashboard";
+import SharedSummary from "./pages/SharedSummary";
 const queryClient = new QueryClient();
 
 const App = () => (
@@ -275,6 +276,8 @@ const App = () => (
                 <AboveSiteDashboard />
               </ProtectedRoute>
             } />
+            {/* Shared Summary Routes - publicly accessible with valid token */}
+            <Route path="/shared/:type/:token" element={<SharedSummary />} />
             {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
             <Route path="*" element={<NotFound />} />
           </Routes>
