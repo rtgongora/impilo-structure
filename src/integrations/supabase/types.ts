@@ -1294,6 +1294,94 @@ export type Database = {
           },
         ]
       }
+      client_follow_up_queues: {
+        Row: {
+          client_response: string | null
+          client_response_at: string | null
+          created_at: string | null
+          created_by: string
+          encounter_id: string | null
+          follow_up_type: string
+          id: string
+          is_virtual: boolean | null
+          metadata: Json | null
+          notes: string | null
+          notification_sent_at: string | null
+          patient_id: string
+          queue_id: string | null
+          scheduled_date: string | null
+          scheduled_time: string | null
+          status: string | null
+          trigger_event: string | null
+          trigger_resource_id: string | null
+          updated_at: string | null
+        }
+        Insert: {
+          client_response?: string | null
+          client_response_at?: string | null
+          created_at?: string | null
+          created_by: string
+          encounter_id?: string | null
+          follow_up_type: string
+          id?: string
+          is_virtual?: boolean | null
+          metadata?: Json | null
+          notes?: string | null
+          notification_sent_at?: string | null
+          patient_id: string
+          queue_id?: string | null
+          scheduled_date?: string | null
+          scheduled_time?: string | null
+          status?: string | null
+          trigger_event?: string | null
+          trigger_resource_id?: string | null
+          updated_at?: string | null
+        }
+        Update: {
+          client_response?: string | null
+          client_response_at?: string | null
+          created_at?: string | null
+          created_by?: string
+          encounter_id?: string | null
+          follow_up_type?: string
+          id?: string
+          is_virtual?: boolean | null
+          metadata?: Json | null
+          notes?: string | null
+          notification_sent_at?: string | null
+          patient_id?: string
+          queue_id?: string | null
+          scheduled_date?: string | null
+          scheduled_time?: string | null
+          status?: string | null
+          trigger_event?: string | null
+          trigger_resource_id?: string | null
+          updated_at?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "client_follow_up_queues_encounter_id_fkey"
+            columns: ["encounter_id"]
+            isOneToOne: false
+            referencedRelation: "encounters"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "client_follow_up_queues_patient_id_fkey"
+            columns: ["patient_id"]
+            isOneToOne: false
+            referencedRelation: "patients"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "client_follow_up_queues_queue_id_fkey"
+            columns: ["queue_id"]
+            isOneToOne: false
+            referencedRelation: "queue_definitions"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       client_identifiers: {
         Row: {
           assigning_authority: string | null
@@ -1471,6 +1559,212 @@ export type Database = {
             columns: ["surviving_client_id"]
             isOneToOne: false
             referencedRelation: "client_registry"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      client_queue_notifications: {
+        Row: {
+          acknowledged_at: string | null
+          action_completed_at: string | null
+          action_deadline: string | null
+          action_type: string | null
+          appointment_id: string | null
+          channel: string
+          created_at: string | null
+          id: string
+          message: string
+          metadata: Json | null
+          notification_type: string
+          patient_id: string
+          priority: string | null
+          queue_item_id: string | null
+          read_at: string | null
+          requires_action: boolean | null
+          response_data: Json | null
+          sent_at: string | null
+          title: string
+        }
+        Insert: {
+          acknowledged_at?: string | null
+          action_completed_at?: string | null
+          action_deadline?: string | null
+          action_type?: string | null
+          appointment_id?: string | null
+          channel?: string
+          created_at?: string | null
+          id?: string
+          message: string
+          metadata?: Json | null
+          notification_type: string
+          patient_id: string
+          priority?: string | null
+          queue_item_id?: string | null
+          read_at?: string | null
+          requires_action?: boolean | null
+          response_data?: Json | null
+          sent_at?: string | null
+          title: string
+        }
+        Update: {
+          acknowledged_at?: string | null
+          action_completed_at?: string | null
+          action_deadline?: string | null
+          action_type?: string | null
+          appointment_id?: string | null
+          channel?: string
+          created_at?: string | null
+          id?: string
+          message?: string
+          metadata?: Json | null
+          notification_type?: string
+          patient_id?: string
+          priority?: string | null
+          queue_item_id?: string | null
+          read_at?: string | null
+          requires_action?: boolean | null
+          response_data?: Json | null
+          sent_at?: string | null
+          title?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "client_queue_notifications_appointment_id_fkey"
+            columns: ["appointment_id"]
+            isOneToOne: false
+            referencedRelation: "appointments"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "client_queue_notifications_patient_id_fkey"
+            columns: ["patient_id"]
+            isOneToOne: false
+            referencedRelation: "patients"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "client_queue_notifications_queue_item_id_fkey"
+            columns: ["queue_item_id"]
+            isOneToOne: false
+            referencedRelation: "queue_items"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      client_queue_requests: {
+        Row: {
+          appointment_id: string | null
+          arrival_confirmed_at: string | null
+          consent_captured: boolean | null
+          consent_timestamp: string | null
+          created_at: string | null
+          facility_id: string
+          id: string
+          metadata: Json | null
+          patient_id: string
+          priority_requested: string | null
+          queue_id: string | null
+          queue_item_id: string | null
+          reason_for_visit: string | null
+          rejection_reason: string | null
+          requested_date: string
+          requested_time_from: string | null
+          requested_time_to: string | null
+          reviewed_at: string | null
+          reviewed_by: string | null
+          service_type: string
+          status: string | null
+          updated_at: string | null
+        }
+        Insert: {
+          appointment_id?: string | null
+          arrival_confirmed_at?: string | null
+          consent_captured?: boolean | null
+          consent_timestamp?: string | null
+          created_at?: string | null
+          facility_id: string
+          id?: string
+          metadata?: Json | null
+          patient_id: string
+          priority_requested?: string | null
+          queue_id?: string | null
+          queue_item_id?: string | null
+          reason_for_visit?: string | null
+          rejection_reason?: string | null
+          requested_date: string
+          requested_time_from?: string | null
+          requested_time_to?: string | null
+          reviewed_at?: string | null
+          reviewed_by?: string | null
+          service_type: string
+          status?: string | null
+          updated_at?: string | null
+        }
+        Update: {
+          appointment_id?: string | null
+          arrival_confirmed_at?: string | null
+          consent_captured?: boolean | null
+          consent_timestamp?: string | null
+          created_at?: string | null
+          facility_id?: string
+          id?: string
+          metadata?: Json | null
+          patient_id?: string
+          priority_requested?: string | null
+          queue_id?: string | null
+          queue_item_id?: string | null
+          reason_for_visit?: string | null
+          rejection_reason?: string | null
+          requested_date?: string
+          requested_time_from?: string | null
+          requested_time_to?: string | null
+          reviewed_at?: string | null
+          reviewed_by?: string | null
+          service_type?: string
+          status?: string | null
+          updated_at?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "client_queue_requests_appointment_id_fkey"
+            columns: ["appointment_id"]
+            isOneToOne: false
+            referencedRelation: "appointments"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "client_queue_requests_facility_id_fkey"
+            columns: ["facility_id"]
+            isOneToOne: false
+            referencedRelation: "facilities"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "client_queue_requests_facility_id_fkey"
+            columns: ["facility_id"]
+            isOneToOne: false
+            referencedRelation: "facility_capabilities"
+            referencedColumns: ["facility_id"]
+          },
+          {
+            foreignKeyName: "client_queue_requests_patient_id_fkey"
+            columns: ["patient_id"]
+            isOneToOne: false
+            referencedRelation: "patients"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "client_queue_requests_queue_id_fkey"
+            columns: ["queue_id"]
+            isOneToOne: false
+            referencedRelation: "queue_definitions"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "client_queue_requests_queue_item_id_fkey"
+            columns: ["queue_item_id"]
+            isOneToOne: false
+            referencedRelation: "queue_items"
             referencedColumns: ["id"]
           },
         ]
