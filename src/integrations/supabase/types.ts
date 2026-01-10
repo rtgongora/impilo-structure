@@ -10100,6 +10100,150 @@ export type Database = {
         }
         Relationships: []
       }
+      shift_workspace_logs: {
+        Row: {
+          created_at: string
+          duration_minutes: number | null
+          entered_at: string
+          exited_at: string | null
+          id: string
+          shift_id: string
+          transfer_notes: string | null
+          transfer_reason:
+            | Database["public"]["Enums"]["workspace_transfer_reason"]
+            | null
+          workspace_id: string
+        }
+        Insert: {
+          created_at?: string
+          duration_minutes?: number | null
+          entered_at?: string
+          exited_at?: string | null
+          id?: string
+          shift_id: string
+          transfer_notes?: string | null
+          transfer_reason?:
+            | Database["public"]["Enums"]["workspace_transfer_reason"]
+            | null
+          workspace_id: string
+        }
+        Update: {
+          created_at?: string
+          duration_minutes?: number | null
+          entered_at?: string
+          exited_at?: string | null
+          id?: string
+          shift_id?: string
+          transfer_notes?: string | null
+          transfer_reason?:
+            | Database["public"]["Enums"]["workspace_transfer_reason"]
+            | null
+          workspace_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "shift_workspace_logs_shift_id_fkey"
+            columns: ["shift_id"]
+            isOneToOne: false
+            referencedRelation: "shifts"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "shift_workspace_logs_workspace_id_fkey"
+            columns: ["workspace_id"]
+            isOneToOne: false
+            referencedRelation: "workspaces"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      shifts: {
+        Row: {
+          created_at: string
+          current_workspace_id: string | null
+          end_method: string | null
+          ended_at: string | null
+          facility_id: string
+          handover_notes: string | null
+          id: string
+          provider_id: string
+          start_method: string
+          started_at: string
+          status: Database["public"]["Enums"]["shift_status"]
+          summary: string | null
+          total_duration_minutes: number | null
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          current_workspace_id?: string | null
+          end_method?: string | null
+          ended_at?: string | null
+          facility_id: string
+          handover_notes?: string | null
+          id?: string
+          provider_id: string
+          start_method?: string
+          started_at?: string
+          status?: Database["public"]["Enums"]["shift_status"]
+          summary?: string | null
+          total_duration_minutes?: number | null
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          current_workspace_id?: string | null
+          end_method?: string | null
+          ended_at?: string | null
+          facility_id?: string
+          handover_notes?: string | null
+          id?: string
+          provider_id?: string
+          start_method?: string
+          started_at?: string
+          status?: Database["public"]["Enums"]["shift_status"]
+          summary?: string | null
+          total_duration_minutes?: number | null
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "shifts_current_workspace_id_fkey"
+            columns: ["current_workspace_id"]
+            isOneToOne: false
+            referencedRelation: "workspaces"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "shifts_facility_id_fkey"
+            columns: ["facility_id"]
+            isOneToOne: false
+            referencedRelation: "facilities"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "shifts_facility_id_fkey"
+            columns: ["facility_id"]
+            isOneToOne: false
+            referencedRelation: "facility_capabilities"
+            referencedColumns: ["facility_id"]
+          },
+          {
+            foreignKeyName: "shifts_provider_id_fkey"
+            columns: ["provider_id"]
+            isOneToOne: false
+            referencedRelation: "provider_scheduling_info"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "shifts_provider_id_fkey"
+            columns: ["provider_id"]
+            isOneToOne: false
+            referencedRelation: "providers"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       shr_bundles: {
         Row: {
           author_id: string | null
@@ -11695,6 +11839,209 @@ export type Database = {
           },
         ]
       }
+      workspace_audit_log: {
+        Row: {
+          action: string
+          actor_id: string
+          actor_provider_id: string | null
+          created_at: string
+          entity_id: string | null
+          entity_type: string
+          facility_id: string | null
+          id: string
+          ip_address: unknown
+          justification: string | null
+          new_value: Json | null
+          old_value: Json | null
+          user_agent: string | null
+          workspace_id: string | null
+        }
+        Insert: {
+          action: string
+          actor_id: string
+          actor_provider_id?: string | null
+          created_at?: string
+          entity_id?: string | null
+          entity_type: string
+          facility_id?: string | null
+          id?: string
+          ip_address?: unknown
+          justification?: string | null
+          new_value?: Json | null
+          old_value?: Json | null
+          user_agent?: string | null
+          workspace_id?: string | null
+        }
+        Update: {
+          action?: string
+          actor_id?: string
+          actor_provider_id?: string | null
+          created_at?: string
+          entity_id?: string | null
+          entity_type?: string
+          facility_id?: string | null
+          id?: string
+          ip_address?: unknown
+          justification?: string | null
+          new_value?: Json | null
+          old_value?: Json | null
+          user_agent?: string | null
+          workspace_id?: string | null
+        }
+        Relationships: []
+      }
+      workspace_memberships: {
+        Row: {
+          assigned_at: string
+          assigned_by: string | null
+          can_self_assign: boolean
+          created_at: string
+          effective_from: string
+          effective_to: string | null
+          id: string
+          is_active: boolean
+          notes: string | null
+          provider_id: string
+          revocation_reason: string | null
+          revoked_at: string | null
+          revoked_by: string | null
+          updated_at: string
+          workspace_id: string
+          workspace_role: Database["public"]["Enums"]["workspace_role"]
+        }
+        Insert: {
+          assigned_at?: string
+          assigned_by?: string | null
+          can_self_assign?: boolean
+          created_at?: string
+          effective_from?: string
+          effective_to?: string | null
+          id?: string
+          is_active?: boolean
+          notes?: string | null
+          provider_id: string
+          revocation_reason?: string | null
+          revoked_at?: string | null
+          revoked_by?: string | null
+          updated_at?: string
+          workspace_id: string
+          workspace_role?: Database["public"]["Enums"]["workspace_role"]
+        }
+        Update: {
+          assigned_at?: string
+          assigned_by?: string | null
+          can_self_assign?: boolean
+          created_at?: string
+          effective_from?: string
+          effective_to?: string | null
+          id?: string
+          is_active?: boolean
+          notes?: string | null
+          provider_id?: string
+          revocation_reason?: string | null
+          revoked_at?: string | null
+          revoked_by?: string | null
+          updated_at?: string
+          workspace_id?: string
+          workspace_role?: Database["public"]["Enums"]["workspace_role"]
+        }
+        Relationships: [
+          {
+            foreignKeyName: "workspace_memberships_provider_id_fkey"
+            columns: ["provider_id"]
+            isOneToOne: false
+            referencedRelation: "provider_scheduling_info"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "workspace_memberships_provider_id_fkey"
+            columns: ["provider_id"]
+            isOneToOne: false
+            referencedRelation: "providers"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "workspace_memberships_workspace_id_fkey"
+            columns: ["workspace_id"]
+            isOneToOne: false
+            referencedRelation: "workspaces"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      workspaces: {
+        Row: {
+          created_at: string
+          created_by: string | null
+          description: string | null
+          facility_id: string
+          id: string
+          is_active: boolean
+          location_code: string | null
+          name: string
+          operating_hours: Json | null
+          parent_workspace_id: string | null
+          service_tags: string[] | null
+          sort_order: number | null
+          updated_at: string
+          workspace_type: Database["public"]["Enums"]["workspace_type"]
+        }
+        Insert: {
+          created_at?: string
+          created_by?: string | null
+          description?: string | null
+          facility_id: string
+          id?: string
+          is_active?: boolean
+          location_code?: string | null
+          name: string
+          operating_hours?: Json | null
+          parent_workspace_id?: string | null
+          service_tags?: string[] | null
+          sort_order?: number | null
+          updated_at?: string
+          workspace_type?: Database["public"]["Enums"]["workspace_type"]
+        }
+        Update: {
+          created_at?: string
+          created_by?: string | null
+          description?: string | null
+          facility_id?: string
+          id?: string
+          is_active?: boolean
+          location_code?: string | null
+          name?: string
+          operating_hours?: Json | null
+          parent_workspace_id?: string | null
+          service_tags?: string[] | null
+          sort_order?: number | null
+          updated_at?: string
+          workspace_type?: Database["public"]["Enums"]["workspace_type"]
+        }
+        Relationships: [
+          {
+            foreignKeyName: "workspaces_facility_id_fkey"
+            columns: ["facility_id"]
+            isOneToOne: false
+            referencedRelation: "facilities"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "workspaces_facility_id_fkey"
+            columns: ["facility_id"]
+            isOneToOne: false
+            referencedRelation: "facility_capabilities"
+            referencedColumns: ["facility_id"]
+          },
+          {
+            foreignKeyName: "workspaces_parent_workspace_id_fkey"
+            columns: ["parent_workspace_id"]
+            isOneToOne: false
+            referencedRelation: "workspaces"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
     }
     Views: {
       facility_capabilities: {
@@ -11750,6 +12097,10 @@ export type Database = {
         Args: { _patient_id: string; _user_id: string }
         Returns: boolean
       }
+      can_access_workspace: {
+        Args: { _user_id: string; _workspace_id: string }
+        Returns: boolean
+      }
       check_provider_eligibility: {
         Args: {
           p_facility_context?: string
@@ -11791,9 +12142,33 @@ export type Database = {
       generate_theatre_booking_number: { Args: never; Returns: string }
       generate_transaction_number: { Args: never; Returns: string }
       generate_upid: { Args: never; Returns: string }
+      get_active_shift: {
+        Args: { _user_id: string }
+        Returns: {
+          current_workspace_id: string
+          current_workspace_name: string
+          duration_minutes: number
+          facility_id: string
+          facility_name: string
+          shift_id: string
+          started_at: string
+        }[]
+      }
       get_next_id_sequence: {
         Args: { p_counter_type: string }
         Returns: number
+      }
+      get_user_workspaces: {
+        Args: { _facility_id?: string; _user_id: string }
+        Returns: {
+          facility_id: string
+          facility_name: string
+          service_tags: string[]
+          workspace_id: string
+          workspace_name: string
+          workspace_role: Database["public"]["Enums"]["workspace_role"]
+          workspace_type: Database["public"]["Enums"]["workspace_type"]
+        }[]
       }
       has_registry_role: {
         Args: {
@@ -11896,6 +12271,15 @@ export type Database = {
         | "shr_admin"
         | "ndr_admin"
         | "registry_super_admin"
+      shift_status: "active" | "ended" | "cancelled"
+      workspace_role: "staff" | "supervisor" | "manager"
+      workspace_transfer_reason:
+        | "rotation"
+        | "cover"
+        | "emergency"
+        | "break"
+        | "other"
+      workspace_type: "clinical" | "admin" | "support"
     }
     CompositeTypes: {
       [_ in never]: never
@@ -12118,6 +12502,16 @@ export const Constants = {
         "ndr_admin",
         "registry_super_admin",
       ],
+      shift_status: ["active", "ended", "cancelled"],
+      workspace_role: ["staff", "supervisor", "manager"],
+      workspace_transfer_reason: [
+        "rotation",
+        "cover",
+        "emergency",
+        "break",
+        "other",
+      ],
+      workspace_type: ["clinical", "admin", "support"],
     },
   },
 } as const

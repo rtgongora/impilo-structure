@@ -6,6 +6,7 @@ import { BrowserRouter, Routes, Route } from "react-router-dom";
 import { AuthProvider } from "@/contexts/AuthContext";
 import { WorkspaceProvider } from "@/contexts/WorkspaceContext";
 import { FacilityProvider } from "@/contexts/FacilityContext";
+import { ShiftProvider } from "@/contexts/ShiftContext";
 import { ProtectedRoute } from "@/components/auth/ProtectedRoute";
 import ModuleHome from "./pages/ModuleHome";
 import Dashboard from "./pages/Dashboard";
@@ -59,6 +60,7 @@ const App = () => (
     <AuthProvider>
       <FacilityProvider>
         <WorkspaceProvider>
+        <ShiftProvider>
         <TooltipProvider>
         <Toaster />
         <Sonner />
@@ -266,6 +268,7 @@ const App = () => (
           </Routes>
         </BrowserRouter>
         </TooltipProvider>
+        </ShiftProvider>
         </WorkspaceProvider>
       </FacilityProvider>
     </AuthProvider>
