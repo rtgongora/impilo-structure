@@ -9,6 +9,9 @@ import { ConsultationsTab } from "./consults/ConsultationsTab";
 import { ReferralsTab } from "./consults/ReferralsTab";
 import { TeleconsultsTab } from "./consults/TeleconsultsTab";
 import { WorklistItem } from "@/contexts/ProviderContext";
+import { useEHR } from "@/contexts/EHRContext";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Badge } from "@/components/ui/badge";
 
 export type ConsultView = 
   | "dashboard"
@@ -43,6 +46,12 @@ const MOCK_WORKLIST_ITEM: WorklistItem = {
 export function ConsultsSection() {
   const [activeView, setActiveView] = useState<ConsultView>("dashboard");
   const [activeReferral, setActiveReferral] = useState<WorklistItem | null>(null);
+  const { patientContext, currentEncounter } = useEHR();
+
+  // Get current patient info for filtering
+  const patientId = patientContext?.patientId || undefined;
+  const encounterId = patientContext?.encounterId || undefined;
+  const patientName = patientContext?.patientName || "Unknown Patient";
 
   const handleNewReferral = () => {
     setActiveView("new-referral");
@@ -102,15 +111,35 @@ export function ConsultsSection() {
     );
   }
 
-  // Main tabbed view with dashboard
+  // Main tabbed view - showing patient-specific data
   return (
     <div className="space-y-6">
-      <Tabs defaultValue="dashboard" className="w-full">
-        <TabsList className="grid w-full grid-cols-4">
-          <TabsTrigger value="dashboard" className="flex items-center gap-2">
-            <LayoutDashboard className="w-4 h-4" />
-            Dashboard
-          </TabsTrigger>
+      {/* Patient Context Header */}
+      {patientId && (
+        <Card className="bg-gradient-to-r from-primary/5 to-transparent border-primary/20">
+          <CardContent className="p-4">
+            <div className="flex items-center justify-between">
+              <div className="flex items-center gap-3">
+                <div className="w-10 h-10 rounded-full bg-primary/20 flex items-center justify-center">
+                  <Users className="w-5 h-5 text-primary" />
+                </div>
+                <div>
+                  <h3 className="font-semibold">{patientName}</h3>
+                  <p className="text-sm text-muted-foreground">
+                    Consults & Referrals for this patient
+                  </p>
+                </div>
+              </div>
+              <Badge variant="outline" className="bg-primary/10">
+                Patient-specific view
+              </Badge>
+            </div>
+          </CardContent>
+        </Card>
+      )}
+
+      <Tabs defaultValue="referrals" className="w-full">
+        <TabsList className="grid w-full grid-cols-3">
           <TabsTrigger value="consults" className="flex items-center gap-2">
             <Users className="w-4 h-4" />
             Consultations
@@ -125,21 +154,18 @@ export function ConsultsSection() {
           </TabsTrigger>
         </TabsList>
 
-        <TabsContent value="dashboard" className="space-y-4">
-          <ConsultsDashboard 
-            onNewReferral={handleNewReferral}
-            onOpenReferral={handleOpenReferral}
-          />
-        </TabsContent>
-
         <TabsContent value="consults" className="space-y-4">
           <ConsultationsTab 
+            patientId={patientId}
+            encounterId={encounterId}
             onJoinTeleconsult={handleJoinTeleconsult}
           />
         </TabsContent>
 
         <TabsContent value="referrals" className="space-y-4">
           <ReferralsTab 
+            patientId={patientId}
+            encounterId={encounterId}
             onNewReferral={handleNewReferral}
             onCompleteReferral={handleCompleteReferral}
           />
@@ -147,6 +173,8 @@ export function ConsultsSection() {
 
         <TabsContent value="teleconsults" className="space-y-4">
           <TeleconsultsTab 
+            patientId={patientId}
+            encounterId={encounterId}
             onJoinTeleconsult={handleJoinTeleconsult}
             onNewReferral={handleNewReferral}
           />
