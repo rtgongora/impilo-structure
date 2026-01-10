@@ -96,39 +96,36 @@ export function WorkspaceDashboard() {
       // Fetch queue data
       const { data: queueData } = await supabase
         .from("queue_items")
-        .select(`
-          id, ticket_number, reason_for_visit, priority, arrival_time,
-          patient:patients(first_name, last_name)
-        `)
+        .select("id, ticket_number, reason_for_visit, priority, arrival_time, patient_id")
         .eq("status", "waiting")
         .eq("arrival_date", today)
         .order("priority")
         .order("arrival_time")
         .limit(5);
 
-      const transformedQueue: QueuePatient[] = (queueData || []).map(q => ({
+      const transformedQueue: QueuePatient[] = (queueData || []).map((q: any) => ({
         id: q.id,
         ticket_number: q.ticket_number || "--",
-        patient_name: q.patient ? `${q.patient.first_name} ${q.patient.last_name}` : "Unknown",
+        patient_name: "Patient",
         reason: q.reason_for_visit || "General",
-        wait_time: formatDistanceToNow(new Date(q.arrival_time), { addSuffix: false }),
+        wait_time: q.arrival_time ? formatDistanceToNow(new Date(q.arrival_time), { addSuffix: false }) : "--",
         priority: q.priority,
       }));
       setQueuePatients(transformedQueue);
 
       // Fetch pending tasks (results, orders needing review)
-      const { data: labResults } = await supabase
+      const { data: labResults }: { data: any[] | null } = await (supabase
         .from("lab_results")
-        .select("id, test_name, result_status, patient:patients(first_name, last_name)")
+        .select("id, test_name, result_status, patient_id")
         .eq("verified", false)
         .order("created_at", { ascending: false })
-        .limit(5);
+        .limit(5) as any);
 
       const transformedTasks: PendingTask[] = (labResults || []).map((r: any) => ({
         id: r.id,
         title: `Review: ${r.test_name || 'Lab Result'}`,
         type: "lab_result" as const,
-        patient_name: r.patient ? `${r.patient.first_name} ${r.patient.last_name}` : undefined,
+        patient_name: undefined,
         priority: r.result_status === "critical" ? "high" as const : "medium" as const,
       }));
       setPendingTasks(transformedTasks);
@@ -136,16 +133,16 @@ export function WorkspaceDashboard() {
       // Fetch today's appointments
       const { data: apptData } = await supabase
         .from("appointments")
-        .select("id, scheduled_start, appointment_type, patient:patients(first_name, last_name)")
+        .select("id, scheduled_start, appointment_type, patient_id")
         .gte("scheduled_start", `${today}T00:00:00`)
         .lte("scheduled_start", `${today}T23:59:59`)
         .eq("status", "confirmed")
         .order("scheduled_start")
         .limit(5);
 
-      const transformedAppointments: UpcomingAppointment[] = (apptData || []).map(a => ({
+      const transformedAppointments: UpcomingAppointment[] = (apptData || []).map((a: any) => ({
         id: a.id,
-        patient_name: a.patient ? `${a.patient.first_name} ${a.patient.last_name}` : "Unknown",
+        patient_name: "Patient",
         time: new Date(a.scheduled_start).toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" }),
         type: a.appointment_type,
       }));

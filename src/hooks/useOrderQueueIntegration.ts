@@ -1,6 +1,7 @@
 import { useState, useCallback } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
+import type { Database } from "@/integrations/supabase/types";
 
 export interface OrderQueueItem {
   id: string;
@@ -25,6 +26,15 @@ interface CreateQueueFromOrderParams {
   priority?: "routine" | "urgent" | "stat";
   specialInstructions?: string;
 }
+
+// Valid service types from the database enum
+type ValidServiceType = Database["public"]["Enums"]["queue_service_type"];
+
+// Valid entry types from the database enum
+type ValidEntryType = Database["public"]["Enums"]["queue_entry_type"];
+
+// Valid priority types
+type ValidPriority = Database["public"]["Enums"]["queue_priority"];
 
 export function useOrderQueueIntegration() {
   const [loading, setLoading] = useState(false);
@@ -65,7 +75,7 @@ export function useOrderQueueIntegration() {
       // 2. Get patient info for the ticket
       const { data: patient } = await supabase
         .from("patients")
-        .select("first_name, last_name, mrn, health_id")
+        .select("first_name, last_name, mrn")
         .eq("id", patientId)
         .single();
 
@@ -74,36 +84,30 @@ export function useOrderQueueIntegration() {
       const ticketNumber = `${ticketPrefix}${Math.floor(Math.random() * 900) + 100}`;
 
       // 4. Create the queue item
+      const insertData = {
+        queue_id: queue.id,
+        patient_id: patientId,
+        encounter_id: encounterId,
+        entry_type: "walk_in" as ValidEntryType,
+        reason_for_visit: `${getOrderDescription(orderType)} - Order #${orderId.slice(0, 8)}`,
+        priority: mapPriorityToQueue(priority) as ValidPriority,
+        ticket_number: ticketNumber,
+        notes: specialInstructions ? `[Order Routing] ${specialInstructions}` : `[Order Routing] Source: ${orderType} order`,
+      };
+
       const { data: queueItem, error: insertError } = await supabase
         .from("queue_items")
-        .insert({
-          queue_id: queue.id,
-          patient_id: patientId,
-          health_id: patient?.health_id,
-          encounter_id: encounterId,
-          entry_type: "order_routing",
-          reason_for_visit: getOrderDescription(orderType),
-          priority: mapPriorityToQueue(priority),
-          ticket_number: ticketNumber,
-          notes: specialInstructions,
-          metadata: {
-            source_order_id: orderId,
-            source_order_type: orderType,
-          },
-        })
+        .insert(insertData)
         .select("id")
         .single();
 
       if (insertError) throw insertError;
 
-      // 5. Update the original order with the queue reference
-      await updateOrderWithQueueRef(orderId, orderType, queueItem.id);
-
-      // 6. Send notification to patient
+      // 5. Send notification to patient
       await supabase.from("client_queue_notifications").insert({
         patient_id: patientId,
         queue_item_id: queueItem.id,
-        notification_type: "order_routing",
+        notification_type: "queue_confirmation",
         title: `${getOrderTypeName(orderType)} Ordered`,
         message: `Please proceed to ${queue.name}. Your ticket number is ${ticketNumber}.`,
         channel: "in_app",
@@ -138,7 +142,7 @@ export function useOrderQueueIntegration() {
       // Get the queue item details
       const { data: queueItem, error: fetchError } = await supabase
         .from("queue_items")
-        .select("*, patient:patients(first_name, last_name)")
+        .select("id, patient_id, encounter_id, priority, queue_id")
         .eq("id", queueItemId)
         .single();
 
@@ -148,7 +152,7 @@ export function useOrderQueueIntegration() {
       const { error: updateError } = await supabase
         .from("queue_items")
         .update({
-          status: "completed",
+          status: "completed" as Database["public"]["Enums"]["queue_item_status"],
           completed_at: new Date().toISOString(),
         })
         .eq("id", queueItemId);
@@ -159,24 +163,25 @@ export function useOrderQueueIntegration() {
       if (returnToQueueId) {
         const ticketNumber = `R${Math.floor(Math.random() * 900) + 100}`;
 
-        await supabase.from("queue_items").insert({
+        const returnInsertData = {
           queue_id: returnToQueueId,
           patient_id: queueItem.patient_id,
-          health_id: queueItem.health_id,
           encounter_id: queueItem.encounter_id,
-          entry_type: "return_routing",
+          entry_type: "internal_transfer" as ValidEntryType,
           reason_for_visit: returnReason || "Return from investigation",
           priority: queueItem.priority,
           ticket_number: ticketNumber,
           transferred_from_queue_id: queueItem.queue_id,
           transferred_from_item_id: queueItemId,
           transfer_reason: "Order completed, returning to care pathway",
-        });
+        };
+
+        await supabase.from("queue_items").insert(returnInsertData);
 
         // Notify patient
         await supabase.from("client_queue_notifications").insert({
           patient_id: queueItem.patient_id,
-          notification_type: "return_routing",
+          notification_type: "queue_update",
           title: "Please Return",
           message: returnReason || "Your investigation is complete. Please return for review.",
           channel: "in_app",
@@ -200,37 +205,29 @@ export function useOrderQueueIntegration() {
     try {
       const { data, error } = await supabase
         .from("queue_items")
-        .select(`
-          id,
-          patient_id,
-          status,
-          ticket_number,
-          reason_for_visit,
-          priority,
-          created_at,
-          metadata,
-          queue:queue_definitions(name)
-        `)
+        .select("id, patient_id, status, ticket_number, reason_for_visit, priority, created_at, notes")
         .eq("patient_id", patientId)
-        .eq("entry_type", "order_routing")
         .in("status", ["waiting", "called", "in_service"])
         .order("created_at", { ascending: false });
 
       if (error) throw error;
 
-      return (data || []).map(item => ({
-        id: item.id,
-        order_id: (item.metadata as any)?.source_order_id || item.id,
-        order_type: (item.metadata as any)?.source_order_type || "lab",
-        patient_id: item.patient_id,
-        patient_name: "",
-        order_name: item.reason_for_visit || "Unknown",
-        status: mapQueueStatusToOrder(item.status),
-        queue_id: undefined,
-        queue_item_id: item.id,
-        created_at: item.created_at,
-        priority: item.priority as any,
-      }));
+      // Filter for order-related items (those with [Order Routing] in notes)
+      return (data || [])
+        .filter(item => item.notes?.includes("[Order Routing]"))
+        .map(item => ({
+          id: item.id,
+          order_id: item.id,
+          order_type: extractOrderType(item.reason_for_visit || ""),
+          patient_id: item.patient_id || "",
+          patient_name: "",
+          order_name: item.reason_for_visit || "Unknown",
+          status: mapQueueStatusToOrder(item.status),
+          queue_id: undefined,
+          queue_item_id: item.id,
+          created_at: item.created_at || "",
+          priority: mapQueuePriorityToOrder(item.priority),
+        }));
     } catch (error) {
       console.error("Error fetching order queues:", error);
       return [];
@@ -247,13 +244,13 @@ export function useOrderQueueIntegration() {
 
 // Helper functions
 
-function mapOrderTypeToServiceType(orderType: string): string {
+function mapOrderTypeToServiceType(orderType: string): ValidServiceType {
   switch (orderType) {
     case "lab": return "lab_sample_collection";
     case "imaging": return "imaging";
     case "pharmacy": return "pharmacy";
     case "procedure": return "procedure_room";
-    default: return "general";
+    default: return "general_reception";
   }
 }
 
@@ -287,7 +284,7 @@ function getOrderTypeName(orderType: string): string {
   }
 }
 
-function mapPriorityToQueue(priority?: string): string {
+function mapPriorityToQueue(priority?: string): ValidPriority {
   switch (priority) {
     case "stat": return "emergency";
     case "urgent": return "urgent";
@@ -305,29 +302,18 @@ function mapQueueStatusToOrder(status: string): OrderQueueItem["status"] {
   }
 }
 
-async function updateOrderWithQueueRef(orderId: string, orderType: string, queueItemId: string) {
-  let table: string;
-  
-  switch (orderType) {
-    case "lab":
-      table = "lab_orders";
-      break;
-    case "imaging":
-      table = "imaging_orders";
-      break;
-    case "pharmacy":
-      table = "medication_orders";
-      break;
-    default:
-      return; // Unknown order type
+function mapQueuePriorityToOrder(priority: string): "routine" | "urgent" | "stat" {
+  switch (priority) {
+    case "emergency":
+    case "very_urgent": return "stat";
+    case "urgent": return "urgent";
+    default: return "routine";
   }
+}
 
-  try {
-    await supabase
-      .from(table)
-      .update({ queue_item_id: queueItemId })
-      .eq("id", orderId);
-  } catch (error) {
-    console.warn(`Could not update ${table} with queue reference:`, error);
-  }
+function extractOrderType(reasonForVisit: string): "lab" | "imaging" | "pharmacy" | "procedure" {
+  if (reasonForVisit.toLowerCase().includes("lab")) return "lab";
+  if (reasonForVisit.toLowerCase().includes("imaging") || reasonForVisit.toLowerCase().includes("radiology")) return "imaging";
+  if (reasonForVisit.toLowerCase().includes("pharmacy")) return "pharmacy";
+  return "procedure";
 }

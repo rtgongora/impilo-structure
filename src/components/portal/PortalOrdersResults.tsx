@@ -99,12 +99,12 @@ export function PortalOrdersResults({ patientId }: PortalOrdersResultsProps) {
       ));
 
       // Fetch results
-      const { data: labResults } = await supabase
+      const { data: labResults }: { data: any[] | null } = await (supabase
         .from("lab_results")
-        .select("*")
+        .select("id, test_name, result_value, unit, reference_range, result_status, created_at, patient_id, verified")
         .eq("patient_id", patientId)
         .order("created_at", { ascending: false })
-        .limit(20);
+        .limit(20) as any);
 
       const transformedResults: PatientResult[] = (labResults || []).map((r: any) => ({
         id: r.id,

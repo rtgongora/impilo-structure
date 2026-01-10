@@ -21,12 +21,12 @@ import { useAuth } from "@/contexts/AuthContext";
 
 interface EligibilityStatus {
   isEligible: boolean;
-  checks: EligibilityCheck[];
+  checks: EligibilityCheckItem[];
   warnings: string[];
   blockers: string[];
 }
 
-interface EligibilityCheck {
+interface EligibilityCheckItem {
   id: string;
   name: string;
   status: "pass" | "warning" | "fail" | "loading";
@@ -54,7 +54,7 @@ export function EligibilityCheck({ onEligibilityConfirmed, onEligibilityFailed }
     if (!user) return;
 
     setLoading(true);
-    const checks: EligibilityCheck[] = [
+    const checks: EligibilityCheckItem[] = [
       { id: "identity", name: "Identity Verification", status: "loading" },
       { id: "license", name: "Professional License", status: "loading" },
       { id: "facility", name: "Facility Assignment", status: "loading" },
@@ -97,20 +97,29 @@ export function EligibilityCheck({ onEligibilityConfirmed, onEligibilityFailed }
     }
     setEligibility(prev => ({ ...prev!, checks: [...checks] }));
 
-    // Check 3: Facility Assignment
+    // Check 3: Facility Assignment - using workspace_memberships as proxy
     await delay(300);
     if (provider) {
-      const { data: assignments } = await supabase
-        .from("provider_facility_assignments")
-        .select("facility_id, is_primary, facilities(name)")
+      // Get workspaces to determine facility assignments
+      const { data: memberships } = await supabase
+        .from("workspace_memberships")
+        .select("id, workspace_id")
         .eq("provider_id", provider.id)
         .eq("is_active", true);
 
-      if (!assignments || assignments.length === 0) {
+      if (!memberships || memberships.length === 0) {
         checks[2] = { id: "facility", name: "Facility Assignment", status: "fail", message: "No facility assigned" };
         blockers.push("You are not assigned to any facility. Please contact administration.");
       } else {
-        checks[2] = { id: "facility", name: "Facility Assignment", status: "pass", message: `${assignments.length} facility(s) assigned` };
+        // Get unique facilities from workspaces
+        const workspaceIds = memberships.map(m => m.workspace_id);
+        const { data: workspaces } = await supabase
+          .from("workspaces")
+          .select("facility_id")
+          .in("id", workspaceIds);
+
+        const uniqueFacilities = new Set((workspaces || []).map(w => w.facility_id));
+        checks[2] = { id: "facility", name: "Facility Assignment", status: "pass", message: `${uniqueFacilities.size} facility(s) assigned` };
       }
     } else {
       checks[2] = { id: "facility", name: "Facility Assignment", status: "fail", message: "Cannot verify" };
@@ -151,7 +160,7 @@ export function EligibilityCheck({ onEligibilityConfirmed, onEligibilityFailed }
     setRetrying(false);
   };
 
-  const getStatusIcon = (status: EligibilityCheck["status"]) => {
+  const getStatusIcon = (status: EligibilityCheckItem["status"]) => {
     switch (status) {
       case "pass": return <CheckCircle2 className="h-5 w-5 text-success" />;
       case "warning": return <AlertTriangle className="h-5 w-5 text-warning" />;
