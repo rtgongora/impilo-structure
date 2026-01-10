@@ -14,6 +14,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { Progress } from '@/components/ui/progress';
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
+import { InterventionsList } from '@/components/aboveSite/InterventionsList';
 import {
   Building2,
   Users,
@@ -25,14 +26,10 @@ import {
   Eye,
   Shield,
   RefreshCw,
-  Map,
   BarChart3,
   Bell,
   CheckCircle2,
-  XCircle,
-  Timer,
   Layers,
-  Globe,
 } from 'lucide-react';
 import { ABOVE_SITE_ROLE_LABELS, CONTEXT_TYPE_LABELS } from '@/types/aboveSite';
 
@@ -490,39 +487,9 @@ const AboveSiteDashboard: React.FC = () => {
           </TabsContent>
 
           <TabsContent value="interventions" className="mt-4">
-            <Card>
-              <CardHeader>
-                <CardTitle>Intervention Actions</CardTitle>
-                <CardDescription>
-                  Request staff redeployment, approve coverage, or escalate queues
-                </CardDescription>
-              </CardHeader>
-              <CardContent>
-                <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-4">
-                  <Button variant="outline" className="h-auto p-4 flex flex-col items-start gap-2">
-                    <Users className="h-5 w-5 text-primary" />
-                    <div className="text-left">
-                      <p className="font-medium">Request Staff Redeployment</p>
-                      <p className="text-xs text-muted-foreground">Move staff between facilities</p>
-                    </div>
-                  </Button>
-                  <Button variant="outline" className="h-auto p-4 flex flex-col items-start gap-2">
-                    <CheckCircle2 className="h-5 w-5 text-green-600" />
-                    <div className="text-left">
-                      <p className="font-medium">Approve Coverage</p>
-                      <p className="text-xs text-muted-foreground">Approve temporary coverage requests</p>
-                    </div>
-                  </Button>
-                  <Button variant="outline" className="h-auto p-4 flex flex-col items-start gap-2">
-                    <TrendingUp className="h-5 w-5 text-orange-600" />
-                    <div className="text-left">
-                      <p className="font-medium">Escalate Queue</p>
-                      <p className="text-xs text-muted-foreground">Route to higher-capacity facility</p>
-                    </div>
-                  </Button>
-                </div>
-              </CardContent>
-            </Card>
+            {activeSession && (
+              <InterventionsList sessionId={activeSession.id} />
+            )}
           </TabsContent>
         </Tabs>
       </div>
