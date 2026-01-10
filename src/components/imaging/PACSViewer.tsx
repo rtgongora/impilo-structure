@@ -238,7 +238,7 @@ export function PACSViewer() {
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-4">
             <h1 className="text-xl font-semibold">PACS Imaging Viewer</h1>
-            <Badge variant="outline">{selectedStudy.modality}</Badge>
+            <Badge variant="outline">{displayStudy.modality}</Badge>
           </div>
           <div className="flex items-center gap-2">
             <Button variant="outline" size="sm">
