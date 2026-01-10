@@ -5352,46 +5352,325 @@ export type Database = {
         }
         Relationships: []
       }
-      lab_orders: {
+      lab_analyzers: {
         Row: {
+          analyzer_code: string
+          connection_config: Json | null
+          connection_type: string | null
           created_at: string
           department: string | null
-          encounter_id: string | null
+          facility_id: string | null
           id: string
-          notes: string | null
-          order_number: string
-          ordered_at: string
-          ordered_by: string | null
-          patient_id: string
-          priority: string
+          is_active: boolean | null
+          last_calibration_at: string | null
+          last_maintenance_at: string | null
+          manufacturer: string | null
+          model: string | null
+          name: string
+          next_maintenance_at: string | null
+          serial_number: string | null
           status: string
+          tests_supported: string[] | null
+          updated_at: string
+          uptime_percent: number | null
+        }
+        Insert: {
+          analyzer_code: string
+          connection_config?: Json | null
+          connection_type?: string | null
+          created_at?: string
+          department?: string | null
+          facility_id?: string | null
+          id?: string
+          is_active?: boolean | null
+          last_calibration_at?: string | null
+          last_maintenance_at?: string | null
+          manufacturer?: string | null
+          model?: string | null
+          name: string
+          next_maintenance_at?: string | null
+          serial_number?: string | null
+          status?: string
+          tests_supported?: string[] | null
+          updated_at?: string
+          uptime_percent?: number | null
+        }
+        Update: {
+          analyzer_code?: string
+          connection_config?: Json | null
+          connection_type?: string | null
+          created_at?: string
+          department?: string | null
+          facility_id?: string | null
+          id?: string
+          is_active?: boolean | null
+          last_calibration_at?: string | null
+          last_maintenance_at?: string | null
+          manufacturer?: string | null
+          model?: string | null
+          name?: string
+          next_maintenance_at?: string | null
+          serial_number?: string | null
+          status?: string
+          tests_supported?: string[] | null
+          updated_at?: string
+          uptime_percent?: number | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "lab_analyzers_facility_id_fkey"
+            columns: ["facility_id"]
+            isOneToOne: false
+            referencedRelation: "facilities"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "lab_analyzers_facility_id_fkey"
+            columns: ["facility_id"]
+            isOneToOne: false
+            referencedRelation: "facility_capabilities"
+            referencedColumns: ["facility_id"]
+          },
+        ]
+      }
+      lab_critical_alerts: {
+        Row: {
+          acknowledged_at: string | null
+          acknowledged_by: string | null
+          alert_message: string
+          created_at: string
+          critical_type: string
+          encounter_id: string | null
+          escalated_at: string | null
+          escalated_to: string | null
+          id: string
+          lab_result_id: string
+          notified_providers: string[] | null
+          patient_id: string
+          resolution_notes: string | null
+          resolved_at: string | null
+          resolved_by: string | null
+          result_value: string
+          status: string
+          test_name: string
+          urgency: string
+        }
+        Insert: {
+          acknowledged_at?: string | null
+          acknowledged_by?: string | null
+          alert_message: string
+          created_at?: string
+          critical_type: string
+          encounter_id?: string | null
+          escalated_at?: string | null
+          escalated_to?: string | null
+          id?: string
+          lab_result_id: string
+          notified_providers?: string[] | null
+          patient_id: string
+          resolution_notes?: string | null
+          resolved_at?: string | null
+          resolved_by?: string | null
+          result_value: string
+          status?: string
+          test_name: string
+          urgency?: string
+        }
+        Update: {
+          acknowledged_at?: string | null
+          acknowledged_by?: string | null
+          alert_message?: string
+          created_at?: string
+          critical_type?: string
+          encounter_id?: string | null
+          escalated_at?: string | null
+          escalated_to?: string | null
+          id?: string
+          lab_result_id?: string
+          notified_providers?: string[] | null
+          patient_id?: string
+          resolution_notes?: string | null
+          resolved_at?: string | null
+          resolved_by?: string | null
+          result_value?: string
+          status?: string
+          test_name?: string
+          urgency?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "lab_critical_alerts_encounter_id_fkey"
+            columns: ["encounter_id"]
+            isOneToOne: false
+            referencedRelation: "encounters"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "lab_critical_alerts_lab_result_id_fkey"
+            columns: ["lab_result_id"]
+            isOneToOne: false
+            referencedRelation: "lab_results"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "lab_critical_alerts_patient_id_fkey"
+            columns: ["patient_id"]
+            isOneToOne: false
+            referencedRelation: "patients"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      lab_order_tests: {
+        Row: {
+          created_at: string
+          id: string
+          lab_order_id: string
+          priority: string | null
+          rejection_code_id: string | null
+          rejection_notes: string | null
+          specimen_id: string | null
+          status: string
+          test_catalog_id: string
           updated_at: string
         }
         Insert: {
           created_at?: string
-          department?: string | null
-          encounter_id?: string | null
           id?: string
-          notes?: string | null
-          order_number: string
-          ordered_at?: string
-          ordered_by?: string | null
-          patient_id: string
-          priority?: string
+          lab_order_id: string
+          priority?: string | null
+          rejection_code_id?: string | null
+          rejection_notes?: string | null
+          specimen_id?: string | null
           status?: string
+          test_catalog_id: string
           updated_at?: string
         }
         Update: {
           created_at?: string
+          id?: string
+          lab_order_id?: string
+          priority?: string | null
+          rejection_code_id?: string | null
+          rejection_notes?: string | null
+          specimen_id?: string | null
+          status?: string
+          test_catalog_id?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "lab_order_tests_lab_order_id_fkey"
+            columns: ["lab_order_id"]
+            isOneToOne: false
+            referencedRelation: "lab_orders"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "lab_order_tests_rejection_code_id_fkey"
+            columns: ["rejection_code_id"]
+            isOneToOne: false
+            referencedRelation: "lab_rejection_codes"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "lab_order_tests_specimen_id_fkey"
+            columns: ["specimen_id"]
+            isOneToOne: false
+            referencedRelation: "specimens"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "lab_order_tests_test_catalog_id_fkey"
+            columns: ["test_catalog_id"]
+            isOneToOne: false
+            referencedRelation: "lab_test_catalog"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      lab_orders: {
+        Row: {
+          acknowledged_at: string | null
+          acknowledged_by: string | null
+          biosafety_level: string | null
+          clinical_indication: string | null
+          collection_instructions: string | null
+          created_at: string
+          department: string | null
+          diagnosis_code: string | null
+          diagnosis_system: string | null
+          encounter_id: string | null
+          id: string
+          infection_control_flags: string[] | null
+          is_stat: boolean | null
+          notes: string | null
+          order_number: string
+          ordered_at: string
+          ordered_by: string | null
+          ordering_facility_id: string | null
+          patient_id: string
+          performing_lab_id: string | null
+          priority: string
+          received_at: string | null
+          received_by: string | null
+          routing_reason: string | null
+          status: string
+          updated_at: string
+        }
+        Insert: {
+          acknowledged_at?: string | null
+          acknowledged_by?: string | null
+          biosafety_level?: string | null
+          clinical_indication?: string | null
+          collection_instructions?: string | null
+          created_at?: string
           department?: string | null
+          diagnosis_code?: string | null
+          diagnosis_system?: string | null
           encounter_id?: string | null
           id?: string
+          infection_control_flags?: string[] | null
+          is_stat?: boolean | null
+          notes?: string | null
+          order_number: string
+          ordered_at?: string
+          ordered_by?: string | null
+          ordering_facility_id?: string | null
+          patient_id: string
+          performing_lab_id?: string | null
+          priority?: string
+          received_at?: string | null
+          received_by?: string | null
+          routing_reason?: string | null
+          status?: string
+          updated_at?: string
+        }
+        Update: {
+          acknowledged_at?: string | null
+          acknowledged_by?: string | null
+          biosafety_level?: string | null
+          clinical_indication?: string | null
+          collection_instructions?: string | null
+          created_at?: string
+          department?: string | null
+          diagnosis_code?: string | null
+          diagnosis_system?: string | null
+          encounter_id?: string | null
+          id?: string
+          infection_control_flags?: string[] | null
+          is_stat?: boolean | null
           notes?: string | null
           order_number?: string
           ordered_at?: string
           ordered_by?: string | null
+          ordering_facility_id?: string | null
           patient_id?: string
+          performing_lab_id?: string | null
           priority?: string
+          received_at?: string | null
+          received_by?: string | null
+          routing_reason?: string | null
           status?: string
           updated_at?: string
         }
@@ -5404,71 +5683,315 @@ export type Database = {
             referencedColumns: ["id"]
           },
           {
+            foreignKeyName: "lab_orders_ordering_facility_id_fkey"
+            columns: ["ordering_facility_id"]
+            isOneToOne: false
+            referencedRelation: "facilities"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "lab_orders_ordering_facility_id_fkey"
+            columns: ["ordering_facility_id"]
+            isOneToOne: false
+            referencedRelation: "facility_capabilities"
+            referencedColumns: ["facility_id"]
+          },
+          {
             foreignKeyName: "lab_orders_patient_id_fkey"
             columns: ["patient_id"]
             isOneToOne: false
             referencedRelation: "patients"
             referencedColumns: ["id"]
           },
+          {
+            foreignKeyName: "lab_orders_performing_lab_id_fkey"
+            columns: ["performing_lab_id"]
+            isOneToOne: false
+            referencedRelation: "facilities"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "lab_orders_performing_lab_id_fkey"
+            columns: ["performing_lab_id"]
+            isOneToOne: false
+            referencedRelation: "facility_capabilities"
+            referencedColumns: ["facility_id"]
+          },
         ]
+      }
+      lab_qc_lots: {
+        Row: {
+          analyzer_id: string | null
+          created_at: string
+          expiry_date: string
+          id: string
+          is_active: boolean | null
+          level: string
+          lot_number: string
+          manufacturer: string | null
+          material_name: string
+          opened_at: string | null
+          target_mean: number
+          target_sd: number
+          test_catalog_id: string | null
+          unit: string | null
+        }
+        Insert: {
+          analyzer_id?: string | null
+          created_at?: string
+          expiry_date: string
+          id?: string
+          is_active?: boolean | null
+          level: string
+          lot_number: string
+          manufacturer?: string | null
+          material_name: string
+          opened_at?: string | null
+          target_mean: number
+          target_sd: number
+          test_catalog_id?: string | null
+          unit?: string | null
+        }
+        Update: {
+          analyzer_id?: string | null
+          created_at?: string
+          expiry_date?: string
+          id?: string
+          is_active?: boolean | null
+          level?: string
+          lot_number?: string
+          manufacturer?: string | null
+          material_name?: string
+          opened_at?: string | null
+          target_mean?: number
+          target_sd?: number
+          test_catalog_id?: string | null
+          unit?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "lab_qc_lots_analyzer_id_fkey"
+            columns: ["analyzer_id"]
+            isOneToOne: false
+            referencedRelation: "lab_analyzers"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "lab_qc_lots_test_catalog_id_fkey"
+            columns: ["test_catalog_id"]
+            isOneToOne: false
+            referencedRelation: "lab_test_catalog"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      lab_qc_runs: {
+        Row: {
+          analyzer_id: string
+          comments: string | null
+          created_at: string
+          cv_percent: number | null
+          id: string
+          performed_by: string
+          qc_lot_id: string
+          result_value: number
+          reviewed_at: string | null
+          reviewed_by: string | null
+          run_date: string
+          run_time: string
+          status: string
+          westgard_rules_violated: string[] | null
+          z_score: number | null
+        }
+        Insert: {
+          analyzer_id: string
+          comments?: string | null
+          created_at?: string
+          cv_percent?: number | null
+          id?: string
+          performed_by: string
+          qc_lot_id: string
+          result_value: number
+          reviewed_at?: string | null
+          reviewed_by?: string | null
+          run_date?: string
+          run_time?: string
+          status?: string
+          westgard_rules_violated?: string[] | null
+          z_score?: number | null
+        }
+        Update: {
+          analyzer_id?: string
+          comments?: string | null
+          created_at?: string
+          cv_percent?: number | null
+          id?: string
+          performed_by?: string
+          qc_lot_id?: string
+          result_value?: number
+          reviewed_at?: string | null
+          reviewed_by?: string | null
+          run_date?: string
+          run_time?: string
+          status?: string
+          westgard_rules_violated?: string[] | null
+          z_score?: number | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "lab_qc_runs_analyzer_id_fkey"
+            columns: ["analyzer_id"]
+            isOneToOne: false
+            referencedRelation: "lab_analyzers"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "lab_qc_runs_qc_lot_id_fkey"
+            columns: ["qc_lot_id"]
+            isOneToOne: false
+            referencedRelation: "lab_qc_lots"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      lab_rejection_codes: {
+        Row: {
+          category: string
+          code: string
+          created_at: string
+          description: string
+          id: string
+          is_active: boolean | null
+          requires_recollection: boolean | null
+        }
+        Insert: {
+          category: string
+          code: string
+          created_at?: string
+          description: string
+          id?: string
+          is_active?: boolean | null
+          requires_recollection?: boolean | null
+        }
+        Update: {
+          category?: string
+          code?: string
+          created_at?: string
+          description?: string
+          id?: string
+          is_active?: boolean | null
+          requires_recollection?: boolean | null
+        }
+        Relationships: []
       }
       lab_results: {
         Row: {
+          analyzer_id: string | null
           category: string | null
+          clinical_validated_at: string | null
+          clinical_validated_by: string | null
           created_at: string
+          delta_check_flag: boolean | null
+          delta_check_value: string | null
           id: string
           is_abnormal: boolean | null
           is_critical: boolean | null
           lab_order_id: string
+          lab_order_test_id: string | null
+          loinc_code: string | null
+          method: string | null
           notes: string | null
           performed_at: string | null
           performed_by: string | null
+          previous_result_date: string | null
+          previous_result_value: string | null
           reference_range: string | null
+          released_at: string | null
+          released_by: string | null
+          result_interpretation: string | null
           result_unit: string | null
           result_value: string | null
+          specimen_id: string | null
           status: string
+          technical_validated_at: string | null
+          technical_validated_by: string | null
           test_code: string | null
           test_name: string
+          ucum_unit: string | null
           updated_at: string
           verified_at: string | null
           verified_by: string | null
         }
         Insert: {
+          analyzer_id?: string | null
           category?: string | null
+          clinical_validated_at?: string | null
+          clinical_validated_by?: string | null
           created_at?: string
+          delta_check_flag?: boolean | null
+          delta_check_value?: string | null
           id?: string
           is_abnormal?: boolean | null
           is_critical?: boolean | null
           lab_order_id: string
+          lab_order_test_id?: string | null
+          loinc_code?: string | null
+          method?: string | null
           notes?: string | null
           performed_at?: string | null
           performed_by?: string | null
+          previous_result_date?: string | null
+          previous_result_value?: string | null
           reference_range?: string | null
+          released_at?: string | null
+          released_by?: string | null
+          result_interpretation?: string | null
           result_unit?: string | null
           result_value?: string | null
+          specimen_id?: string | null
           status?: string
+          technical_validated_at?: string | null
+          technical_validated_by?: string | null
           test_code?: string | null
           test_name: string
+          ucum_unit?: string | null
           updated_at?: string
           verified_at?: string | null
           verified_by?: string | null
         }
         Update: {
+          analyzer_id?: string | null
           category?: string | null
+          clinical_validated_at?: string | null
+          clinical_validated_by?: string | null
           created_at?: string
+          delta_check_flag?: boolean | null
+          delta_check_value?: string | null
           id?: string
           is_abnormal?: boolean | null
           is_critical?: boolean | null
           lab_order_id?: string
+          lab_order_test_id?: string | null
+          loinc_code?: string | null
+          method?: string | null
           notes?: string | null
           performed_at?: string | null
           performed_by?: string | null
+          previous_result_date?: string | null
+          previous_result_value?: string | null
           reference_range?: string | null
+          released_at?: string | null
+          released_by?: string | null
+          result_interpretation?: string | null
           result_unit?: string | null
           result_value?: string | null
+          specimen_id?: string | null
           status?: string
+          technical_validated_at?: string | null
+          technical_validated_by?: string | null
           test_code?: string | null
           test_name?: string
+          ucum_unit?: string | null
           updated_at?: string
           verified_at?: string | null
           verified_by?: string | null
@@ -5481,7 +6004,245 @@ export type Database = {
             referencedRelation: "lab_orders"
             referencedColumns: ["id"]
           },
+          {
+            foreignKeyName: "lab_results_lab_order_test_id_fkey"
+            columns: ["lab_order_test_id"]
+            isOneToOne: false
+            referencedRelation: "lab_order_tests"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "lab_results_specimen_id_fkey"
+            columns: ["specimen_id"]
+            isOneToOne: false
+            referencedRelation: "specimens"
+            referencedColumns: ["id"]
+          },
         ]
+      }
+      lab_routing_rules: {
+        Row: {
+          conditions: Json | null
+          created_at: string
+          destination_lab_id: string | null
+          effective_from: string
+          effective_to: string | null
+          id: string
+          is_active: boolean | null
+          priority: number | null
+          rule_name: string
+          source_facility_id: string | null
+          test_categories: string[] | null
+          test_codes: string[] | null
+        }
+        Insert: {
+          conditions?: Json | null
+          created_at?: string
+          destination_lab_id?: string | null
+          effective_from?: string
+          effective_to?: string | null
+          id?: string
+          is_active?: boolean | null
+          priority?: number | null
+          rule_name: string
+          source_facility_id?: string | null
+          test_categories?: string[] | null
+          test_codes?: string[] | null
+        }
+        Update: {
+          conditions?: Json | null
+          created_at?: string
+          destination_lab_id?: string | null
+          effective_from?: string
+          effective_to?: string | null
+          id?: string
+          is_active?: boolean | null
+          priority?: number | null
+          rule_name?: string
+          source_facility_id?: string | null
+          test_categories?: string[] | null
+          test_codes?: string[] | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "lab_routing_rules_destination_lab_id_fkey"
+            columns: ["destination_lab_id"]
+            isOneToOne: false
+            referencedRelation: "facilities"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "lab_routing_rules_destination_lab_id_fkey"
+            columns: ["destination_lab_id"]
+            isOneToOne: false
+            referencedRelation: "facility_capabilities"
+            referencedColumns: ["facility_id"]
+          },
+          {
+            foreignKeyName: "lab_routing_rules_source_facility_id_fkey"
+            columns: ["source_facility_id"]
+            isOneToOne: false
+            referencedRelation: "facilities"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "lab_routing_rules_source_facility_id_fkey"
+            columns: ["source_facility_id"]
+            isOneToOne: false
+            referencedRelation: "facility_capabilities"
+            referencedColumns: ["facility_id"]
+          },
+        ]
+      }
+      lab_test_catalog: {
+        Row: {
+          age_max_years: number | null
+          age_min_years: number | null
+          category: string
+          collection_instructions: string | null
+          created_at: string
+          critical_high: number | null
+          critical_low: number | null
+          department: string | null
+          facility_availability: string[] | null
+          gender_specific: string | null
+          id: string
+          is_active: boolean | null
+          is_orderable: boolean | null
+          is_panel: boolean | null
+          loinc_code: string | null
+          panel_components: string[] | null
+          reference_range_high: number | null
+          reference_range_low: number | null
+          reference_range_text: string | null
+          requires_fasting: boolean | null
+          result_type: string | null
+          result_unit: string | null
+          short_name: string | null
+          specimen_snomed_code: string | null
+          specimen_type: string
+          stability_hours: number | null
+          temperature_requirement: string | null
+          test_code: string
+          test_name: string
+          turnaround_time_hours: number | null
+          ucum_unit: string | null
+          updated_at: string
+        }
+        Insert: {
+          age_max_years?: number | null
+          age_min_years?: number | null
+          category: string
+          collection_instructions?: string | null
+          created_at?: string
+          critical_high?: number | null
+          critical_low?: number | null
+          department?: string | null
+          facility_availability?: string[] | null
+          gender_specific?: string | null
+          id?: string
+          is_active?: boolean | null
+          is_orderable?: boolean | null
+          is_panel?: boolean | null
+          loinc_code?: string | null
+          panel_components?: string[] | null
+          reference_range_high?: number | null
+          reference_range_low?: number | null
+          reference_range_text?: string | null
+          requires_fasting?: boolean | null
+          result_type?: string | null
+          result_unit?: string | null
+          short_name?: string | null
+          specimen_snomed_code?: string | null
+          specimen_type: string
+          stability_hours?: number | null
+          temperature_requirement?: string | null
+          test_code: string
+          test_name: string
+          turnaround_time_hours?: number | null
+          ucum_unit?: string | null
+          updated_at?: string
+        }
+        Update: {
+          age_max_years?: number | null
+          age_min_years?: number | null
+          category?: string
+          collection_instructions?: string | null
+          created_at?: string
+          critical_high?: number | null
+          critical_low?: number | null
+          department?: string | null
+          facility_availability?: string[] | null
+          gender_specific?: string | null
+          id?: string
+          is_active?: boolean | null
+          is_orderable?: boolean | null
+          is_panel?: boolean | null
+          loinc_code?: string | null
+          panel_components?: string[] | null
+          reference_range_high?: number | null
+          reference_range_low?: number | null
+          reference_range_text?: string | null
+          requires_fasting?: boolean | null
+          result_type?: string | null
+          result_unit?: string | null
+          short_name?: string | null
+          specimen_snomed_code?: string | null
+          specimen_type?: string
+          stability_hours?: number | null
+          temperature_requirement?: string | null
+          test_code?: string
+          test_name?: string
+          turnaround_time_hours?: number | null
+          ucum_unit?: string | null
+          updated_at?: string
+        }
+        Relationships: []
+      }
+      lab_workflow_events: {
+        Row: {
+          created_at: string
+          entity_id: string
+          entity_type: string
+          event_type: string
+          facility_id: string | null
+          from_status: string | null
+          id: string
+          metadata: Json | null
+          notes: string | null
+          performed_by: string
+          to_status: string | null
+          workspace_id: string | null
+        }
+        Insert: {
+          created_at?: string
+          entity_id: string
+          entity_type: string
+          event_type: string
+          facility_id?: string | null
+          from_status?: string | null
+          id?: string
+          metadata?: Json | null
+          notes?: string | null
+          performed_by: string
+          to_status?: string | null
+          workspace_id?: string | null
+        }
+        Update: {
+          created_at?: string
+          entity_id?: string
+          entity_type?: string
+          event_type?: string
+          facility_id?: string | null
+          from_status?: string | null
+          id?: string
+          metadata?: Json | null
+          notes?: string | null
+          performed_by?: string
+          to_status?: string | null
+          workspace_id?: string | null
+        }
+        Relationships: []
       }
       leave_requests: {
         Row: {
@@ -11759,6 +12520,8 @@ export type Database = {
       }
       specimens: {
         Row: {
+          barcode: string | null
+          body_site_code: string | null
           collected_at: string
           collected_by: string | null
           collection_method: string | null
@@ -11766,7 +12529,10 @@ export type Database = {
           collection_site: string | null
           container_type: string | null
           created_at: string
+          disposed_at: string | null
+          disposed_by: string | null
           encounter_id: string | null
+          external_id: string | null
           fasting_status: string | null
           id: string
           is_biohazard: boolean | null
@@ -11774,11 +12540,21 @@ export type Database = {
           patient_id: string
           preservative: string | null
           priority: string | null
+          processing_completed_at: string | null
+          processing_started_at: string | null
+          received_at: string | null
+          received_by: string | null
+          received_condition: string | null
+          referral_lab_id: string | null
           rejection_reason: string | null
+          shipped_at: string | null
+          shipped_by: string | null
+          snomed_specimen_code: string | null
           specimen_id: string
           specimen_source: string | null
           specimen_type: string
           status: string
+          storage_location: string | null
           temperature_requirement: string | null
           transport_conditions: string | null
           updated_at: string
@@ -11786,6 +12562,8 @@ export type Database = {
           volume_unit: string | null
         }
         Insert: {
+          barcode?: string | null
+          body_site_code?: string | null
           collected_at?: string
           collected_by?: string | null
           collection_method?: string | null
@@ -11793,7 +12571,10 @@ export type Database = {
           collection_site?: string | null
           container_type?: string | null
           created_at?: string
+          disposed_at?: string | null
+          disposed_by?: string | null
           encounter_id?: string | null
+          external_id?: string | null
           fasting_status?: string | null
           id?: string
           is_biohazard?: boolean | null
@@ -11801,11 +12582,21 @@ export type Database = {
           patient_id: string
           preservative?: string | null
           priority?: string | null
+          processing_completed_at?: string | null
+          processing_started_at?: string | null
+          received_at?: string | null
+          received_by?: string | null
+          received_condition?: string | null
+          referral_lab_id?: string | null
           rejection_reason?: string | null
+          shipped_at?: string | null
+          shipped_by?: string | null
+          snomed_specimen_code?: string | null
           specimen_id: string
           specimen_source?: string | null
           specimen_type: string
           status?: string
+          storage_location?: string | null
           temperature_requirement?: string | null
           transport_conditions?: string | null
           updated_at?: string
@@ -11813,6 +12604,8 @@ export type Database = {
           volume_unit?: string | null
         }
         Update: {
+          barcode?: string | null
+          body_site_code?: string | null
           collected_at?: string
           collected_by?: string | null
           collection_method?: string | null
@@ -11820,7 +12613,10 @@ export type Database = {
           collection_site?: string | null
           container_type?: string | null
           created_at?: string
+          disposed_at?: string | null
+          disposed_by?: string | null
           encounter_id?: string | null
+          external_id?: string | null
           fasting_status?: string | null
           id?: string
           is_biohazard?: boolean | null
@@ -11828,11 +12624,21 @@ export type Database = {
           patient_id?: string
           preservative?: string | null
           priority?: string | null
+          processing_completed_at?: string | null
+          processing_started_at?: string | null
+          received_at?: string | null
+          received_by?: string | null
+          received_condition?: string | null
+          referral_lab_id?: string | null
           rejection_reason?: string | null
+          shipped_at?: string | null
+          shipped_by?: string | null
+          snomed_specimen_code?: string | null
           specimen_id?: string
           specimen_source?: string | null
           specimen_type?: string
           status?: string
+          storage_location?: string | null
           temperature_requirement?: string | null
           transport_conditions?: string | null
           updated_at?: string
@@ -11860,6 +12666,20 @@ export type Database = {
             isOneToOne: false
             referencedRelation: "patients"
             referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "specimens_referral_lab_id_fkey"
+            columns: ["referral_lab_id"]
+            isOneToOne: false
+            referencedRelation: "facilities"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "specimens_referral_lab_id_fkey"
+            columns: ["referral_lab_id"]
+            isOneToOne: false
+            referencedRelation: "facility_capabilities"
+            referencedColumns: ["facility_id"]
           },
         ]
       }
