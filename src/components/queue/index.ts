@@ -3,3 +3,6 @@ export { QueueMetricsBar } from './QueueMetricsBar';
 export { QueueWorkstation } from './QueueWorkstation';
 export { AddToQueueDialog } from './AddToQueueDialog';
 export { SupervisorDashboard } from './SupervisorDashboard';
+export { QueueConfigManager } from './QueueConfigManager';
+export { QueuePathwayEditor } from './QueuePathwayEditor';
+export { QueueToEncounterBridge } from './QueueToEncounterBridge';
