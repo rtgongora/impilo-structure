@@ -776,38 +776,38 @@ export default function ModuleHome() {
             </div>
 
             {/* Module Categories */}
-            <div className="space-y-3 pb-4">
+            <div className="space-y-4 pb-4">
               {visibleCategories.map((category) => (
                 <section key={category.id}>
                   <div className="mb-2">
                     <div className="flex items-center gap-2">
-                      <h3 className="text-sm font-semibold">{category.title}</h3>
+                      <h3 className="text-base font-semibold">{category.title}</h3>
                       {category.roles && category.roles.length > 0 && (
-                        <Badge variant="outline" className="text-[10px] px-1 py-0 h-4 border-muted-foreground/30">
-                          <Lock className="h-2.5 w-2.5 mr-0.5" />
+                        <Badge variant="outline" className="text-xs px-1.5 py-0 h-5 border-muted-foreground/30">
+                          <Lock className="h-3 w-3 mr-0.5" />
                         </Badge>
                       )}
                     </div>
-                    <p className="text-xs text-muted-foreground">{category.description}</p>
+                    <p className="text-sm text-muted-foreground">{category.description}</p>
                   </div>
-                  <div className="grid grid-cols-3 sm:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-2">
+                  <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-2">
                     {category.modules.map((module) => (
                       <Card
                         key={module.id}
                         className="cursor-pointer hover:shadow-md hover:border-primary/50 transition-all group"
                         onClick={() => handleModuleClick(module.path)}
                       >
-                        <CardContent className="p-2.5">
-                          <div className="flex items-center gap-2">
-                            <div className={`w-8 h-8 shrink-0 rounded-md ${module.color} flex items-center justify-center`}>
-                              <module.icon className="h-4 w-4 text-white" />
+                        <CardContent className="p-3">
+                          <div className="flex items-center gap-3">
+                            <div className={`w-10 h-10 shrink-0 rounded-lg ${module.color} flex items-center justify-center`}>
+                              <module.icon className="h-5 w-5 text-white" />
                             </div>
                             <div className="min-w-0 flex-1">
-                              <p className="text-sm font-medium truncate">{module.label}</p>
-                              <p className="text-xs text-muted-foreground truncate">{module.description}</p>
+                              <p className="text-base font-medium truncate">{module.label}</p>
+                              <p className="text-sm text-muted-foreground truncate">{module.description}</p>
                             </div>
                             {module.roles && module.roles.length > 0 && (
-                              <Lock className="h-3 w-3 text-muted-foreground/50 shrink-0" />
+                              <Lock className="h-3.5 w-3.5 text-muted-foreground/50 shrink-0" />
                             )}
                           </div>
                         </CardContent>
