@@ -114,12 +114,13 @@ export function WorkspaceDashboard() {
       setQueuePatients(transformedQueue);
 
       // Fetch pending tasks (results, orders needing review)
-      const { data: labResults }: { data: any[] | null } = await (supabase
+      const { data: labResults }: { data: any[] | null } = await ((supabase as any)
         .from("lab_results")
         .select("id, test_name, result_status, patient_id")
         .eq("verified", false)
         .order("created_at", { ascending: false })
-        .limit(5) as any);
+        .limit(5));
+
 
       const transformedTasks: PendingTask[] = (labResults || []).map((r: any) => ({
         id: r.id,
