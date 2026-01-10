@@ -151,7 +151,11 @@ export function EHRProvider({ children }: { children: ReactNode }) {
       if (error) throw error;
 
       if (!encounterData) {
-        setContextError("Encounter not found");
+        // No encounter found - this may be a mock/demo ID or deleted encounter
+        // Return gracefully instead of showing error
+        console.warn(`Encounter ${encounterId} not found in database`);
+        setContextError("Encounter not found. The patient may have been discharged or the record doesn't exist.");
+        setIsLoadingContext(false);
         return;
       }
 
