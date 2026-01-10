@@ -19,15 +19,12 @@ import {
   Search,
   ClipboardList,
   ShieldCheck,
-  ArrowRight,
   Home,
   Clock,
   UserCheck,
   AlertTriangle,
   Bell,
   Activity,
-  CheckCircle2,
-  Timer,
   Stethoscope,
   Pill,
   FlaskConical,
@@ -35,6 +32,17 @@ import {
   TrendingUp,
   ChevronRight,
   PlayCircle,
+  Package,
+  Scan,
+  ArrowDownUp,
+  MessageSquare,
+  CheckCircle,
+  XCircle,
+  Image,
+  Microscope,
+  Send,
+  Inbox,
+  AlertOctagon,
 } from "lucide-react";
 import { Link, useNavigate } from "react-router-dom";
 import { useShift } from "@/contexts/ShiftContext";
@@ -61,11 +69,51 @@ const mockAlerts = [
   { id: "3", type: "escalation", title: "Deteriorating Patient", patient: "P. Mwale", message: "NEWS score increased to 7", time: "20 min ago" },
 ];
 
+// Results requiring review
+const mockResults = [
+  { id: "1", type: "lab", title: "CBC + Diff", patient: "T. Moyo", status: "ready", time: "10 min ago", abnormal: true },
+  { id: "2", type: "lab", title: "Renal Function Panel", patient: "S. Banda", status: "ready", time: "25 min ago", abnormal: false },
+  { id: "3", type: "imaging", title: "Chest X-Ray", patient: "M. Dube", status: "ready", time: "1 hr ago", abnormal: true },
+  { id: "4", type: "imaging", title: "CT Abdomen", patient: "E. Ncube", status: "ready", time: "2 hrs ago", abnormal: false },
+  { id: "5", type: "pathology", title: "Biopsy Report", patient: "L. Khumalo", status: "ready", time: "3 hrs ago", abnormal: true },
+];
+
+// Stock and supply alerts
+const mockStockAlerts = [
+  { id: "1", type: "low_stock", item: "Paracetamol 500mg", level: "Critical", quantity: "50 units", reorderPoint: "200 units" },
+  { id: "2", type: "low_stock", item: "Normal Saline 1L", level: "Warning", quantity: "120 units", reorderPoint: "150 units" },
+  { id: "3", type: "expiring", item: "Amoxicillin 250mg", level: "Warning", quantity: "200 units", expiryDate: "2026-02-15" },
+  { id: "4", type: "out_of_stock", item: "IV Cannula 22G", level: "Critical", quantity: "0 units", reorderPoint: "100 units" },
+];
+
+// Pending approvals and requests
+const mockApprovals = [
+  { id: "1", type: "prescription", title: "Controlled substance Rx", patient: "J. Moyo", requestedBy: "Dr. Banda", time: "30 min ago" },
+  { id: "2", type: "leave", title: "Leave request", requestedBy: "Nurse P. Ncube", dates: "15-17 Jan", time: "2 hrs ago" },
+  { id: "3", type: "override", title: "Allergy override", patient: "T. Sibanda", medication: "Penicillin V", time: "1 hr ago" },
+];
+
+// Referrals and consults
+const mockReferrals = [
+  { id: "1", direction: "incoming", specialty: "Cardiology", patient: "M. Chuma", from: "Dr. Ndlovu", time: "45 min ago", status: "pending" },
+  { id: "2", direction: "response", specialty: "Orthopaedics", patient: "S. Phiri", from: "Dr. Mukwena", time: "2 hrs ago", status: "completed" },
+  { id: "3", direction: "incoming", specialty: "Psychiatry", patient: "E. Moyo", from: "Casualty", time: "3 hrs ago", status: "urgent" },
+];
+
+// Handoff items from previous shift
+const mockHandoffItems = [
+  { id: "1", patient: "L. Banda", ward: "Med A", priority: "high", note: "Monitor BP q2h - started new antihypertensive", from: "Dr. Moyo" },
+  { id: "2", patient: "J. Ncube", ward: "Surg B", priority: "medium", note: "Post-op day 1 - check drain output", from: "Dr. Sithole" },
+  { id: "3", patient: "P. Dube", ward: "ICU", priority: "high", note: "Ventilator weaning trial at 10:00", from: "Dr. Chuma" },
+];
+
 const mockStats = {
   patientsSeenToday: 18,
   pendingTasks: 7,
   activeAlerts: 3,
-  avgConsultTime: "12 min",
+  resultsReady: 5,
+  stockAlerts: 4,
+  pendingApprovals: 3,
 };
 
 export function NoPatientSelected() {
@@ -180,59 +228,87 @@ export function NoPatientSelected() {
           </div>
         )}
 
-        {/* Quick Stats */}
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+        {/* Quick Stats - 6 cards */}
+        <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-3">
           <Card className="bg-primary/5 border-primary/20">
-            <CardContent className="p-4">
-              <div className="flex items-center justify-between">
-                <div>
-                  <p className="text-sm text-muted-foreground">Patients Today</p>
-                  <p className="text-2xl font-bold text-primary">{mockStats.patientsSeenToday}</p>
+            <CardContent className="p-3">
+              <div className="flex items-center gap-3">
+                <div className="h-9 w-9 rounded-full bg-primary/20 flex items-center justify-center shrink-0">
+                  <UserCheck className="h-4 w-4 text-primary" />
                 </div>
-                <div className="h-10 w-10 rounded-full bg-primary/20 flex items-center justify-center">
-                  <UserCheck className="h-5 w-5 text-primary" />
+                <div>
+                  <p className="text-xl font-bold text-primary">{mockStats.patientsSeenToday}</p>
+                  <p className="text-xs text-muted-foreground">Seen Today</p>
                 </div>
               </div>
             </CardContent>
           </Card>
 
           <Card className="bg-warning/5 border-warning/20">
-            <CardContent className="p-4">
-              <div className="flex items-center justify-between">
-                <div>
-                  <p className="text-sm text-muted-foreground">Pending Tasks</p>
-                  <p className="text-2xl font-bold text-warning">{mockStats.pendingTasks}</p>
+            <CardContent className="p-3">
+              <div className="flex items-center gap-3">
+                <div className="h-9 w-9 rounded-full bg-warning/20 flex items-center justify-center shrink-0">
+                  <ClipboardList className="h-4 w-4 text-warning" />
                 </div>
-                <div className="h-10 w-10 rounded-full bg-warning/20 flex items-center justify-center">
-                  <ClipboardList className="h-5 w-5 text-warning" />
+                <div>
+                  <p className="text-xl font-bold text-warning">{mockStats.pendingTasks}</p>
+                  <p className="text-xs text-muted-foreground">Tasks</p>
                 </div>
               </div>
             </CardContent>
           </Card>
 
           <Card className="bg-destructive/5 border-destructive/20">
-            <CardContent className="p-4">
-              <div className="flex items-center justify-between">
-                <div>
-                  <p className="text-sm text-muted-foreground">Active Alerts</p>
-                  <p className="text-2xl font-bold text-destructive">{mockStats.activeAlerts}</p>
+            <CardContent className="p-3">
+              <div className="flex items-center gap-3">
+                <div className="h-9 w-9 rounded-full bg-destructive/20 flex items-center justify-center shrink-0">
+                  <Bell className="h-4 w-4 text-destructive" />
                 </div>
-                <div className="h-10 w-10 rounded-full bg-destructive/20 flex items-center justify-center">
-                  <Bell className="h-5 w-5 text-destructive" />
+                <div>
+                  <p className="text-xl font-bold text-destructive">{mockStats.activeAlerts}</p>
+                  <p className="text-xs text-muted-foreground">Alerts</p>
                 </div>
               </div>
             </CardContent>
           </Card>
 
-          <Card className="bg-success/5 border-success/20">
-            <CardContent className="p-4">
-              <div className="flex items-center justify-between">
-                <div>
-                  <p className="text-sm text-muted-foreground">Avg Consult</p>
-                  <p className="text-2xl font-bold text-success">{mockStats.avgConsultTime}</p>
+          <Card className="bg-info/5 border-info/20">
+            <CardContent className="p-3">
+              <div className="flex items-center gap-3">
+                <div className="h-9 w-9 rounded-full bg-info/20 flex items-center justify-center shrink-0">
+                  <FlaskConical className="h-4 w-4 text-info" />
                 </div>
-                <div className="h-10 w-10 rounded-full bg-success/20 flex items-center justify-center">
-                  <TrendingUp className="h-5 w-5 text-success" />
+                <div>
+                  <p className="text-xl font-bold text-info">{mockStats.resultsReady}</p>
+                  <p className="text-xs text-muted-foreground">Results</p>
+                </div>
+              </div>
+            </CardContent>
+          </Card>
+
+          <Card className="bg-orange-500/5 border-orange-500/20">
+            <CardContent className="p-3">
+              <div className="flex items-center gap-3">
+                <div className="h-9 w-9 rounded-full bg-orange-500/20 flex items-center justify-center shrink-0">
+                  <Package className="h-4 w-4 text-orange-500" />
+                </div>
+                <div>
+                  <p className="text-xl font-bold text-orange-500">{mockStats.stockAlerts}</p>
+                  <p className="text-xs text-muted-foreground">Stock</p>
+                </div>
+              </div>
+            </CardContent>
+          </Card>
+
+          <Card className="bg-purple-500/5 border-purple-500/20">
+            <CardContent className="p-3">
+              <div className="flex items-center gap-3">
+                <div className="h-9 w-9 rounded-full bg-purple-500/20 flex items-center justify-center shrink-0">
+                  <CheckCircle className="h-4 w-4 text-purple-500" />
+                </div>
+                <div>
+                  <p className="text-xl font-bold text-purple-500">{mockStats.pendingApprovals}</p>
+                  <p className="text-xs text-muted-foreground">Approvals</p>
                 </div>
               </div>
             </CardContent>
@@ -240,30 +316,54 @@ export function NoPatientSelected() {
         </div>
 
         {/* Main Work Area with Tabs */}
-        <div className="flex-1">
+        <div className="flex-1 min-h-0">
           <Tabs value={activeTab} onValueChange={setActiveTab} className="h-full flex flex-col">
-            <TabsList className="w-fit">
-              <TabsTrigger value="queues" className="gap-2">
-                <Users className="h-4 w-4" />
-                My Queues
-                <Badge variant="secondary" className="ml-1">{mockQueueData.reduce((sum, q) => sum + q.waiting, 0)}</Badge>
-              </TabsTrigger>
-              <TabsTrigger value="tasks" className="gap-2">
-                <ClipboardList className="h-4 w-4" />
-                Tasks
-                <Badge variant="secondary" className="ml-1">{mockTasks.length}</Badge>
-              </TabsTrigger>
-              <TabsTrigger value="alerts" className="gap-2">
-                <Bell className="h-4 w-4" />
-                Alerts
-                {mockAlerts.length > 0 && (
-                  <Badge variant="destructive" className="ml-1">{mockAlerts.length}</Badge>
-                )}
-              </TabsTrigger>
-            </TabsList>
+            <ScrollArea className="w-full">
+              <TabsList className="w-fit flex-nowrap">
+                <TabsTrigger value="queues" className="gap-1.5 whitespace-nowrap">
+                  <Users className="h-4 w-4" />
+                  Queues
+                  <Badge variant="secondary" className="ml-1">{mockQueueData.reduce((sum, q) => sum + q.waiting, 0)}</Badge>
+                </TabsTrigger>
+                <TabsTrigger value="results" className="gap-1.5 whitespace-nowrap">
+                  <FlaskConical className="h-4 w-4" />
+                  Results
+                  <Badge variant="secondary" className="ml-1">{mockResults.length}</Badge>
+                </TabsTrigger>
+                <TabsTrigger value="tasks" className="gap-1.5 whitespace-nowrap">
+                  <ClipboardList className="h-4 w-4" />
+                  Tasks
+                  <Badge variant="secondary" className="ml-1">{mockTasks.length}</Badge>
+                </TabsTrigger>
+                <TabsTrigger value="alerts" className="gap-1.5 whitespace-nowrap">
+                  <Bell className="h-4 w-4" />
+                  Alerts
+                  {mockAlerts.length > 0 && (
+                    <Badge variant="destructive" className="ml-1">{mockAlerts.length}</Badge>
+                  )}
+                </TabsTrigger>
+                <TabsTrigger value="referrals" className="gap-1.5 whitespace-nowrap">
+                  <Send className="h-4 w-4" />
+                  Referrals
+                  <Badge variant="secondary" className="ml-1">{mockReferrals.length}</Badge>
+                </TabsTrigger>
+                <TabsTrigger value="stock" className="gap-1.5 whitespace-nowrap">
+                  <Package className="h-4 w-4" />
+                  Stock
+                  {mockStockAlerts.filter(s => s.level === "Critical").length > 0 && (
+                    <Badge variant="destructive" className="ml-1">{mockStockAlerts.filter(s => s.level === "Critical").length}</Badge>
+                  )}
+                </TabsTrigger>
+                <TabsTrigger value="handoff" className="gap-1.5 whitespace-nowrap">
+                  <ArrowDownUp className="h-4 w-4" />
+                  Handoff
+                  <Badge variant="secondary" className="ml-1">{mockHandoffItems.length}</Badge>
+                </TabsTrigger>
+              </TabsList>
+            </ScrollArea>
 
             {/* Queues Tab */}
-            <TabsContent value="queues" className="flex-1 mt-4">
+            <TabsContent value="queues" className="flex-1 mt-4 overflow-auto">
               <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-4">
                 {mockQueueData.map((queue) => (
                   <Card 
@@ -333,15 +433,72 @@ export function NoPatientSelected() {
               </div>
             </TabsContent>
 
+            {/* Results Tab */}
+            <TabsContent value="results" className="flex-1 mt-4 overflow-auto">
+              <Card>
+                <CardHeader className="pb-2">
+                  <CardTitle className="text-base flex items-center gap-2">
+                    <FlaskConical className="h-4 w-4 text-info" />
+                    Results Ready for Review
+                  </CardTitle>
+                  <CardDescription>Lab, imaging, and pathology results pending your review</CardDescription>
+                </CardHeader>
+                <CardContent className="p-0">
+                  <ScrollArea className="h-[350px]">
+                    <div className="divide-y">
+                      {mockResults.map((result) => {
+                        const Icon = result.type === "lab" ? FlaskConical : result.type === "imaging" ? Image : Microscope;
+                        return (
+                          <div
+                            key={result.id}
+                            className={cn(
+                              "flex items-center justify-between p-4 cursor-pointer transition-colors hover:bg-muted/50",
+                              result.abnormal && "bg-warning/5"
+                            )}
+                            onClick={() => navigate(`/encounter/${result.id}?source=results`)}
+                          >
+                            <div className="flex items-center gap-4">
+                              <div className={cn(
+                                "h-10 w-10 rounded-lg flex items-center justify-center",
+                                result.abnormal ? "bg-warning/20 text-warning" : "bg-info/20 text-info"
+                              )}>
+                                <Icon className="h-5 w-5" />
+                              </div>
+                              <div>
+                                <div className="flex items-center gap-2">
+                                  <h4 className="font-medium">{result.title}</h4>
+                                  {result.abnormal && (
+                                    <Badge variant="outline" className="text-xs border-warning text-warning">
+                                      Abnormal
+                                    </Badge>
+                                  )}
+                                </div>
+                                <p className="text-sm text-muted-foreground">
+                                  {result.patient} • {result.time}
+                                </p>
+                              </div>
+                            </div>
+                            <Button size="sm" variant="outline">
+                              Review
+                            </Button>
+                          </div>
+                        );
+                      })}
+                    </div>
+                  </ScrollArea>
+                </CardContent>
+              </Card>
+            </TabsContent>
+
             {/* Tasks Tab */}
-            <TabsContent value="tasks" className="flex-1 mt-4">
+            <TabsContent value="tasks" className="flex-1 mt-4 overflow-auto">
               <Card>
                 <CardHeader className="pb-2">
                   <CardTitle className="text-base">Pending Tasks</CardTitle>
                   <CardDescription>Tasks requiring your attention</CardDescription>
                 </CardHeader>
                 <CardContent className="p-0">
-                  <ScrollArea className="h-[400px]">
+                  <ScrollArea className="h-[350px]">
                     <div className="divide-y">
                       {mockTasks.map((task) => {
                         const Icon = getTaskIcon(task.type);
@@ -387,7 +544,7 @@ export function NoPatientSelected() {
             </TabsContent>
 
             {/* Alerts Tab */}
-            <TabsContent value="alerts" className="flex-1 mt-4">
+            <TabsContent value="alerts" className="flex-1 mt-4 overflow-auto">
               <Card>
                 <CardHeader className="pb-2">
                   <CardTitle className="text-base flex items-center gap-2">
@@ -397,7 +554,7 @@ export function NoPatientSelected() {
                   <CardDescription>Requires immediate attention</CardDescription>
                 </CardHeader>
                 <CardContent className="p-0">
-                  <ScrollArea className="h-[400px]">
+                  <ScrollArea className="h-[350px]">
                     <div className="divide-y">
                       {mockAlerts.map((alert) => (
                         <div
@@ -435,6 +592,173 @@ export function NoPatientSelected() {
                           </div>
                           <Button size="sm" variant="destructive">
                             Respond
+                          </Button>
+                        </div>
+                      ))}
+                    </div>
+                  </ScrollArea>
+                </CardContent>
+              </Card>
+            </TabsContent>
+
+            {/* Referrals Tab */}
+            <TabsContent value="referrals" className="flex-1 mt-4 overflow-auto">
+              <Card>
+                <CardHeader className="pb-2">
+                  <CardTitle className="text-base flex items-center gap-2">
+                    <Send className="h-4 w-4 text-primary" />
+                    Referrals & Consults
+                  </CardTitle>
+                  <CardDescription>Incoming referrals and consult responses</CardDescription>
+                </CardHeader>
+                <CardContent className="p-0">
+                  <ScrollArea className="h-[350px]">
+                    <div className="divide-y">
+                      {mockReferrals.map((referral) => (
+                        <div
+                          key={referral.id}
+                          className={cn(
+                            "flex items-center justify-between p-4 cursor-pointer transition-colors hover:bg-muted/50",
+                            referral.status === "urgent" && "bg-destructive/5"
+                          )}
+                          onClick={() => navigate(`/encounter/${referral.id}?source=referral`)}
+                        >
+                          <div className="flex items-center gap-4">
+                            <div className={cn(
+                              "h-10 w-10 rounded-lg flex items-center justify-center",
+                              referral.direction === "incoming" ? "bg-primary/20 text-primary" : "bg-success/20 text-success"
+                            )}>
+                              {referral.direction === "incoming" ? <Inbox className="h-5 w-5" /> : <CheckCircle className="h-5 w-5" />}
+                            </div>
+                            <div>
+                              <div className="flex items-center gap-2">
+                                <h4 className="font-medium">{referral.specialty}</h4>
+                                <Badge 
+                                  variant={referral.status === "urgent" ? "destructive" : referral.status === "completed" ? "secondary" : "outline"}
+                                  className="text-xs"
+                                >
+                                  {referral.direction === "incoming" ? "Incoming" : "Response"}
+                                </Badge>
+                              </div>
+                              <p className="text-sm text-muted-foreground">
+                                {referral.patient} • From: {referral.from}
+                              </p>
+                              <p className="text-xs text-muted-foreground">{referral.time}</p>
+                            </div>
+                          </div>
+                          <Button size="sm" variant={referral.status === "urgent" ? "destructive" : "outline"}>
+                            {referral.direction === "incoming" ? "Accept" : "View"}
+                          </Button>
+                        </div>
+                      ))}
+                    </div>
+                  </ScrollArea>
+                </CardContent>
+              </Card>
+            </TabsContent>
+
+            {/* Stock Alerts Tab */}
+            <TabsContent value="stock" className="flex-1 mt-4 overflow-auto">
+              <Card>
+                <CardHeader className="pb-2">
+                  <CardTitle className="text-base flex items-center gap-2">
+                    <Package className="h-4 w-4 text-orange-500" />
+                    Stock & Supply Alerts
+                  </CardTitle>
+                  <CardDescription>Inventory issues requiring attention</CardDescription>
+                </CardHeader>
+                <CardContent className="p-0">
+                  <ScrollArea className="h-[350px]">
+                    <div className="divide-y">
+                      {mockStockAlerts.map((stock) => (
+                        <div
+                          key={stock.id}
+                          className={cn(
+                            "flex items-center justify-between p-4 cursor-pointer transition-colors hover:bg-muted/50",
+                            stock.level === "Critical" && "bg-destructive/5"
+                          )}
+                          onClick={() => navigate("/stock")}
+                        >
+                          <div className="flex items-center gap-4">
+                            <div className={cn(
+                              "h-10 w-10 rounded-lg flex items-center justify-center",
+                              stock.level === "Critical" ? "bg-destructive/20 text-destructive" : "bg-warning/20 text-warning"
+                            )}>
+                              {stock.type === "out_of_stock" ? <XCircle className="h-5 w-5" /> : 
+                               stock.type === "expiring" ? <Clock className="h-5 w-5" /> : 
+                               <AlertOctagon className="h-5 w-5" />}
+                            </div>
+                            <div>
+                              <div className="flex items-center gap-2">
+                                <h4 className="font-medium">{stock.item}</h4>
+                                <Badge 
+                                  variant={stock.level === "Critical" ? "destructive" : "outline"}
+                                  className="text-xs"
+                                >
+                                  {stock.level}
+                                </Badge>
+                              </div>
+                              <p className="text-sm text-muted-foreground">
+                                {stock.type === "expiring" 
+                                  ? `Expires: ${stock.expiryDate}` 
+                                  : `Current: ${stock.quantity} (Min: ${stock.reorderPoint})`}
+                              </p>
+                            </div>
+                          </div>
+                          <Button size="sm" variant="outline">
+                            {stock.type === "out_of_stock" ? "Order" : "View"}
+                          </Button>
+                        </div>
+                      ))}
+                    </div>
+                  </ScrollArea>
+                </CardContent>
+              </Card>
+            </TabsContent>
+
+            {/* Handoff Tab */}
+            <TabsContent value="handoff" className="flex-1 mt-4 overflow-auto">
+              <Card>
+                <CardHeader className="pb-2">
+                  <CardTitle className="text-base flex items-center gap-2">
+                    <ArrowDownUp className="h-4 w-4 text-purple-500" />
+                    Shift Handoff Items
+                  </CardTitle>
+                  <CardDescription>Patients handed off from previous shift</CardDescription>
+                </CardHeader>
+                <CardContent className="p-0">
+                  <ScrollArea className="h-[350px]">
+                    <div className="divide-y">
+                      {mockHandoffItems.map((item) => (
+                        <div
+                          key={item.id}
+                          className={cn(
+                            "flex items-center justify-between p-4 cursor-pointer transition-colors hover:bg-muted/50",
+                            item.priority === "high" && "bg-warning/5"
+                          )}
+                          onClick={() => navigate(`/encounter/${item.id}?source=handoff`)}
+                        >
+                          <div className="flex items-center gap-4">
+                            <div className={cn(
+                              "h-10 w-10 rounded-lg flex items-center justify-center",
+                              item.priority === "high" ? "bg-warning/20 text-warning" : "bg-purple-500/20 text-purple-500"
+                            )}>
+                              <MessageSquare className="h-5 w-5" />
+                            </div>
+                            <div>
+                              <div className="flex items-center gap-2">
+                                <h4 className="font-medium">{item.patient}</h4>
+                                <Badge variant="outline" className="text-xs">{item.ward}</Badge>
+                                {item.priority === "high" && (
+                                  <Badge variant="outline" className="text-xs border-warning text-warning">Priority</Badge>
+                                )}
+                              </div>
+                              <p className="text-sm text-muted-foreground line-clamp-1">{item.note}</p>
+                              <p className="text-xs text-muted-foreground">From: {item.from}</p>
+                            </div>
+                          </div>
+                          <Button size="sm" variant="outline">
+                            View
                           </Button>
                         </div>
                       ))}
