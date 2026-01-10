@@ -162,12 +162,10 @@ export function usePACSViewer() {
   }) => {
     setLoading(true);
     try {
+      // First fetch studies without patient join to avoid RLS restrictions
       let query = supabase
         .from('imaging_studies')
-        .select(`
-          *,
-          patient:patients(id, mrn, first_name, last_name)
-        `)
+        .select('*')
         .order('study_date', { ascending: false });
 
       if (patientId) {
