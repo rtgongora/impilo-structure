@@ -65,6 +65,7 @@ import {
   Target,
   AlertTriangle,
   Lock,
+  Search,
 } from "lucide-react";
 import { Dialog, DialogContent, DialogTrigger } from "@/components/ui/dialog";
 import { EmergencyHub } from "@/components/emergency/EmergencyHub";
@@ -174,11 +175,13 @@ const workModuleCategories: ModuleCategory[] = [
     description: "Generate, validate, and recover health IDs",
     roles: ['admin', 'registrar', 'receptionist', 'hie_admin', 'doctor', 'nurse'],
     modules: [
-      { id: "id-services", label: "ID Services Hub", description: "Generate, validate & recover IDs", icon: Shield, path: "/id-services", color: "bg-primary", roles: ["admin", "registrar", "hie_admin"] },
-      { id: "phid-generation", label: "Patient PHID", description: "Generate Patient Health IDs", icon: UserCog, path: "/id-services", color: "bg-blue-500", roles: ["admin", "registrar", "receptionist", "hie_admin"] },
-      { id: "provider-id", label: "Provider ID (Varapi)", description: "Generate healthcare worker IDs", icon: Stethoscope, path: "/id-services", color: "bg-teal-500", roles: ["admin", "hie_admin"] },
-      { id: "facility-id", label: "Facility ID (Thuso)", description: "Generate facility identifiers", icon: Building2, path: "/id-services", color: "bg-purple-500", roles: ["admin", "hie_admin"] },
-      { id: "id-recovery", label: "ID Recovery", description: "Recover lost or forgotten IDs", icon: Shield, path: "/id-services", color: "bg-amber-500" },
+      { id: "id-services", label: "ID Services Hub", description: "Generate, validate & recover IDs", icon: Shield, path: "/id-services?tab=generate", color: "bg-primary", roles: ["admin", "registrar", "hie_admin"] },
+      { id: "phid-generation", label: "Patient PHID", description: "Generate Patient Health IDs", icon: UserCog, path: "/id-services?tab=generate", color: "bg-blue-500", roles: ["admin", "registrar", "receptionist", "hie_admin"] },
+      { id: "provider-id", label: "Provider ID (Varapi)", description: "Generate healthcare worker IDs", icon: Stethoscope, path: "/id-services?tab=generate", color: "bg-teal-500", roles: ["admin", "hie_admin"] },
+      { id: "facility-id", label: "Facility ID (Thuso)", description: "Generate facility identifiers", icon: Building2, path: "/id-services?tab=generate", color: "bg-purple-500", roles: ["admin", "hie_admin"] },
+      { id: "id-recovery", label: "ID Recovery", description: "Recover lost or forgotten IDs", icon: Shield, path: "/id-services?tab=recovery", color: "bg-amber-500" },
+      { id: "id-validate", label: "ID Validation", description: "Verify ID authenticity", icon: Search, path: "/id-services?tab=validate", color: "bg-green-500" },
+      { id: "id-batch", label: "Batch Generation", description: "Generate IDs in bulk", icon: Package, path: "/id-services?tab=batch", color: "bg-orange-500", roles: ["admin", "hie_admin"] },
     ],
   },
   {
@@ -190,9 +193,9 @@ const workModuleCategories: ModuleCategory[] = [
       { id: "patients-registry", label: "Client Registry (MOSIP)", description: "Master patient index & Health ID", icon: Users, path: "/client-registry", color: "bg-blue-500", roles: ["admin", "hie_admin", "registrar"] },
       { id: "providers", label: "Provider Registry (Varapi)", description: "National HPR & IdP", icon: Stethoscope, path: "/hpr", color: "bg-teal-500", roles: ["admin", "hie_admin"] },
       { id: "facilities", label: "Facility Registry (Thuso)", description: "GOFR health facilities", icon: Building2, path: "/facility-registry", color: "bg-purple-500", roles: ["admin", "hie_admin"] },
-      { id: "terminology", label: "Terminology Service", description: "ICD-11, SNOMED-CT, LOINC codes", icon: BookOpen, path: "/id-services", color: "bg-amber-500" },
-      { id: "shr", label: "Shared Health Record", description: "FHIR-based patient records", icon: FileHeart, path: "/id-services", color: "bg-rose-500", roles: ["admin", "hie_admin"] },
-      { id: "ndr", label: "National Data Repository", description: "Aggregated facility reporting", icon: Database, path: "/id-services", color: "bg-indigo-500", roles: ["admin", "hie_admin"] },
+      { id: "terminology", label: "Terminology Service", description: "ICD-11, SNOMED-CT, LOINC codes", icon: BookOpen, path: "/terminology", color: "bg-amber-500" },
+      { id: "shr", label: "Shared Health Record", description: "FHIR-based patient records", icon: FileHeart, path: "/shr", color: "bg-rose-500", roles: ["admin", "hie_admin"] },
+      { id: "ndr", label: "National Data Repository", description: "Aggregated facility reporting", icon: Database, path: "/ndr", color: "bg-indigo-500", roles: ["admin", "hie_admin"] },
       { id: "product-registry", label: "Product Registry", description: "Health products catalogue", icon: Package, path: "/admin/product-registry", color: "bg-green-500", roles: ["admin"] },
       { id: "fhir-viewer", label: "FHIR Resources", description: "HL7 FHIR interoperability viewer", icon: FileCheck, path: "/admin", color: "bg-cyan-500", roles: ["admin", "hie_admin"] },
     ],
