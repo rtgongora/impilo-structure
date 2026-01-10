@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useMemo } from "react";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -10,6 +10,7 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from 
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { useLabAnalyzers, type LabAnalyzer } from "@/hooks/lims/useLabAnalyzers";
 import { useQCRuns, useQCLots, checkWestgardRules } from "@/hooks/lims/useLabQC";
+import { LeveyJenningsChart } from "./LeveyJenningsChart";
 import {
   Activity,
   AlertTriangle,
@@ -375,14 +376,68 @@ function AnalyzerQCPanel({ analyzerId }: { analyzerId: string }) {
       </TabsContent>
 
       <TabsContent value="chart">
-        <Card>
-          <CardContent className="p-6">
-            <div className="h-64 flex items-center justify-center text-muted-foreground">
-              <p>Levey-Jennings chart visualization would be rendered here using recharts</p>
-            </div>
-          </CardContent>
-        </Card>
+        <LeveyJenningsChartWrapper runs={runs} lots={lots} />
       </TabsContent>
     </Tabs>
+  );
+}
+
+function LeveyJenningsChartWrapper({ runs, lots }: { runs: any[]; lots: any[] }) {
+  const [selectedLotId, setSelectedLotId] = useState<string>("");
+
+  // Transform runs into chart data format
+  const chartData = useMemo(() => {
+    const filteredRuns = selectedLotId 
+      ? runs.filter(r => r.qc_lot_id === selectedLotId)
+      : runs;
+    
+    const lot = lots.find(l => l.id === selectedLotId);
+    
+    return filteredRuns.map(run => ({
+      id: run.id,
+      run_date: run.run_time,
+      measured_value: run.result_value,
+      target_value: lot?.target_mean || run.qc_lot?.target_mean || 100,
+      sd: lot?.target_sd || run.qc_lot?.target_sd || 5,
+      lot_number: run.qc_lot?.lot_number || "Unknown",
+      westgard_status: run.status === "accepted" ? "pass" : run.status === "rejected" ? "fail" : "warning",
+      westgard_rules_violated: run.westgard_rules_violated || []
+    }));
+  }, [runs, lots, selectedLotId]);
+
+  const selectedLot = lots.find(l => l.id === selectedLotId);
+
+  return (
+    <div className="space-y-4">
+      <div className="flex items-center gap-4">
+        <Label>QC Material:</Label>
+        <Select value={selectedLotId} onValueChange={setSelectedLotId}>
+          <SelectTrigger className="w-64">
+            <SelectValue placeholder="Select QC material..." />
+          </SelectTrigger>
+          <SelectContent>
+            {lots.map(lot => (
+              <SelectItem key={lot.id} value={lot.id}>
+                {lot.material_name} - {lot.level}
+              </SelectItem>
+            ))}
+          </SelectContent>
+        </Select>
+      </div>
+
+      {selectedLotId ? (
+        <LeveyJenningsChart 
+          data={chartData}
+          testName={selectedLot?.material_name || "QC"}
+          unit={selectedLot?.unit || ""}
+        />
+      ) : (
+        <Card>
+          <CardContent className="p-8 text-center text-muted-foreground">
+            Select a QC material to view the Levey-Jennings chart
+          </CardContent>
+        </Card>
+      )}
+    </div>
   );
 }
