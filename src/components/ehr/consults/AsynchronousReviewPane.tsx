@@ -29,6 +29,7 @@ import {
   CalendarClock,
   Building,
   ChevronRight,
+  ArrowLeft,
 } from "lucide-react";
 import { format } from "date-fns";
 import { cn } from "@/lib/utils";
@@ -42,9 +43,10 @@ import type {
 
 interface AsynchronousReviewPaneProps {
   referral: ReferralPackage;
-  onSubmitResponse: (response: ConsultationResponse) => void;
-  onSaveDraft: (response: Partial<ConsultationResponse>) => void;
-  onRequestLiveSession: () => void;
+  onBack?: () => void;
+  onSubmitResponse?: (response: ConsultationResponse) => void;
+  onSaveDraft?: (response: Partial<ConsultationResponse>) => void;
+  onRequestLiveSession?: () => void;
 }
 
 const DISPOSITION_OPTIONS: { value: DispositionType; label: string; description: string }[] = [
@@ -62,6 +64,7 @@ const FOLLOW_UP_OPTIONS: { value: FollowUpType; label: string }[] = [
 
 export function AsynchronousReviewPane({
   referral,
+  onBack,
   onSubmitResponse,
   onSaveDraft,
   onRequestLiveSession,
@@ -121,7 +124,7 @@ export function AsynchronousReviewPane({
   };
 
   const handleSaveDraft = () => {
-    onSaveDraft(response);
+    onSaveDraft?.(response);
     setLastSaved(new Date());
     toast.success("Draft saved");
   };
@@ -153,7 +156,7 @@ export function AsynchronousReviewPane({
         completedAt: new Date().toISOString(),
       },
     };
-    onSubmitResponse(fullResponse);
+    onSubmitResponse?.(fullResponse);
     toast.success("Consultation response submitted");
   };
 
@@ -169,11 +172,18 @@ export function AsynchronousReviewPane({
       <div className="w-1/2 border-r flex flex-col">
         <div className="p-4 border-b bg-muted/30">
           <div className="flex items-center justify-between">
-            <div>
-              <h3 className="font-semibold">Referral Package</h3>
-              <p className="text-sm text-muted-foreground">
-                From {referral.context.referringFacilityName}
-              </p>
+            <div className="flex items-center gap-3">
+              {onBack && (
+                <Button variant="ghost" size="sm" onClick={onBack}>
+                  <ArrowLeft className="h-4 w-4" />
+                </Button>
+              )}
+              <div>
+                <h3 className="font-semibold">Referral Package</h3>
+                <p className="text-sm text-muted-foreground">
+                  From {referral.context.referringFacilityName}
+                </p>
+              </div>
             </div>
             <Badge variant={referral.urgency === "emergency" ? "destructive" : "secondary"}>
               {referral.urgency.toUpperCase()}
