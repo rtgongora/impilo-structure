@@ -107,6 +107,7 @@ const workModuleCategories: ModuleCategory[] = [
     modules: [
       { id: "dashboard", label: "My Dashboard", description: "Your worklist, tasks, and alerts", icon: ClipboardList, path: "/dashboard", color: "bg-primary" },
       { id: "communication", label: "Communication", description: "Messages, pages & calls", icon: MessageSquare, path: "/communication", color: "bg-primary" },
+      { id: "sorting", label: "Patient Sorting", description: "Front desk: arrival & triage", icon: ClipboardCheck, path: "/sorting", color: "bg-orange-500" },
       { id: "ehr", label: "Patient Encounters", description: "Clinical documentation & care", icon: Stethoscope, path: "/encounter", color: "bg-blue-500", roles: ["doctor", "nurse", "specialist", "admin"] },
       { id: "queue", label: "Patient Queue", description: "Waiting patients & triage", icon: Users, path: "/queue", color: "bg-orange-500" },
       { id: "beds", label: "Bed Management", description: "Ward status & admissions", icon: Bed, path: "/beds", color: "bg-purple-500", roles: ["doctor", "nurse", "admin"], capabilities: ["inpatient"] },
@@ -143,6 +144,7 @@ const workModuleCategories: ModuleCategory[] = [
     title: "Scheduling & Registration",
     description: "Appointments, patient registration, and theatre",
     modules: [
+      { id: "sorting", label: "Patient Sorting", description: "Arrival, triage & queue assignment", icon: ClipboardCheck, path: "/sorting", color: "bg-orange-500" },
       { id: "appointments", label: "Appointments", description: "Clinic & provider scheduling", icon: Calendar, path: "/appointments", color: "bg-cyan-500" },
       { id: "registration", label: "Patient Registration", description: "New patient intake & ID", icon: UserPlus, path: "/registration", color: "bg-emerald-500" },
       { id: "patients", label: "Patient Registry", description: "Search & manage patients", icon: Users, path: "/patients", color: "bg-slate-500" },

@@ -57,6 +57,7 @@ import Operations from "./pages/Operations";
 import AboveSiteDashboard from "./pages/AboveSiteDashboard";
 import SharedSummary from "./pages/SharedSummary";
 import Telemedicine from "./pages/Telemedicine";
+import PatientSorting from "./pages/PatientSorting";
 const queryClient = new QueryClient();
 
 const App = () => (
@@ -280,6 +281,11 @@ const App = () => (
             <Route path="/telemedicine" element={
               <ProtectedRoute>
                 <Telemedicine />
+              </ProtectedRoute>
+            } />
+            <Route path="/sorting" element={
+              <ProtectedRoute>
+                <PatientSorting />
               </ProtectedRoute>
             } />
             {/* Shared Summary Routes - publicly accessible with valid token */}

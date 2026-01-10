@@ -94,30 +94,30 @@ export function PatientSortingDesk({ facilityId, onBack }: PatientSortingDeskPro
   }
 
   return (
-    <div className="min-h-screen bg-background p-4 space-y-4">
-      {/* Header */}
-      <div className="flex items-center justify-between">
+    <div className="min-h-screen bg-background p-3 md:p-4 lg:p-6 space-y-4">
+      {/* Header - Touch optimized */}
+      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
         <div className="flex items-center gap-3">
           {onBack && (
-            <Button variant="ghost" size="icon" onClick={onBack}>
+            <Button variant="ghost" size="icon" onClick={onBack} className="min-h-[44px] min-w-[44px]">
               <ArrowLeft className="h-5 w-5" />
             </Button>
           )}
           <div>
-            <h1 className="text-2xl font-bold">Patient Sorting Desk</h1>
+            <h1 className="text-xl md:text-2xl font-bold">Patient Sorting Desk</h1>
             <p className="text-sm text-muted-foreground">
               Arrival, identification, triage, and queue assignment
             </p>
           </div>
         </div>
-        <div className="flex items-center gap-2">
-          <Badge variant="outline" className="gap-1">
-            <Users className="h-3 w-3" />
+        <div className="flex items-center gap-2 self-end sm:self-auto">
+          <Badge variant="outline" className="gap-1 py-1.5 px-3">
+            <Users className="h-3.5 w-3.5" />
             {activeSessions.length} Active
           </Badge>
           {metrics && metrics.pending_count > 0 && (
-            <Badge variant="destructive" className="gap-1">
-              <Clock className="h-3 w-3" />
+            <Badge variant="destructive" className="gap-1 py-1.5 px-3">
+              <Clock className="h-3.5 w-3.5" />
               {metrics.pending_count} Pending
             </Badge>
           )}
@@ -125,74 +125,75 @@ export function PatientSortingDesk({ facilityId, onBack }: PatientSortingDeskPro
       </div>
 
       <Tabs value={activeTab} onValueChange={(v) => setActiveTab(v as typeof activeTab)}>
-        <TabsList className="grid w-full max-w-md grid-cols-3">
-          <TabsTrigger value="desk" className="gap-2">
+        <TabsList className="grid w-full max-w-lg grid-cols-3 h-12">
+          <TabsTrigger value="desk" className="gap-2 min-h-[44px] text-sm">
             <UserPlus className="h-4 w-4" />
-            New Arrival
+            <span className="hidden sm:inline">New Arrival</span>
+            <span className="sm:hidden">New</span>
           </TabsTrigger>
-          <TabsTrigger value="active" className="gap-2">
+          <TabsTrigger value="active" className="gap-2 min-h-[44px] text-sm">
             <Activity className="h-4 w-4" />
             Active ({activeSessions.length})
           </TabsTrigger>
-          <TabsTrigger value="metrics" className="gap-2">
+          <TabsTrigger value="metrics" className="gap-2 min-h-[44px] text-sm">
             <CheckCircle2 className="h-4 w-4" />
             Metrics
           </TabsTrigger>
         </TabsList>
 
         {/* New Arrival Tab */}
-        <TabsContent value="desk" className="space-y-6 mt-6">
+        <TabsContent value="desk" className="space-y-4 md:space-y-6 mt-4 md:mt-6">
           <Card>
-            <CardHeader>
-              <CardTitle className="flex items-center gap-2">
+            <CardHeader className="pb-3 md:pb-4">
+              <CardTitle className="flex items-center gap-2 text-lg">
                 <UserPlus className="h-5 w-5" />
                 Register New Arrival
               </CardTitle>
             </CardHeader>
             <CardContent>
-              <p className="text-sm text-muted-foreground mb-6">
-                Select the arrival type to start the sorting process. The system will guide you through identification, triage, and routing.
+              <p className="text-sm text-muted-foreground mb-4 md:mb-6">
+                Select the arrival type to start the sorting process.
               </p>
-              <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+              <div className="grid grid-cols-2 gap-3 md:gap-4">
                 {ARRIVAL_BUTTONS.map(({ mode, label, icon, color }) => (
                   <Button
                     key={mode}
-                    className={`h-24 flex-col gap-2 text-white ${color}`}
+                    className={`h-20 md:h-24 flex-col gap-2 text-white ${color} active:scale-[0.98] transition-transform`}
                     onClick={() => handleNewArrival(mode)}
                     disabled={loading}
                   >
                     {icon}
-                    <span className="font-medium">{label}</span>
+                    <span className="font-medium text-sm md:text-base">{label}</span>
                   </Button>
                 ))}
               </div>
             </CardContent>
           </Card>
 
-          {/* Quick Stats */}
+          {/* Quick Stats - Tablet grid */}
           {metrics && (
-            <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+            <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
               <Card>
-                <CardContent className="pt-4">
-                  <div className="text-2xl font-bold">{metrics.total_arrivals}</div>
+                <CardContent className="pt-4 pb-3">
+                  <div className="text-2xl md:text-3xl font-bold">{metrics.total_arrivals}</div>
                   <p className="text-xs text-muted-foreground">Today's Arrivals</p>
                 </CardContent>
               </Card>
               <Card>
-                <CardContent className="pt-4">
-                  <div className="text-2xl font-bold">{metrics.total_triaged}</div>
+                <CardContent className="pt-4 pb-3">
+                  <div className="text-2xl md:text-3xl font-bold">{metrics.total_triaged}</div>
                   <p className="text-xs text-muted-foreground">Triaged</p>
                 </CardContent>
               </Card>
               <Card>
-                <CardContent className="pt-4">
-                  <div className="text-2xl font-bold text-red-600">{metrics.immediate_care_count}</div>
+                <CardContent className="pt-4 pb-3">
+                  <div className="text-2xl md:text-3xl font-bold text-red-600">{metrics.immediate_care_count}</div>
                   <p className="text-xs text-muted-foreground">Immediate Care</p>
                 </CardContent>
               </Card>
               <Card>
-                <CardContent className="pt-4">
-                  <div className="text-2xl font-bold text-blue-600">{metrics.queued_count}</div>
+                <CardContent className="pt-4 pb-3">
+                  <div className="text-2xl md:text-3xl font-bold text-blue-600">{metrics.queued_count}</div>
                   <p className="text-xs text-muted-foreground">Queued</p>
                 </CardContent>
               </Card>
