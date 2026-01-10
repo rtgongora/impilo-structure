@@ -221,35 +221,35 @@ export function SortingWorkflow({
   };
 
   return (
-    <div className="min-h-screen bg-background p-3 md:p-4 lg:p-6">
-      {/* Header - Touch friendly */}
-      <div className="flex items-center justify-between mb-4 md:mb-6">
-        <div className="flex items-center gap-2 md:gap-3">
-          <Button variant="ghost" size="icon" onClick={onCancel} disabled={loading} className="min-h-[44px] min-w-[44px]">
-            <ArrowLeft className="h-5 w-5" />
+    <div className="h-[calc(100vh-56px)] bg-background p-2 md:p-3 flex flex-col overflow-hidden">
+      {/* Compact Header */}
+      <div className="flex items-center justify-between mb-2 flex-shrink-0">
+        <div className="flex items-center gap-2">
+          <Button variant="ghost" size="icon" onClick={onCancel} disabled={loading} className="h-8 w-8">
+            <ArrowLeft className="h-4 w-4" />
           </Button>
           <div>
-            <h1 className="text-lg md:text-xl font-bold">Patient Sorting</h1>
-            <p className="text-sm text-muted-foreground flex items-center gap-2 flex-wrap">
-              <Badge variant="outline" className="py-0.5">{session.session_number}</Badge>
-              <span className="flex items-center gap-1">
-                <Clock className="h-3 w-3" />
-                {waitTime} waiting
-              </span>
+            <div className="flex items-center gap-2">
+              <h1 className="text-base font-bold">Sorting</h1>
+              <Badge variant="outline" className="py-0 text-xs">{session.session_number}</Badge>
+            </div>
+            <p className="text-xs text-muted-foreground flex items-center gap-1">
+              <Clock className="h-3 w-3" />
+              {waitTime} waiting
             </p>
           </div>
         </div>
-        <Button variant="outline" size="sm" onClick={handleCancel} disabled={loading} className="min-h-[40px]">
-          <X className="h-4 w-4 mr-1" />
-          <span className="hidden sm:inline">Cancel</span>
+        <Button variant="outline" size="sm" onClick={handleCancel} disabled={loading} className="h-8 text-xs">
+          <X className="h-3.5 w-3.5 mr-1" />
+          Cancel
         </Button>
       </div>
 
-      {/* Progress Steps - Responsive */}
-      <div className="flex items-center justify-center gap-2 md:gap-4 mb-6 md:mb-8 overflow-x-auto pb-2">
+      {/* Compact Progress Steps */}
+      <div className="flex items-center justify-center gap-3 mb-3 flex-shrink-0">
         {(['identify', 'triage', 'route'] as WorkflowStep[]).map((s, idx) => (
-          <div key={s} className="flex items-center gap-1.5 md:gap-2 flex-shrink-0">
-            <div className={`w-8 h-8 md:w-9 md:h-9 rounded-full flex items-center justify-center text-sm font-medium ${
+          <div key={s} className="flex items-center gap-1">
+            <div className={`w-6 h-6 rounded-full flex items-center justify-center text-xs font-medium ${
               step === s 
                 ? 'bg-primary text-primary-foreground' 
                 : session.identity_status !== 'unknown' && s === 'identify'
@@ -260,19 +260,20 @@ export function SortingWorkflow({
             }`}>
               {(session.identity_status !== 'unknown' && s === 'identify') || 
                (session.triage_category && s === 'triage') 
-                ? <CheckCircle2 className="h-4 w-4" />
+                ? <CheckCircle2 className="h-3 w-3" />
                 : idx + 1}
             </div>
-            <span className={`text-xs md:text-sm ${step === s ? 'font-medium' : 'text-muted-foreground'}`}>
-              {s === 'identify' ? 'Identify' : s === 'triage' ? 'Triage' : 'Route'}
+            <span className={`text-xs ${step === s ? 'font-medium' : 'text-muted-foreground'}`}>
+              {s === 'identify' ? 'ID' : s === 'triage' ? 'Triage' : 'Route'}
             </span>
-            {idx < 2 && <ArrowRight className="h-3 w-3 md:h-4 md:w-4 text-muted-foreground mx-1 md:mx-2" />}
+            {idx < 2 && <ArrowRight className="h-3 w-3 text-muted-foreground mx-1" />}
           </div>
         ))}
       </div>
 
-      {/* Step Content */}
-      <div className="max-w-2xl mx-auto">
+      {/* Scrollable Content */}
+      <div className="flex-1 overflow-y-auto min-h-0">
+        <div className="max-w-2xl mx-auto pb-4">
         {/* IDENTIFY STEP */}
         {step === 'identify' && (
           <div className="space-y-4">
@@ -607,6 +608,7 @@ export function SortingWorkflow({
             </Card>
           </div>
         )}
+        </div>
       </div>
     </div>
   );

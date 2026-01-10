@@ -502,162 +502,111 @@ export default function ModuleHome() {
   const visibleCategories = getVisibleCategories(workModuleCategories);
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-background via-background to-muted/30">
-      {/* Header */}
-      <header className="sticky top-0 z-50 bg-background/95 backdrop-blur-md border-b">
-        <div className="max-w-7xl mx-auto px-3 sm:px-6 lg:px-8">
-          <div className="flex items-center justify-between h-14 sm:h-16">
-            <div className="flex items-center gap-2 sm:gap-3">
-              <img src={impiloLogo} alt="Impilo" className="h-8 sm:h-10 w-auto" />
-            </div>
+    <div className="h-screen flex flex-col bg-gradient-to-br from-background via-background to-muted/30">
+      {/* Compact Header */}
+      <header className="sticky top-0 z-50 bg-background/95 backdrop-blur-md border-b flex-shrink-0">
+        <div className="max-w-7xl mx-auto px-3">
+          <div className="flex items-center justify-between h-12">
+            <img src={impiloLogo} alt="Impilo" className="h-7 w-auto" />
 
-            <div className="flex items-center gap-2 sm:gap-4">
-              <div className="flex items-center gap-2 px-2 sm:px-3 py-1 sm:py-1.5 bg-muted/50 rounded-full">
-                <div className="w-7 h-7 sm:w-8 sm:h-8 rounded-full bg-primary/10 flex items-center justify-center">
-                  <User className="h-3.5 w-3.5 sm:h-4 sm:w-4 text-primary" />
+            <div className="flex items-center gap-2">
+              <div className="flex items-center gap-2 px-2 py-1 bg-muted/50 rounded-full">
+                <div className="w-6 h-6 rounded-full bg-primary/10 flex items-center justify-center">
+                  <User className="h-3 w-3 text-primary" />
                 </div>
                 <div className="hidden sm:block">
-                  <p className="text-sm font-medium">{profile?.display_name}</p>
-                  <p className="text-xs text-muted-foreground capitalize">{profile?.role} • {profile?.department || "General"}</p>
+                  <p className="text-xs font-medium leading-tight">{profile?.display_name}</p>
+                  <p className="text-[10px] text-muted-foreground capitalize leading-tight">{profile?.role}</p>
                 </div>
               </div>
-              <Button variant="ghost" size="icon" className="h-8 w-8 sm:h-9 sm:w-9" onClick={() => signOut()}>
-                <LogOut className="h-4 w-4" />
+              <Button variant="ghost" size="icon" className="h-7 w-7" onClick={() => signOut()}>
+                <LogOut className="h-3.5 w-3.5" />
               </Button>
             </div>
           </div>
         </div>
       </header>
 
-      {/* Main Content */}
-      <main className="max-w-7xl mx-auto px-3 sm:px-6 lg:px-8 py-4 sm:py-8">
-        {/* Welcome */}
-        <div className="mb-4 sm:mb-6">
-          <h2 className="text-xl sm:text-2xl md:text-3xl font-bold">
-            Welcome back, {getDisplayTitle()}
-          </h2>
-          <p className="text-sm sm:text-base text-muted-foreground mt-0.5 sm:mt-1">
-            Select a module to get started.
-          </p>
-        </div>
+      {/* Main Content - Scrollable */}
+      <main className="flex-1 overflow-y-auto">
+        <div className="max-w-7xl mx-auto px-3 py-3">
+          {/* Compact Welcome */}
+          <div className="mb-3">
+            <h2 className="text-lg font-bold leading-tight">Welcome, {getDisplayTitle()}</h2>
+            <p className="text-xs text-muted-foreground">Select a module to get started</p>
+          </div>
 
-        {/* Main Tabs */}
-        <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
-          <TabsList className="grid w-full grid-cols-3 mb-4 sm:mb-6 h-auto p-1">
-            <TabsTrigger value="work" className="flex items-center justify-center gap-1.5 sm:gap-2 py-2.5 sm:py-3 text-xs sm:text-sm data-[state=active]:bg-primary data-[state=active]:text-primary-foreground">
-              <Briefcase className="h-3.5 w-3.5 sm:h-4 sm:w-4" />
-              <span className="hidden xs:inline sm:hidden">Work</span>
-              <span className="hidden sm:inline">My Work</span>
-              <span className="xs:hidden">Work</span>
-            </TabsTrigger>
-            <TabsTrigger value="portal" className="flex items-center justify-center gap-1.5 sm:gap-2 py-2.5 sm:py-3 text-xs sm:text-sm data-[state=active]:bg-pink-500 data-[state=active]:text-white">
-              <Heart className="h-3.5 w-3.5 sm:h-4 sm:w-4" />
-              <span className="hidden sm:inline">Health Portal</span>
-              <span className="sm:hidden">Health</span>
-            </TabsTrigger>
-            <TabsTrigger value="social" className="flex items-center justify-center gap-1.5 sm:gap-2 py-2.5 sm:py-3 text-xs sm:text-sm data-[state=active]:bg-purple-500 data-[state=active]:text-white">
-              <Users className="h-3.5 w-3.5 sm:h-4 sm:w-4" />
-              <span className="hidden sm:inline">Social Hub</span>
-              <span className="sm:hidden">Social</span>
-            </TabsTrigger>
-          </TabsList>
+          {/* Compact Tabs */}
+          <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
+            <TabsList className="grid w-full grid-cols-3 mb-3 h-9 p-0.5">
+              <TabsTrigger value="work" className="flex items-center justify-center gap-1 py-1.5 text-xs data-[state=active]:bg-primary data-[state=active]:text-primary-foreground">
+                <Briefcase className="h-3.5 w-3.5" />
+                Work
+              </TabsTrigger>
+              <TabsTrigger value="portal" className="flex items-center justify-center gap-1 py-1.5 text-xs data-[state=active]:bg-pink-500 data-[state=active]:text-white">
+                <Heart className="h-3.5 w-3.5" />
+                Health
+              </TabsTrigger>
+              <TabsTrigger value="social" className="flex items-center justify-center gap-1 py-1.5 text-xs data-[state=active]:bg-purple-500 data-[state=active]:text-white">
+                <Users className="h-3.5 w-3.5" />
+                Social
+              </TabsTrigger>
+            </TabsList>
 
-          {/* My Work Tab */}
-          <TabsContent value="work" className="mt-0 space-y-4 sm:space-y-8">
-            {/* Communication Quick Access */}
+            {/* My Work Tab */}
+            <TabsContent value="work" className="mt-0 space-y-3">
+            {/* Communication Quick Access - Compact */}
             <div>
-              <div className="flex items-center justify-between mb-3 sm:mb-4">
-                <div className="flex items-center gap-2">
-                  <Badge variant="secondary" className="px-2 sm:px-3 py-0.5 sm:py-1 text-xs sm:text-sm">Communication</Badge>
-                  <p className="hidden md:block text-sm text-muted-foreground">Messages, pages & calls</p>
-                </div>
-                <Button variant="outline" size="sm" className="h-8 text-xs sm:text-sm" onClick={() => navigate("/communication")}>
-                  <span className="hidden sm:inline">Open Hub</span>
-                  <span className="sm:hidden">Hub</span>
-                  <ChevronRight className="h-3.5 w-3.5 sm:h-4 sm:w-4 ml-1" />
+              <div className="flex items-center justify-between mb-2">
+                <Badge variant="secondary" className="px-2 py-0.5 text-xs">Communication</Badge>
+                <Button variant="outline" size="sm" className="h-7 text-xs px-2" onClick={() => navigate("/communication")}>
+                  Hub <ChevronRight className="h-3 w-3 ml-0.5" />
                 </Button>
               </div>
 
-              <div className="grid grid-cols-3 gap-2 sm:gap-4">
+              <div className="grid grid-cols-3 gap-2">
                 <Button
                   variant="outline"
-                  className="h-auto p-3 sm:p-5 flex flex-col sm:flex-row items-center sm:justify-between gap-2 sm:gap-3 hover:bg-accent"
+                  className="h-auto py-2 flex flex-col items-center gap-1 hover:bg-accent"
                   onClick={() => navigate("/communication?tab=messages")}
                 >
-                  <div className="flex flex-col sm:flex-row items-center gap-1.5 sm:gap-3">
-                    <div className="h-9 w-9 sm:h-10 sm:w-10 rounded-lg bg-primary/10 flex items-center justify-center">
-                      <MessageSquare className="h-4 w-4 sm:h-5 sm:w-5 text-primary" />
-                    </div>
-                    <div className="text-center sm:text-left">
-                      <p className="font-medium text-xs sm:text-sm">Messages</p>
-                      <p className="hidden sm:block text-xs text-muted-foreground">Chat with teams</p>
-                    </div>
+                  <div className="h-7 w-7 rounded-md bg-primary/10 flex items-center justify-center">
+                    <MessageSquare className="h-3.5 w-3.5 text-primary" />
                   </div>
-                  <ChevronRight className="hidden sm:block h-4 w-4 text-muted-foreground" />
+                  <span className="font-medium text-xs">Messages</span>
                 </Button>
 
                 <Button
                   variant="outline"
-                  className="h-auto p-3 sm:p-5 flex flex-col sm:flex-row items-center sm:justify-between gap-2 sm:gap-3 hover:bg-accent"
+                  className="h-auto py-2 flex flex-col items-center gap-1 hover:bg-accent"
                   onClick={() => navigate("/communication?tab=pages")}
                 >
-                  <div className="flex flex-col sm:flex-row items-center gap-1.5 sm:gap-3">
-                    <div className="h-9 w-9 sm:h-10 sm:w-10 rounded-lg bg-warning/10 flex items-center justify-center">
-                      <Bell className="h-4 w-4 sm:h-5 sm:w-5 text-warning" />
-                    </div>
-                    <div className="text-center sm:text-left">
-                      <p className="font-medium text-xs sm:text-sm">Pages</p>
-                      <p className="hidden sm:block text-xs text-muted-foreground">Urgent alerts</p>
-                    </div>
+                  <div className="h-7 w-7 rounded-md bg-warning/10 flex items-center justify-center">
+                    <Bell className="h-3.5 w-3.5 text-warning" />
                   </div>
-                  <ChevronRight className="hidden sm:block h-4 w-4 text-muted-foreground" />
+                  <span className="font-medium text-xs">Pages</span>
                 </Button>
 
                 <Button
                   variant="outline"
-                  className="h-auto p-3 sm:p-5 flex flex-col sm:flex-row items-center sm:justify-between gap-2 sm:gap-3 hover:bg-accent"
+                  className="h-auto py-2 flex flex-col items-center gap-1 hover:bg-accent"
                   onClick={() => navigate("/communication?tab=calls")}
                 >
-                  <div className="flex flex-col sm:flex-row items-center gap-1.5 sm:gap-3">
-                    <div className="h-9 w-9 sm:h-10 sm:w-10 rounded-lg bg-success/10 flex items-center justify-center">
-                      <Phone className="h-4 w-4 sm:h-5 sm:w-5 text-success" />
-                    </div>
-                    <div className="text-center sm:text-left">
-                      <p className="font-medium text-xs sm:text-sm">Calls</p>
-                      <p className="hidden sm:block text-xs text-muted-foreground">Voice & video</p>
-                    </div>
+                  <div className="h-7 w-7 rounded-md bg-success/10 flex items-center justify-center">
+                    <Phone className="h-3.5 w-3.5 text-success" />
                   </div>
-                  <ChevronRight className="hidden sm:block h-4 w-4 text-muted-foreground" />
+                  <span className="font-medium text-xs">Calls</span>
                 </Button>
               </div>
             </div>
 
-            {/* Document Scanner */}
-            <div>
-              <div className="flex items-center justify-between mb-3 sm:mb-4">
-                <div className="flex items-center gap-2">
-                  <Badge variant="secondary" className="px-2 sm:px-3 py-0.5 sm:py-1 text-xs sm:text-sm bg-gradient-to-r from-primary/10 to-blue-500/10">
-                    <ScanLine className="h-3 w-3 mr-1" />
-                    <span className="hidden sm:inline">Document </span>Scanner
-                  </Badge>
-                  <p className="hidden md:block text-sm text-muted-foreground">Scan prescriptions, lab results & more</p>
-                </div>
+            {/* Document Scanner - Compact */}
+            <Card className="p-2">
+              <div className="flex items-center gap-2">
+                <HealthDocumentScanner variant="button" className="h-8 text-xs" />
+                <span className="text-xs text-muted-foreground">Scan prescriptions, labs & more</span>
               </div>
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4">
-                <HealthDocumentScanner variant="card" />
-                <Card className="bg-gradient-to-br from-muted/50 to-muted/30 border-dashed">
-                  <CardContent className="py-4 sm:pt-6 flex flex-col items-center gap-2 sm:gap-3 text-center">
-                    <div className="w-10 h-10 sm:w-14 sm:h-14 rounded-xl bg-muted flex items-center justify-center">
-                      <FileText className="h-5 w-5 sm:h-7 sm:w-7 text-muted-foreground" />
-                    </div>
-                    <div>
-                      <p className="font-medium text-sm text-muted-foreground">Recent Scans</p>
-                      <p className="text-xs text-muted-foreground">No documents scanned yet</p>
-                    </div>
-                  </CardContent>
-                </Card>
-              </div>
-            </div>
+            </Card>
 
             {/* My Practice Section */}
             <div>
@@ -884,6 +833,7 @@ export default function ModuleHome() {
             <SocialHubLayout />
           </TabsContent>
         </Tabs>
+        </div>
       </main>
 
       {/* Floating Emergency Button - Always Visible */}

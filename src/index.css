@@ -257,26 +257,14 @@
   /* Tablet optimization - 10.1" tablets (1280x800 to 1920x1200) */
   @media (min-width: 768px) and (max-width: 1366px) {
     html {
-      font-size: 15px; /* Slightly larger base for readability */
+      font-size: 14px; /* Compact for tablets */
     }
   }
 
-  /* Touch-friendly sizing for tablets */
-  @media (pointer: coarse) {
-    button, 
-    [role="button"], 
-    input, 
-    select, 
-    textarea,
-    a {
-      min-height: 44px; /* Apple's minimum touch target */
-    }
-    
-    /* Larger checkboxes and radio buttons on touch */
-    input[type="checkbox"],
-    input[type="radio"] {
-      min-width: 20px;
-      min-height: 20px;
+  /* Reduce spacing on tablets */
+  @media (max-height: 900px) {
+    html {
+      --spacing: 0.2rem;
     }
   }
 }
@@ -323,49 +311,59 @@
 
   /* Tablet-optimized containers */
   .tablet-container {
-    @apply px-4 md:px-6 lg:px-8;
+    @apply px-3 md:px-4;
   }
 
-  /* Touch-friendly list items */
-  .touch-list-item {
-    @apply py-3 px-4 min-h-[56px] flex items-center;
-  }
-
-  /* Touch-friendly cards for tablets */
+  /* Compact cards for tablets */
   .touch-card {
-    @apply p-4 md:p-5;
+    @apply p-3;
   }
 
-  /* Tablet grid - optimized for 10.1" screens */
+  /* Tablet grids - compact */
   .tablet-grid-2 {
-    @apply grid grid-cols-1 sm:grid-cols-2 gap-4;
+    @apply grid grid-cols-2 gap-2;
   }
 
   .tablet-grid-3 {
-    @apply grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4;
+    @apply grid grid-cols-3 gap-2;
   }
 
   .tablet-grid-4 {
-    @apply grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-3 md:gap-4;
+    @apply grid grid-cols-4 gap-2;
   }
 
-  /* Touch-friendly navigation items */
+  /* Compact list items */
+  .touch-list-item {
+    @apply py-2 px-3 min-h-[44px] flex items-center;
+  }
+
+  /* Touch-friendly navigation */
   .touch-nav-item {
-    @apply min-h-[48px] px-3 py-2.5 rounded-lg flex items-center gap-3;
+    @apply min-h-[40px] px-2 py-1.5 rounded-md flex items-center gap-2;
   }
 
-  /* Larger buttons for touch */
+  /* Touch buttons */
   .btn-touch {
-    @apply min-h-[48px] px-4 py-3;
+    @apply min-h-[40px] px-3 py-2;
   }
 
-  /* Touch-friendly tabs */
+  /* Touch tabs */
   .touch-tabs {
-    @apply min-h-[44px];
+    @apply min-h-[40px];
   }
 
-  /* Optimized input for tablets */
+  /* Compact inputs */
   .input-touch {
-    @apply min-h-[48px] text-base px-4;
+    @apply min-h-[40px] text-sm px-3;
+  }
+
+  /* Viewport-height utilities for tablet */
+  .tablet-vh-full {
+    height: calc(100vh - 56px); /* Account for header */
+  }
+
+  .tablet-vh-content {
+    max-height: calc(100vh - 120px);
+    overflow-y: auto;
   }
 }
