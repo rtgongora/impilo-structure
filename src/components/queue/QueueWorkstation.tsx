@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { toast } from 'sonner';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
@@ -104,16 +105,20 @@ export function QueueWorkstation({ facilityId, initialQueueId }: QueueWorkstatio
 
   // Navigate to encounter and start service
   const handleStartServiceAndOpenChart = async (item: QueueItem) => {
-    await startService(item.id);
-    // Navigate to encounter with queue source for pre-authorization
-    const encounterId = item.encounter_id || item.id; // Use encounter_id if exists, else use item id
-    navigate(`/encounter/${encounterId}?source=queue`);
+    const result = await startService(item.id);
+    if (result.success && result.encounterId) {
+      // Navigate to encounter with queue source for pre-authorization
+      navigate(`/encounter/${result.encounterId}?source=queue`);
+    }
   };
 
   // Open patient chart for in-service items
   const handleOpenChart = (item: QueueItem) => {
-    const encounterId = item.encounter_id || item.id;
-    navigate(`/encounter/${encounterId}?source=queue`);
+    if (item.encounter_id) {
+      navigate(`/encounter/${item.encounter_id}?source=queue`);
+    } else {
+      toast.error('No encounter linked to this queue item');
+    }
   };
 
   const waitingItems = items.filter(i => i.status === 'waiting');

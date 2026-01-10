@@ -210,23 +210,57 @@ export function useQueueItems(queueId?: string) {
     }
   };
 
-  const startService = async (itemId: string): Promise<boolean> => {
+  const startService = async (itemId: string): Promise<{ success: boolean; encounterId?: string }> => {
     try {
+      // First, get the queue item to check patient and encounter
+      const { data: item, error: fetchError } = await supabase
+        .from('queue_items')
+        .select('*, patient:patients(id, first_name, last_name)')
+        .eq('id', itemId)
+        .single();
+
+      if (fetchError) throw fetchError;
+
+      let encounterId = item.encounter_id;
+
+      // If no encounter exists, create one
+      if (!encounterId && item.patient_id) {
+        const encounterNumber = `ENC-${new Date().toISOString().split('T')[0].replace(/-/g, '')}-${Math.random().toString(36).substring(2, 6).toUpperCase()}`;
+        
+        const { data: newEncounter, error: createError } = await supabase
+          .from('encounters')
+          .insert({
+            patient_id: item.patient_id,
+            encounter_number: encounterNumber,
+            encounter_type: 'outpatient',
+            status: 'active',
+            chief_complaint: item.reason_for_visit || 'Queue visit',
+          })
+          .select()
+          .single();
+
+        if (createError) throw createError;
+        encounterId = newEncounter.id;
+      }
+
+      // Update queue item with encounter ID and status
       const { error: updateError } = await supabase
         .from('queue_items')
         .update({
           status: 'in_service' as const,
           in_service_at: new Date().toISOString(),
+          encounter_id: encounterId,
         })
         .eq('id', itemId);
 
       if (updateError) throw updateError;
       toast.success('Service started');
-      return true;
+      await fetchItems();
+      return { success: true, encounterId };
     } catch (err) {
       console.error('Error starting service:', err);
       toast.error('Failed to start service');
-      return false;
+      return { success: false };
     }
   };
 
