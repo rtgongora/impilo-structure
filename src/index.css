@@ -253,6 +253,32 @@
   ::-webkit-scrollbar-thumb:hover {
     @apply bg-muted-foreground/50;
   }
+
+  /* Tablet optimization - 10.1" tablets (1280x800 to 1920x1200) */
+  @media (min-width: 768px) and (max-width: 1366px) {
+    html {
+      font-size: 15px; /* Slightly larger base for readability */
+    }
+  }
+
+  /* Touch-friendly sizing for tablets */
+  @media (pointer: coarse) {
+    button, 
+    [role="button"], 
+    input, 
+    select, 
+    textarea,
+    a {
+      min-height: 44px; /* Apple's minimum touch target */
+    }
+    
+    /* Larger checkboxes and radio buttons on touch */
+    input[type="checkbox"],
+    input[type="radio"] {
+      min-width: 20px;
+      min-height: 20px;
+    }
+  }
 }
 
 @layer components {
@@ -293,5 +319,53 @@
   .elapsed-time {
     font-family: var(--font-mono);
     font-variant-numeric: tabular-nums;
+  }
+
+  /* Tablet-optimized containers */
+  .tablet-container {
+    @apply px-4 md:px-6 lg:px-8;
+  }
+
+  /* Touch-friendly list items */
+  .touch-list-item {
+    @apply py-3 px-4 min-h-[56px] flex items-center;
+  }
+
+  /* Touch-friendly cards for tablets */
+  .touch-card {
+    @apply p-4 md:p-5;
+  }
+
+  /* Tablet grid - optimized for 10.1" screens */
+  .tablet-grid-2 {
+    @apply grid grid-cols-1 sm:grid-cols-2 gap-4;
+  }
+
+  .tablet-grid-3 {
+    @apply grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4;
+  }
+
+  .tablet-grid-4 {
+    @apply grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-3 md:gap-4;
+  }
+
+  /* Touch-friendly navigation items */
+  .touch-nav-item {
+    @apply min-h-[48px] px-3 py-2.5 rounded-lg flex items-center gap-3;
+  }
+
+  /* Larger buttons for touch */
+  .btn-touch {
+    @apply min-h-[48px] px-4 py-3;
+  }
+
+  /* Touch-friendly tabs */
+  .touch-tabs {
+    @apply min-h-[44px];
+  }
+
+  /* Optimized input for tablets */
+  .input-touch {
+    @apply min-h-[48px] text-base px-4;
   }
 }
