@@ -30,9 +30,12 @@ import {
   RefreshCw,
   Home,
   ArrowLeft,
-  AlertTriangle
+  AlertTriangle,
+  Users
 } from "lucide-react";
 import { EmergencySOS } from "./EmergencySOS";
+import { PortalQueueStatus } from "./PortalQueueStatus";
+import { RemoteQueueRequestDialog } from "./RemoteQueueRequestDialog";
 
 interface Appointment {
   id: string;
@@ -289,8 +292,12 @@ export function PatientPortal() {
       {/* Main Content */}
       <main className="container mx-auto px-4 py-6">
         <Tabs value={activeTab} onValueChange={setActiveTab}>
-          <TabsList className="mb-6">
+          <TabsList className="mb-6 flex-wrap">
             <TabsTrigger value="dashboard">Dashboard</TabsTrigger>
+            <TabsTrigger value="queue" className="flex items-center gap-1">
+              <Users className="w-4 h-4" />
+              Queue Status
+            </TabsTrigger>
             <TabsTrigger value="appointments">Appointments</TabsTrigger>
             <TabsTrigger value="records">Health Records</TabsTrigger>
             <TabsTrigger value="prescriptions">Prescriptions</TabsTrigger>
@@ -350,6 +357,15 @@ export function PatientPortal() {
                   <CardTitle className="text-base">Quick Actions</CardTitle>
                 </CardHeader>
                 <CardContent className="space-y-2">
+                  <Button 
+                    className="w-full justify-start" 
+                    variant="outline"
+                    onClick={() => setActiveTab("queue")}
+                  >
+                    <Users className="h-4 w-4 mr-2" />
+                    View Queue Status
+                    <ChevronRight className="h-4 w-4 ml-auto" />
+                  </Button>
                   <Button className="w-full justify-start" variant="outline">
                     <Calendar className="h-4 w-4 mr-2" />
                     Book Appointment
@@ -475,6 +491,23 @@ export function PatientPortal() {
                 </CardContent>
               </Card>
             </div>
+          </TabsContent>
+
+          {/* Queue Status Tab */}
+          <TabsContent value="queue">
+            <div className="flex justify-between items-center mb-6">
+              <h2 className="text-xl font-semibold">My Queue Status</h2>
+              <RemoteQueueRequestDialog 
+                patientId="mock-patient-id" 
+                trigger={
+                  <Button>
+                    <Users className="h-4 w-4 mr-2" />
+                    Request Queue Entry
+                  </Button>
+                }
+              />
+            </div>
+            <PortalQueueStatus patientId="mock-patient-id" />
           </TabsContent>
 
           {/* Appointments Tab */}
