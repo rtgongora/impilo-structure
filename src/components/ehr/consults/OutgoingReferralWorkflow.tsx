@@ -1,6 +1,7 @@
 /**
  * OutgoingReferralWorkflow - Stage 1-3 + 7 for Referring Facility (A)
  * Handles: Case Identified → Build Package → Routing → (wait) → Completion
+ * Auto-generates IPS and Visit Summary when entering workflow
  */
 import { useState, useCallback, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
@@ -40,6 +41,7 @@ import type {
 import { ReferralBuilder } from "./ReferralBuilder";
 import { CompletionNoteForm } from "./CompletionNote";
 import { LiveSessionWorkspace } from "./LiveSessionWorkspace";
+import { usePatientSummary, useVisitSummary } from "@/hooks/useSummaries";
 
 // Stages for referring facility
 const REFERRER_STAGES = [
@@ -87,9 +89,54 @@ export function OutgoingReferralWorkflow({
   const [consultationResponse, setConsultationResponse] = useState<ConsultationResponse | null>(existingResponse || null);
   const [isSessionActive, setIsSessionActive] = useState(false);
   const [activeMode, setActiveMode] = useState<TelemedicineMode>("chat");
+  const [summariesGenerated, setSummariesGenerated] = useState(false);
+
+  // Auto-generate IPS and Visit Summary hooks
+  const { 
+    ips, 
+    generating: generatingIPS, 
+    generateNewIPS 
+  } = usePatientSummary(patientId);
+  
+  const { 
+    summary: visitSummary, 
+    generating: generatingVisitSummary, 
+    generateNewSummary: generateNewVisitSummary 
+  } = useVisitSummary(encounterId);
 
   const currentStageInfo = REFERRER_STAGES.find(s => s.stage === currentStage)!;
   const progress = currentStage === 7 ? 100 : ((currentStage) / 4) * 80;
+
+  // Auto-generate summaries when entering the workflow
+  useEffect(() => {
+    if (patientId && !summariesGenerated && !existingReferral) {
+      setSummariesGenerated(true);
+      
+      // Generate IPS for the referral package
+      generateNewIPS({ 
+        trigger: 'referral',
+        purpose: 'Telemedicine referral package',
+        includeAttachments: true 
+      }).then((generatedIPS) => {
+        if (generatedIPS) {
+          toast.success("Patient Summary generated for referral");
+        }
+      });
+
+      // Generate Visit Summary if we have an encounter
+      if (encounterId) {
+        generateNewVisitSummary({ 
+          patientFriendly: true,
+          includeProviderDetails: true,
+          includeAllInvestigations: true
+        }).then((generatedSummary) => {
+          if (generatedSummary) {
+            toast.success("Visit Summary generated for referral");
+          }
+        });
+      }
+    }
+  }, [patientId, encounterId, summariesGenerated, existingReferral, generateNewIPS, generateNewVisitSummary]);
 
   // Simulate receiving response (in production, this would be real-time via Supabase)
   useEffect(() => {

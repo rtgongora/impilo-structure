@@ -1,8 +1,9 @@
 /**
  * IncomingConsultWorkflow - Stage 4-7 for Consulting Facility (B/C)
  * Handles: Accept → Live Session → Response → Closure for incoming referrals
+ * Auto-generates IPS and Visit Summary when accepting referral
  */
-import { useState, useCallback } from "react";
+import { useState, useCallback, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import {
   FileText,
@@ -19,6 +20,7 @@ import {
   Clock,
   Shield,
   Building,
+  Loader2,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
@@ -35,6 +37,7 @@ import type {
 import { ReferralPackageViewer } from "./ReferralPackageViewer";
 import { LiveSessionWorkspace } from "./LiveSessionWorkspace";
 import { ConsultationResponseBuilder } from "./ConsultationResponseBuilder";
+import { usePatientSummary, useVisitSummary } from "@/hooks/useSummaries";
 
 // Stages visible to the consulting facility
 const CONSULTANT_STAGES = [
@@ -66,9 +69,42 @@ export function IncomingConsultWorkflow({
     initialReferral.preferredMode || "async"
   );
   const [isSessionActive, setIsSessionActive] = useState(false);
+  const [summariesGenerated, setSummariesGenerated] = useState(false);
+
+  // Auto-generate IPS and Visit Summary hooks for the patient being consulted on
+  const patientId = initialReferral.patientId;
+  const { 
+    ips, 
+    generating: generatingIPS, 
+    fetchIPS,
+    generateNewIPS 
+  } = usePatientSummary(patientId);
 
   const currentStageInfo = CONSULTANT_STAGES.find(s => s.stage === currentStage)!;
   const progress = ((currentStage - 3) / 4) * 100;
+
+  // Auto-generate/fetch patient summary when accepting the referral
+  useEffect(() => {
+    if (patientId && !summariesGenerated) {
+      setSummariesGenerated(true);
+      
+      // First try to fetch existing IPS
+      fetchIPS().then(() => {
+        // If no IPS exists, generate one for consultation
+        if (!ips) {
+          generateNewIPS({ 
+            trigger: 'on_demand',
+            purpose: 'Telemedicine consultation',
+            includeAttachments: true 
+          }).then((generatedIPS) => {
+            if (generatedIPS) {
+              toast.success("Patient Summary generated for consultation");
+            }
+          });
+        }
+      });
+    }
+  }, [patientId, summariesGenerated, ips, fetchIPS, generateNewIPS]);
 
   // Handle accepting the referral (Stage 4 → 5)
   const handleAcceptReferral = useCallback(() => {
