@@ -10,6 +10,7 @@ import { LabOrderEntryForm } from "./LabOrderEntryForm";
 import { LabAnalyzerDashboard } from "./LabAnalyzerDashboard";
 import { LabCriticalAlertsDashboard } from "./LabCriticalAlertsDashboard";
 import { LabResultValidationWorkflow } from "./LabResultValidationWorkflow";
+import { SpecimenChainOfCustody } from "./SpecimenChainOfCustody";
 import {
   FlaskConical,
   TestTube,
@@ -20,6 +21,7 @@ import {
   Activity,
   Bell,
   ClipboardCheck,
+  Package,
 } from "lucide-react";
 
 export function LIMSIntegration() {
@@ -130,7 +132,10 @@ export function LIMSIntegration() {
               </Badge>
             )}
           </TabsTrigger>
-          <TabsTrigger value="specimens">Specimens</TabsTrigger>
+          <TabsTrigger value="specimens" className="flex items-center gap-1">
+            <Package className="h-4 w-4" />
+            Specimens
+          </TabsTrigger>
         </TabsList>
 
         <TabsContent value="orders" className="mt-6">
@@ -154,13 +159,7 @@ export function LIMSIntegration() {
         </TabsContent>
 
         <TabsContent value="specimens" className="mt-6">
-          <Card>
-            <CardContent className="p-8 text-center text-muted-foreground">
-              <TestTube className="h-12 w-12 mx-auto mb-4 opacity-50" />
-              <p>Specimen tracking integrated via the existing SpecimenCollection component</p>
-              <p className="text-sm mt-2">Use the Order Entry tab to create orders with specimen requirements</p>
-            </CardContent>
-          </Card>
+          <SpecimenChainOfCustody />
         </TabsContent>
       </Tabs>
     </div>
