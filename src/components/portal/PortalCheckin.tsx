@@ -27,6 +27,10 @@ import {
 } from "lucide-react";
 import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
+import type { Database } from "@/integrations/supabase/types";
+
+type ValidEntryType = Database["public"]["Enums"]["queue_entry_type"];
+type ValidPriority = Database["public"]["Enums"]["queue_priority"];
 
 interface PortalCheckinProps {
   patientId: string;
@@ -90,11 +94,11 @@ export function PortalCheckin({ patientId, healthId, onCheckinComplete }: Portal
     setIsLoading(true);
     try {
       // Look up facility by code
-      const { data: facility, error } = await supabase
+      const { data: facility, error }: { data: any; error: any } = await (supabase
         .from("facilities")
         .select("id, name")
         .eq("code", facilityCode.toUpperCase())
-        .maybeSingle();
+        .maybeSingle() as any);
 
       if (error || !facility) {
         toast.error("Facility not found. Please check the code.");
@@ -145,20 +149,34 @@ export function PortalCheckin({ patientId, healthId, onCheckinComplete }: Portal
       // Generate ticket number
       const ticketNumber = `T${Math.floor(Math.random() * 900) + 100}`;
       
-      // Create queue item
+      // First, find a default queue for the facility
+      const { data: defaultQueue } = await supabase
+        .from("queue_definitions")
+        .select("id")
+        .eq("is_active", true)
+        .limit(1)
+        .maybeSingle();
+
+      if (!defaultQueue) {
+        toast.error("No active queue found. Please contact reception.");
+        return;
+      }
+
+      // Create queue item with proper types
+      const insertData = {
+        queue_id: defaultQueue.id,
+        patient_id: patientId,
+        appointment_id: appointmentId,
+        entry_type: (appointmentId ? "appointment" : "walk_in") as ValidEntryType,
+        reason_for_visit: serviceType || "General Consultation",
+        priority: "routine" as ValidPriority,
+        ticket_number: ticketNumber,
+        status: "waiting" as Database["public"]["Enums"]["queue_item_status"],
+      };
+
       const { data: queueData, error: queueError } = await supabase
         .from("queue_items")
-        .insert({
-          queue_id: null, // Will be assigned by the system
-          patient_id: patientId,
-          health_id: healthId,
-          appointment_id: appointmentId,
-          entry_type: appointmentId ? "appointment" : "walk_in",
-          reason_for_visit: serviceType || "General Consultation",
-          priority: "routine",
-          ticket_number: ticketNumber,
-          status: "waiting",
-        })
+        .insert(insertData)
         .select()
         .single();
 

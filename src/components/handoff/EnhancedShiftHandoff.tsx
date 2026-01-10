@@ -96,21 +96,18 @@ export function EnhancedShiftHandoff() {
       // 1. Fetch queue items assigned to this provider
       const { data: queueItems } = await supabase
         .from("queue_items")
-        .select(`
-          id, status, ticket_number, reason_for_visit, priority,
-          patient:patients(id, first_name, last_name)
-        `)
+        .select("id, status, ticket_number, reason_for_visit, priority, patient_id")
         .eq("assigned_provider_id", user.id)
         .in("status", ["called", "in_service", "paused"])
         .order("priority");
 
-      (queueItems || []).forEach(q => {
+      (queueItems || []).forEach((q: any) => {
         tasks.push({
           id: q.id,
           type: "queue_item",
           title: `Queue: ${q.ticket_number}`,
-          patient_id: q.patient?.id,
-          patient_name: q.patient ? `${q.patient.first_name} ${q.patient.last_name}` : undefined,
+          patient_id: q.patient_id,
+          patient_name: undefined,
           priority: mapPriority(q.priority),
           description: q.reason_for_visit,
           can_reassign: true,
@@ -118,12 +115,12 @@ export function EnhancedShiftHandoff() {
       });
 
       // 2. Fetch pending lab results needing review
-      const { data: labResults } = await supabase
+      const { data: labResults }: { data: any[] | null } = await (supabase
         .from("lab_results")
         .select("id, test_name, result_status, patient_id")
         .eq("verified", false)
         .order("created_at", { ascending: false })
-        .limit(10);
+        .limit(10) as any);
 
       (labResults || []).forEach((r: any) => {
         tasks.push({
