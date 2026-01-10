@@ -45,23 +45,33 @@ async function fetchPatientAllergies(patientId: string): Promise<AllergyEntry[]>
 }
 
 async function fetchPatientMedications(patientId: string): Promise<MedicationEntry[]> {
+  // First get prescriptions for the patient
   const { data: prescriptions } = await supabase
     .from('prescriptions')
-    .select('*')
+    .select('id, prescribed_at, status')
     .eq('patient_id', patientId)
     .eq('status', 'active')
     .order('prescribed_at', { ascending: false });
 
-  if (!prescriptions) return [];
+  if (!prescriptions || prescriptions.length === 0) return [];
 
-  return prescriptions.map((rx) => ({
-    id: rx.id,
-    name: rx.medication_name,
-    dose: rx.dosage,
-    route: rx.route,
-    frequency: rx.frequency,
-    status: rx.status === 'active' ? 'active' as const : 'completed' as const,
-    startDate: rx.prescribed_at,
+  // Get prescription items for these prescriptions
+  const prescriptionIds = prescriptions.map(p => p.id);
+  const { data: items } = await supabase
+    .from('prescription_items')
+    .select('*')
+    .in('prescription_id', prescriptionIds);
+
+  if (!items) return [];
+
+  return items.map((item) => ({
+    id: item.id,
+    name: item.medication_name,
+    dose: item.dosage,
+    route: item.route,
+    frequency: item.frequency,
+    status: item.status === 'active' ? 'active' as const : 'completed' as const,
+    startDate: item.created_at,
   }));
 }
 
@@ -103,46 +113,83 @@ async function fetchPatientVitals(patientId: string): Promise<VitalSignEntry[]> 
 }
 
 async function fetchPatientLabResults(patientId: string): Promise<DiagnosticResultEntry[]> {
+  // Get lab orders for the patient
   const { data: orders } = await supabase
     .from('lab_orders')
-    .select('*')
+    .select('id, ordered_at')
     .eq('patient_id', patientId)
-    .eq('status', 'completed')
     .order('ordered_at', { ascending: false })
     .limit(20);
 
-  if (!orders) return [];
+  if (!orders || orders.length === 0) return [];
 
-  return orders.map((order) => ({
-    id: order.id,
-    testName: order.test_name,
-    value: (order.results as any)?.value?.toString() || 'See report',
-    unit: (order.results as any)?.unit,
-    referenceRange: (order.results as any)?.reference_range,
-    interpretation: (order.results as any)?.interpretation,
-    date: order.completed_at || order.ordered_at,
-  }));
+  // Get lab results for these orders
+  const orderIds = orders.map(o => o.id);
+  const { data: results } = await supabase
+    .from('lab_results')
+    .select('*')
+    .in('lab_order_id', orderIds)
+    .eq('status', 'released');
+
+  if (!results) return [];
+
+  return results.map((result) => {
+    // Map interpretation to allowed values
+    let interpretation: 'normal' | 'abnormal' | 'critical' | undefined;
+    if (result.is_critical) {
+      interpretation = 'critical';
+    } else if (result.is_abnormal) {
+      interpretation = 'abnormal';
+    } else {
+      interpretation = 'normal';
+    }
+    
+    return {
+      id: result.id,
+      testName: result.test_name,
+      value: result.result_value || 'Pending',
+      unit: result.result_unit,
+      referenceRange: result.reference_range,
+      interpretation,
+      date: result.performed_at || result.created_at,
+    };
+  });
 }
 
 async function fetchPatientImaging(patientId: string): Promise<ImagingSummaryEntry[]> {
+  // Get imaging studies for the patient
   const { data: studies } = await supabase
     .from('imaging_studies')
-    .select('*')
+    .select('id, study_description, modality, body_part, study_date')
     .eq('patient_id', patientId)
     .order('study_date', { ascending: false })
     .limit(10);
 
-  if (!studies) return [];
+  if (!studies || studies.length === 0) return [];
 
-  return studies.map((study) => ({
-    id: study.id,
-    studyType: study.study_description || study.modality,
-    modality: study.modality,
-    bodyPart: study.body_part,
-    date: study.study_date,
-    findings: study.findings,
-    pacsLink: `/pacs/viewer/${study.id}`,
-  }));
+  // Get imaging reports for these studies
+  const studyIds = studies.map(s => s.id);
+  const { data: reports } = await supabase
+    .from('imaging_reports')
+    .select('study_id, findings, impression, status')
+    .in('study_id', studyIds);
+
+  const reportsMap = new Map(reports?.map(r => [r.study_id, r]) || []);
+
+  return studies.map((study) => {
+    const report = reportsMap.get(study.id);
+    return {
+      id: study.id,
+      studyType: study.study_description || study.modality,
+      modality: study.modality,
+      bodyPart: study.body_part,
+      date: study.study_date,
+      findings: report?.findings,
+      impression: report?.impression,
+      status: report?.status || 'pending',
+      pacsLink: `/pacs/viewer/${study.id}`,
+    };
+  });
 }
 
 // Generate IPS
@@ -231,32 +278,66 @@ export async function generateVisitSummary(
       .eq('id', patientId)
       .single();
 
-    const [prescriptions, labOrders, referrals] = await Promise.all([
-      supabase.from('prescriptions').select('*').eq('encounter_id', encounterId),
-      supabase.from('lab_orders').select('*').eq('encounter_id', encounterId),
-      supabase.from('referrals').select('*').eq('encounter_id', encounterId),
-    ]);
+    // Get prescriptions and their items
+    const { data: prescriptions } = await supabase
+      .from('prescriptions')
+      .select('id, prescribed_at, status')
+      .eq('encounter_id', encounterId);
+
+    let prescriptionItems: any[] = [];
+    if (prescriptions && prescriptions.length > 0) {
+      const prescriptionIds = prescriptions.map(p => p.id);
+      const { data: items } = await supabase
+        .from('prescription_items')
+        .select('*')
+        .in('prescription_id', prescriptionIds);
+      prescriptionItems = items || [];
+    }
+
+    // Get lab orders and their results
+    const { data: labOrders } = await supabase
+      .from('lab_orders')
+      .select('id, ordered_at, status, clinical_indication')
+      .eq('encounter_id', encounterId);
+
+    let labResults: any[] = [];
+    if (labOrders && labOrders.length > 0) {
+      const orderIds = labOrders.map(o => o.id);
+      const { data: results } = await supabase
+        .from('lab_results')
+        .select('*')
+        .in('lab_order_id', orderIds);
+      labResults = results || [];
+    }
+
+    // Get referrals
+    const { data: referrals } = await supabase
+      .from('referrals')
+      .select('*')
+      .eq('encounter_id', encounterId);
 
     const diagnoses: DiagnosisEntry[] = [];
-    const medicationsPrescribed: MedicationEntry[] = (prescriptions.data || []).map((rx) => ({
-      id: rx.id,
-      name: rx.medication_name,
-      dose: rx.dosage,
-      route: rx.route,
-      frequency: rx.frequency,
+    const medicationsPrescribed: MedicationEntry[] = prescriptionItems.map((item) => ({
+      id: item.id,
+      name: item.medication_name,
+      dose: item.dosage,
+      route: item.route,
+      frequency: item.frequency,
       status: 'active' as const,
-      startDate: rx.prescribed_at,
+      startDate: item.created_at,
     }));
 
-    const investigations: InvestigationEntry[] = (labOrders.data || []).map((order) => ({
-      id: order.id,
-      name: order.test_name,
-      orderedAt: order.ordered_at,
-      status: order.status as any,
-      resultSummary: (order.results as any)?.value,
+    const investigations: InvestigationEntry[] = labResults.map((result) => ({
+      id: result.id,
+      name: result.test_name,
+      orderedAt: result.created_at,
+      status: result.status as any,
+      resultSummary: result.result_value,
+      isAbnormal: result.is_abnormal,
+      isCritical: result.is_critical,
     }));
 
-    const referralsMade: ReferralEntry[] = (referrals.data || []).map((ref) => ({
+    const referralsMade: ReferralEntry[] = (referrals || []).map((ref) => ({
       id: ref.id,
       destination: ref.to_department || 'External',
       specialty: ref.to_department,

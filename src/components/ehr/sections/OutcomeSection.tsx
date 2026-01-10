@@ -10,11 +10,13 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { 
   CheckCircle, Home, Building, Ambulance, Calendar, Send, AlertTriangle,
   Pill, FileText, User, Clock, MapPin, Phone, Stethoscope, Heart,
-  ClipboardList, AlertCircle, UserX, Plus, ChevronRight
+  ClipboardList, AlertCircle, UserX, Plus, ChevronRight, FileDown, QrCode
 } from "lucide-react";
 import { useState } from "react";
 import { PostEncounterNavigation } from "@/components/ehr/PostEncounterNavigation";
 import { toast } from "sonner";
+import { SummaryActions } from "@/components/summaries";
+import { useEHR } from "@/contexts/EHRContext";
 type DispositionType = "discharge" | "admit" | "transfer" | "refer" | "death" | "lama" | "";
 
 const DISPOSITION_OPTIONS = [
@@ -57,6 +59,7 @@ const FACILITIES = [
 ];
 
 export function OutcomeSection() {
+  const { currentEncounter } = useEHR();
   const [disposition, setDisposition] = useState<DispositionType>("");
   const [checkedItems, setCheckedItems] = useState<Record<string, boolean>>({});
   const [isCompleted, setIsCompleted] = useState(false);
@@ -147,6 +150,25 @@ export function OutcomeSection() {
         patientName="Mary Johnson"
         onClose={() => setIsCompleted(false)}
       />
+
+      {/* Summary Generation */}
+      {disposition && (
+        <Card>
+          <CardHeader>
+            <CardTitle className="text-base flex items-center gap-2">
+              <FileDown className="w-5 h-5 text-primary" />
+              Patient & Visit Summaries
+            </CardTitle>
+          </CardHeader>
+          <CardContent>
+            <SummaryActions 
+              patientId={currentEncounter.patient.id}
+              patientName={currentEncounter.patient.name}
+              encounterId={currentEncounter.id}
+            />
+          </CardContent>
+        </Card>
+      )}
 
       {/* Actions */}
       {disposition && !isCompleted && (
