@@ -36,6 +36,9 @@ import {
 import { EmergencySOS } from "./EmergencySOS";
 import { PortalQueueStatus } from "./PortalQueueStatus";
 import { RemoteQueueRequestDialog } from "./RemoteQueueRequestDialog";
+import { HealthIdManager } from "./HealthIdManager";
+import { ServiceDiscovery } from "./ServiceDiscovery";
+import { Shield, Search as SearchIcon } from "lucide-react";
 
 interface Appointment {
   id: string;
@@ -294,6 +297,14 @@ export function PatientPortal() {
         <Tabs value={activeTab} onValueChange={setActiveTab}>
           <TabsList className="mb-6 flex-wrap">
             <TabsTrigger value="dashboard">Dashboard</TabsTrigger>
+            <TabsTrigger value="health-id" className="flex items-center gap-1">
+              <Shield className="w-4 h-4" />
+              Health ID
+            </TabsTrigger>
+            <TabsTrigger value="services" className="flex items-center gap-1">
+              <SearchIcon className="w-4 h-4" />
+              Find Services
+            </TabsTrigger>
             <TabsTrigger value="queue" className="flex items-center gap-1">
               <Users className="w-4 h-4" />
               Queue Status
@@ -313,6 +324,16 @@ export function PatientPortal() {
               )}
             </TabsTrigger>
           </TabsList>
+
+          {/* Health ID Tab */}
+          <TabsContent value="health-id">
+            <HealthIdManager hasHealthId={true} />
+          </TabsContent>
+
+          {/* Services Tab */}
+          <TabsContent value="services">
+            <ServiceDiscovery />
+          </TabsContent>
 
           {/* Dashboard Tab */}
           <TabsContent value="dashboard">
