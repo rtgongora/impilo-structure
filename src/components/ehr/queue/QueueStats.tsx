@@ -1,9 +1,9 @@
 import { Users, Clock, TrendingUp, AlertCircle, Video, CheckCircle2 } from "lucide-react";
 import { Card, CardContent } from "@/components/ui/card";
-import type { QueuePatient } from "./QueuePatientCard";
+import type { SecureQueuePatient } from "@/components/queue/SecureQueueCard";
 
 interface QueueStatsProps {
-  patients: QueuePatient[];
+  patients: SecureQueuePatient[];
 }
 
 export function QueueStats({ patients }: QueueStatsProps) {
