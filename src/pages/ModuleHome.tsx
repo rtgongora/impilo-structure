@@ -776,44 +776,40 @@ export default function ModuleHome() {
             </div>
 
             {/* Module Categories */}
-            <div className="space-y-4 sm:space-y-8 pb-4 sm:pb-8">
+            <div className="space-y-3 pb-4">
               {visibleCategories.map((category) => (
                 <section key={category.id}>
-                  <div className="mb-2 sm:mb-4">
+                  <div className="mb-2">
                     <div className="flex items-center gap-2">
-                      <h3 className="text-base sm:text-lg font-semibold">{category.title}</h3>
+                      <h3 className="text-sm font-semibold">{category.title}</h3>
                       {category.roles && category.roles.length > 0 && (
-                        <Badge variant="outline" className="text-[10px] sm:text-xs px-1.5 py-0 h-4 sm:h-5 border-muted-foreground/30">
-                          <Lock className="h-2.5 w-2.5 sm:h-3 sm:w-3 mr-0.5" />
-                          <span className="hidden sm:inline">Restricted</span>
+                        <Badge variant="outline" className="text-[10px] px-1 py-0 h-4 border-muted-foreground/30">
+                          <Lock className="h-2.5 w-2.5 mr-0.5" />
                         </Badge>
                       )}
                     </div>
-                    <p className="text-xs sm:text-sm text-muted-foreground">{category.description}</p>
+                    <p className="text-xs text-muted-foreground">{category.description}</p>
                   </div>
-                  <div className="grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-2 sm:gap-4">
+                  <div className="grid grid-cols-3 sm:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-2">
                     {category.modules.map((module) => (
                       <Card
                         key={module.id}
-                        className="cursor-pointer hover:shadow-md sm:hover:shadow-lg hover:border-primary/50 transition-all group"
+                        className="cursor-pointer hover:shadow-md hover:border-primary/50 transition-all group"
                         onClick={() => handleModuleClick(module.path)}
                       >
-                        <CardHeader className="p-3 sm:pb-3 sm:p-6">
-                          <div className="flex items-start justify-between">
-                            <div className={`w-8 h-8 sm:w-10 sm:h-10 rounded-md sm:rounded-lg ${module.color} flex items-center justify-center`}>
-                              <module.icon className="h-4 w-4 sm:h-5 sm:w-5 text-white" />
+                        <CardContent className="p-2.5">
+                          <div className="flex items-center gap-2">
+                            <div className={`w-8 h-8 shrink-0 rounded-md ${module.color} flex items-center justify-center`}>
+                              <module.icon className="h-4 w-4 text-white" />
                             </div>
-                            <div className="flex items-center gap-1">
-                              {module.roles && module.roles.length > 0 && (
-                                <Lock className="h-3 w-3 text-muted-foreground/50" />
-                              )}
-                              <ChevronRight className="h-3.5 w-3.5 sm:h-4 sm:w-4 text-muted-foreground group-hover:text-primary transition-colors" />
+                            <div className="min-w-0 flex-1">
+                              <p className="text-sm font-medium truncate">{module.label}</p>
+                              <p className="text-xs text-muted-foreground truncate">{module.description}</p>
                             </div>
+                            {module.roles && module.roles.length > 0 && (
+                              <Lock className="h-3 w-3 text-muted-foreground/50 shrink-0" />
+                            )}
                           </div>
-                        </CardHeader>
-                        <CardContent className="p-3 pt-0 sm:p-6 sm:pt-0">
-                          <CardTitle className="text-xs sm:text-base mb-0.5 sm:mb-1">{module.label}</CardTitle>
-                          <CardDescription className="text-[10px] sm:text-xs line-clamp-1 sm:line-clamp-none">{module.description}</CardDescription>
                         </CardContent>
                       </Card>
                     ))}
