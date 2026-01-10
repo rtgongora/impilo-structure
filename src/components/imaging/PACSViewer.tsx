@@ -1,4 +1,4 @@
-import { useState, useCallback } from "react";
+import { useState, useCallback, useEffect } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -7,9 +7,10 @@ import { ScrollArea } from "@/components/ui/scroll-area";
 import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Slider } from "@/components/ui/slider";
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { Label } from "@/components/ui/label";
+import { Textarea } from "@/components/ui/textarea";
 import { toast } from "sonner";
+import { usePACSViewer, WINDOW_PRESETS } from "@/hooks/usePACSViewer";
 import {
   Search,
   ZoomIn,
@@ -21,7 +22,6 @@ import {
   Ruler,
   Circle,
   Square,
-  Pencil,
   Download,
   Share2,
   Printer,
@@ -38,32 +38,18 @@ import {
   SkipForward,
   Layers,
   FileImage,
-  Info,
-  Settings,
   Eye,
   EyeOff,
   Crosshair,
-  Target,
-  Type,
-  Trash2,
-  Undo,
-  Redo,
-  Save,
-  History,
-  Bookmark,
-  BookmarkCheck,
   MousePointer,
-  PenTool,
   ArrowUpRight,
   Triangle,
-  Heart,
-  Brain,
-  Bone,
-  Wind,
-  Droplet
+  Type,
+  Save,
+  Loader2
 } from "lucide-react";
 
-// Mock DICOM studies
+// Mock DICOM studies (fallback when no database data)
 const mockStudies = [
   {
     id: "STD001",
@@ -126,58 +112,42 @@ const mockSeries = [
   { id: "SER004", name: "3D Reconstruction", images: 32, thickness: "1mm" },
 ];
 
-// Window/Level Presets
-const windowPresets = [
-  { name: "Default", window: 400, level: 40 },
-  { name: "Lung", window: 1500, level: -600 },
-  { name: "Bone", window: 2500, level: 480 },
-  { name: "Soft Tissue", window: 400, level: 40 },
-  { name: "Brain", window: 80, level: 40 },
-  { name: "Liver", window: 150, level: 30 },
-  { name: "Abdomen", window: 350, level: 50 },
-  { name: "Spine", window: 300, level: 30 },
-];
-
-// Annotation types
-interface Annotation {
-  id: string;
-  type: "line" | "circle" | "rectangle" | "arrow" | "text" | "angle";
-  points: { x: number; y: number }[];
-  label?: string;
-  measurement?: string;
-  color: string;
-}
-
 export function PACSViewer() {
-  const [selectedStudy, setSelectedStudy] = useState(mockStudies[0]);
-  const [selectedSeries, setSelectedSeries] = useState(mockSeries[0]);
-  const [currentImage, setCurrentImage] = useState(1);
-  const [zoom, setZoom] = useState(100);
-  const [brightness, setBrightness] = useState(50);
-  const [contrast, setContrast] = useState(50);
-  const [isPlaying, setIsPlaying] = useState(false);
-  const [viewMode, setViewMode] = useState<"1x1" | "2x2" | "1x2" | "mpr">("1x1");
-  const [activeTool, setActiveTool] = useState<string>("pan");
-  const [showAnnotations, setShowAnnotations] = useState(true);
+  const pacs = usePACSViewer();
+  
+  // Local state for mock data fallback
+  const [localStudy, setLocalStudy] = useState(mockStudies[0]);
+  const [localSeries, setLocalSeries] = useState(mockSeries[0]);
+  const [localImage, setLocalImage] = useState(1);
   const [searchQuery, setSearchQuery] = useState("");
   const [modalityFilter, setModalityFilter] = useState<string>("all");
-  
-  // Enhanced state
-  const [rotation, setRotation] = useState(0);
-  const [flipH, setFlipH] = useState(false);
-  const [flipV, setFlipV] = useState(false);
-  const [windowPreset, setWindowPreset] = useState("Default");
-  const [annotations, setAnnotations] = useState<Annotation[]>([
-    { id: "1", type: "line", points: [{ x: 100, y: 150 }, { x: 200, y: 180 }], measurement: "45.2 mm", color: "#00ff00" },
-    { id: "2", type: "circle", points: [{ x: 300, y: 200 }], measurement: "Area: 12.4 cm²", color: "#ffff00" },
-    { id: "3", type: "text", points: [{ x: 150, y: 280 }], label: "Nodule suspected", color: "#ff6600" },
-  ]);
-  const [selectedAnnotation, setSelectedAnnotation] = useState<string | null>(null);
-  const [isKeyImageMarked, setIsKeyImageMarked] = useState(false);
-  const [showMeasurements, setShowMeasurements] = useState(true);
-  const [invertColors, setInvertColors] = useState(false);
-  const [crosshairs, setCrosshairs] = useState(false);
-  const [mprPlane, setMprPlane] = useState<"axial" | "coronal" | "sagittal">("axial");
+  const [viewMode, setViewMode] = useState<"1x1" | "2x2" | "1x2" | "mpr">("1x1");
+  const [reportFindings, setReportFindings] = useState("");
+  const [reportImpression, setReportImpression] = useState("");
+
+  // Derive data - use hook data if available, otherwise mock
+  const hasDbData = pacs.studies.length > 0;
+  const selectedStudy = hasDbData ? pacs.selectedStudy : null;
+  const currentSeries = hasDbData ? pacs.selectedSeries : null;
+  const totalImages = hasDbData 
+    ? pacs.instances.length 
+    : localSeries.images;
+  const currentImageIndex = hasDbData 
+    ? pacs.currentIndex + 1 
+    : localImage;
+
+  // Load studies on mount
+  useEffect(() => {
+    pacs.fetchStudies();
+  }, []);
+
+  // Populate report form when report loads
+  useEffect(() => {
+    if (pacs.report) {
+      setReportFindings(pacs.report.findings || "");
+      setReportImpression(pacs.report.impression || "");
+    }
+  }, [pacs.report]);
 
   const getModalityBadgeColor = (modality: string) => {
     switch (modality) {
@@ -206,42 +176,31 @@ export function PACSViewer() {
     { id: "annotate", icon: Type, label: "Text Annotation" },
   ];
 
-  const handleRotateLeft = () => setRotation((prev) => (prev - 90) % 360);
-  const handleRotateRight = () => setRotation((prev) => (prev + 90) % 360);
-  const handleFlipH = () => setFlipH((prev) => !prev);
-  const handleFlipV = () => setFlipV((prev) => !prev);
-  const handleReset = () => {
-    setZoom(100);
-    setBrightness(50);
-    setContrast(50);
-    setRotation(0);
-    setFlipH(false);
-    setFlipV(false);
-    setInvertColors(false);
-  };
-
-  const handleWindowPreset = (preset: string) => {
-    setWindowPreset(preset);
-    const p = windowPresets.find(wp => wp.name === preset);
-    if (p) {
-      setBrightness(50 + (p.level / 20));
-      setContrast(50 + (p.window / 100));
+  const handleNavigate = (direction: 'prev' | 'next') => {
+    if (hasDbData) {
+      pacs.navigateImage(direction);
+    } else {
+      if (direction === 'next') {
+        setLocalImage(Math.min(localSeries.images, localImage + 1));
+      } else {
+        setLocalImage(Math.max(1, localImage - 1));
+      }
     }
-    toast.success(`Applied ${preset} preset`);
   };
 
-  const handleDeleteAnnotation = (id: string) => {
-    setAnnotations(prev => prev.filter(a => a.id !== id));
-    toast.success("Annotation deleted");
+  const handleGoToImage = (index: number) => {
+    if (hasDbData) {
+      pacs.goToImage(index - 1);
+    } else {
+      setLocalImage(index);
+    }
   };
 
-  const handleMarkKeyImage = () => {
-    setIsKeyImageMarked(!isKeyImageMarked);
-    toast.success(isKeyImageMarked ? "Key image unmarked" : "Marked as key image");
-  };
-
-  const handleSaveAnnotations = () => {
-    toast.success("Annotations saved successfully");
+  const handleSaveReport = async () => {
+    await pacs.saveReport({
+      findings: reportFindings,
+      impression: reportImpression,
+    }, 'current-user'); // Replace with actual user ID
   };
 
   const filteredStudies = mockStudies.filter(study => {
@@ -251,6 +210,26 @@ export function PACSViewer() {
     const matchesModality = modalityFilter === "all" || study.modality === modalityFilter;
     return matchesSearch && matchesModality;
   });
+
+  // Display values
+  const displayStudy = selectedStudy ? {
+    patientName: 'Patient', // Would come from patient join
+    patientId: selectedStudy.patient_id,
+    studyDate: selectedStudy.study_date,
+    modality: selectedStudy.modality,
+    description: selectedStudy.study_description || '',
+    bodyPart: selectedStudy.body_part || '',
+    images: selectedStudy.number_of_instances,
+    series: selectedStudy.number_of_series,
+    accession: selectedStudy.accession_number || '',
+  } : localStudy;
+
+  const displaySeries = currentSeries ? {
+    name: currentSeries.series_description || `Series ${currentSeries.series_number}`,
+    images: currentSeries.number_of_instances,
+    thickness: currentSeries.slice_thickness ? `${currentSeries.slice_thickness}mm` : 'N/A',
+  } : localSeries;
+
 
   return (
     <div className="h-full flex flex-col">
@@ -311,9 +290,9 @@ export function PACSViewer() {
                 <Card
                   key={study.id}
                   className={`cursor-pointer transition-all hover:border-primary ${
-                    selectedStudy.id === study.id ? "border-primary bg-primary/5" : ""
+                    localStudy.id === study.id ? "border-primary bg-primary/5" : ""
                   }`}
-                  onClick={() => setSelectedStudy(study)}
+                  onClick={() => setLocalStudy(study)}
                 >
                   <CardContent className="p-3">
                     <div className="flex items-start justify-between mb-2">
@@ -346,11 +325,11 @@ export function PACSViewer() {
                   <div
                     key={series.id}
                     className={`p-2 rounded cursor-pointer text-sm transition-colors ${
-                      selectedSeries.id === series.id
+                      localSeries.id === series.id
                         ? "bg-primary/10 text-primary"
                         : "hover:bg-muted"
                     }`}
-                    onClick={() => setSelectedSeries(series)}
+                    onClick={() => setLocalSeries(series)}
                   >
                     <div className="flex items-center justify-between">
                       <span className="font-medium">{series.name}</span>
@@ -372,26 +351,26 @@ export function PACSViewer() {
               {tools.map((tool) => (
                 <Button
                   key={tool.id}
-                  variant={activeTool === tool.id ? "secondary" : "ghost"}
+                  variant={pacs.activeTool === tool.id ? "secondary" : "ghost"}
                   size="sm"
-                  className={activeTool === tool.id ? "bg-primary text-primary-foreground" : "text-zinc-400 hover:text-white"}
-                  onClick={() => setActiveTool(tool.id)}
+                  className={pacs.activeTool === tool.id ? "bg-primary text-primary-foreground" : "text-zinc-400 hover:text-white"}
+                  onClick={() => pacs.setActiveTool(tool.id)}
                   title={tool.label}
                 >
                   <tool.icon className="w-4 h-4" />
                 </Button>
               ))}
               <div className="w-px h-6 bg-zinc-700 mx-2" />
-              <Button variant="ghost" size="sm" className="text-zinc-400 hover:text-white">
+              <Button variant="ghost" size="sm" className="text-zinc-400 hover:text-white" onClick={() => pacs.rotateImage(-90)}>
                 <RotateCcw className="w-4 h-4" />
               </Button>
-              <Button variant="ghost" size="sm" className="text-zinc-400 hover:text-white">
+              <Button variant="ghost" size="sm" className="text-zinc-400 hover:text-white" onClick={() => pacs.rotateImage(90)}>
                 <RotateCw className="w-4 h-4" />
               </Button>
-              <Button variant="ghost" size="sm" className="text-zinc-400 hover:text-white">
+              <Button variant="ghost" size="sm" className={pacs.flipH ? "text-primary" : "text-zinc-400 hover:text-white"} onClick={() => pacs.setFlipH(!pacs.flipH)}>
                 <FlipHorizontal className="w-4 h-4" />
               </Button>
-              <Button variant="ghost" size="sm" className="text-zinc-400 hover:text-white">
+              <Button variant="ghost" size="sm" className={pacs.flipV ? "text-primary" : "text-zinc-400 hover:text-white"} onClick={() => pacs.setFlipV(!pacs.flipV)}>
                 <FlipVertical className="w-4 h-4" />
               </Button>
             </div>
@@ -426,10 +405,10 @@ export function PACSViewer() {
               <Button
                 variant="ghost"
                 size="sm"
-                className={showAnnotations ? "text-primary" : "text-zinc-400"}
-                onClick={() => setShowAnnotations(!showAnnotations)}
+                className={pacs.showAnnotations ? "text-primary" : "text-zinc-400"}
+                onClick={() => pacs.setShowAnnotations(!pacs.showAnnotations)}
               >
-                {showAnnotations ? <Eye className="w-4 h-4" /> : <EyeOff className="w-4 h-4" />}
+                {pacs.showAnnotations ? <Eye className="w-4 h-4" /> : <EyeOff className="w-4 h-4" />}
               </Button>
             </div>
           </div>
@@ -442,37 +421,45 @@ export function PACSViewer() {
               style={{
                 width: viewMode === "1x1" ? "80%" : viewMode === "1x2" ? "45%" : "45%",
                 height: viewMode === "1x1" ? "85%" : "45%",
-                filter: `brightness(${brightness / 50}) contrast(${contrast / 50})`,
-                transform: `scale(${zoom / 100})`
+                filter: `brightness(${(pacs.windowLevel + 1000) / 1000}) contrast(${pacs.windowWidth / 400}) ${pacs.invert ? 'invert(1)' : ''}`,
+                transform: `scale(${pacs.zoom / 100}) rotate(${pacs.rotation}deg) scaleX(${pacs.flipH ? -1 : 1}) scaleY(${pacs.flipV ? -1 : 1})`,
+                translate: `${pacs.pan.x}px ${pacs.pan.y}px`
               }}
             >
+              {/* Loading state */}
+              {pacs.loading && (
+                <div className="absolute inset-0 flex items-center justify-center bg-zinc-900/80 z-10">
+                  <Loader2 className="w-8 h-8 animate-spin text-primary" />
+                </div>
+              )}
+              
               {/* Placeholder for actual DICOM rendering */}
               <div className="absolute inset-0 flex items-center justify-center">
                 <div className="text-center text-zinc-500">
                   <FileImage className="w-24 h-24 mx-auto mb-4 opacity-50" />
-                  <p className="text-lg font-medium">{selectedStudy.description}</p>
-                  <p className="text-sm">{selectedSeries.name} - Image {currentImage}/{selectedSeries.images}</p>
+                  <p className="text-lg font-medium">{displayStudy.description}</p>
+                  <p className="text-sm">{displaySeries.name} - Image {currentImageIndex}/{totalImages}</p>
                 </div>
               </div>
 
               {/* DICOM Overlay Info */}
               <div className="absolute top-4 left-4 text-xs text-green-400 font-mono space-y-1">
-                <p>{selectedStudy.patientName}</p>
-                <p>{selectedStudy.patientId}</p>
-                <p>{selectedStudy.studyDate}</p>
+                <p>{displayStudy.patientName}</p>
+                <p>{displayStudy.patientId}</p>
+                <p>{displayStudy.studyDate}</p>
               </div>
               <div className="absolute top-4 right-4 text-xs text-green-400 font-mono text-right space-y-1">
-                <p>{selectedStudy.modality}</p>
-                <p>{selectedStudy.bodyPart}</p>
-                <p>ACC: {selectedStudy.accession}</p>
+                <p>{displayStudy.modality}</p>
+                <p>{displayStudy.bodyPart}</p>
+                <p>ACC: {displayStudy.accession}</p>
               </div>
               <div className="absolute bottom-4 left-4 text-xs text-green-400 font-mono space-y-1">
-                <p>W: {brightness * 40} L: {contrast * 20}</p>
-                <p>Zoom: {zoom}%</p>
+                <p>W: {pacs.windowWidth} L: {pacs.windowLevel}</p>
+                <p>Zoom: {pacs.zoom}%</p>
               </div>
               <div className="absolute bottom-4 right-4 text-xs text-green-400 font-mono text-right">
-                <p>Im: {currentImage}/{selectedSeries.images}</p>
-                <p>Se: {selectedSeries.name}</p>
+                <p>Im: {currentImageIndex}/{totalImages}</p>
+                <p>Se: {displaySeries.name}</p>
               </div>
             </div>
           </div>
@@ -482,24 +469,24 @@ export function PACSViewer() {
             <div className="flex items-center gap-6">
               {/* Playback Controls */}
               <div className="flex items-center gap-2">
-                <Button variant="ghost" size="sm" className="text-zinc-400" onClick={() => setCurrentImage(1)}>
+                <Button variant="ghost" size="sm" className="text-zinc-400" onClick={() => handleGoToImage(1)}>
                   <SkipBack className="w-4 h-4" />
                 </Button>
-                <Button variant="ghost" size="sm" className="text-zinc-400" onClick={() => setCurrentImage(Math.max(1, currentImage - 1))}>
+                <Button variant="ghost" size="sm" className="text-zinc-400" onClick={() => handleNavigate('prev')}>
                   <ChevronLeft className="w-4 h-4" />
                 </Button>
                 <Button
                   variant="ghost"
                   size="sm"
-                  className={isPlaying ? "text-primary" : "text-zinc-400"}
-                  onClick={() => setIsPlaying(!isPlaying)}
+                  className={pacs.isPlaying ? "text-primary" : "text-zinc-400"}
+                  onClick={() => pacs.setIsPlaying(!pacs.isPlaying)}
                 >
-                  {isPlaying ? <Pause className="w-4 h-4" /> : <Play className="w-4 h-4" />}
+                  {pacs.isPlaying ? <Pause className="w-4 h-4" /> : <Play className="w-4 h-4" />}
                 </Button>
-                <Button variant="ghost" size="sm" className="text-zinc-400" onClick={() => setCurrentImage(Math.min(selectedSeries.images, currentImage + 1))}>
+                <Button variant="ghost" size="sm" className="text-zinc-400" onClick={() => handleNavigate('next')}>
                   <ChevronRight className="w-4 h-4" />
                 </Button>
-                <Button variant="ghost" size="sm" className="text-zinc-400" onClick={() => setCurrentImage(selectedSeries.images)}>
+                <Button variant="ghost" size="sm" className="text-zinc-400" onClick={() => handleGoToImage(totalImages)}>
                   <SkipForward className="w-4 h-4" />
                 </Button>
               </div>
@@ -507,11 +494,11 @@ export function PACSViewer() {
               {/* Image Slider */}
               <div className="flex-1">
                 <Slider
-                  value={[currentImage]}
+                  value={[currentImageIndex]}
                   min={1}
-                  max={selectedSeries.images}
+                  max={totalImages}
                   step={1}
-                  onValueChange={(value) => setCurrentImage(value[0])}
+                  onValueChange={(value) => handleGoToImage(value[0])}
                   className="w-full"
                 />
               </div>
@@ -520,41 +507,54 @@ export function PACSViewer() {
               <div className="flex items-center gap-2">
                 <ZoomOut className="w-4 h-4 text-zinc-400" />
                 <Slider
-                  value={[zoom]}
+                  value={[pacs.zoom]}
                   min={50}
                   max={400}
                   step={10}
-                  onValueChange={(value) => setZoom(value[0])}
+                  onValueChange={(value) => pacs.setZoom(value[0])}
                   className="w-24"
                 />
                 <ZoomIn className="w-4 h-4 text-zinc-400" />
-                <span className="text-xs text-zinc-400 w-12">{zoom}%</span>
+                <span className="text-xs text-zinc-400 w-12">{pacs.zoom}%</span>
               </div>
 
-              {/* Brightness/Contrast */}
+              {/* Window/Level */}
               <div className="flex items-center gap-4">
-                <div className="flex items-center gap-2">
+                <div className="flex items-center gap-2" title="Window Level">
                   <SunMedium className="w-4 h-4 text-zinc-400" />
                   <Slider
-                    value={[brightness]}
-                    min={0}
-                    max={100}
-                    step={1}
-                    onValueChange={(value) => setBrightness(value[0])}
+                    value={[pacs.windowLevel]}
+                    min={-1000}
+                    max={1000}
+                    step={10}
+                    onValueChange={(value) => pacs.setWindowLevel(value[0])}
                     className="w-20"
                   />
                 </div>
-                <div className="flex items-center gap-2">
+                <div className="flex items-center gap-2" title="Window Width">
                   <Contrast className="w-4 h-4 text-zinc-400" />
                   <Slider
-                    value={[contrast]}
-                    min={0}
-                    max={100}
-                    step={1}
-                    onValueChange={(value) => setContrast(value[0])}
+                    value={[pacs.windowWidth]}
+                    min={1}
+                    max={4000}
+                    step={10}
+                    onValueChange={(value) => pacs.setWindowWidth(value[0])}
                     className="w-20"
                   />
                 </div>
+                <Select onValueChange={(name) => {
+                  const preset = WINDOW_PRESETS.find(p => p.name === name);
+                  if (preset) pacs.applyWindowPreset(preset);
+                }}>
+                  <SelectTrigger className="w-28 h-8 text-xs bg-zinc-800 border-zinc-700 text-zinc-300">
+                    <SelectValue placeholder="Presets" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {WINDOW_PRESETS.map((preset) => (
+                      <SelectItem key={preset.name} value={preset.name}>{preset.name}</SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
               </div>
             </div>
           </div>
@@ -575,11 +575,11 @@ export function PACSViewer() {
                 <CardContent className="text-sm space-y-2">
                   <div className="flex justify-between">
                     <span className="text-muted-foreground">Name</span>
-                    <span className="font-medium">{selectedStudy.patientName}</span>
+                    <span className="font-medium">{displayStudy.patientName}</span>
                   </div>
                   <div className="flex justify-between">
                     <span className="text-muted-foreground">ID</span>
-                    <span className="font-medium">{selectedStudy.patientId}</span>
+                    <span className="font-medium">{displayStudy.patientId}</span>
                   </div>
                 </CardContent>
               </Card>
@@ -591,27 +591,27 @@ export function PACSViewer() {
                 <CardContent className="text-sm space-y-2">
                   <div className="flex justify-between">
                     <span className="text-muted-foreground">Modality</span>
-                    <span className="font-medium">{selectedStudy.modality}</span>
+                    <span className="font-medium">{displayStudy.modality}</span>
                   </div>
                   <div className="flex justify-between">
                     <span className="text-muted-foreground">Date</span>
-                    <span className="font-medium">{selectedStudy.studyDate}</span>
+                    <span className="font-medium">{displayStudy.studyDate}</span>
                   </div>
                   <div className="flex justify-between">
                     <span className="text-muted-foreground">Body Part</span>
-                    <span className="font-medium">{selectedStudy.bodyPart}</span>
+                    <span className="font-medium">{displayStudy.bodyPart}</span>
                   </div>
                   <div className="flex justify-between">
                     <span className="text-muted-foreground">Accession</span>
-                    <span className="font-medium">{selectedStudy.accession}</span>
+                    <span className="font-medium">{displayStudy.accession}</span>
                   </div>
                   <div className="flex justify-between">
                     <span className="text-muted-foreground">Series</span>
-                    <span className="font-medium">{selectedStudy.series}</span>
+                    <span className="font-medium">{displayStudy.series}</span>
                   </div>
                   <div className="flex justify-between">
                     <span className="text-muted-foreground">Images</span>
-                    <span className="font-medium">{selectedStudy.images}</span>
+                    <span className="font-medium">{displayStudy.images}</span>
                   </div>
                 </CardContent>
               </Card>
@@ -623,29 +623,61 @@ export function PACSViewer() {
                 <CardContent className="text-sm space-y-2">
                   <div className="flex justify-between">
                     <span className="text-muted-foreground">Name</span>
-                    <span className="font-medium">{selectedSeries.name}</span>
+                    <span className="font-medium">{displaySeries.name}</span>
                   </div>
                   <div className="flex justify-between">
                     <span className="text-muted-foreground">Thickness</span>
-                    <span className="font-medium">{selectedSeries.thickness}</span>
+                    <span className="font-medium">{displaySeries.thickness}</span>
                   </div>
                   <div className="flex justify-between">
                     <span className="text-muted-foreground">Images</span>
-                    <span className="font-medium">{selectedSeries.images}</span>
+                    <span className="font-medium">{displaySeries.images}</span>
                   </div>
                 </CardContent>
               </Card>
             </TabsContent>
-            <TabsContent value="report" className="p-4">
-              <Card>
-                <CardContent className="p-4 text-center text-muted-foreground">
-                  <FileImage className="w-12 h-12 mx-auto mb-3 opacity-50" />
-                  <p className="text-sm">No radiology report available</p>
-                  <Button variant="outline" size="sm" className="mt-3">
-                    Create Report
-                  </Button>
-                </CardContent>
-              </Card>
+            <TabsContent value="report" className="p-4 space-y-4">
+              {pacs.report ? (
+                <>
+                  <div className="space-y-2">
+                    <Label className="text-xs">Findings</Label>
+                    <Textarea 
+                      value={reportFindings}
+                      onChange={(e) => setReportFindings(e.target.value)}
+                      placeholder="Enter findings..."
+                      className="min-h-[120px] text-sm"
+                    />
+                  </div>
+                  <div className="space-y-2">
+                    <Label className="text-xs">Impression</Label>
+                    <Textarea 
+                      value={reportImpression}
+                      onChange={(e) => setReportImpression(e.target.value)}
+                      placeholder="Enter impression..."
+                      className="min-h-[80px] text-sm"
+                    />
+                  </div>
+                  <div className="flex gap-2">
+                    <Button size="sm" onClick={handleSaveReport}>
+                      <Save className="w-3 h-3 mr-1" />
+                      Save Draft
+                    </Button>
+                    <Badge variant={pacs.report.status === 'final' ? 'default' : 'secondary'}>
+                      {pacs.report.status}
+                    </Badge>
+                  </div>
+                </>
+              ) : (
+                <Card>
+                  <CardContent className="p-4 text-center text-muted-foreground">
+                    <FileImage className="w-12 h-12 mx-auto mb-3 opacity-50" />
+                    <p className="text-sm">No radiology report available</p>
+                    <Button variant="outline" size="sm" className="mt-3" onClick={() => handleSaveReport()}>
+                      Create Report
+                    </Button>
+                  </CardContent>
+                </Card>
+              )}
             </TabsContent>
           </Tabs>
         </div>
