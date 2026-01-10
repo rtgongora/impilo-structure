@@ -14760,6 +14760,309 @@ export type Database = {
           },
         ]
       }
+      sorting_desk_metrics: {
+        Row: {
+          avg_processing_time: number | null
+          confirmed_identity_count: number | null
+          created_at: string | null
+          emergency_count: number | null
+          facility_id: string
+          id: string
+          immediate_care_count: number | null
+          max_processing_time: number | null
+          metric_date: string
+          metric_hour: number | null
+          min_processing_time: number | null
+          queued_count: number | null
+          routine_count: number | null
+          temporary_identity_count: number | null
+          total_arrivals: number | null
+          total_triaged: number | null
+          updated_at: string | null
+          urgent_count: number | null
+          very_urgent_count: number | null
+          workspace_id: string | null
+        }
+        Insert: {
+          avg_processing_time?: number | null
+          confirmed_identity_count?: number | null
+          created_at?: string | null
+          emergency_count?: number | null
+          facility_id: string
+          id?: string
+          immediate_care_count?: number | null
+          max_processing_time?: number | null
+          metric_date: string
+          metric_hour?: number | null
+          min_processing_time?: number | null
+          queued_count?: number | null
+          routine_count?: number | null
+          temporary_identity_count?: number | null
+          total_arrivals?: number | null
+          total_triaged?: number | null
+          updated_at?: string | null
+          urgent_count?: number | null
+          very_urgent_count?: number | null
+          workspace_id?: string | null
+        }
+        Update: {
+          avg_processing_time?: number | null
+          confirmed_identity_count?: number | null
+          created_at?: string | null
+          emergency_count?: number | null
+          facility_id?: string
+          id?: string
+          immediate_care_count?: number | null
+          max_processing_time?: number | null
+          metric_date?: string
+          metric_hour?: number | null
+          min_processing_time?: number | null
+          queued_count?: number | null
+          routine_count?: number | null
+          temporary_identity_count?: number | null
+          total_arrivals?: number | null
+          total_triaged?: number | null
+          updated_at?: string | null
+          urgent_count?: number | null
+          very_urgent_count?: number | null
+          workspace_id?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "sorting_desk_metrics_facility_id_fkey"
+            columns: ["facility_id"]
+            isOneToOne: false
+            referencedRelation: "facilities"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "sorting_desk_metrics_facility_id_fkey"
+            columns: ["facility_id"]
+            isOneToOne: false
+            referencedRelation: "facility_capabilities"
+            referencedColumns: ["facility_id"]
+          },
+          {
+            foreignKeyName: "sorting_desk_metrics_workspace_id_fkey"
+            columns: ["workspace_id"]
+            isOneToOne: false
+            referencedRelation: "workspaces"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      sorting_session_audit: {
+        Row: {
+          action: string
+          action_data: Json | null
+          id: string
+          performed_at: string | null
+          performed_by: string | null
+          sorting_session_id: string
+        }
+        Insert: {
+          action: string
+          action_data?: Json | null
+          id?: string
+          performed_at?: string | null
+          performed_by?: string | null
+          sorting_session_id: string
+        }
+        Update: {
+          action?: string
+          action_data?: Json | null
+          id?: string
+          performed_at?: string | null
+          performed_by?: string | null
+          sorting_session_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "sorting_session_audit_sorting_session_id_fkey"
+            columns: ["sorting_session_id"]
+            isOneToOne: false
+            referencedRelation: "sorting_sessions"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      sorting_sessions: {
+        Row: {
+          arrival_mode: Database["public"]["Enums"]["arrival_mode"]
+          arrival_time: string
+          completed_at: string | null
+          created_at: string | null
+          created_by: string | null
+          danger_signs: string[] | null
+          encounter_id: string | null
+          escalated: boolean | null
+          escalated_at: string | null
+          escalated_by: string | null
+          escalated_reason: string | null
+          facility_id: string | null
+          health_id: string | null
+          id: string
+          identity_status: Database["public"]["Enums"]["identity_resolution_status"]
+          immediate_care_workspace_id: string | null
+          outcome: Database["public"]["Enums"]["sorting_outcome"] | null
+          outcome_at: string | null
+          outcome_by: string | null
+          outcome_reason: string | null
+          patient_id: string | null
+          presenting_complaint: string | null
+          processing_time_seconds: number | null
+          queue_item_id: string | null
+          search_query: string | null
+          session_number: string
+          sorting_desk_id: string | null
+          status: Database["public"]["Enums"]["sorting_session_status"]
+          supervisor_notes: string | null
+          supervisor_override: boolean | null
+          target_queue_id: string | null
+          temp_identity_id: string | null
+          triage_at: string | null
+          triage_by: string | null
+          triage_category: Database["public"]["Enums"]["triage_urgency"] | null
+          triage_notes: string | null
+          updated_at: string | null
+        }
+        Insert: {
+          arrival_mode?: Database["public"]["Enums"]["arrival_mode"]
+          arrival_time?: string
+          completed_at?: string | null
+          created_at?: string | null
+          created_by?: string | null
+          danger_signs?: string[] | null
+          encounter_id?: string | null
+          escalated?: boolean | null
+          escalated_at?: string | null
+          escalated_by?: string | null
+          escalated_reason?: string | null
+          facility_id?: string | null
+          health_id?: string | null
+          id?: string
+          identity_status?: Database["public"]["Enums"]["identity_resolution_status"]
+          immediate_care_workspace_id?: string | null
+          outcome?: Database["public"]["Enums"]["sorting_outcome"] | null
+          outcome_at?: string | null
+          outcome_by?: string | null
+          outcome_reason?: string | null
+          patient_id?: string | null
+          presenting_complaint?: string | null
+          processing_time_seconds?: number | null
+          queue_item_id?: string | null
+          search_query?: string | null
+          session_number: string
+          sorting_desk_id?: string | null
+          status?: Database["public"]["Enums"]["sorting_session_status"]
+          supervisor_notes?: string | null
+          supervisor_override?: boolean | null
+          target_queue_id?: string | null
+          temp_identity_id?: string | null
+          triage_at?: string | null
+          triage_by?: string | null
+          triage_category?: Database["public"]["Enums"]["triage_urgency"] | null
+          triage_notes?: string | null
+          updated_at?: string | null
+        }
+        Update: {
+          arrival_mode?: Database["public"]["Enums"]["arrival_mode"]
+          arrival_time?: string
+          completed_at?: string | null
+          created_at?: string | null
+          created_by?: string | null
+          danger_signs?: string[] | null
+          encounter_id?: string | null
+          escalated?: boolean | null
+          escalated_at?: string | null
+          escalated_by?: string | null
+          escalated_reason?: string | null
+          facility_id?: string | null
+          health_id?: string | null
+          id?: string
+          identity_status?: Database["public"]["Enums"]["identity_resolution_status"]
+          immediate_care_workspace_id?: string | null
+          outcome?: Database["public"]["Enums"]["sorting_outcome"] | null
+          outcome_at?: string | null
+          outcome_by?: string | null
+          outcome_reason?: string | null
+          patient_id?: string | null
+          presenting_complaint?: string | null
+          processing_time_seconds?: number | null
+          queue_item_id?: string | null
+          search_query?: string | null
+          session_number?: string
+          sorting_desk_id?: string | null
+          status?: Database["public"]["Enums"]["sorting_session_status"]
+          supervisor_notes?: string | null
+          supervisor_override?: boolean | null
+          target_queue_id?: string | null
+          temp_identity_id?: string | null
+          triage_at?: string | null
+          triage_by?: string | null
+          triage_category?: Database["public"]["Enums"]["triage_urgency"] | null
+          triage_notes?: string | null
+          updated_at?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "sorting_sessions_encounter_id_fkey"
+            columns: ["encounter_id"]
+            isOneToOne: false
+            referencedRelation: "encounters"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "sorting_sessions_facility_id_fkey"
+            columns: ["facility_id"]
+            isOneToOne: false
+            referencedRelation: "facilities"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "sorting_sessions_facility_id_fkey"
+            columns: ["facility_id"]
+            isOneToOne: false
+            referencedRelation: "facility_capabilities"
+            referencedColumns: ["facility_id"]
+          },
+          {
+            foreignKeyName: "sorting_sessions_immediate_care_workspace_id_fkey"
+            columns: ["immediate_care_workspace_id"]
+            isOneToOne: false
+            referencedRelation: "workspaces"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "sorting_sessions_patient_id_fkey"
+            columns: ["patient_id"]
+            isOneToOne: false
+            referencedRelation: "patients"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "sorting_sessions_queue_item_id_fkey"
+            columns: ["queue_item_id"]
+            isOneToOne: false
+            referencedRelation: "queue_items"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "sorting_sessions_sorting_desk_id_fkey"
+            columns: ["sorting_desk_id"]
+            isOneToOne: false
+            referencedRelation: "workspaces"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "sorting_sessions_target_queue_id_fkey"
+            columns: ["target_queue_id"]
+            isOneToOne: false
+            referencedRelation: "queue_definitions"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       specimen_tracking: {
         Row: {
           action: string
@@ -15662,6 +15965,101 @@ export type Database = {
             columns: ["session_id"]
             isOneToOne: false
             referencedRelation: "teleconsult_sessions"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      temporary_patient_identities: {
+        Row: {
+          alias: string | null
+          created_at: string | null
+          created_by: string | null
+          estimated_age: number | null
+          estimated_age_unit: string | null
+          expires_at: string | null
+          facility_id: string | null
+          given_name: string | null
+          id: string
+          is_active: boolean | null
+          reason: string
+          reconciled_at: string | null
+          reconciled_by: string | null
+          reconciled_to_patient_id: string | null
+          reconciliation_method: string | null
+          sex: string | null
+          sorting_session_id: string | null
+          temp_id: string
+          updated_at: string | null
+        }
+        Insert: {
+          alias?: string | null
+          created_at?: string | null
+          created_by?: string | null
+          estimated_age?: number | null
+          estimated_age_unit?: string | null
+          expires_at?: string | null
+          facility_id?: string | null
+          given_name?: string | null
+          id?: string
+          is_active?: boolean | null
+          reason: string
+          reconciled_at?: string | null
+          reconciled_by?: string | null
+          reconciled_to_patient_id?: string | null
+          reconciliation_method?: string | null
+          sex?: string | null
+          sorting_session_id?: string | null
+          temp_id: string
+          updated_at?: string | null
+        }
+        Update: {
+          alias?: string | null
+          created_at?: string | null
+          created_by?: string | null
+          estimated_age?: number | null
+          estimated_age_unit?: string | null
+          expires_at?: string | null
+          facility_id?: string | null
+          given_name?: string | null
+          id?: string
+          is_active?: boolean | null
+          reason?: string
+          reconciled_at?: string | null
+          reconciled_by?: string | null
+          reconciled_to_patient_id?: string | null
+          reconciliation_method?: string | null
+          sex?: string | null
+          sorting_session_id?: string | null
+          temp_id?: string
+          updated_at?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "temporary_patient_identities_facility_id_fkey"
+            columns: ["facility_id"]
+            isOneToOne: false
+            referencedRelation: "facilities"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "temporary_patient_identities_facility_id_fkey"
+            columns: ["facility_id"]
+            isOneToOne: false
+            referencedRelation: "facility_capabilities"
+            referencedColumns: ["facility_id"]
+          },
+          {
+            foreignKeyName: "temporary_patient_identities_reconciled_to_patient_id_fkey"
+            columns: ["reconciled_to_patient_id"]
+            isOneToOne: false
+            referencedRelation: "patients"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "temporary_patient_identities_sorting_session_id_fkey"
+            columns: ["sorting_session_id"]
+            isOneToOne: false
+            referencedRelation: "sorting_sessions"
             referencedColumns: ["id"]
           },
         ]
@@ -17161,8 +17559,10 @@ export type Database = {
       generate_referral_number: { Args: never; Returns: string }
       generate_renewal_application_number: { Args: never; Returns: string }
       generate_shr_id: { Args: never; Returns: string }
+      generate_sorting_session_number: { Args: never; Returns: string }
       generate_specimen_id: { Args: never; Returns: string }
       generate_summary_share_token: { Args: never; Returns: string }
+      generate_temp_patient_id: { Args: never; Returns: string }
       generate_theatre_booking_number: { Args: never; Returns: string }
       generate_transaction_number: { Args: never; Returns: string }
       generate_upid: { Args: never; Returns: string }
@@ -17276,6 +17676,7 @@ export type Database = {
         | "regulator_inspector"
       app_role: "admin" | "moderator" | "user"
       approval_status: "pending" | "approved" | "suspended" | "rejected"
+      arrival_mode: "walk_in" | "appointment" | "referral" | "emergency"
       client_lifecycle_state:
         | "draft"
         | "active"
@@ -17321,6 +17722,11 @@ export type Database = {
         | "self_reported"
         | "derived"
         | "uncertain"
+      identity_resolution_status:
+        | "confirmed"
+        | "probable_match"
+        | "temporary"
+        | "unknown"
       intervention_type:
         | "staff_redeployment"
         | "coverage_approval"
@@ -17434,6 +17840,18 @@ export type Database = {
         | "no_show"
       shift_status: "active" | "ended" | "cancelled"
       shift_type: "am" | "pm" | "night" | "on_call" | "full_day" | "custom"
+      sorting_outcome:
+        | "immediate_care"
+        | "queued"
+        | "referred"
+        | "deferred"
+        | "redirected"
+      sorting_session_status:
+        | "in_progress"
+        | "completed"
+        | "cancelled"
+        | "escalated"
+      triage_urgency: "emergency" | "very_urgent" | "urgent" | "routine"
       workspace_role: "staff" | "supervisor" | "manager"
       workspace_transfer_reason:
         | "rotation"
@@ -17591,6 +18009,7 @@ export const Constants = {
       ],
       app_role: ["admin", "moderator", "user"],
       approval_status: ["pending", "approved", "suspended", "rejected"],
+      arrival_mode: ["walk_in", "appointment", "referral", "emergency"],
       client_lifecycle_state: [
         "draft",
         "active",
@@ -17640,6 +18059,12 @@ export const Constants = {
         "self_reported",
         "derived",
         "uncertain",
+      ],
+      identity_resolution_status: [
+        "confirmed",
+        "probable_match",
+        "temporary",
+        "unknown",
       ],
       intervention_type: [
         "staff_redeployment",
@@ -17767,6 +18192,20 @@ export const Constants = {
       ],
       shift_status: ["active", "ended", "cancelled"],
       shift_type: ["am", "pm", "night", "on_call", "full_day", "custom"],
+      sorting_outcome: [
+        "immediate_care",
+        "queued",
+        "referred",
+        "deferred",
+        "redirected",
+      ],
+      sorting_session_status: [
+        "in_progress",
+        "completed",
+        "cancelled",
+        "escalated",
+      ],
+      triage_urgency: ["emergency", "very_urgent", "urgent", "routine"],
       workspace_role: ["staff", "supervisor", "manager"],
       workspace_transfer_reason: [
         "rotation",
