@@ -2,26 +2,29 @@ import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "@/contexts/AuthContext";
 import { useWorkspace } from "@/contexts/WorkspaceContext";
+import { useAboveSiteRole } from "@/hooks/useAboveSiteRole";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
 import { ProviderIdLookup } from "@/components/auth/ProviderIdLookup";
 import { BiometricAuth } from "@/components/auth/BiometricAuth";
 import { WorkspaceSelection, type WorkspaceSelectionData } from "@/components/auth/WorkspaceSelection";
+import { AboveSiteContextSelection } from "@/components/auth/AboveSiteContextSelection";
 import { type ProviderRegistryRecord, type FacilityRegistryRecord } from "@/services/registryServices";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Fingerprint, Mail, Shield, ArrowLeft } from "lucide-react";
+import { Fingerprint, Mail, Shield, ArrowLeft, Eye } from "lucide-react";
 import impiloLogo from "@/assets/impilo-logo.png";
+import type { AboveSiteContextType } from "@/types/aboveSite";
 
-type AuthView = "method-select" | "lookup" | "biometric" | "workspace" | "email-login";
+type AuthView = "method-select" | "lookup" | "biometric" | "workspace" | "email-login" | "above-site-context";
 
 const Auth = () => {
   const navigate = useNavigate();
   const { user, loading } = useAuth();
   const { setCurrentDepartment } = useWorkspace();
+  const { isAboveSiteUser, roles, availableContexts, startSession, loading: aboveSiteLoading } = useAboveSiteRole();
 
   const [view, setView] = useState<AuthView>("method-select");
   const [provider, setProvider] = useState<ProviderRegistryRecord | null>(null);
@@ -34,10 +37,15 @@ const Auth = () => {
   const [isSubmitting, setIsSubmitting] = useState(false);
 
   useEffect(() => {
-    if (user && view !== "workspace") {
-      navigate("/");
+    if (user && view !== "workspace" && view !== "above-site-context") {
+      // Check if user is above-site - redirect to context selection
+      if (isAboveSiteUser && !aboveSiteLoading) {
+        setView("above-site-context");
+      } else if (!aboveSiteLoading) {
+        navigate("/");
+      }
     }
-  }, [user, view, navigate]);
+  }, [user, view, navigate, isAboveSiteUser, aboveSiteLoading]);
 
   const handleProviderFound = (providerData: ProviderRegistryRecord, facilityData: FacilityRegistryRecord) => {
     setProvider(providerData);
@@ -189,7 +197,17 @@ const Auth = () => {
     setPendingAuth(null);
   };
 
-  if (loading) {
+  const handleAboveSiteContextSelected = async (
+    roleId: string,
+    contextType: AboveSiteContextType,
+    contextLabel: string,
+    scope?: { province?: string; district?: string; programme?: string }
+  ) => {
+    await startSession(roleId, contextType, contextLabel, scope);
+    navigate("/above-site");
+  };
+
+  if (loading || (user && aboveSiteLoading)) {
     return (
       <div className="min-h-screen flex items-center justify-center bg-background">
         <div className="animate-pulse text-muted-foreground">Loading...</div>
@@ -323,6 +341,18 @@ const Auth = () => {
           provider={provider}
           onWorkspaceSelected={handleWorkspaceSelected}
           onBack={handleWorkspaceBack}
+        />
+      )}
+
+      {view === "above-site-context" && isAboveSiteUser && (
+        <AboveSiteContextSelection
+          roles={roles}
+          availableContexts={availableContexts}
+          onContextSelected={handleAboveSiteContextSelected}
+          onBack={() => {
+            supabase.auth.signOut();
+            setView("method-select");
+          }}
         />
       )}
     </div>

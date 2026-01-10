@@ -14,6 +14,328 @@ export type Database = {
   }
   public: {
     Tables: {
+      above_site_audit_log: {
+        Row: {
+          action_category: string
+          action_type: string
+          created_at: string | null
+          description: string | null
+          id: string
+          ip_address: unknown
+          jurisdiction_scope: Json | null
+          metadata: Json | null
+          patient_access_approved_by: string | null
+          patient_access_purpose: string | null
+          patient_access_time_limit: unknown
+          patient_id: string | null
+          session_id: string | null
+          target_id: string | null
+          target_name: string | null
+          target_type: string | null
+          user_agent: string | null
+          user_id: string
+        }
+        Insert: {
+          action_category: string
+          action_type: string
+          created_at?: string | null
+          description?: string | null
+          id?: string
+          ip_address?: unknown
+          jurisdiction_scope?: Json | null
+          metadata?: Json | null
+          patient_access_approved_by?: string | null
+          patient_access_purpose?: string | null
+          patient_access_time_limit?: unknown
+          patient_id?: string | null
+          session_id?: string | null
+          target_id?: string | null
+          target_name?: string | null
+          target_type?: string | null
+          user_agent?: string | null
+          user_id: string
+        }
+        Update: {
+          action_category?: string
+          action_type?: string
+          created_at?: string | null
+          description?: string | null
+          id?: string
+          ip_address?: unknown
+          jurisdiction_scope?: Json | null
+          metadata?: Json | null
+          patient_access_approved_by?: string | null
+          patient_access_purpose?: string | null
+          patient_access_time_limit?: unknown
+          patient_id?: string | null
+          session_id?: string | null
+          target_id?: string | null
+          target_name?: string | null
+          target_type?: string | null
+          user_agent?: string | null
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "above_site_audit_log_session_id_fkey"
+            columns: ["session_id"]
+            isOneToOne: false
+            referencedRelation: "above_site_sessions"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      above_site_interventions: {
+        Row: {
+          action_data: Json | null
+          approved_at: string | null
+          approved_by: string | null
+          created_at: string | null
+          description: string | null
+          expires_at: string | null
+          id: string
+          intervention_type: Database["public"]["Enums"]["intervention_type"]
+          is_approved: boolean | null
+          is_reversible: boolean | null
+          reason: string
+          reversal_reason: string | null
+          reversed_at: string | null
+          reversed_by: string | null
+          session_id: string
+          target_facility_id: string | null
+          target_pool_id: string | null
+          target_provider_id: string | null
+          target_workspace_id: string | null
+          title: string
+          user_id: string
+        }
+        Insert: {
+          action_data?: Json | null
+          approved_at?: string | null
+          approved_by?: string | null
+          created_at?: string | null
+          description?: string | null
+          expires_at?: string | null
+          id?: string
+          intervention_type: Database["public"]["Enums"]["intervention_type"]
+          is_approved?: boolean | null
+          is_reversible?: boolean | null
+          reason: string
+          reversal_reason?: string | null
+          reversed_at?: string | null
+          reversed_by?: string | null
+          session_id: string
+          target_facility_id?: string | null
+          target_pool_id?: string | null
+          target_provider_id?: string | null
+          target_workspace_id?: string | null
+          title: string
+          user_id: string
+        }
+        Update: {
+          action_data?: Json | null
+          approved_at?: string | null
+          approved_by?: string | null
+          created_at?: string | null
+          description?: string | null
+          expires_at?: string | null
+          id?: string
+          intervention_type?: Database["public"]["Enums"]["intervention_type"]
+          is_approved?: boolean | null
+          is_reversible?: boolean | null
+          reason?: string
+          reversal_reason?: string | null
+          reversed_at?: string | null
+          reversed_by?: string | null
+          session_id?: string
+          target_facility_id?: string | null
+          target_pool_id?: string | null
+          target_provider_id?: string | null
+          target_workspace_id?: string | null
+          title?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "above_site_interventions_session_id_fkey"
+            columns: ["session_id"]
+            isOneToOne: false
+            referencedRelation: "above_site_sessions"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "above_site_interventions_target_facility_id_fkey"
+            columns: ["target_facility_id"]
+            isOneToOne: false
+            referencedRelation: "facilities"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "above_site_interventions_target_facility_id_fkey"
+            columns: ["target_facility_id"]
+            isOneToOne: false
+            referencedRelation: "facility_capabilities"
+            referencedColumns: ["facility_id"]
+          },
+          {
+            foreignKeyName: "above_site_interventions_target_pool_id_fkey"
+            columns: ["target_pool_id"]
+            isOneToOne: false
+            referencedRelation: "virtual_pools"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "above_site_interventions_target_workspace_id_fkey"
+            columns: ["target_workspace_id"]
+            isOneToOne: false
+            referencedRelation: "workspaces"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      above_site_roles: {
+        Row: {
+          can_access_patient_data: boolean | null
+          can_act_as: boolean | null
+          can_intervene: boolean | null
+          created_at: string | null
+          created_by: string | null
+          description: string | null
+          effective_from: string
+          effective_to: string | null
+          id: string
+          is_active: boolean | null
+          role_type: Database["public"]["Enums"]["above_site_role_type"]
+          title: string
+          updated_at: string | null
+          user_id: string
+        }
+        Insert: {
+          can_access_patient_data?: boolean | null
+          can_act_as?: boolean | null
+          can_intervene?: boolean | null
+          created_at?: string | null
+          created_by?: string | null
+          description?: string | null
+          effective_from?: string
+          effective_to?: string | null
+          id?: string
+          is_active?: boolean | null
+          role_type: Database["public"]["Enums"]["above_site_role_type"]
+          title: string
+          updated_at?: string | null
+          user_id: string
+        }
+        Update: {
+          can_access_patient_data?: boolean | null
+          can_act_as?: boolean | null
+          can_intervene?: boolean | null
+          created_at?: string | null
+          created_by?: string | null
+          description?: string | null
+          effective_from?: string
+          effective_to?: string | null
+          id?: string
+          is_active?: boolean | null
+          role_type?: Database["public"]["Enums"]["above_site_role_type"]
+          title?: string
+          updated_at?: string | null
+          user_id?: string
+        }
+        Relationships: []
+      }
+      above_site_sessions: {
+        Row: {
+          above_site_role_id: string
+          acting_as_expires_at: string | null
+          acting_as_reason: string | null
+          acting_as_started_at: string | null
+          acting_as_workspace_id: string | null
+          context_label: string
+          context_type: Database["public"]["Enums"]["above_site_context_type"]
+          created_at: string | null
+          ended_at: string | null
+          id: string
+          is_acting_as: boolean | null
+          last_activity_at: string | null
+          selected_district: string | null
+          selected_facility_id: string | null
+          selected_programme: string | null
+          selected_province: string | null
+          started_at: string | null
+          user_id: string
+        }
+        Insert: {
+          above_site_role_id: string
+          acting_as_expires_at?: string | null
+          acting_as_reason?: string | null
+          acting_as_started_at?: string | null
+          acting_as_workspace_id?: string | null
+          context_label: string
+          context_type: Database["public"]["Enums"]["above_site_context_type"]
+          created_at?: string | null
+          ended_at?: string | null
+          id?: string
+          is_acting_as?: boolean | null
+          last_activity_at?: string | null
+          selected_district?: string | null
+          selected_facility_id?: string | null
+          selected_programme?: string | null
+          selected_province?: string | null
+          started_at?: string | null
+          user_id: string
+        }
+        Update: {
+          above_site_role_id?: string
+          acting_as_expires_at?: string | null
+          acting_as_reason?: string | null
+          acting_as_started_at?: string | null
+          acting_as_workspace_id?: string | null
+          context_label?: string
+          context_type?: Database["public"]["Enums"]["above_site_context_type"]
+          created_at?: string | null
+          ended_at?: string | null
+          id?: string
+          is_acting_as?: boolean | null
+          last_activity_at?: string | null
+          selected_district?: string | null
+          selected_facility_id?: string | null
+          selected_programme?: string | null
+          selected_province?: string | null
+          started_at?: string | null
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "above_site_sessions_above_site_role_id_fkey"
+            columns: ["above_site_role_id"]
+            isOneToOne: false
+            referencedRelation: "above_site_roles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "above_site_sessions_acting_as_workspace_id_fkey"
+            columns: ["acting_as_workspace_id"]
+            isOneToOne: false
+            referencedRelation: "workspaces"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "above_site_sessions_selected_facility_id_fkey"
+            columns: ["selected_facility_id"]
+            isOneToOne: false
+            referencedRelation: "facilities"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "above_site_sessions_selected_facility_id_fkey"
+            columns: ["selected_facility_id"]
+            isOneToOne: false
+            referencedRelation: "facility_capabilities"
+            referencedColumns: ["facility_id"]
+          },
+        ]
+      }
       account_lockouts: {
         Row: {
           created_at: string
@@ -6278,6 +6600,65 @@ export type Database = {
           updated_at?: string
         }
         Relationships: []
+      }
+      jurisdiction_assignments: {
+        Row: {
+          above_site_role_id: string
+          created_at: string | null
+          district_codes: string[] | null
+          effective_from: string
+          effective_to: string | null
+          facility_ids: string[] | null
+          id: string
+          is_active: boolean | null
+          jurisdiction_level: Database["public"]["Enums"]["jurisdiction_level"]
+          programme_code: string | null
+          programme_name: string | null
+          province_codes: string[] | null
+          updated_at: string | null
+          virtual_pool_ids: string[] | null
+        }
+        Insert: {
+          above_site_role_id: string
+          created_at?: string | null
+          district_codes?: string[] | null
+          effective_from?: string
+          effective_to?: string | null
+          facility_ids?: string[] | null
+          id?: string
+          is_active?: boolean | null
+          jurisdiction_level: Database["public"]["Enums"]["jurisdiction_level"]
+          programme_code?: string | null
+          programme_name?: string | null
+          province_codes?: string[] | null
+          updated_at?: string | null
+          virtual_pool_ids?: string[] | null
+        }
+        Update: {
+          above_site_role_id?: string
+          created_at?: string | null
+          district_codes?: string[] | null
+          effective_from?: string
+          effective_to?: string | null
+          facility_ids?: string[] | null
+          id?: string
+          is_active?: boolean | null
+          jurisdiction_level?: Database["public"]["Enums"]["jurisdiction_level"]
+          programme_code?: string | null
+          programme_name?: string | null
+          province_codes?: string[] | null
+          updated_at?: string | null
+          virtual_pool_ids?: string[] | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "jurisdiction_assignments_above_site_role_id_fkey"
+            columns: ["above_site_role_id"]
+            isOneToOne: false
+            referencedRelation: "above_site_roles"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       lab_analyzers: {
         Row: {
@@ -15396,6 +15777,10 @@ export type Database = {
       }
     }
     Functions: {
+      can_access_facility_in_jurisdiction: {
+        Args: { _facility_id: string; _user_id: string }
+        Returns: boolean
+      }
       can_access_patient: {
         Args: { _patient_id: string; _user_id: string }
         Returns: boolean
@@ -15445,6 +15830,17 @@ export type Database = {
       generate_theatre_booking_number: { Args: never; Returns: string }
       generate_transaction_number: { Args: never; Returns: string }
       generate_upid: { Args: never; Returns: string }
+      get_above_site_roles: {
+        Args: { _user_id: string }
+        Returns: {
+          can_access_patient_data: boolean
+          can_act_as: boolean
+          can_intervene: boolean
+          role_id: string
+          role_type: Database["public"]["Enums"]["above_site_role_type"]
+          title: string
+        }[]
+      }
       get_active_shift: {
         Args: { _user_id: string }
         Returns: {
@@ -15461,6 +15857,7 @@ export type Database = {
         Args: { _facility_id: string }
         Returns: Database["public"]["Enums"]["facility_ops_mode"]
       }
+      get_jurisdiction_scope: { Args: { _role_id: string }; Returns: Json }
       get_next_id_sequence: {
         Args: { p_counter_type: string }
         Returns: number
@@ -15491,6 +15888,7 @@ export type Database = {
           workspace_type: Database["public"]["Enums"]["workspace_type"]
         }[]
       }
+      has_above_site_role: { Args: { _user_id: string }; Returns: boolean }
       has_registry_role: {
         Args: {
           _registry_role: Database["public"]["Enums"]["registry_role"]
@@ -15511,6 +15909,24 @@ export type Database = {
       }
     }
     Enums: {
+      above_site_context_type:
+        | "district_overview"
+        | "provincial_operations"
+        | "national_operations"
+        | "programme_operations"
+        | "telecare_operations"
+        | "network_operations"
+      above_site_role_type:
+        | "district_medical_officer"
+        | "district_health_executive"
+        | "provincial_health_executive"
+        | "national_programme_manager"
+        | "telecare_operations_manager"
+        | "radiology_network_manager"
+        | "lab_network_manager"
+        | "digital_health_manager"
+        | "quality_assurance_officer"
+        | "regulator_inspector"
       app_role: "admin" | "moderator" | "user"
       approval_status: "pending" | "approved" | "suspended" | "rejected"
       client_lifecycle_state:
@@ -15558,6 +15974,20 @@ export type Database = {
         | "self_reported"
         | "derived"
         | "uncertain"
+      intervention_type:
+        | "staff_redeployment"
+        | "coverage_approval"
+        | "queue_escalation"
+        | "virtual_pool_authorization"
+        | "facility_override"
+        | "emergency_response"
+      jurisdiction_level:
+        | "facility_list"
+        | "district"
+        | "province"
+        | "national"
+        | "virtual_services"
+        | "programme"
       license_status:
         | "active"
         | "suspended"
@@ -15749,6 +16179,26 @@ export type CompositeTypes<
 export const Constants = {
   public: {
     Enums: {
+      above_site_context_type: [
+        "district_overview",
+        "provincial_operations",
+        "national_operations",
+        "programme_operations",
+        "telecare_operations",
+        "network_operations",
+      ],
+      above_site_role_type: [
+        "district_medical_officer",
+        "district_health_executive",
+        "provincial_health_executive",
+        "national_programme_manager",
+        "telecare_operations_manager",
+        "radiology_network_manager",
+        "lab_network_manager",
+        "digital_health_manager",
+        "quality_assurance_officer",
+        "regulator_inspector",
+      ],
       app_role: ["admin", "moderator", "user"],
       approval_status: ["pending", "approved", "suspended", "rejected"],
       client_lifecycle_state: [
@@ -15800,6 +16250,22 @@ export const Constants = {
         "self_reported",
         "derived",
         "uncertain",
+      ],
+      intervention_type: [
+        "staff_redeployment",
+        "coverage_approval",
+        "queue_escalation",
+        "virtual_pool_authorization",
+        "facility_override",
+        "emergency_response",
+      ],
+      jurisdiction_level: [
+        "facility_list",
+        "district",
+        "province",
+        "national",
+        "virtual_services",
+        "programme",
       ],
       license_status: [
         "active",
