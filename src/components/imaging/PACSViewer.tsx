@@ -151,19 +151,23 @@ export function PACSViewer() {
 
   // Derive data - use hook data if available, otherwise mock
   const hasDbData = pacs.studies.length > 0;
-  const selectedStudy = hasDbData ? pacs.selectedStudy : null;
-  const currentSeries = hasDbData ? pacs.selectedSeries : null;
-  const totalImages = hasDbData 
-    ? pacs.instances.length 
-    : localSeries.images;
-  const currentImageIndex = hasDbData 
-    ? pacs.currentIndex + 1 
-    : localImage;
+  const studiesForDisplay = hasDbData ? pacs.studies : [];
+  const selectedStudy = pacs.selectedStudy;
+  const currentSeries = pacs.selectedSeries;
+  const totalImages = pacs.instances.length || localSeries.images;
+  const currentImageIndex = pacs.currentIndex + 1 || localImage;
 
   // Load studies on mount
   useEffect(() => {
     pacs.fetchStudies();
   }, []);
+
+  // Auto-select first study from database when loaded
+  useEffect(() => {
+    if (pacs.studies.length > 0 && !pacs.selectedStudy) {
+      pacs.selectStudy(pacs.studies[0]);
+    }
+  }, [pacs.studies]);
 
   // Load DICOM image when instance changes
   useEffect(() => {
@@ -254,18 +258,28 @@ export function PACSViewer() {
     }, 'current-user'); // Replace with actual user ID
   };
 
-  const filteredStudies = mockStudies.filter(study => {
-    const matchesSearch = study.patientName.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      study.patientId.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      study.description.toLowerCase().includes(searchQuery.toLowerCase());
-    const matchesModality = modalityFilter === "all" || study.modality === modalityFilter;
-    return matchesSearch && matchesModality;
-  });
+  // Filter studies from database or use mock for fallback
+  const filteredStudies = hasDbData 
+    ? studiesForDisplay.filter(study => {
+        const patientName = study.patient ? `${study.patient.first_name} ${study.patient.last_name}` : '';
+        const matchesSearch = patientName.toLowerCase().includes(searchQuery.toLowerCase()) ||
+          (study.patient?.mrn || '').toLowerCase().includes(searchQuery.toLowerCase()) ||
+          (study.study_description || '').toLowerCase().includes(searchQuery.toLowerCase());
+        const matchesModality = modalityFilter === "all" || study.modality === modalityFilter;
+        return matchesSearch && matchesModality;
+      })
+    : mockStudies.filter(study => {
+        const matchesSearch = study.patientName.toLowerCase().includes(searchQuery.toLowerCase()) ||
+          study.patientId.toLowerCase().includes(searchQuery.toLowerCase()) ||
+          study.description.toLowerCase().includes(searchQuery.toLowerCase());
+        const matchesModality = modalityFilter === "all" || study.modality === modalityFilter;
+        return matchesSearch && matchesModality;
+      });
 
   // Display values
   const displayStudy = selectedStudy ? {
-    patientName: 'Patient', // Would come from patient join
-    patientId: selectedStudy.patient_id,
+    patientName: selectedStudy.patient ? `${selectedStudy.patient.first_name} ${selectedStudy.patient.last_name}` : 'Unknown Patient',
+    patientId: selectedStudy.patient?.mrn || selectedStudy.patient_id,
     studyDate: selectedStudy.study_date,
     modality: selectedStudy.modality,
     description: selectedStudy.study_description || '',
@@ -275,7 +289,16 @@ export function PACSViewer() {
     accession: selectedStudy.accession_number || '',
   } : localStudy;
 
+  // Display series from database or mock
+  const displaySeriesList = pacs.series.length > 0 ? pacs.series.map(s => ({
+    id: s.id,
+    name: s.series_description || `Series ${s.series_number}`,
+    images: s.number_of_instances,
+    thickness: s.slice_thickness ? `${s.slice_thickness}mm` : 'N/A',
+  })) : mockSeries;
+
   const displaySeries = currentSeries ? {
+    id: currentSeries.id,
     name: currentSeries.series_description || `Series ${currentSeries.series_number}`,
     images: currentSeries.number_of_instances,
     thickness: currentSeries.slice_thickness ? `${currentSeries.slice_thickness}mm` : 'N/A',
@@ -337,33 +360,64 @@ export function PACSViewer() {
 
           <ScrollArea className="flex-1">
             <div className="p-2 space-y-2">
-              {filteredStudies.map((study) => (
-                <Card
-                  key={study.id}
-                  className={`cursor-pointer transition-all hover:border-primary ${
-                    localStudy.id === study.id ? "border-primary bg-primary/5" : ""
-                  }`}
-                  onClick={() => setLocalStudy(study)}
-                >
-                  <CardContent className="p-3">
-                    <div className="flex items-start justify-between mb-2">
-                      <Badge className={`${getModalityBadgeColor(study.modality)} text-white`}>
-                        {study.modality}
-                      </Badge>
-                      <span className="text-xs text-muted-foreground">{study.studyDate}</span>
-                    </div>
-                    <h4 className="font-medium text-sm">{study.patientName}</h4>
-                    <p className="text-xs text-muted-foreground">{study.patientId}</p>
-                    <p className="text-xs text-muted-foreground mt-1">{study.description}</p>
-                    <div className="flex items-center gap-2 mt-2 text-xs text-muted-foreground">
-                      <Layers className="w-3 h-3" />
-                      <span>{study.series} series</span>
-                      <FileImage className="w-3 h-3 ml-2" />
-                      <span>{study.images} images</span>
-                    </div>
-                  </CardContent>
-                </Card>
-              ))}
+              {pacs.loading ? (
+                <div className="flex items-center justify-center py-8">
+                  <Loader2 className="w-6 h-6 animate-spin text-muted-foreground" />
+                </div>
+              ) : filteredStudies.length === 0 ? (
+                <div className="text-center py-8 text-muted-foreground text-sm">
+                  No studies found
+                </div>
+              ) : (
+                filteredStudies.map((study) => {
+                  const isDbStudy = 'patient' in study;
+                  const patientName = isDbStudy 
+                    ? (study.patient ? `${study.patient.first_name} ${study.patient.last_name}` : 'Unknown')
+                    : (study as any).patientName;
+                  const patientId = isDbStudy 
+                    ? (study.patient?.mrn || study.patient_id)
+                    : (study as any).patientId;
+                  const studyDate = isDbStudy ? study.study_date : (study as any).studyDate;
+                  const description = isDbStudy ? (study.study_description || '') : (study as any).description;
+                  const seriesCount = isDbStudy ? study.number_of_series : (study as any).series;
+                  const imageCount = isDbStudy ? study.number_of_instances : (study as any).images;
+                  const isSelected = pacs.selectedStudy?.id === study.id;
+
+                  return (
+                    <Card
+                      key={study.id}
+                      className={`cursor-pointer transition-all hover:border-primary ${
+                        isSelected ? "border-primary bg-primary/5" : ""
+                      }`}
+                      onClick={() => {
+                        if (isDbStudy) {
+                          pacs.selectStudy(study as any);
+                        } else {
+                          setLocalStudy(study as any);
+                        }
+                      }}
+                    >
+                      <CardContent className="p-3">
+                        <div className="flex items-start justify-between mb-2">
+                          <Badge className={`${getModalityBadgeColor(study.modality)} text-white`}>
+                            {study.modality}
+                          </Badge>
+                          <span className="text-xs text-muted-foreground">{studyDate}</span>
+                        </div>
+                        <h4 className="font-medium text-sm">{patientName}</h4>
+                        <p className="text-xs text-muted-foreground">{patientId}</p>
+                        <p className="text-xs text-muted-foreground mt-1">{description}</p>
+                        <div className="flex items-center gap-2 mt-2 text-xs text-muted-foreground">
+                          <Layers className="w-3 h-3" />
+                          <span>{seriesCount} series</span>
+                          <FileImage className="w-3 h-3 ml-2" />
+                          <span>{imageCount} images</span>
+                        </div>
+                      </CardContent>
+                    </Card>
+                  );
+                })
+              )}
             </div>
           </ScrollArea>
 
@@ -372,15 +426,22 @@ export function PACSViewer() {
             <div className="p-3">
               <h3 className="text-sm font-medium mb-2">Series</h3>
               <div className="space-y-1">
-                {mockSeries.map((series) => (
+                {displaySeriesList.map((series) => (
                   <div
                     key={series.id}
                     className={`p-2 rounded cursor-pointer text-sm transition-colors ${
-                      localSeries.id === series.id
+                      displaySeries.id === series.id
                         ? "bg-primary/10 text-primary"
                         : "hover:bg-muted"
                     }`}
-                    onClick={() => setLocalSeries(series)}
+                    onClick={() => {
+                      const dbSeries = pacs.series.find(s => s.id === series.id);
+                      if (dbSeries) {
+                        pacs.selectSeries(dbSeries);
+                      } else {
+                        setLocalSeries(series as any);
+                      }
+                    }}
                   >
                     <div className="flex items-center justify-between">
                       <span className="font-medium">{series.name}</span>
