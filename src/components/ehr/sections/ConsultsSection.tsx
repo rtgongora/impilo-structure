@@ -1,12 +1,13 @@
 import { useState } from "react";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Users, Send, Video, LayoutDashboard, FileText } from "lucide-react";
+import { Users, Send, Video, LayoutDashboard, FileText, Activity } from "lucide-react";
 import { ConsultsDashboard } from "../consults/ConsultsDashboard";
 import { ReferralBuilder } from "../consults/ReferralBuilder";
 import { TeleconsultSession } from "../consults/TeleconsultSession";
 import { CompletionNoteForm } from "../consults/CompletionNote";
 import { TelehealthDashboard } from "../consults/TelehealthDashboard";
 import { AsynchronousReviewPane } from "../consults/AsynchronousReviewPane";
+import { FullCircleTelemedicineHub } from "../consults/FullCircleTelemedicineHub";
 import { ConsultationsTab } from "./consults/ConsultationsTab";
 import { ReferralsTab } from "./consults/ReferralsTab";
 import { TeleconsultsTab } from "./consults/TeleconsultsTab";
@@ -26,7 +27,8 @@ export type ConsultView =
   | "teleconsult-session"
   | "completion-note"
   | "telehealth-dashboard"
-  | "async-review";
+  | "async-review"
+  | "telemedicine-hub";
 
 // Mock referral for demo purposes
 const MOCK_WORKLIST_ITEM: WorklistItem = {
@@ -148,6 +150,18 @@ export function ConsultsSection() {
     );
   }
 
+  if (activeView === "telemedicine-hub") {
+    return (
+      <FullCircleTelemedicineHub
+        patientId={patientId}
+        patientName={patientName}
+        patientHID={patientContext?.patientId}
+        encounterId={encounterId}
+        onBack={handleBack}
+      />
+    );
+  }
+
   // Main tabbed view - showing patient-specific data
   return (
     <div className="space-y-6">
@@ -175,15 +189,22 @@ export function ConsultsSection() {
         </Card>
       )}
 
-      {/* Quick Access to Telehealth Dashboard */}
-      <div className="flex justify-end">
+      {/* Quick Access to Telemedicine */}
+      <div className="flex justify-end gap-2">
         <Button 
           variant="outline" 
           onClick={handleOpenTelehealthDashboard}
           className="flex items-center gap-2"
         >
           <LayoutDashboard className="w-4 h-4" />
-          Open Telehealth Worklist
+          Worklist
+        </Button>
+        <Button 
+          onClick={() => setActiveView("telemedicine-hub")}
+          className="flex items-center gap-2"
+        >
+          <Activity className="w-4 h-4" />
+          Telemedicine Hub
         </Button>
       </div>
 
