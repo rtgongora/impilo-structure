@@ -24,14 +24,69 @@ export interface DashboardTask {
   encounterId?: string;
 }
 
+export interface DashboardOrder {
+  id: string;
+  orderName: string;
+  orderType: string;
+  status: string;
+  priority: string;
+  patientName: string;
+  patientMrn: string;
+  orderedAt: string;
+  patientId?: string;
+  encounterId?: string;
+}
+
+export interface DashboardReferral {
+  id: string;
+  patientName: string;
+  patientMrn: string;
+  referralType: string;
+  specialty: string;
+  urgency: string;
+  status: string;
+  createdAt: string;
+  fromFacility?: string;
+  toFacility?: string;
+}
+
+export interface DashboardResult {
+  id: string;
+  testName: string;
+  resultType: string;
+  status: string;
+  patientName: string;
+  patientMrn: string;
+  reportedAt: string;
+  isCritical: boolean;
+}
+
+export interface AggregateStats {
+  myPatients: number;
+  pendingTasks: number;
+  criticalAlerts: number;
+  completedToday: number;
+  pendingOrders: number;
+  pendingResults: number;
+  activeReferrals: number;
+  pendingConsults: number;
+}
+
 export function useDashboardData() {
   const [patients, setPatients] = useState<DashboardPatient[]>([]);
   const [tasks, setTasks] = useState<DashboardTask[]>([]);
-  const [stats, setStats] = useState({
+  const [orders, setOrders] = useState<DashboardOrder[]>([]);
+  const [referrals, setReferrals] = useState<DashboardReferral[]>([]);
+  const [results, setResults] = useState<DashboardResult[]>([]);
+  const [stats, setStats] = useState<AggregateStats>({
     myPatients: 0,
     pendingTasks: 0,
     criticalAlerts: 0,
     completedToday: 0,
+    pendingOrders: 0,
+    pendingResults: 0,
+    activeReferrals: 0,
+    pendingConsults: 0,
   });
   const [loading, setLoading] = useState(true);
   const { user } = useAuth();
@@ -75,23 +130,26 @@ export function useDashboardData() {
         }
 
         // Fetch pending clinical orders as tasks
-        const { data: orders } = await supabase
+        const { data: clinicalOrders } = await supabase
           .from("clinical_orders")
           .select(`
             id,
             order_name,
             order_type,
             priority,
+            status,
             created_at,
             patient_id,
-            encounter_id
+            encounter_id,
+            patient:patients(first_name, last_name, mrn)
           `)
           .in("status", ["pending", "in_progress"])
-          .order("created_at", { ascending: true })
-          .limit(10);
+          .order("created_at", { ascending: false })
+          .limit(50);
 
-        if (orders) {
-          const dashboardTasks: DashboardTask[] = orders.map((order) => ({
+        if (clinicalOrders) {
+          // Tasks from orders
+          const dashboardTasks: DashboardTask[] = clinicalOrders.slice(0, 10).map((order) => ({
             id: order.id,
             title: order.order_name,
             type: order.order_type,
@@ -101,6 +159,90 @@ export function useDashboardData() {
             encounterId: order.encounter_id,
           }));
           setTasks(dashboardTasks);
+
+          // Orders list
+          const dashboardOrders: DashboardOrder[] = clinicalOrders.map((order) => ({
+            id: order.id,
+            orderName: order.order_name,
+            orderType: order.order_type,
+            status: order.status,
+            priority: order.priority,
+            patientName: order.patient ? `${order.patient.first_name} ${order.patient.last_name}` : "Unknown",
+            patientMrn: order.patient?.mrn || "",
+            orderedAt: getRelativeTime(order.created_at),
+            patientId: order.patient_id,
+            encounterId: order.encounter_id,
+          }));
+          setOrders(dashboardOrders);
+        }
+
+        // Fetch referrals
+        const { data: referralData } = await supabase
+          .from("referrals")
+          .select(`
+            id,
+            referral_type,
+            to_department,
+            from_department,
+            urgency,
+            status,
+            created_at,
+            patient:patients(first_name, last_name, mrn)
+          `)
+          .in("status", ["pending", "accepted", "in_progress"])
+          .order("created_at", { ascending: false })
+          .limit(20);
+
+        if (referralData) {
+          const dashboardReferrals: DashboardReferral[] = referralData.map((ref) => ({
+            id: ref.id,
+            patientName: ref.patient ? `${ref.patient.first_name} ${ref.patient.last_name}` : "Unknown",
+            patientMrn: ref.patient?.mrn || "",
+            referralType: ref.referral_type || "Consultation",
+            specialty: ref.to_department || "General",
+            urgency: ref.urgency || "routine",
+            status: ref.status,
+            createdAt: getRelativeTime(ref.created_at),
+            fromFacility: ref.from_department || undefined,
+            toFacility: ref.to_department || undefined,
+          }));
+          setReferrals(dashboardReferrals);
+        }
+
+        // Fetch lab results with lab_order for patient info
+        const { data: labResults } = await supabase
+          .from("lab_results")
+          .select(`
+            id,
+            test_name,
+            status,
+            is_critical,
+            released_at,
+            performed_at,
+            lab_order:lab_orders(
+              patient:patients(first_name, last_name, mrn)
+            )
+          `)
+          .in("status", ["pending", "preliminary", "final"])
+          .order("created_at", { ascending: false })
+          .limit(20);
+
+        if (labResults) {
+          const dashboardResults: DashboardResult[] = labResults.map((result) => {
+            const patient = result.lab_order?.patient;
+            return {
+              id: result.id,
+              testName: result.test_name,
+              resultType: "lab",
+              status: result.status,
+              patientName: patient ? `${patient.first_name} ${patient.last_name}` : "Unknown",
+              patientMrn: patient?.mrn || "",
+              reportedAt: result.released_at ? getRelativeTime(result.released_at) : 
+                          result.performed_at ? getRelativeTime(result.performed_at) : "Pending",
+              isCritical: result.is_critical || false,
+            };
+          });
+          setResults(dashboardResults);
         }
 
         // Fetch stats
@@ -128,11 +270,25 @@ export function useDashboardData() {
           .eq("status", "completed")
           .gte("completed_at", today.toISOString());
 
+        const { count: pendingResultsCount } = await supabase
+          .from("lab_results")
+          .select("*", { count: "exact", head: true })
+          .in("status", ["pending", "preliminary"]);
+
+        const { count: activeReferralsCount } = await supabase
+          .from("referrals")
+          .select("*", { count: "exact", head: true })
+          .in("status", ["pending", "accepted", "in_progress"]);
+
         setStats({
           myPatients: activeEncounters || 0,
           pendingTasks: pendingOrders || 0,
           criticalAlerts: criticalAlerts || 0,
           completedToday: completedToday || 0,
+          pendingOrders: pendingOrders || 0,
+          pendingResults: pendingResultsCount || 0,
+          activeReferrals: activeReferralsCount || 0,
+          pendingConsults: activeReferralsCount || 0,
         });
       } catch (err) {
         console.error("Error fetching dashboard data:", err);
@@ -147,6 +303,9 @@ export function useDashboardData() {
   return {
     patients,
     tasks,
+    orders,
+    referrals,
+    results,
     stats,
     loading,
   };

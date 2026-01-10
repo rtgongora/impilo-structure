@@ -13,6 +13,7 @@ import { useDashboardData } from "@/hooks/useDashboardData";
 import { AppLayout } from "@/components/layout/AppLayout";
 import { useWorkspace } from "@/contexts/WorkspaceContext";
 import { DepartmentView, TeamView } from "@/components/dashboard/WorkspaceViews";
+import { ProviderDashboardTabs } from "@/components/dashboard/ProviderDashboardTabs";
 import { 
   Users, 
   ClipboardList, 
@@ -28,13 +29,15 @@ import {
   Phone,
   Bell,
   Inbox,
+  Send,
+  TestTube2,
 } from "lucide-react";
 
 const Dashboard = () => {
   const { profile } = useAuth();
   const navigate = useNavigate();
   const [activeTab, setActiveTab] = useState("worklist");
-  const { patients, tasks, stats, loading } = useDashboardData();
+  const { patients, tasks, orders, referrals, results, stats, loading } = useDashboardData();
   const { currentView } = useWorkspace();
 
   const getPriorityColor = (priority: string) => {
@@ -124,7 +127,7 @@ const Dashboard = () => {
       </Card>
 
       {/* Quick Stats */}
-      <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-6">
+      <div className="grid grid-cols-2 md:grid-cols-6 gap-4 mb-6">
         <Card>
           <CardContent className="p-4 flex items-center gap-3">
             <div className="p-2 bg-primary/10 rounded-lg">
@@ -151,7 +154,37 @@ const Dashboard = () => {
               ) : (
                 <p className="text-2xl font-bold">{stats.pendingTasks}</p>
               )}
-              <p className="text-xs text-muted-foreground">My Tasks</p>
+              <p className="text-xs text-muted-foreground">Pending Orders</p>
+            </div>
+          </CardContent>
+        </Card>
+        <Card>
+          <CardContent className="p-4 flex items-center gap-3">
+            <div className="p-2 bg-info/10 rounded-lg">
+              <Send className="h-5 w-5 text-info" />
+            </div>
+            <div>
+              {loading ? (
+                <Skeleton className="h-8 w-8" />
+              ) : (
+                <p className="text-2xl font-bold">{stats.activeReferrals}</p>
+              )}
+              <p className="text-xs text-muted-foreground">Active Referrals</p>
+            </div>
+          </CardContent>
+        </Card>
+        <Card>
+          <CardContent className="p-4 flex items-center gap-3">
+            <div className="p-2 bg-secondary/10 rounded-lg">
+              <TestTube2 className="h-5 w-5 text-secondary" />
+            </div>
+            <div>
+              {loading ? (
+                <Skeleton className="h-8 w-8" />
+              ) : (
+                <p className="text-2xl font-bold">{stats.pendingResults}</p>
+              )}
+              <p className="text-xs text-muted-foreground">Pending Results</p>
             </div>
           </CardContent>
         </Card>
@@ -166,7 +199,7 @@ const Dashboard = () => {
               ) : (
                 <p className="text-2xl font-bold">{stats.criticalAlerts}</p>
               )}
-              <p className="text-xs text-muted-foreground">My Alerts</p>
+              <p className="text-xs text-muted-foreground">Critical Alerts</p>
             </div>
           </CardContent>
         </Card>
@@ -312,6 +345,15 @@ const Dashboard = () => {
           <NurseMedDashboard />
         </div>
       </div>
+
+      {/* Clinical Overview Tabs - All Patients */}
+      <ProviderDashboardTabs
+        orders={orders}
+        referrals={referrals}
+        results={results}
+        stats={stats}
+        loading={loading}
+      />
     </>
   );
 
