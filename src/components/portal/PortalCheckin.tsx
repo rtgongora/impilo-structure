@@ -94,11 +94,12 @@ export function PortalCheckin({ patientId, healthId, onCheckinComplete }: Portal
     setIsLoading(true);
     try {
       // Look up facility by code
-      const { data: facility, error }: { data: any; error: any } = await (supabase
+      const { data: facility, error }: { data: any; error: any } = await ((supabase as any)
         .from("facilities")
         .select("id, name")
         .eq("code", facilityCode.toUpperCase())
-        .maybeSingle() as any);
+        .maybeSingle());
+
 
       if (error || !facility) {
         toast.error("Facility not found. Please check the code.");

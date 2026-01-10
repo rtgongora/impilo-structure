@@ -115,12 +115,13 @@ export function EnhancedShiftHandoff() {
       });
 
       // 2. Fetch pending lab results needing review
-      const { data: labResults }: { data: any[] | null } = await (supabase
+      const { data: labResults }: { data: any[] | null } = await ((supabase as any)
         .from("lab_results")
         .select("id, test_name, result_status, patient_id")
         .eq("verified", false)
         .order("created_at", { ascending: false })
-        .limit(10) as any);
+        .limit(10));
+
 
       (labResults || []).forEach((r: any) => {
         tasks.push({
