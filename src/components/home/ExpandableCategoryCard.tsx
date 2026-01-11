@@ -46,22 +46,15 @@ export function ExpandableCategoryCard({
         className="cursor-pointer transition-all duration-200 hover:shadow-md hover:border-primary/50 group h-full"
         onClick={() => setIsOpen(true)}
       >
-        <CardContent className="p-2 sm:p-3">
-          <div className="flex flex-col items-center text-center gap-1">
-            <div className={cn("w-9 h-9 sm:w-10 sm:h-10 shrink-0 rounded-lg flex items-center justify-center group-hover:scale-105 transition-transform", color)}>
-              <Icon className="h-4 w-4 sm:h-5 sm:w-5 text-white" />
+        <CardContent className="p-1.5 sm:p-2">
+          <div className="flex flex-col items-center text-center gap-0.5">
+            <div className={cn("w-7 h-7 sm:w-8 sm:h-8 shrink-0 rounded-md flex items-center justify-center group-hover:scale-105 transition-transform", color)}>
+              <Icon className="h-3.5 w-3.5 sm:h-4 sm:w-4 text-white" />
             </div>
-            <div className="min-w-0 w-full">
-              <div className="flex items-center justify-center gap-1">
-                <p className="text-sm sm:text-base font-semibold leading-tight line-clamp-2">{title}</p>
-                {roles && roles.length > 0 && (
-                  <Lock className="h-2.5 w-2.5 text-muted-foreground/50 shrink-0" />
-                )}
-              </div>
-              <Badge variant="secondary" className="text-[10px] sm:text-xs px-1.5 py-0 h-4 mt-0.5">
-                {modules.length}
-              </Badge>
-            </div>
+            <p className="text-[10px] sm:text-xs font-medium leading-tight line-clamp-2">{title}</p>
+            {roles && roles.length > 0 && (
+              <Lock className="h-2 w-2 text-muted-foreground/50" />
+            )}
           </div>
         </CardContent>
       </Card>
