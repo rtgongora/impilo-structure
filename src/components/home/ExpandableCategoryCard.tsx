@@ -1,7 +1,8 @@
 import { useState } from "react";
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { ChevronDown, ChevronRight, Lock } from "lucide-react";
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
+import { Lock } from "lucide-react";
 import { cn } from "@/lib/utils";
 
 interface ModuleItem {
@@ -35,85 +36,82 @@ export function ExpandableCategoryCard({
   color,
   roles,
   onModuleClick,
-  defaultExpanded = false,
 }: ExpandableCategoryCardProps) {
-  const [isExpanded, setIsExpanded] = useState(defaultExpanded);
+  const [isOpen, setIsOpen] = useState(false);
 
   return (
-    <div className="space-y-2">
-      {/* Category Header - Clickable */}
+    <>
+      {/* Compact Category Card */}
       <Card
-        className={cn(
-          "cursor-pointer transition-all duration-200 hover:shadow-md",
-          isExpanded 
-            ? "border-primary/50 bg-primary/5" 
-            : "hover:border-primary/30"
-        )}
-        onClick={() => setIsExpanded(!isExpanded)}
+        className="cursor-pointer transition-all duration-200 hover:shadow-md hover:border-primary/50 group h-full"
+        onClick={() => setIsOpen(true)}
       >
-        <CardContent className="p-3">
-          <div className="flex items-center justify-between">
-            <div className="flex items-center gap-3">
-              <div className={cn("w-10 h-10 shrink-0 rounded-lg flex items-center justify-center", color)}>
-                <Icon className="h-5 w-5 text-white" />
-              </div>
-              <div className="min-w-0 flex-1">
-                <div className="flex items-center gap-2">
-                  <p className="text-base font-semibold">{title}</p>
-                  <Badge variant="secondary" className="text-[10px] px-1.5 py-0 h-4">
-                    {modules.length}
-                  </Badge>
-                  {roles && roles.length > 0 && (
-                    <Lock className="h-3 w-3 text-muted-foreground/50" />
-                  )}
-                </div>
-                <p className="text-sm text-muted-foreground">{description}</p>
-              </div>
+        <CardContent className="p-2.5 sm:p-3">
+          <div className="flex items-center gap-2">
+            <div className={cn("w-8 h-8 sm:w-9 sm:h-9 shrink-0 rounded-lg flex items-center justify-center group-hover:scale-105 transition-transform", color)}>
+              <Icon className="h-4 w-4 sm:h-5 sm:w-5 text-white" />
             </div>
-            <div className={cn(
-              "w-8 h-8 rounded-full flex items-center justify-center transition-colors",
-              isExpanded ? "bg-primary/10" : "bg-muted"
-            )}>
-              {isExpanded ? (
-                <ChevronDown className="h-4 w-4 text-primary" />
-              ) : (
-                <ChevronRight className="h-4 w-4 text-muted-foreground" />
-              )}
+            <div className="min-w-0 flex-1">
+              <div className="flex items-center gap-1">
+                <p className="text-xs sm:text-sm font-semibold truncate">{title}</p>
+                {roles && roles.length > 0 && (
+                  <Lock className="h-2.5 w-2.5 text-muted-foreground/50 shrink-0" />
+                )}
+              </div>
+              <div className="flex items-center gap-1">
+                <Badge variant="secondary" className="text-[9px] px-1 py-0 h-3.5">
+                  {modules.length}
+                </Badge>
+              </div>
             </div>
           </div>
         </CardContent>
       </Card>
 
-      {/* Expanded Modules Grid */}
-      {isExpanded && (
-        <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-2 animate-fade-in pl-2">
-          {modules.map((module) => (
-            <Card
-              key={module.id}
-              className="cursor-pointer hover:shadow-md hover:border-primary/50 transition-all group"
-              onClick={(e) => {
-                e.stopPropagation();
-                onModuleClick(module.path);
-              }}
-            >
-              <CardContent className="p-3">
-                <div className="flex items-center gap-3">
-                  <div className={cn("w-9 h-9 shrink-0 rounded-lg flex items-center justify-center", module.color)}>
-                    <module.icon className="h-4 w-4 text-white" />
+      {/* Expanded Dialog with Modules */}
+      <Dialog open={isOpen} onOpenChange={setIsOpen}>
+        <DialogContent className="max-w-2xl max-h-[80vh] overflow-y-auto">
+          <DialogHeader>
+            <div className="flex items-center gap-3">
+              <div className={cn("w-10 h-10 shrink-0 rounded-lg flex items-center justify-center", color)}>
+                <Icon className="h-5 w-5 text-white" />
+              </div>
+              <div>
+                <DialogTitle className="text-lg">{title}</DialogTitle>
+                <p className="text-sm text-muted-foreground">{description}</p>
+              </div>
+            </div>
+          </DialogHeader>
+          
+          <div className="grid grid-cols-2 sm:grid-cols-3 gap-2 mt-4">
+            {modules.map((module) => (
+              <Card
+                key={module.id}
+                className="cursor-pointer hover:shadow-md hover:border-primary/50 transition-all group"
+                onClick={() => {
+                  onModuleClick(module.path);
+                  setIsOpen(false);
+                }}
+              >
+                <CardContent className="p-3">
+                  <div className="flex items-center gap-2">
+                    <div className={cn("w-8 h-8 shrink-0 rounded-lg flex items-center justify-center", module.color)}>
+                      <module.icon className="h-4 w-4 text-white" />
+                    </div>
+                    <div className="min-w-0 flex-1">
+                      <p className="text-sm font-medium truncate">{module.label}</p>
+                      <p className="text-xs text-muted-foreground truncate">{module.description}</p>
+                    </div>
+                    {module.roles && module.roles.length > 0 && (
+                      <Lock className="h-3 w-3 text-muted-foreground/50 shrink-0" />
+                    )}
                   </div>
-                  <div className="min-w-0 flex-1">
-                    <p className="text-sm font-medium truncate">{module.label}</p>
-                    <p className="text-xs text-muted-foreground truncate">{module.description}</p>
-                  </div>
-                  {module.roles && module.roles.length > 0 && (
-                    <Lock className="h-3 w-3 text-muted-foreground/50 shrink-0" />
-                  )}
-                </div>
-              </CardContent>
-            </Card>
-          ))}
-        </div>
-      )}
-    </div>
+                </CardContent>
+              </Card>
+            ))}
+          </div>
+        </DialogContent>
+      </Dialog>
+    </>
   );
 }

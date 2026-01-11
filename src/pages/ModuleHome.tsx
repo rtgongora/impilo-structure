@@ -808,8 +808,8 @@ export default function ModuleHome() {
               </div>
             </div>
 
-            {/* Module Categories - Expandable Cards */}
-            <div className="space-y-3 pb-4">
+            {/* Module Categories - Expandable Cards Grid */}
+            <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-2 pb-4">
               {visibleCategories.map((category) => (
                 <ExpandableCategoryCard
                   key={category.id}
