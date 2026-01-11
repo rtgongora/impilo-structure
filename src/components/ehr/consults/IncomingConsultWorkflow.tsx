@@ -53,9 +53,15 @@ import type {
 import { ReferralPackageViewer } from "./ReferralPackageViewer";
 import { LiveSessionWorkspace } from "./LiveSessionWorkspace";
 import { ConsultationResponseBuilder } from "./ConsultationResponseBuilder";
+import { AsyncReviewSession } from "./AsyncReviewSession";
 import { usePatientSummary } from "@/hooks/useSummaries";
 import { useTelemedicineTrustLayer, type EHRAccessScope } from "@/hooks/useTelemedicineTrustLayer";
 import { useTelemedicineRoles } from "@/hooks/useTelemedicineRoles";
+
+// Helper to determine if mode is non-live (supports save/pause/resume)
+const isNonLiveMode = (mode: TelemedicineMode): boolean => {
+  return mode === 'async' || mode === 'board';
+};
 
 // Workflow stages for the consulting facility
 const CONSULTANT_STAGES = [
@@ -202,12 +208,14 @@ export function IncomingConsultWorkflow({
       setEhrAccessRequested(true);
       setShowEhrAccessDialog(false);
       
-      // If async mode, go to response building, otherwise to live session
-      if (activeMode === "async") {
-        setCurrentStage(4);
-        toast.success("Proceeding to asynchronous review");
+      // All modes now go to stage 3 - the stage handler determines the UI
+      // Non-live modes (async, board) use AsyncReviewSession with save/pause/resume
+      // Live modes (video, audio, chat) use LiveSessionWorkspace
+      setCurrentStage(3);
+      
+      if (isNonLiveMode(activeMode)) {
+        toast.success(`Starting ${activeMode === 'board' ? 'case review board' : 'asynchronous review'} - You can save and resume later`);
       } else {
-        setCurrentStage(3);
         setIsSessionActive(true);
         toast.success("Starting live session");
       }
@@ -371,22 +379,40 @@ export function IncomingConsultWorkflow({
                 {/* Session mode */}
                 <div className="space-y-2">
                   <Label>Consultation Mode</Label>
-                  <div className="grid grid-cols-3 gap-2">
-                    {(['async', 'video', 'audio', 'chat'] as TelemedicineMode[]).map((mode) => (
-                      <Button
-                        key={mode}
-                        variant={activeMode === mode ? "default" : "outline"}
-                        className="flex-col h-auto py-3"
-                        onClick={() => setActiveMode(mode)}
-                      >
-                        {mode === 'async' && <FileText className="h-5 w-5 mb-1" />}
-                        {mode === 'video' && <Video className="h-5 w-5 mb-1" />}
-                        {mode === 'audio' && <Phone className="h-5 w-5 mb-1" />}
-                        {mode === 'chat' && <MessageSquare className="h-5 w-5 mb-1" />}
-                        <span className="text-xs capitalize">{mode}</span>
-                      </Button>
-                    ))}
+                  <div className="grid grid-cols-5 gap-2">
+                    {(['async', 'board', 'video', 'audio', 'chat'] as TelemedicineMode[]).map((mode) => {
+                      const modeLabels: Record<string, string> = {
+                        async: 'Async Review',
+                        board: 'Case Board',
+                        video: 'Video',
+                        audio: 'Audio',
+                        chat: 'Chat',
+                      };
+                      const isNonLive = isNonLiveMode(mode);
+                      return (
+                        <Button
+                          key={mode}
+                          variant={activeMode === mode ? "default" : "outline"}
+                          className="flex-col h-auto py-3"
+                          onClick={() => setActiveMode(mode)}
+                        >
+                          {mode === 'async' && <FileText className="h-5 w-5 mb-1" />}
+                          {mode === 'board' && <Users className="h-5 w-5 mb-1" />}
+                          {mode === 'video' && <Video className="h-5 w-5 mb-1" />}
+                          {mode === 'audio' && <Phone className="h-5 w-5 mb-1" />}
+                          {mode === 'chat' && <MessageSquare className="h-5 w-5 mb-1" />}
+                          <span className="text-xs">{modeLabels[mode]}</span>
+                          {isNonLive && (
+                            <span className="text-[10px] text-muted-foreground">Save & Resume</span>
+                          )}
+                        </Button>
+                      );
+                    })}
                   </div>
+                  <p className="text-xs text-muted-foreground">
+                    <Clock className="h-3 w-3 inline mr-1" />
+                    Async Review and Case Board sessions can be paused and resumed later
+                  </p>
                 </div>
 
                 <div className="flex gap-3 pt-4">
@@ -413,7 +439,29 @@ export function IncomingConsultWorkflow({
         );
 
       case 3:
-        // Live Session
+        // Session - Live or Async/Board (with save/pause/resume)
+        if (isNonLiveMode(activeMode)) {
+          // Non-live modes (async, board) use AsyncReviewSession with save/pause/resume
+          return (
+            <AsyncReviewSession
+              sessionId={workItem.workItemId}
+              referral={referralPackage}
+              onComplete={(response) => {
+                setConsultationResponse(response);
+                setCurrentStage(5);
+                handleResponseSubmit(response);
+              }}
+              onBack={() => setCurrentStage(2)}
+              onConvertToLive={() => {
+                // Convert async/board to live session
+                setActiveMode('video');
+                toast.info('Switching to live video session');
+              }}
+            />
+          );
+        }
+        
+        // Live modes (video, audio, chat) use LiveSessionWorkspace
         return (
           <LiveSessionWorkspace
             referral={referralPackage}
