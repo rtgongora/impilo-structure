@@ -8,6 +8,7 @@ import { CompletionNoteForm } from "../consults/CompletionNote";
 import { TelehealthDashboard } from "../consults/TelehealthDashboard";
 import { AsynchronousReviewPane } from "../consults/AsynchronousReviewPane";
 import { FullCircleTelemedicineHub } from "../consults/FullCircleTelemedicineHub";
+import { TelemedicineWorkflow } from "../consults/TelemedicineWorkflow";
 import { ConsultationsTab } from "./consults/ConsultationsTab";
 import { ReferralsTab } from "./consults/ReferralsTab";
 import { TeleconsultsTab } from "./consults/TeleconsultsTab";
@@ -24,6 +25,7 @@ export type ConsultView =
   | "referrals" 
   | "teleconsults"
   | "new-referral"
+  | "new-teleconsult"  // NEW: Full 7-stage telemedicine workflow
   | "teleconsult-session"
   | "completion-note"
   | "telehealth-dashboard"
@@ -66,6 +68,10 @@ export function ConsultsSection() {
     setActiveView("new-referral");
   };
 
+  const handleNewTeleconsult = () => {
+    setActiveView("new-teleconsult");
+  };
+
   const handleOpenReferral = (referral: WorklistItem) => {
     setActiveReferral(referral);
     if (referral.stage === "in-session" || referral.stage === "response-pending") {
@@ -106,6 +112,20 @@ export function ConsultsSection() {
       <ReferralBuilder 
         onSubmit={handleBack}
         onCancel={handleBack}
+      />
+    );
+  }
+
+  // Full 7-stage Telemedicine Workflow
+  if (activeView === "new-teleconsult") {
+    return (
+      <TelemedicineWorkflow
+        role="referrer"
+        initialStage={1}
+        patientId={patientId}
+        patientName={patientName}
+        onComplete={handleBack}
+        onBack={handleBack}
       />
     );
   }
@@ -247,6 +267,7 @@ export function ConsultsSection() {
             encounterId={encounterId}
             onJoinTeleconsult={handleJoinTeleconsult}
             onNewReferral={handleNewReferral}
+            onNewTeleconsult={handleNewTeleconsult}
           />
         </TabsContent>
       </Tabs>

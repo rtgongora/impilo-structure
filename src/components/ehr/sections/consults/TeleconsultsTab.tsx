@@ -14,6 +14,7 @@ interface TeleconsultsTabProps {
   encounterId?: string;
   onJoinTeleconsult: (consultId: string) => void;
   onNewReferral: () => void;
+  onNewTeleconsult?: () => void;  // NEW: For full 7-stage workflow
 }
 
 interface Teleconsult {
@@ -52,7 +53,9 @@ const getStatusBadge = (status: string) => {
   }
 };
 
-export function TeleconsultsTab({ patientId, encounterId, onJoinTeleconsult, onNewReferral }: TeleconsultsTabProps) {
+export function TeleconsultsTab({ patientId, encounterId, onJoinTeleconsult, onNewReferral, onNewTeleconsult }: TeleconsultsTabProps) {
+  // Use the full teleconsult workflow if available, fallback to referral
+  const handleScheduleTeleconsult = onNewTeleconsult || onNewReferral;
   const [teleconsults, setTeleconsults] = useState<Teleconsult[]>([]);
   const [loading, setLoading] = useState(true);
 
@@ -184,7 +187,7 @@ export function TeleconsultsTab({ patientId, encounterId, onJoinTeleconsult, onN
       <Card>
         <CardHeader className="flex flex-row items-center justify-between pb-3">
           <CardTitle className="text-base">Teleconsultation Sessions</CardTitle>
-          <Button size="sm" onClick={onNewReferral}>
+          <Button size="sm" onClick={handleScheduleTeleconsult}>
             <Video className="w-4 h-4 mr-1" />
             Schedule Teleconsult
           </Button>
@@ -194,7 +197,7 @@ export function TeleconsultsTab({ patientId, encounterId, onJoinTeleconsult, onN
             <div className="text-center py-8 text-muted-foreground">
               <Video className="w-12 h-12 mx-auto mb-4 opacity-50" />
               <p>No teleconsultations for this patient</p>
-              <Button variant="outline" size="sm" className="mt-4" onClick={onNewReferral}>
+              <Button variant="outline" size="sm" className="mt-4" onClick={handleScheduleTeleconsult}>
                 Schedule first teleconsult
               </Button>
             </div>
@@ -287,15 +290,15 @@ export function TeleconsultsTab({ patientId, encounterId, onJoinTeleconsult, onN
           <div className="pt-4 border-t">
             <p className="text-sm font-medium mb-3">Quick Connect</p>
             <div className="grid grid-cols-3 gap-2">
-              <Button variant="outline" className="flex flex-col h-auto py-3" onClick={onNewReferral}>
+              <Button variant="outline" className="flex flex-col h-auto py-3" onClick={handleScheduleTeleconsult}>
                 <Video className="w-5 h-5 mb-1" />
                 <span className="text-xs">Video Call</span>
               </Button>
-              <Button variant="outline" className="flex flex-col h-auto py-3" onClick={onNewReferral}>
+              <Button variant="outline" className="flex flex-col h-auto py-3" onClick={handleScheduleTeleconsult}>
                 <Phone className="w-5 h-5 mb-1" />
                 <span className="text-xs">Audio Call</span>
               </Button>
-              <Button variant="outline" className="flex flex-col h-auto py-3" onClick={onNewReferral}>
+              <Button variant="outline" className="flex flex-col h-auto py-3" onClick={handleScheduleTeleconsult}>
                 <MessageSquare className="w-5 h-5 mb-1" />
                 <span className="text-xs">Chat</span>
               </Button>
