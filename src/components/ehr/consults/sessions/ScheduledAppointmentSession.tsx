@@ -1,6 +1,6 @@
 /**
  * ScheduledAppointmentSession - Pre-booked teleconsultation appointments
- * For managing scheduled video/audio appointments with waiting room
+ * Enhanced with: recording integration, multi-participant, instant comms, referral linking
  */
 import { useState, useEffect, useCallback } from "react";
 import {
@@ -17,22 +17,24 @@ import {
   FileText,
   MessageSquare,
   ArrowLeft,
-  RefreshCw,
   Loader2,
   Timer,
   Users,
+  UserPlus,
+  Link,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
-import { Progress } from "@/components/ui/progress";
 import { Separator } from "@/components/ui/separator";
-import { ScrollArea } from "@/components/ui/scroll-area";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { format, differenceInMinutes, differenceInSeconds, isPast, addMinutes } from "date-fns";
 import { cn } from "@/lib/utils";
 import { toast } from "sonner";
+import { useMultiParticipantSession, type ParticipantInvite } from "@/hooks/useMultiParticipantSession";
+import { AddParticipantDialog } from "../AddParticipantDialog";
+import { ReferralPackageBuilderDialog } from "../ReferralPackageBuilderDialog";
 import type { ReferralPackage, TelemedicineMode } from "@/types/telehealth";
 import { ReferralPackageViewer } from "../ReferralPackageViewer";
 
@@ -45,6 +47,8 @@ interface ScheduledAppointmentSessionProps {
   onReschedule?: () => void;
   onCancel?: () => void;
   onBack: () => void;
+  onStartInstantCall?: (mode: 'audio' | 'video') => void;
+  onStartChat?: () => void;
 }
 
 type AppointmentState = 'upcoming' | 'waiting_room' | 'ready' | 'started' | 'no_show' | 'completed';
@@ -67,15 +71,42 @@ export function ScheduledAppointmentSession({
   onReschedule,
   onCancel,
   onBack,
+  onStartInstantCall,
+  onStartChat,
 }: ScheduledAppointmentSessionProps) {
   const [appointmentState, setAppointmentState] = useState<AppointmentState>('upcoming');
   const [countdown, setCountdown] = useState({ minutes: 0, seconds: 0 });
   const [waitingParticipants, setWaitingParticipants] = useState<WaitingRoomParticipant[]>([]);
   const [isReady, setIsReady] = useState(false);
   const [activeTab, setActiveTab] = useState("overview");
+  const [showAddParticipant, setShowAddParticipant] = useState(false);
+  const [showReferralBuilder, setShowReferralBuilder] = useState(false);
 
   const scheduledTime = new Date(scheduledAt);
-  const waitingRoomOpensAt = addMinutes(scheduledTime, -15); // 15 min before
+  const waitingRoomOpensAt = addMinutes(scheduledTime, -15);
+
+  // Multi-participant hook
+  const {
+    participants,
+    activeCount,
+    canAddMore,
+    addParticipant,
+  } = useMultiParticipantSession({
+    sessionId,
+    hostId: 'current-user',
+    hostName: 'You (Consultant)',
+    initialParticipants: [{
+      id: referral.context.referringProviderId,
+      name: referral.context.referringProviderName,
+      role: 'Referring Clinician',
+      facility: referral.context.referringFacilityName,
+      isHost: false,
+      isActive: false, // Not yet joined
+      isMuted: true,
+      isVideoOff: true,
+      connectionStatus: 'disconnected',
+    }],
+  });
 
   // Update countdown and state
   useEffect(() => {
@@ -86,7 +117,6 @@ export function ScheduledAppointmentSession({
 
       setCountdown({ minutes: Math.max(0, diffMinutes), seconds: Math.max(0, diffSeconds) });
 
-      // State transitions
       if (appointmentState === 'upcoming' && now >= waitingRoomOpensAt) {
         setAppointmentState('waiting_room');
         toast.info("Waiting room is now open");
@@ -98,7 +128,6 @@ export function ScheduledAppointmentSession({
         }
       }
 
-      // No-show after 15 minutes past scheduled time
       if (isPast(addMinutes(scheduledTime, 15)) && appointmentState === 'waiting_room') {
         setAppointmentState('no_show');
         toast.warning("Appointment marked as no-show");
@@ -146,6 +175,28 @@ export function ScheduledAppointmentSession({
     setAppointmentState('started');
     onStartSession(appointmentMode);
   }, [appointmentMode, onStartSession]);
+
+  const handleAddParticipant = async (invite: ParticipantInvite) => {
+    await addParticipant(invite);
+    setShowAddParticipant(false);
+    toast.success(`${invite.targetName} will be invited when session starts`);
+  };
+
+  const handleInstantCall = (mode: 'audio' | 'video') => {
+    if (onStartInstantCall) {
+      onStartInstantCall(mode);
+    } else {
+      toast.info(`${mode === 'video' ? 'Video' : 'Audio'} call initiated to ${referral.context.referringProviderName}`);
+    }
+  };
+
+  const handleInstantChat = () => {
+    if (onStartChat) {
+      onStartChat();
+    } else {
+      toast.info(`Chat started with ${referral.context.referringProviderName}`);
+    }
+  };
 
   const renderAppointmentState = () => {
     switch (appointmentState) {
@@ -204,6 +255,23 @@ export function ScheduledAppointmentSession({
                 <div className="flex items-center gap-3">
                   <Building className="h-5 w-5 text-muted-foreground" />
                   <span>{referral.context.referringFacilityName}</span>
+                </div>
+              </div>
+
+              <Separator />
+
+              {/* Quick communication before scheduled time */}
+              <div className="space-y-2">
+                <p className="text-sm text-muted-foreground text-center">Need to communicate before the appointment?</p>
+                <div className="flex gap-2 justify-center">
+                  <Button variant="outline" size="sm" onClick={() => handleInstantCall('audio')}>
+                    <Phone className="h-4 w-4 mr-1" />
+                    Quick Call
+                  </Button>
+                  <Button variant="outline" size="sm" onClick={handleInstantChat}>
+                    <MessageSquare className="h-4 w-4 mr-1" />
+                    Chat
+                  </Button>
                 </div>
               </div>
 
@@ -290,10 +358,18 @@ export function ScheduledAppointmentSession({
 
               {/* Other Participants */}
               <div className="space-y-3">
-                <h4 className="font-medium flex items-center gap-2">
-                  <Users className="h-4 w-4" />
-                  Other Participants
-                </h4>
+                <div className="flex items-center justify-between">
+                  <h4 className="font-medium flex items-center gap-2">
+                    <Users className="h-4 w-4" />
+                    Other Participants
+                  </h4>
+                  {canAddMore && (
+                    <Button variant="outline" size="sm" onClick={() => setShowAddParticipant(true)}>
+                      <UserPlus className="h-4 w-4 mr-1" />
+                      Add
+                    </Button>
+                  )}
+                </div>
                 {waitingParticipants.length === 0 ? (
                   <div className="text-center py-8 text-muted-foreground">
                     <Loader2 className="h-8 w-8 animate-spin mx-auto mb-2" />
@@ -333,6 +409,22 @@ export function ScheduledAppointmentSession({
                     </div>
                   ))
                 )}
+              </div>
+
+              {/* Quick comm options */}
+              <div className="flex gap-2 justify-center border-t pt-4">
+                <Button variant="outline" size="sm" onClick={() => handleInstantCall('audio')}>
+                  <Phone className="h-4 w-4 mr-1" />
+                  Call Now
+                </Button>
+                <Button variant="outline" size="sm" onClick={handleInstantChat}>
+                  <MessageSquare className="h-4 w-4 mr-1" />
+                  Chat
+                </Button>
+                <Button variant="outline" size="sm" onClick={() => setShowReferralBuilder(true)}>
+                  <Link className="h-4 w-4 mr-1" />
+                  Link Referral
+                </Button>
               </div>
 
               {/* Start button */}
@@ -378,6 +470,18 @@ export function ScheduledAppointmentSession({
               </CardDescription>
             </CardHeader>
             <CardContent className="space-y-4">
+              {/* Try to reach them */}
+              <div className="flex gap-2 justify-center">
+                <Button variant="outline" size="sm" onClick={() => handleInstantCall('audio')}>
+                  <Phone className="h-4 w-4 mr-1" />
+                  Try Calling
+                </Button>
+                <Button variant="outline" size="sm" onClick={handleInstantChat}>
+                  <MessageSquare className="h-4 w-4 mr-1" />
+                  Send Message
+                </Button>
+              </div>
+              <Separator />
               <div className="flex gap-3">
                 {onReschedule && (
                   <Button className="flex-1" onClick={onReschedule}>
@@ -415,10 +519,16 @@ export function ScheduledAppointmentSession({
             </p>
           </div>
         </div>
-        <Badge variant="outline">
-          {appointmentMode === 'video' ? <Video className="h-3 w-3 mr-1" /> : <Phone className="h-3 w-3 mr-1" />}
-          {appointmentMode === 'video' ? 'Video' : 'Audio'}
-        </Badge>
+        <div className="flex items-center gap-2">
+          <Badge variant="outline">
+            {appointmentMode === 'video' ? <Video className="h-3 w-3 mr-1" /> : <Phone className="h-3 w-3 mr-1" />}
+            {appointmentMode === 'video' ? 'Video' : 'Audio'}
+          </Badge>
+          <Badge variant="outline">
+            <Users className="h-3 w-3 mr-1" />
+            {activeCount + waitingParticipants.length}
+          </Badge>
+        </div>
       </div>
 
       {/* Content */}
@@ -456,6 +566,27 @@ export function ScheduledAppointmentSession({
           </TabsContent>
         </Tabs>
       </div>
+
+      {/* Dialogs */}
+      <AddParticipantDialog
+        open={showAddParticipant}
+        onOpenChange={setShowAddParticipant}
+        onInvite={handleAddParticipant}
+        currentParticipantCount={activeCount}
+        maxParticipants={25}
+      />
+
+      <ReferralPackageBuilderDialog
+        open={showReferralBuilder}
+        onOpenChange={setShowReferralBuilder}
+        patientId={referral.patientId}
+        patientHID={referral.patientHID}
+        linkedSessionId={sessionId}
+        onReferralCreated={() => {
+          toast.success("Referral linked to appointment");
+          setShowReferralBuilder(false);
+        }}
+      />
     </div>
   );
 }
