@@ -22,7 +22,9 @@ import {
   CheckCircle2,
   Search,
   Building2,
-  Trees
+  Trees,
+  Heart,
+  CalendarPlus
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -36,10 +38,12 @@ import { BiometricCapture, BiometricData, BiometricSummary, BiometricType } from
 import { ConsentCapture, ConsentData } from "./ConsentCapture";
 import { DuplicateSearchStep } from "./DuplicateSearchStep";
 import { AddressCapture, AddressData, initialAddressData, formatAddress } from "./AddressCapture";
+import { MedicalAidCapture, MedicalAidData, initialMedicalAidData } from "./MedicalAidCapture";
 import { cn } from "@/lib/utils";
 import { supabase } from "@/integrations/supabase/client";
 import { ClientRegistryService, BiometricUtils } from "@/services/registryServices";
 import { toast } from "sonner";
+import { useNavigate } from "react-router-dom";
 
 interface RegistrationStep {
   id: string;
@@ -52,6 +56,7 @@ const STEPS: RegistrationStep[] = [
   { id: "demographics", title: "Demographics", description: "Basic information", icon: User },
   { id: "contact", title: "Contact", description: "Address & phone", icon: MapPin },
   { id: "identity", title: "Identity", description: "ID documents", icon: IdCard },
+  { id: "medical-aid", title: "Medical Aid", description: "Insurance details", icon: Heart },
   { id: "biometrics", title: "Biometrics", description: "Fingerprint, iris & facial", icon: Fingerprint },
   { id: "duplicate-check", title: "Duplicate Check", description: "Search for matches", icon: Search },
   { id: "consent", title: "Consent", description: "Data & treatment consent", icon: Shield },
@@ -125,6 +130,9 @@ interface ClientData {
   
   // Consent
   consents: ConsentData[];
+  
+  // Medical Aid
+  medicalAid: MedicalAidData;
 }
 
 const initialClientData: ClientData = {
@@ -189,14 +197,19 @@ const initialClientData: ClientData = {
   // Biometrics & Consent
   biometrics: [],
   consents: [],
+  
+  // Medical Aid
+  medicalAid: initialMedicalAidData,
 };
 
 interface RegistrationWizardProps {
   onComplete?: (data: ClientData) => void;
   onCancel?: () => void;
+  onCreateVisit?: (patientId: string) => void;
 }
 
-export function RegistrationWizard({ onComplete, onCancel }: RegistrationWizardProps) {
+export function RegistrationWizard({ onComplete, onCancel, onCreateVisit }: RegistrationWizardProps) {
+  const navigate = useNavigate();
   const [currentStep, setCurrentStep] = useState(0);
   const [clientData, setClientData] = useState<ClientData>(initialClientData);
   const [activeBiometric, setActiveBiometric] = useState<BiometricType>("fingerprint");
@@ -205,6 +218,7 @@ export function RegistrationWizard({ onComplete, onCancel }: RegistrationWizardP
     patientId: string;
     mrn: string;
     impiloId: string;
+    memorableId: string; // Easy to remember PHID
     mosipUin: string;
   } | null>(null);
   const [copiedField, setCopiedField] = useState<string | null>(null);
@@ -312,11 +326,12 @@ export function RegistrationWizard({ onComplete, onCancel }: RegistrationWizardP
         patientId: patient.id,
         mrn: patient.mrn,
         impiloId: registryResult.impiloId,
+        memorableId: registryResult.memorableId, // Easy to remember PHID
         mosipUin: registryResult.mosipUin
       });
 
       toast.success('Client registered successfully!', {
-        description: `Impilo ID: ${registryResult.impiloId}`
+        description: `Your PHID: ${registryResult.memorableId}`
       });
 
       // Move to completion step
@@ -1190,6 +1205,14 @@ export function RegistrationWizard({ onComplete, onCancel }: RegistrationWizardP
             </div>
           </div>
         );
+      
+      case "medical-aid":
+        return (
+          <MedicalAidCapture
+            data={clientData.medicalAid}
+            onChange={(medicalAid) => setClientData(prev => ({ ...prev, medicalAid }))}
+          />
+        );
         
       case "biometrics":
         return (
@@ -1403,37 +1426,57 @@ export function RegistrationWizard({ onComplete, onCancel }: RegistrationWizardP
                   </p>
                 </div>
 
-                {/* Impilo ID Card */}
-                <Card className="max-w-md mx-auto bg-gradient-to-br from-primary/5 to-primary/10 border-primary/20">
+                {/* Memorable PHID Card - Primary ID for Patient */}
+                <Card className="max-w-md mx-auto bg-gradient-to-br from-emerald-500/10 to-emerald-600/5 border-emerald-500/30">
                   <CardHeader className="pb-2">
-                    <CardTitle className="text-sm text-muted-foreground">Impilo ID (Client Registry)</CardTitle>
+                    <CardTitle className="text-sm text-emerald-700 dark:text-emerald-400">
+                      Your Health ID (Easy to Remember)
+                    </CardTitle>
+                    <CardDescription>Give this ID to the patient - it's designed to be easy to memorize</CardDescription>
                   </CardHeader>
                   <CardContent className="space-y-4">
-                    <div className="flex items-center justify-between p-3 bg-background rounded-lg border">
-                      <span className="font-mono text-xl font-bold text-primary">
-                        {registrationResult.impiloId}
+                    <div className="flex items-center justify-between p-4 bg-background rounded-lg border-2 border-emerald-500/30">
+                      <span className="font-mono text-3xl font-bold tracking-widest text-emerald-600 dark:text-emerald-400">
+                        {registrationResult.memorableId}
                       </span>
                       <Button
                         variant="ghost"
                         size="icon"
-                        onClick={() => copyToClipboard(registrationResult.impiloId, 'impiloId')}
+                        onClick={() => copyToClipboard(registrationResult.memorableId, 'memorableId')}
                       >
-                        {copiedField === 'impiloId' ? (
+                        {copiedField === 'memorableId' ? (
                           <Check className="w-4 h-4 text-emerald-500" />
                         ) : (
                           <Copy className="w-4 h-4" />
                         )}
                       </Button>
                     </div>
+                    <p className="text-xs text-muted-foreground text-center">
+                      Format: 3 digits + letter + 3 digits + check digit (e.g., 123A4567)
+                    </p>
+                  </CardContent>
+                </Card>
 
-                    <div className="grid grid-cols-2 gap-3 text-sm">
-                      <div className="p-2 bg-background rounded border">
-                        <p className="text-muted-foreground text-xs">MOSIP UIN</p>
-                        <p className="font-mono text-xs">{registrationResult.mosipUin}</p>
+                {/* Full System ID - For Records */}
+                <Card className="max-w-md mx-auto border-muted">
+                  <CardHeader className="pb-2">
+                    <CardTitle className="text-xs text-muted-foreground">Full System ID (Internal Use)</CardTitle>
+                  </CardHeader>
+                  <CardContent className="space-y-3">
+                    <div className="flex items-center justify-between p-2 bg-muted/50 rounded text-xs">
+                      <span className="font-mono truncate max-w-[250px]">{registrationResult.impiloId}</span>
+                      <Button variant="ghost" size="icon" className="h-6 w-6" onClick={() => copyToClipboard(registrationResult.impiloId, 'impiloId')}>
+                        {copiedField === 'impiloId' ? <Check className="w-3 h-3" /> : <Copy className="w-3 h-3" />}
+                      </Button>
+                    </div>
+                    <div className="grid grid-cols-2 gap-2 text-xs">
+                      <div className="p-2 bg-muted/30 rounded">
+                        <p className="text-muted-foreground">MOSIP UIN</p>
+                        <p className="font-mono">{registrationResult.mosipUin}</p>
                       </div>
-                      <div className="p-2 bg-background rounded border">
-                        <p className="text-muted-foreground text-xs">MRN</p>
-                        <p className="font-mono text-xs">{registrationResult.mrn}</p>
+                      <div className="p-2 bg-muted/30 rounded">
+                        <p className="text-muted-foreground">MRN</p>
+                        <p className="font-mono">{registrationResult.mrn}</p>
                       </div>
                     </div>
                   </CardContent>
@@ -1468,6 +1511,27 @@ export function RegistrationWizard({ onComplete, onCancel }: RegistrationWizardP
                     <Fingerprint className="w-3 h-3 mr-1 text-primary" />
                     {clientData.biometrics.length} Biometrics Enrolled
                   </Badge>
+                </div>
+
+                {/* Action Buttons - Create Visit */}
+                <div className="flex flex-col gap-3 max-w-md mx-auto pt-4">
+                  <Button 
+                    size="lg" 
+                    className="w-full bg-primary"
+                    onClick={() => {
+                      if (onCreateVisit) {
+                        onCreateVisit(registrationResult.patientId);
+                      } else {
+                        navigate(`/registration?view=visit&patientId=${registrationResult.patientId}`);
+                      }
+                    }}
+                  >
+                    <CalendarPlus className="w-4 h-4 mr-2" />
+                    Create Visit for This Client
+                  </Button>
+                  <Button variant="outline" onClick={handleFinish}>
+                    Done - Return to Menu
+                  </Button>
                 </div>
               </>
             ) : (

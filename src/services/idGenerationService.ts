@@ -19,6 +19,7 @@ import { supabase } from '@/integrations/supabase/client';
 
 export interface CompositeImpiloId {
   impiloId: string;           // Full composite ID (CR-ID|SHR-ID)
+  memorableId: string;        // Easy to remember PHID format: DDDSDDDX
   clientRegistryId: string;   // Client Registry component
   shrId: string;              // Shared Health Record component
   version: number;
@@ -105,6 +106,60 @@ const generateSecureRandom = (length: number, charset: string = 'ABCDEFGHIJKLMNO
 };
 
 /**
+ * Calculate Luhn check digit for a numeric string
+ * Used for PHID validation (DDDSDDDX format)
+ */
+const calculateLuhnCheckDigit = (digits: string): number => {
+  let sum = 0;
+  let isSecond = true; // Start from right, we're adding a check digit
+  
+  for (let i = digits.length - 1; i >= 0; i--) {
+    let d = parseInt(digits[i], 10);
+    if (isSecond) {
+      d = d * 2;
+      if (d > 9) d = d - 9;
+    }
+    sum += d;
+    isSecond = !isSecond;
+  }
+  
+  return (10 - (sum % 10)) % 10;
+};
+
+/**
+ * Generate memorable PHID in format DDDSDDDX
+ * D = digit 0-9
+ * S = letter A-Z (excluding I, O to avoid confusion)
+ * X = Luhn check digit
+ * 
+ * Per PHID Functional Requirements document:
+ * - Easy to memorize format
+ * - Check digit for validation
+ * - Unique per patient
+ */
+const generateMemorablePHID = (): string => {
+  // Letters excluding I and O (to avoid confusion with 1 and 0)
+  const letters = 'ABCDEFGHJKLMNPQRSTUVWXYZ';
+  
+  // Generate first 3 digits
+  const firstDigits = String(Math.floor(Math.random() * 900) + 100); // 100-999
+  
+  // Generate middle letter
+  const letterArray = new Uint8Array(1);
+  crypto.getRandomValues(letterArray);
+  const letter = letters[letterArray[0] % letters.length];
+  
+  // Generate last 3 digits
+  const lastDigits = String(Math.floor(Math.random() * 900) + 100); // 100-999
+  
+  // Calculate Luhn check digit on all digits
+  const allDigits = firstDigits + lastDigits;
+  const checkDigit = calculateLuhnCheckDigit(allDigits);
+  
+  return `${firstDigits}${letter}${lastDigits}${checkDigit}`;
+};
+
+/**
  * Generate local Client Registry ID (fallback when DB unavailable)
  */
 const generateLocalClientRegistryId = (): string => {
@@ -154,6 +209,9 @@ export const IdGenerationService = {
    * This is the primary ID that clients will receive and carry with them
    */
   async generateImpiloId(): Promise<CompositeImpiloId> {
+    // Generate memorable PHID (DDDSDDDX format) - easy for patients to remember
+    const memorableId = generateMemorablePHID();
+    
     try {
       // Try database function first for guaranteed uniqueness
       const { data, error } = await supabase.rpc('generate_impilo_id');
@@ -162,6 +220,7 @@ export const IdGenerationService = {
         const result = data[0];
         return {
           impiloId: result.impilo_id,
+          memorableId, // Easy to memorize ID for the patient
           clientRegistryId: result.client_registry_id,
           shrId: result.shr_id,
           version: 1,
@@ -178,6 +237,7 @@ export const IdGenerationService = {
     
     return {
       impiloId: `${clientRegistryId}|${shrId}`,
+      memorableId, // Easy to memorize ID for the patient
       clientRegistryId,
       shrId,
       version: 1,
@@ -461,6 +521,7 @@ export const IdGenerationService = {
         impiloId: partialId,
         components: {
           impiloId: partialId,
+          memorableId: '', // Not available for resolved IDs
           clientRegistryId: parsed.clientRegistryId,
           shrId: parsed.shrId,
           version: 1,
@@ -489,6 +550,7 @@ export const IdGenerationService = {
       impiloId: fullImpiloId,
       components: {
         impiloId: fullImpiloId,
+        memorableId: '', // Not available for resolved IDs
         clientRegistryId: partialId,
         shrId: linkResult.shrId,
         version: 1,
