@@ -66,15 +66,23 @@ interface ClientData {
   maritalStatus: string;
   employmentStatus: string;
   occupation: string;
+  countryOfBirth: string;
+  nationality: string;
+  religion: string;
+  educationLevel: string;
   
-  // Contact
+  // Contact / Address
   phone: string;
   alternatePhone: string;
   email: string;
-  address: string;
+  addressLine1: string;
+  addressLine2: string;
+  suburb: string;
   city: string;
   district: string;
+  province: string;
   postalCode: string;
+  country: string;
   
   // Identity
   idType: string;
@@ -102,13 +110,21 @@ const initialClientData: ClientData = {
   maritalStatus: "",
   employmentStatus: "",
   occupation: "",
+  countryOfBirth: "",
+  nationality: "",
+  religion: "",
+  educationLevel: "",
   phone: "",
   alternatePhone: "",
   email: "",
-  address: "",
+  addressLine1: "",
+  addressLine2: "",
+  suburb: "",
   city: "",
   district: "",
+  province: "",
   postalCode: "",
+  country: "",
   idType: "",
   idNumber: "",
   nationalId: "",
@@ -190,9 +206,9 @@ export function RegistrationWizard({ onComplete, onCancel }: RegistrationWizardP
           phone_primary: clientData.phone,
           phone_secondary: clientData.alternatePhone || null,
           email: clientData.email || null,
-          address_line1: clientData.address,
+          address_line1: clientData.addressLine1,
           city: clientData.city,
-          province: clientData.district,
+          province: clientData.province || clientData.district,
           postal_code: clientData.postalCode || null,
           emergency_contact_name: clientData.nokName,
           emergency_contact_phone: clientData.nokPhone,
@@ -336,7 +352,7 @@ export function RegistrationWizard({ onComplete, onCancel }: RegistrationWizardP
               </div>
             </div>
             
-            <div className="grid grid-cols-3 gap-4">
+            <div className="grid grid-cols-2 gap-4">
               <div className="space-y-2">
                 <Label htmlFor="marital">Marital Status</Label>
                 <Select value={clientData.maritalStatus} onValueChange={(v) => updateField("maritalStatus", v)}>
@@ -351,6 +367,31 @@ export function RegistrationWizard({ onComplete, onCancel }: RegistrationWizardP
                   </SelectContent>
                 </Select>
               </div>
+              <div className="space-y-2">
+                <Label htmlFor="educationLevel">Level of Education</Label>
+                <Select value={clientData.educationLevel} onValueChange={(v) => updateField("educationLevel", v)}>
+                  <SelectTrigger>
+                    <SelectValue placeholder="Select level" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="none">No Formal Education</SelectItem>
+                    <SelectItem value="primary_incomplete">Primary (Incomplete)</SelectItem>
+                    <SelectItem value="primary">Primary (Complete)</SelectItem>
+                    <SelectItem value="secondary_incomplete">Secondary (Incomplete)</SelectItem>
+                    <SelectItem value="o_level">O-Level / Form 4</SelectItem>
+                    <SelectItem value="a_level">A-Level / Form 6</SelectItem>
+                    <SelectItem value="vocational">Vocational / Technical</SelectItem>
+                    <SelectItem value="diploma">Diploma</SelectItem>
+                    <SelectItem value="bachelor">Bachelor's Degree</SelectItem>
+                    <SelectItem value="master">Master's Degree</SelectItem>
+                    <SelectItem value="doctorate">Doctorate / PhD</SelectItem>
+                    <SelectItem value="other">Other</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
+            </div>
+            
+            <div className="grid grid-cols-2 gap-4">
               <div className="space-y-2">
                 <Label htmlFor="employmentStatus">Employment Status</Label>
                 <Select value={clientData.employmentStatus} onValueChange={(v) => updateField("employmentStatus", v)}>
@@ -446,6 +487,129 @@ export function RegistrationWizard({ onComplete, onCancel }: RegistrationWizardP
                 </Select>
               </div>
             </div>
+            
+            <div className="grid grid-cols-3 gap-4">
+              <div className="space-y-2">
+                <Label htmlFor="countryOfBirth">Country of Birth *</Label>
+                <Select value={clientData.countryOfBirth} onValueChange={(v) => updateField("countryOfBirth", v)}>
+                  <SelectTrigger>
+                    <SelectValue placeholder="Select country" />
+                  </SelectTrigger>
+                  <SelectContent className="max-h-[300px]">
+                    <SelectItem value="ZW">Zimbabwe</SelectItem>
+                    <div className="px-2 py-1.5 text-xs font-semibold text-muted-foreground bg-muted/50">Africa</div>
+                    <SelectItem value="ZA">South Africa</SelectItem>
+                    <SelectItem value="BW">Botswana</SelectItem>
+                    <SelectItem value="MZ">Mozambique</SelectItem>
+                    <SelectItem value="ZM">Zambia</SelectItem>
+                    <SelectItem value="MW">Malawi</SelectItem>
+                    <SelectItem value="NA">Namibia</SelectItem>
+                    <SelectItem value="LS">Lesotho</SelectItem>
+                    <SelectItem value="SZ">Eswatini (Swaziland)</SelectItem>
+                    <SelectItem value="AO">Angola</SelectItem>
+                    <SelectItem value="CD">DR Congo</SelectItem>
+                    <SelectItem value="TZ">Tanzania</SelectItem>
+                    <SelectItem value="KE">Kenya</SelectItem>
+                    <SelectItem value="UG">Uganda</SelectItem>
+                    <SelectItem value="RW">Rwanda</SelectItem>
+                    <SelectItem value="ET">Ethiopia</SelectItem>
+                    <SelectItem value="NG">Nigeria</SelectItem>
+                    <SelectItem value="GH">Ghana</SelectItem>
+                    <SelectItem value="EG">Egypt</SelectItem>
+                    <SelectItem value="MA">Morocco</SelectItem>
+                    <div className="px-2 py-1.5 text-xs font-semibold text-muted-foreground bg-muted/50">Europe</div>
+                    <SelectItem value="GB">United Kingdom</SelectItem>
+                    <SelectItem value="DE">Germany</SelectItem>
+                    <SelectItem value="FR">France</SelectItem>
+                    <SelectItem value="NL">Netherlands</SelectItem>
+                    <SelectItem value="PT">Portugal</SelectItem>
+                    <div className="px-2 py-1.5 text-xs font-semibold text-muted-foreground bg-muted/50">Americas</div>
+                    <SelectItem value="US">United States</SelectItem>
+                    <SelectItem value="CA">Canada</SelectItem>
+                    <SelectItem value="BR">Brazil</SelectItem>
+                    <div className="px-2 py-1.5 text-xs font-semibold text-muted-foreground bg-muted/50">Asia & Oceania</div>
+                    <SelectItem value="CN">China</SelectItem>
+                    <SelectItem value="IN">India</SelectItem>
+                    <SelectItem value="PK">Pakistan</SelectItem>
+                    <SelectItem value="AU">Australia</SelectItem>
+                    <SelectItem value="NZ">New Zealand</SelectItem>
+                    <SelectItem value="OTHER">Other</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
+              <div className="space-y-2">
+                <Label htmlFor="nationality">Nationality *</Label>
+                <Select value={clientData.nationality} onValueChange={(v) => updateField("nationality", v)}>
+                  <SelectTrigger>
+                    <SelectValue placeholder="Select nationality" />
+                  </SelectTrigger>
+                  <SelectContent className="max-h-[300px]">
+                    <SelectItem value="ZW">Zimbabwean</SelectItem>
+                    <div className="px-2 py-1.5 text-xs font-semibold text-muted-foreground bg-muted/50">Africa</div>
+                    <SelectItem value="ZA">South African</SelectItem>
+                    <SelectItem value="BW">Motswana</SelectItem>
+                    <SelectItem value="MZ">Mozambican</SelectItem>
+                    <SelectItem value="ZM">Zambian</SelectItem>
+                    <SelectItem value="MW">Malawian</SelectItem>
+                    <SelectItem value="NA">Namibian</SelectItem>
+                    <SelectItem value="LS">Mosotho</SelectItem>
+                    <SelectItem value="SZ">Swazi</SelectItem>
+                    <SelectItem value="AO">Angolan</SelectItem>
+                    <SelectItem value="CD">Congolese</SelectItem>
+                    <SelectItem value="TZ">Tanzanian</SelectItem>
+                    <SelectItem value="KE">Kenyan</SelectItem>
+                    <SelectItem value="UG">Ugandan</SelectItem>
+                    <SelectItem value="RW">Rwandan</SelectItem>
+                    <SelectItem value="ET">Ethiopian</SelectItem>
+                    <SelectItem value="NG">Nigerian</SelectItem>
+                    <SelectItem value="GH">Ghanaian</SelectItem>
+                    <SelectItem value="EG">Egyptian</SelectItem>
+                    <SelectItem value="MA">Moroccan</SelectItem>
+                    <div className="px-2 py-1.5 text-xs font-semibold text-muted-foreground bg-muted/50">Europe</div>
+                    <SelectItem value="GB">British</SelectItem>
+                    <SelectItem value="DE">German</SelectItem>
+                    <SelectItem value="FR">French</SelectItem>
+                    <SelectItem value="NL">Dutch</SelectItem>
+                    <SelectItem value="PT">Portuguese</SelectItem>
+                    <div className="px-2 py-1.5 text-xs font-semibold text-muted-foreground bg-muted/50">Americas</div>
+                    <SelectItem value="US">American</SelectItem>
+                    <SelectItem value="CA">Canadian</SelectItem>
+                    <SelectItem value="BR">Brazilian</SelectItem>
+                    <div className="px-2 py-1.5 text-xs font-semibold text-muted-foreground bg-muted/50">Asia & Oceania</div>
+                    <SelectItem value="CN">Chinese</SelectItem>
+                    <SelectItem value="IN">Indian</SelectItem>
+                    <SelectItem value="PK">Pakistani</SelectItem>
+                    <SelectItem value="AU">Australian</SelectItem>
+                    <SelectItem value="NZ">New Zealander</SelectItem>
+                    <SelectItem value="OTHER">Other</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
+              <div className="space-y-2">
+                <Label htmlFor="religion">Religion</Label>
+                <Select value={clientData.religion} onValueChange={(v) => updateField("religion", v)}>
+                  <SelectTrigger>
+                    <SelectValue placeholder="Select religion" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="christian_protestant">Christian - Protestant</SelectItem>
+                    <SelectItem value="christian_catholic">Christian - Catholic</SelectItem>
+                    <SelectItem value="christian_apostolic">Christian - Apostolic</SelectItem>
+                    <SelectItem value="christian_pentecostal">Christian - Pentecostal</SelectItem>
+                    <SelectItem value="christian_other">Christian - Other</SelectItem>
+                    <SelectItem value="islam">Islam</SelectItem>
+                    <SelectItem value="traditional">African Traditional</SelectItem>
+                    <SelectItem value="hindu">Hindu</SelectItem>
+                    <SelectItem value="buddhist">Buddhist</SelectItem>
+                    <SelectItem value="jewish">Jewish</SelectItem>
+                    <SelectItem value="bahai">Bahá'í</SelectItem>
+                    <SelectItem value="none">No Religion</SelectItem>
+                    <SelectItem value="prefer_not_to_say">Prefer Not to Say</SelectItem>
+                    <SelectItem value="other">Other</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
+            </div>
           </div>
         );
         
@@ -496,21 +660,41 @@ export function RegistrationWizard({ onComplete, onCancel }: RegistrationWizardP
               </div>
             </div>
             
-            <div className="space-y-2">
-              <Label htmlFor="address">Street Address *</Label>
-              <div className="relative">
-                <Home className="absolute left-3 top-3 w-4 h-4 text-muted-foreground" />
+            <div className="grid grid-cols-2 gap-4">
+              <div className="space-y-2">
+                <Label htmlFor="addressLine1">Street Address Line 1 *</Label>
+                <div className="relative">
+                  <Home className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
+                  <Input
+                    id="addressLine1"
+                    value={clientData.addressLine1}
+                    onChange={(e) => updateField("addressLine1", e.target.value)}
+                    placeholder="123 Main Street"
+                    className="pl-10"
+                  />
+                </div>
+              </div>
+              <div className="space-y-2">
+                <Label htmlFor="addressLine2">Street Address Line 2</Label>
                 <Input
-                  id="address"
-                  value={clientData.address}
-                  onChange={(e) => updateField("address", e.target.value)}
-                  placeholder="123 Main Street"
-                  className="pl-10"
+                  id="addressLine2"
+                  value={clientData.addressLine2}
+                  onChange={(e) => updateField("addressLine2", e.target.value)}
+                  placeholder="Apartment, suite, unit, etc."
                 />
               </div>
             </div>
             
             <div className="grid grid-cols-3 gap-4">
+              <div className="space-y-2">
+                <Label htmlFor="suburb">Suburb / Area</Label>
+                <Input
+                  id="suburb"
+                  value={clientData.suburb}
+                  onChange={(e) => updateField("suburb", e.target.value)}
+                  placeholder="Avondale"
+                />
+              </div>
               <div className="space-y-2">
                 <Label htmlFor="city">City/Town *</Label>
                 <Input
@@ -521,21 +705,34 @@ export function RegistrationWizard({ onComplete, onCancel }: RegistrationWizardP
                 />
               </div>
               <div className="space-y-2">
-                <Label htmlFor="district">District/Province</Label>
-                <Select value={clientData.district} onValueChange={(v) => updateField("district", v)}>
+                <Label htmlFor="district">District</Label>
+                <Input
+                  id="district"
+                  value={clientData.district}
+                  onChange={(e) => updateField("district", e.target.value)}
+                  placeholder="Harare Urban"
+                />
+              </div>
+            </div>
+            
+            <div className="grid grid-cols-3 gap-4">
+              <div className="space-y-2">
+                <Label htmlFor="province">Province *</Label>
+                <Select value={clientData.province} onValueChange={(v) => updateField("province", v)}>
                   <SelectTrigger>
-                    <SelectValue placeholder="Select district" />
+                    <SelectValue placeholder="Select province" />
                   </SelectTrigger>
                   <SelectContent>
                     <SelectItem value="harare">Harare</SelectItem>
                     <SelectItem value="bulawayo">Bulawayo</SelectItem>
-                    <SelectItem value="mashonaland-east">Mashonaland East</SelectItem>
-                    <SelectItem value="mashonaland-west">Mashonaland West</SelectItem>
+                    <SelectItem value="mashonaland_central">Mashonaland Central</SelectItem>
+                    <SelectItem value="mashonaland_east">Mashonaland East</SelectItem>
+                    <SelectItem value="mashonaland_west">Mashonaland West</SelectItem>
                     <SelectItem value="manicaland">Manicaland</SelectItem>
                     <SelectItem value="masvingo">Masvingo</SelectItem>
                     <SelectItem value="midlands">Midlands</SelectItem>
-                    <SelectItem value="matebeleland-north">Matabeleland North</SelectItem>
-                    <SelectItem value="matebeleland-south">Matabeleland South</SelectItem>
+                    <SelectItem value="matabeleland_north">Matabeleland North</SelectItem>
+                    <SelectItem value="matabeleland_south">Matabeleland South</SelectItem>
                   </SelectContent>
                 </Select>
               </div>
@@ -547,6 +744,23 @@ export function RegistrationWizard({ onComplete, onCancel }: RegistrationWizardP
                   onChange={(e) => updateField("postalCode", e.target.value)}
                   placeholder="00263"
                 />
+              </div>
+              <div className="space-y-2">
+                <Label htmlFor="country">Country *</Label>
+                <Select value={clientData.country} onValueChange={(v) => updateField("country", v)}>
+                  <SelectTrigger>
+                    <SelectValue placeholder="Select country" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="ZW">Zimbabwe</SelectItem>
+                    <SelectItem value="ZA">South Africa</SelectItem>
+                    <SelectItem value="BW">Botswana</SelectItem>
+                    <SelectItem value="MZ">Mozambique</SelectItem>
+                    <SelectItem value="ZM">Zambia</SelectItem>
+                    <SelectItem value="MW">Malawi</SelectItem>
+                    <SelectItem value="OTHER">Other</SelectItem>
+                  </SelectContent>
+                </Select>
               </div>
             </div>
             
@@ -795,7 +1009,9 @@ export function RegistrationWizard({ onComplete, onCancel }: RegistrationWizardP
                 <div className="col-span-2">
                   <span className="text-muted-foreground">Address:</span>
                   <p className="font-medium">
-                    {clientData.address ? `${clientData.address}, ${clientData.city}` : "Not provided"}
+                    {clientData.addressLine1 
+                      ? `${clientData.addressLine1}${clientData.suburb ? `, ${clientData.suburb}` : ''}, ${clientData.city}${clientData.province ? `, ${clientData.province}` : ''}`
+                      : "Not provided"}
                   </p>
                 </div>
               </CardContent>
