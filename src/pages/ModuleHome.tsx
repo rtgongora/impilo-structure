@@ -69,6 +69,7 @@ import {
   Search,
 } from "lucide-react";
 import { Dialog, DialogContent, DialogTrigger } from "@/components/ui/dialog";
+import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible";
 import { EmergencyHub } from "@/components/emergency/EmergencyHub";
 import impiloLogo from "@/assets/impilo-logo.png";
 
@@ -563,10 +564,10 @@ export default function ModuleHome() {
       {/* Main Content - Scrollable */}
       <main className="flex-1 overflow-y-auto">
         <div className="max-w-7xl mx-auto px-3 py-3">
-          {/* Compact Welcome */}
-          <div className="mb-3">
-            <h2 className="text-lg font-bold leading-tight">Welcome, {getDisplayTitle()}</h2>
-            <p className="text-xs text-muted-foreground">Select a module to get started</p>
+          {/* Welcome */}
+          <div className="mb-2">
+            <h2 className="text-xl font-bold leading-tight">Welcome, {getDisplayTitle()}</h2>
+            <p className="text-sm text-muted-foreground">Select a module to get started</p>
           </div>
 
           {/* Compact Tabs */}
@@ -587,223 +588,143 @@ export default function ModuleHome() {
             </TabsList>
 
             {/* My Work Tab */}
-            <TabsContent value="work" className="mt-0 space-y-3">
-            {/* Communication Quick Access - Compact */}
-            <div>
-              <div className="flex items-center justify-between mb-2">
-                <Badge variant="secondary" className="px-2 py-0.5 text-xs">Communication</Badge>
-                <Button variant="outline" size="sm" className="h-7 text-xs px-2" onClick={() => navigate("/communication")}>
-                  Hub <ChevronRight className="h-3 w-3 ml-0.5" />
-                </Button>
-              </div>
-
-              <div className="grid grid-cols-3 gap-2">
+            <TabsContent value="work" className="mt-0 space-y-2">
+            {/* Communication Quick Access */}
+            <div className="flex items-center gap-2">
+              <Badge variant="secondary" className="px-2 py-0.5 text-sm">Communication</Badge>
+              <div className="flex gap-1.5 flex-1">
                 <Button
                   variant="outline"
-                  className="h-auto py-2 flex flex-col items-center gap-1 hover:bg-accent"
+                  size="sm"
+                  className="h-8 px-3 flex items-center gap-1.5 hover:bg-accent"
                   onClick={() => navigate("/communication?tab=messages")}
                 >
-                  <div className="h-7 w-7 rounded-md bg-primary/10 flex items-center justify-center">
-                    <MessageSquare className="h-3.5 w-3.5 text-primary" />
-                  </div>
-                  <span className="font-medium text-xs">Messages</span>
+                  <MessageSquare className="h-4 w-4 text-primary" />
+                  <span className="font-medium text-sm">Messages</span>
                 </Button>
-
                 <Button
                   variant="outline"
-                  className="h-auto py-2 flex flex-col items-center gap-1 hover:bg-accent"
+                  size="sm"
+                  className="h-8 px-3 flex items-center gap-1.5 hover:bg-accent"
                   onClick={() => navigate("/communication?tab=pages")}
                 >
-                  <div className="h-7 w-7 rounded-md bg-warning/10 flex items-center justify-center">
-                    <Bell className="h-3.5 w-3.5 text-warning" />
-                  </div>
-                  <span className="font-medium text-xs">Pages</span>
+                  <Bell className="h-4 w-4 text-warning" />
+                  <span className="font-medium text-sm">Pages</span>
                 </Button>
-
                 <Button
                   variant="outline"
-                  className="h-auto py-2 flex flex-col items-center gap-1 hover:bg-accent"
+                  size="sm"
+                  className="h-8 px-3 flex items-center gap-1.5 hover:bg-accent"
                   onClick={() => navigate("/communication?tab=calls")}
                 >
-                  <div className="h-7 w-7 rounded-md bg-success/10 flex items-center justify-center">
-                    <Phone className="h-3.5 w-3.5 text-success" />
-                  </div>
-                  <span className="font-medium text-xs">Calls</span>
+                  <Phone className="h-4 w-4 text-success" />
+                  <span className="font-medium text-sm">Calls</span>
                 </Button>
               </div>
-            </div>
+              <HealthDocumentScanner variant="button" className="h-8 text-sm" />
 
-            {/* Document Scanner - Compact */}
-            <Card className="p-2">
-              <div className="flex items-center gap-2">
-                <HealthDocumentScanner variant="button" className="h-8 text-xs" />
-                <span className="text-xs text-muted-foreground">Scan prescriptions, labs & more</span>
+            {/* My Practice Section - Collapsible */}
+            <Collapsible defaultOpen={false}>
+              <div className="flex items-center justify-between">
+                <CollapsibleTrigger asChild>
+                  <Button variant="ghost" size="sm" className="h-8 px-2 gap-1.5 hover:bg-muted">
+                    <Briefcase className="h-4 w-4 text-teal-500" />
+                    <span className="text-sm font-medium">My Practice</span>
+                    <ChevronRight className="h-4 w-4 text-muted-foreground transition-transform duration-200 [[data-state=open]>&]:rotate-90" />
+                  </Button>
+                </CollapsibleTrigger>
+                <Button variant="outline" size="sm" className="h-7 text-sm px-2" onClick={() => navigate("/practice")}>
+                  Dashboard <ChevronRight className="h-3.5 w-3.5 ml-0.5" />
+                </Button>
               </div>
-            </Card>
-
-            {/* My Practice Section */}
-            <div>
-              <div className="flex items-center justify-between mb-3 sm:mb-4">
-                <div className="flex items-center gap-2">
-                  <Badge variant="secondary" className="px-2 sm:px-3 py-0.5 sm:py-1 text-xs sm:text-sm bg-gradient-to-r from-teal-500/10 to-cyan-500/10">
-                    <Briefcase className="h-3 w-3 mr-1" />
-                    My Practice
-                  </Badge>
-                  <p className="hidden md:block text-sm text-muted-foreground">Manage your practice operations</p>
+              <CollapsibleContent className="pt-2">
+                <div className="grid grid-cols-6 gap-1.5">
+                  <Button variant="outline" size="sm" className="h-auto py-2 flex flex-col items-center gap-1" onClick={() => navigate("/appointments")}>
+                    <Calendar className="h-4 w-4 text-teal-500" />
+                    <span className="text-xs">Schedule</span>
+                  </Button>
+                  <Button variant="outline" size="sm" className="h-auto py-2 flex flex-col items-center gap-1" onClick={() => navigate("/patients")}>
+                    <Users className="h-4 w-4 text-blue-500" />
+                    <span className="text-xs">Patients</span>
+                  </Button>
+                  <Button variant="outline" size="sm" className="h-auto py-2 flex flex-col items-center gap-1" onClick={() => navigate("/charges")}>
+                    <Wallet className="h-4 w-4 text-green-500" />
+                    <span className="text-xs">Billing</span>
+                  </Button>
+                  <Button variant="outline" size="sm" className="h-auto py-2 flex flex-col items-center gap-1" onClick={() => navigate("/reports")}>
+                    <TrendingUp className="h-4 w-4 text-purple-500" />
+                    <span className="text-xs">Analytics</span>
+                  </Button>
+                  <Button variant="outline" size="sm" className="h-auto py-2 flex flex-col items-center gap-1" onClick={() => navigate("/admin")}>
+                    <UserCog className="h-4 w-4 text-orange-500" />
+                    <span className="text-xs">Staff</span>
+                  </Button>
+                  <Button variant="outline" size="sm" className="h-auto py-2 flex flex-col items-center gap-1" onClick={() => navigate("/stock")}>
+                    <Package className="h-4 w-4 text-amber-500" />
+                    <span className="text-xs">Inventory</span>
+                  </Button>
                 </div>
-                <Button variant="outline" size="sm" className="h-8 text-xs sm:text-sm" onClick={() => navigate("/practice")}>
-                  <span className="hidden sm:inline">Practice Dashboard</span>
-                  <span className="sm:hidden">Dashboard</span>
-                  <ChevronRight className="h-3.5 w-3.5 sm:h-4 sm:w-4 ml-1" />
-                </Button>
-              </div>
-
-              <div className="grid grid-cols-3 sm:grid-cols-3 lg:grid-cols-6 gap-2 sm:gap-4">
-                <Card 
-                  className="cursor-pointer hover:shadow-md sm:hover:shadow-lg hover:border-teal-500/50 transition-all group"
-                  onClick={() => navigate("/appointments")}
-                >
-                  <CardContent className="p-2.5 sm:pt-5 sm:pb-4 text-center">
-                    <div className="w-9 h-9 sm:w-11 sm:h-11 mx-auto rounded-lg sm:rounded-xl bg-teal-500/10 flex items-center justify-center mb-1.5 sm:mb-2 group-hover:bg-teal-500 transition-colors">
-                      <Calendar className="h-4 w-4 sm:h-5 sm:w-5 text-teal-500 group-hover:text-white" />
-                    </div>
-                    <p className="text-xs sm:text-sm font-medium">Schedule</p>
-                    <p className="hidden sm:block text-xs text-muted-foreground">Appointments</p>
-                  </CardContent>
-                </Card>
-
-                <Card 
-                  className="cursor-pointer hover:shadow-md sm:hover:shadow-lg hover:border-teal-500/50 transition-all group"
-                  onClick={() => navigate("/patients")}
-                >
-                  <CardContent className="p-2.5 sm:pt-5 sm:pb-4 text-center">
-                    <div className="w-9 h-9 sm:w-11 sm:h-11 mx-auto rounded-lg sm:rounded-xl bg-blue-500/10 flex items-center justify-center mb-1.5 sm:mb-2 group-hover:bg-blue-500 transition-colors">
-                      <Users className="h-4 w-4 sm:h-5 sm:w-5 text-blue-500 group-hover:text-white" />
-                    </div>
-                    <p className="text-xs sm:text-sm font-medium">Patients</p>
-                    <p className="hidden sm:block text-xs text-muted-foreground">My patients</p>
-                  </CardContent>
-                </Card>
-
-                <Card 
-                  className="cursor-pointer hover:shadow-md sm:hover:shadow-lg hover:border-teal-500/50 transition-all group"
-                  onClick={() => navigate("/charges")}
-                >
-                  <CardContent className="p-2.5 sm:pt-5 sm:pb-4 text-center">
-                    <div className="w-9 h-9 sm:w-11 sm:h-11 mx-auto rounded-lg sm:rounded-xl bg-green-500/10 flex items-center justify-center mb-1.5 sm:mb-2 group-hover:bg-green-500 transition-colors">
-                      <Wallet className="h-4 w-4 sm:h-5 sm:w-5 text-green-500 group-hover:text-white" />
-                    </div>
-                    <p className="text-xs sm:text-sm font-medium">Billing</p>
-                    <p className="hidden sm:block text-xs text-muted-foreground">Revenue & claims</p>
-                  </CardContent>
-                </Card>
-
-                <Card 
-                  className="cursor-pointer hover:shadow-md sm:hover:shadow-lg hover:border-teal-500/50 transition-all group"
-                  onClick={() => navigate("/reports")}
-                >
-                  <CardContent className="p-2.5 sm:pt-5 sm:pb-4 text-center">
-                    <div className="w-9 h-9 sm:w-11 sm:h-11 mx-auto rounded-lg sm:rounded-xl bg-purple-500/10 flex items-center justify-center mb-1.5 sm:mb-2 group-hover:bg-purple-500 transition-colors">
-                      <TrendingUp className="h-4 w-4 sm:h-5 sm:w-5 text-purple-500 group-hover:text-white" />
-                    </div>
-                    <p className="text-xs sm:text-sm font-medium">Analytics</p>
-                    <p className="hidden sm:block text-xs text-muted-foreground">Performance</p>
-                  </CardContent>
-                </Card>
-
-                <Card 
-                  className="cursor-pointer hover:shadow-md sm:hover:shadow-lg hover:border-teal-500/50 transition-all group"
-                  onClick={() => navigate("/admin")}
-                >
-                  <CardContent className="p-2.5 sm:pt-5 sm:pb-4 text-center">
-                    <div className="w-9 h-9 sm:w-11 sm:h-11 mx-auto rounded-lg sm:rounded-xl bg-orange-500/10 flex items-center justify-center mb-1.5 sm:mb-2 group-hover:bg-orange-500 transition-colors">
-                      <UserCog className="h-4 w-4 sm:h-5 sm:w-5 text-orange-500 group-hover:text-white" />
-                    </div>
-                    <p className="text-xs sm:text-sm font-medium">Staff</p>
-                    <p className="hidden sm:block text-xs text-muted-foreground">Team & roles</p>
-                  </CardContent>
-                </Card>
-
-                <Card 
-                  className="cursor-pointer hover:shadow-md sm:hover:shadow-lg hover:border-teal-500/50 transition-all group"
-                  onClick={() => navigate("/stock")}
-                >
-                  <CardContent className="p-2.5 sm:pt-5 sm:pb-4 text-center">
-                    <div className="w-9 h-9 sm:w-11 sm:h-11 mx-auto rounded-lg sm:rounded-xl bg-amber-500/10 flex items-center justify-center mb-1.5 sm:mb-2 group-hover:bg-amber-500 transition-colors">
-                      <Package className="h-4 w-4 sm:h-5 sm:w-5 text-amber-500 group-hover:text-white" />
-                    </div>
-                    <p className="text-xs sm:text-sm font-medium">Inventory</p>
-                    <p className="hidden sm:block text-xs text-muted-foreground">Supplies & stock</p>
-                  </CardContent>
-                </Card>
-              </div>
+              </CollapsibleContent>
+            </Collapsible>
             </div>
 
             {/* Quick Access */}
-            <div>
-              <div className="flex items-center gap-2 mb-3 sm:mb-4">
-                <Badge variant="secondary" className="px-2 sm:px-3 py-0.5 sm:py-1 text-xs sm:text-sm">Quick Access</Badge>
-              </div>
-              <div className="grid grid-cols-3 sm:grid-cols-3 lg:grid-cols-6 gap-2 sm:gap-4">
+            <div className="flex items-center gap-2">
+              <Badge variant="secondary" className="px-2 py-0.5 text-sm shrink-0">Quick Access</Badge>
+              <div className="grid grid-cols-6 gap-1.5 flex-1">
                 <Button
                   variant="outline"
-                  className="h-auto py-3 sm:py-6 flex flex-col items-center gap-1.5 sm:gap-3 hover:bg-primary hover:text-primary-foreground hover:border-primary transition-all group"
+                  size="sm"
+                  className="h-auto py-2 flex flex-col items-center gap-1 hover:bg-primary hover:text-primary-foreground hover:border-primary transition-all group"
                   onClick={() => navigate("/dashboard")}
                 >
-                  <div className="w-9 h-9 sm:w-12 sm:h-12 rounded-lg sm:rounded-xl bg-primary/10 group-hover:bg-primary-foreground/20 flex items-center justify-center transition-colors">
-                    <ClipboardList className="h-4 w-4 sm:h-6 sm:w-6 text-primary group-hover:text-primary-foreground" />
-                  </div>
-                  <span className="font-medium text-[10px] sm:text-sm">Dashboard</span>
+                  <ClipboardList className="h-4 w-4 text-primary group-hover:text-primary-foreground" />
+                  <span className="font-medium text-xs">Dashboard</span>
                 </Button>
                 <Button
                   variant="outline"
-                  className="h-auto py-3 sm:py-6 flex flex-col items-center gap-1.5 sm:gap-3 hover:bg-blue-500 hover:text-white hover:border-blue-500 transition-all group"
+                  size="sm"
+                  className="h-auto py-2 flex flex-col items-center gap-1 hover:bg-blue-500 hover:text-white hover:border-blue-500 transition-all group"
                   onClick={() => navigate("/queue")}
                 >
-                  <div className="w-9 h-9 sm:w-12 sm:h-12 rounded-lg sm:rounded-xl bg-blue-500/10 group-hover:bg-white/20 flex items-center justify-center transition-colors">
-                    <Users className="h-4 w-4 sm:h-6 sm:w-6 text-blue-500 group-hover:text-white" />
-                  </div>
-                  <span className="font-medium text-[10px] sm:text-sm">Queue</span>
+                  <Users className="h-4 w-4 text-blue-500 group-hover:text-white" />
+                  <span className="font-medium text-xs">Queue</span>
                 </Button>
                 <Button
                   variant="outline"
-                  className="h-auto py-3 sm:py-6 flex flex-col items-center gap-1.5 sm:gap-3 hover:bg-emerald-600 hover:text-white hover:border-emerald-600 transition-all group"
+                  size="sm"
+                  className="h-auto py-2 flex flex-col items-center gap-1 hover:bg-emerald-600 hover:text-white hover:border-emerald-600 transition-all group"
                   onClick={() => navigate("/pharmacy")}
                 >
-                  <div className="w-9 h-9 sm:w-12 sm:h-12 rounded-lg sm:rounded-xl bg-emerald-600/10 group-hover:bg-white/20 flex items-center justify-center transition-colors">
-                    <Pill className="h-4 w-4 sm:h-6 sm:w-6 text-emerald-600 group-hover:text-white" />
-                  </div>
-                  <span className="font-medium text-[10px] sm:text-sm">Prescribe</span>
+                  <Pill className="h-4 w-4 text-emerald-600 group-hover:text-white" />
+                  <span className="font-medium text-xs">Prescribe</span>
                 </Button>
                 <Button
                   variant="outline"
-                  className="h-auto py-3 sm:py-6 flex flex-col items-center gap-1.5 sm:gap-3 hover:bg-cyan-600 hover:text-white hover:border-cyan-600 transition-all group"
+                  size="sm"
+                  className="h-auto py-2 flex flex-col items-center gap-1 hover:bg-cyan-600 hover:text-white hover:border-cyan-600 transition-all group"
                   onClick={() => navigate("/orders")}
                 >
-                  <div className="w-9 h-9 sm:w-12 sm:h-12 rounded-lg sm:rounded-xl bg-cyan-600/10 group-hover:bg-white/20 flex items-center justify-center transition-colors">
-                    <ClipboardCheck className="h-4 w-4 sm:h-6 sm:w-6 text-cyan-600 group-hover:text-white" />
-                  </div>
-                  <span className="font-medium text-[10px] sm:text-sm">Orders</span>
+                  <ClipboardCheck className="h-4 w-4 text-cyan-600 group-hover:text-white" />
+                  <span className="font-medium text-xs">Orders</span>
                 </Button>
                 <Button
                   variant="outline"
-                  className="h-auto py-3 sm:py-6 flex flex-col items-center gap-1.5 sm:gap-3 hover:bg-green-500 hover:text-white hover:border-green-500 transition-all group"
+                  size="sm"
+                  className="h-auto py-2 flex flex-col items-center gap-1 hover:bg-green-500 hover:text-white hover:border-green-500 transition-all group"
                   onClick={() => navigate("/registration")}
                 >
-                  <div className="w-9 h-9 sm:w-12 sm:h-12 rounded-lg sm:rounded-xl bg-green-500/10 group-hover:bg-white/20 flex items-center justify-center transition-colors">
-                    <UserPlus className="h-4 w-4 sm:h-6 sm:w-6 text-green-500 group-hover:text-white" />
-                  </div>
-                  <span className="font-medium text-[10px] sm:text-sm">Register</span>
+                  <UserPlus className="h-4 w-4 text-green-500 group-hover:text-white" />
+                  <span className="font-medium text-xs">Register</span>
                 </Button>
                 <Button
                   variant="outline"
-                  className="h-auto py-3 sm:py-6 flex flex-col items-center gap-1.5 sm:gap-3 hover:bg-purple-500 hover:text-white hover:border-purple-500 transition-all group"
+                  size="sm"
+                  className="h-auto py-2 flex flex-col items-center gap-1 hover:bg-purple-500 hover:text-white hover:border-purple-500 transition-all group"
                   onClick={() => navigate("/encounter")}
                 >
-                  <div className="w-9 h-9 sm:w-12 sm:h-12 rounded-lg sm:rounded-xl bg-purple-500/10 group-hover:bg-white/20 flex items-center justify-center transition-colors">
-                    <Stethoscope className="h-4 w-4 sm:h-6 sm:w-6 text-purple-500 group-hover:text-white" />
-                  </div>
-                  <span className="font-medium text-[10px] sm:text-sm">EHR</span>
+                  <Stethoscope className="h-4 w-4 text-purple-500 group-hover:text-white" />
+                  <span className="font-medium text-xs">EHR</span>
                 </Button>
               </div>
             </div>
