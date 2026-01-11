@@ -47,6 +47,7 @@ import { useTelemedicineRoles } from "@/hooks/useTelemedicineRoles";
 import { OutgoingReferralWorkflow } from "./OutgoingReferralWorkflow";
 import { IncomingConsultWorkflow } from "./IncomingConsultWorkflow";
 import { TelehealthDashboard } from "./TelehealthDashboard";
+import { TelehealthChatSidebar, useTelehealthChatSidebar } from "./TelehealthChatSidebar";
 
 type HubView = 
   | "overview"
@@ -147,6 +148,9 @@ export function FullCircleTelemedicineHub({
   const [selectedIncoming, setSelectedIncoming] = useState<TelehealthWorkItem | null>(null);
   const [outgoingReferrals, setOutgoingReferrals] = useState<ReferralPackage[]>(MOCK_OUTGOING_REFERRALS);
   const [incomingWorkItems, setIncomingWorkItems] = useState<TelehealthWorkItem[]>(MOCK_INCOMING_WORKLIST);
+
+  // Chat sidebar state
+  const chatSidebar = useTelehealthChatSidebar();
 
   // Role-based access control
   const { permissions, primaryRole, getRoleLabel, loading: rolesLoading } = useTelemedicineRoles();
@@ -250,11 +254,20 @@ export function FullCircleTelemedicineHub({
 
   if (currentView === "incoming-list") {
     return (
-      <TelehealthDashboard
-        onBack={handleBack}
-        onAcceptCase={handleAcceptIncoming}
-        onViewCase={handleAcceptIncoming}
-      />
+      <>
+        <TelehealthDashboard
+          onBack={handleBack}
+          onAcceptCase={handleAcceptIncoming}
+          onViewCase={handleAcceptIncoming}
+          onOpenChatSidebar={chatSidebar.open}
+        />
+        <TelehealthChatSidebar
+          isOpen={chatSidebar.isOpen}
+          onClose={chatSidebar.close}
+          onMinimize={chatSidebar.toggleMinimize}
+          isMinimized={chatSidebar.isMinimized}
+        />
+      </>
     );
   }
 
@@ -502,7 +515,7 @@ export function FullCircleTelemedicineHub({
               <CardTitle className="text-base">Quick Actions</CardTitle>
             </CardHeader>
             <CardContent>
-              <div className="grid grid-cols-4 gap-4">
+              <div className="grid grid-cols-5 gap-4">
                 <Button variant="outline" className="h-20 flex-col gap-2" onClick={handleStartNewReferral}>
                   <Send className="h-6 w-6" />
                   <span>New Referral</span>
@@ -510,6 +523,22 @@ export function FullCircleTelemedicineHub({
                 <Button variant="outline" className="h-20 flex-col gap-2" onClick={() => setCurrentView("incoming-list")}>
                   <Inbox className="h-6 w-6" />
                   <span>View Worklist</span>
+                </Button>
+                <Button 
+                  variant="outline" 
+                  className="h-20 flex-col gap-2 relative" 
+                  onClick={chatSidebar.open}
+                >
+                  <MessageSquare className="h-6 w-6" />
+                  <span>Active Chats</span>
+                  {chatSidebar.unreadCount > 0 && (
+                    <Badge 
+                      variant="destructive" 
+                      className="absolute top-2 right-2 h-5 min-w-5 p-0 flex items-center justify-center text-xs"
+                    >
+                      {chatSidebar.unreadCount}
+                    </Badge>
+                  )}
                 </Button>
                 <Button variant="outline" className="h-20 flex-col gap-2">
                   <Calendar className="h-6 w-6" />
@@ -524,6 +553,14 @@ export function FullCircleTelemedicineHub({
           </Card>
         </div>
       </ScrollArea>
+
+      {/* Persistent Chat Sidebar */}
+      <TelehealthChatSidebar
+        isOpen={chatSidebar.isOpen}
+        onClose={chatSidebar.close}
+        onMinimize={chatSidebar.toggleMinimize}
+        isMinimized={chatSidebar.isMinimized}
+      />
     </div>
   );
 }

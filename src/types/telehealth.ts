@@ -225,6 +225,7 @@ export interface TelehealthWorkItem {
   scheduledAt?: string;
   specialty: string;
   reason: string;
+  unreadMessages?: number; // For chat-type items
 }
 
 // Board Session for case reviews
