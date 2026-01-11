@@ -1,6 +1,6 @@
 /**
  * CaseReviewBoardSession - Multi-participant case review / M&M / Specialist board
- * For MDT discussions, tumor boards, morbidity & mortality reviews
+ * Enhanced with: recording, multi-participant MDT, instant comms, save/resume
  */
 import { useState, useEffect, useCallback } from "react";
 import {
@@ -17,16 +17,16 @@ import {
   Pause,
   Save,
   ArrowLeft,
-  Plus,
   UserPlus,
   Crown,
-  AlertCircle,
   Clipboard,
-  Vote,
   ThumbsUp,
   ThumbsDown,
   List,
   Loader2,
+  Phone,
+  Link,
+  CircleDot,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
@@ -50,7 +50,12 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { format } from "date-fns";
 import { cn } from "@/lib/utils";
 import { toast } from "sonner";
-import { useTeleconsultSessionDraft, type SessionDraftData } from "@/hooks/useTeleconsultSessionDraft";
+import { useTeleconsultSessionDraft } from "@/hooks/useTeleconsultSessionDraft";
+import { useTelemedicineRecording } from "@/hooks/useTelemedicineRecording";
+import { useMultiParticipantSession, type ParticipantInvite } from "@/hooks/useMultiParticipantSession";
+import { RecordingIndicator } from "../RecordingIndicator";
+import { AddParticipantDialog } from "../AddParticipantDialog";
+import { ReferralPackageBuilderDialog } from "../ReferralPackageBuilderDialog";
 import type { ReferralPackage, ConsultationResponse, BoardSession } from "@/types/telehealth";
 import { ReferralPackageViewer } from "../ReferralPackageViewer";
 
@@ -61,24 +66,13 @@ interface CaseReviewBoardSessionProps {
   onComplete: (response: ConsultationResponse) => void;
   onPause?: () => void;
   onBack: () => void;
-}
-
-interface BoardParticipant {
-  id: string;
-  name: string;
-  role: string;
-  specialty: string;
-  isLead: boolean;
-  isPresent: boolean;
-  isMuted: boolean;
-  hasHandRaised: boolean;
-  vote?: 'agree' | 'disagree' | 'abstain';
+  onStartCall?: (mode: 'audio' | 'video') => void;
 }
 
 interface AgendaItem {
   id: string;
   title: string;
-  duration: number; // minutes
+  duration: number;
   status: 'pending' | 'current' | 'completed';
   notes?: string;
 }
@@ -97,22 +91,17 @@ export function CaseReviewBoardSession({
   onComplete,
   onPause,
   onBack,
+  onStartCall,
 }: CaseReviewBoardSessionProps) {
   // Session state
   const [isSessionStarted, setIsSessionStarted] = useState(false);
   const [isPaused, setIsPaused] = useState(false);
   const [duration, setDuration] = useState(0);
   const [activeTab, setActiveTab] = useState("board");
+  const [showAddParticipant, setShowAddParticipant] = useState(false);
+  const [showReferralBuilder, setShowReferralBuilder] = useState(false);
 
   // Board management
-  const [participants, setParticipants] = useState<BoardParticipant[]>([
-    { id: "1", name: "Dr. Tendai Moyo", role: "Lead Reviewer", specialty: "Oncology", isLead: true, isPresent: true, isMuted: false, hasHandRaised: false },
-    { id: "2", name: "Dr. Grace Mutasa", role: "Specialist", specialty: "Surgery", isLead: false, isPresent: true, isMuted: true, hasHandRaised: false },
-    { id: "3", name: "Dr. Sarah Ncube", role: "Pathologist", specialty: "Pathology", isLead: false, isPresent: true, isMuted: true, hasHandRaised: true },
-    { id: referral.context.referringProviderId, name: referral.context.referringProviderName, role: "Referring Clinician", specialty: referral.context.specialty, isLead: false, isPresent: true, isMuted: true, hasHandRaised: false },
-    { id: "current", name: "You", role: "Consultant", specialty: referral.context.specialty, isLead: false, isPresent: true, isMuted: false, hasHandRaised: false },
-  ]);
-
   const [agenda, setAgenda] = useState<AgendaItem[]>([
     { id: "1", title: "Case Presentation", duration: 10, status: 'pending' },
     { id: "2", title: "Imaging Review", duration: 15, status: 'pending' },
@@ -124,8 +113,65 @@ export function CaseReviewBoardSession({
   const [currentDiscussionNotes, setCurrentDiscussionNotes] = useState("");
   const [showVoteDialog, setShowVoteDialog] = useState(false);
   const [voteQuestion, setVoteQuestion] = useState("");
-  const [showAddParticipantDialog, setShowAddParticipantDialog] = useState(false);
   const [showCompleteDialog, setShowCompleteDialog] = useState(false);
+
+  // Recording hook
+  const recording = useTelemedicineRecording({
+    sessionId,
+    patientId: referral.patientId,
+    referralId: referral.id,
+    mode: 'board',
+  });
+
+  // Multi-participant hook
+  const {
+    participants,
+    activeCount,
+    canAddMore,
+    addParticipant,
+    removeParticipant,
+    promoteToHost,
+    toggleParticipantMute,
+  } = useMultiParticipantSession({
+    sessionId,
+    hostId: 'current-user',
+    hostName: 'You',
+    initialParticipants: [
+      {
+        id: "1",
+        name: "Dr. Tendai Moyo",
+        role: "Lead Reviewer",
+        specialty: "Oncology",
+        isHost: false,
+        isActive: true,
+        isMuted: true,
+        isVideoOff: true,
+        connectionStatus: 'connected',
+      },
+      {
+        id: "2",
+        name: "Dr. Grace Mutasa",
+        role: "Specialist",
+        specialty: "Surgery",
+        isHost: false,
+        isActive: true,
+        isMuted: true,
+        isVideoOff: true,
+        connectionStatus: 'connected',
+      },
+      {
+        id: referral.context.referringProviderId,
+        name: referral.context.referringProviderName,
+        role: "Referring Clinician",
+        specialty: referral.context.specialty,
+        isHost: false,
+        isActive: true,
+        isMuted: true,
+        isVideoOff: true,
+        connectionStatus: 'connected',
+      },
+    ],
+  });
 
   // Draft management
   const {
@@ -141,7 +187,7 @@ export function CaseReviewBoardSession({
     sessionId,
     referralId: referral.id,
     patientId: referral.patientId,
-    autoSaveInterval: 60000, // Auto-save every minute
+    autoSaveInterval: 60000,
   });
 
   // Duration timer
@@ -168,6 +214,7 @@ export function CaseReviewBoardSession({
     setAgenda((prev) => prev.map((item, idx) => 
       idx === 0 ? { ...item, status: 'current' } : item
     ));
+    recording.startRecording();
     toast.success("Case review board session started");
   };
 
@@ -201,23 +248,14 @@ export function CaseReviewBoardSession({
     }
   };
 
-  const handleRaiseHand = () => {
-    setParticipants((prev) =>
-      prev.map((p) =>
-        p.id === "current" ? { ...p, hasHandRaised: !p.hasHandRaised } : p
-      )
-    );
-  };
-
   const handleCallVote = () => {
     if (!voteQuestion.trim()) {
       toast.error("Please enter a question for the vote");
       return;
     }
     
-    // Simulate voting
     const votes = {
-      agree: Math.floor(Math.random() * participants.length),
+      agree: Math.floor(Math.random() * activeCount),
       disagree: Math.floor(Math.random() * 2),
       abstain: 1,
     };
@@ -234,7 +272,21 @@ export function CaseReviewBoardSession({
     toast.success("Vote recorded");
   };
 
+  const handleAddParticipant = async (invite: ParticipantInvite) => {
+    await addParticipant(invite);
+    setShowAddParticipant(false);
+  };
+
+  const handleInstantCall = (mode: 'audio' | 'video') => {
+    if (onStartCall) {
+      onStartCall(mode);
+    } else {
+      toast.info(`${mode === 'video' ? 'Video' : 'Audio'} call initiated`);
+    }
+  };
+
   const handleCompleteReview = async () => {
+    await recording.stopRecording();
     const success = await completeSession();
     if (success) {
       const response: ConsultationResponse = {
@@ -274,7 +326,8 @@ export function CaseReviewBoardSession({
           communicationLogRef: sessionId,
           sessionDuration: duration,
           attachmentsUsed: [],
-          boardParticipants: participants.map((p) => p.id),
+          boardParticipants: participants.filter(p => p.isActive).map((p) => p.id),
+          recordingId: recording.recordingId,
         },
         status: "submitted",
         timestamps: {
@@ -314,7 +367,6 @@ export function CaseReviewBoardSession({
 
         <div className="flex-1 p-6 overflow-auto">
           <div className="max-w-3xl mx-auto space-y-6">
-            {/* Board Info Card */}
             <Card>
               <CardHeader>
                 <CardTitle>Multidisciplinary Case Review</CardTitle>
@@ -327,10 +379,10 @@ export function CaseReviewBoardSession({
                 <div>
                   <h4 className="font-medium mb-3 flex items-center gap-2">
                     <Users className="h-4 w-4" />
-                    Board Participants ({participants.length})
+                    Board Participants ({activeCount})
                   </h4>
                   <div className="grid grid-cols-2 gap-2">
-                    {participants.map((p) => (
+                    {participants.filter(p => p.isActive).map((p) => (
                       <div key={p.id} className="flex items-center gap-2 p-2 rounded-lg bg-muted/50">
                         <Avatar className="h-8 w-8">
                           <AvatarFallback className="text-xs">
@@ -340,17 +392,19 @@ export function CaseReviewBoardSession({
                         <div className="flex-1 min-w-0">
                           <p className="text-sm font-medium truncate flex items-center gap-1">
                             {p.name}
-                            {p.isLead && <Crown className="h-3 w-3 text-warning" />}
+                            {p.isHost && <Crown className="h-3 w-3 text-warning" />}
                           </p>
-                          <p className="text-xs text-muted-foreground">{p.specialty}</p>
+                          <p className="text-xs text-muted-foreground">{p.specialty || p.role}</p>
                         </div>
                       </div>
                     ))}
                   </div>
-                  <Button variant="outline" size="sm" className="mt-2" onClick={() => setShowAddParticipantDialog(true)}>
-                    <UserPlus className="h-4 w-4 mr-1" />
-                    Add Participant
-                  </Button>
+                  {canAddMore && (
+                    <Button variant="outline" size="sm" className="mt-2" onClick={() => setShowAddParticipant(true)}>
+                      <UserPlus className="h-4 w-4 mr-1" />
+                      Add Participant
+                    </Button>
+                  )}
                 </div>
 
                 <Separator />
@@ -384,7 +438,6 @@ export function CaseReviewBoardSession({
               </CardContent>
             </Card>
 
-            {/* Case Summary */}
             <Card>
               <CardHeader>
                 <CardTitle>Case Summary</CardTitle>
@@ -395,6 +448,14 @@ export function CaseReviewBoardSession({
             </Card>
           </div>
         </div>
+
+        <AddParticipantDialog
+          open={showAddParticipant}
+          onOpenChange={setShowAddParticipant}
+          onInvite={handleAddParticipant}
+          currentParticipantCount={activeCount}
+          maxParticipants={25}
+        />
       </div>
     );
   }
@@ -412,10 +473,11 @@ export function CaseReviewBoardSession({
             <h3 className="font-semibold flex items-center gap-2">
               <Users className="h-4 w-4 text-primary" />
               Case Review Board
+              <RecordingIndicator recording={recording} compact />
               {isPaused && <Badge variant="outline" className="text-warning">Paused</Badge>}
             </h3>
             <p className="text-xs text-muted-foreground">
-              {referral.patientHID} • {participants.length} participants
+              {referral.patientHID} • {activeCount} participants
             </p>
           </div>
         </div>
@@ -431,6 +493,19 @@ export function CaseReviewBoardSession({
           )}
           
           {isSaving && <Loader2 className="h-4 w-4 animate-spin" />}
+
+          {/* Instant comms */}
+          <div className="flex gap-1 border-l pl-3">
+            <Button variant="outline" size="icon" onClick={() => handleInstantCall('audio')}>
+              <Phone className="h-4 w-4" />
+            </Button>
+            <Button variant="outline" size="icon" onClick={() => handleInstantCall('video')}>
+              <Video className="h-4 w-4" />
+            </Button>
+            <Button variant="outline" size="icon" onClick={() => setShowReferralBuilder(true)}>
+              <Link className="h-4 w-4" />
+            </Button>
+          </div>
           
           <Button variant="outline" size="sm" onClick={() => saveDraft()}>
             <Save className="h-4 w-4 mr-1" />
@@ -467,7 +542,6 @@ export function CaseReviewBoardSession({
 
       {/* Main Content */}
       <div className="flex-1 flex overflow-hidden">
-        {/* Left: Case & Discussion */}
         <div className="flex-1 flex flex-col border-r">
           <Tabs value={activeTab} onValueChange={setActiveTab} className="flex-1 flex flex-col">
             <div className="px-4 pt-2">
@@ -488,71 +562,102 @@ export function CaseReviewBoardSession({
             </div>
 
             <TabsContent value="board" className="flex-1 p-4 overflow-auto">
-              {/* Current Agenda Item */}
-              <Card className="mb-4">
-                <CardHeader className="pb-2">
-                  <div className="flex items-center justify-between">
-                    <CardTitle className="text-base">
-                      Current: {agenda.find((a) => a.status === 'current')?.title || "Session Complete"}
+              <div className="grid grid-cols-2 gap-6">
+                {/* Participants */}
+                <Card>
+                  <CardHeader className="pb-2">
+                    <CardTitle className="text-base flex items-center justify-between">
+                      <span>Participants ({activeCount})</span>
+                      {canAddMore && (
+                        <Button variant="ghost" size="sm" onClick={() => setShowAddParticipant(true)}>
+                          <UserPlus className="h-4 w-4" />
+                        </Button>
+                      )}
                     </CardTitle>
-                    <Button size="sm" onClick={handleNextAgendaItem}>
-                      Next Item
-                    </Button>
-                  </div>
+                  </CardHeader>
+                  <CardContent>
+                    <div className="space-y-2">
+                      {participants.filter(p => p.isActive).map((p) => (
+                        <div key={p.id} className="flex items-center gap-2 p-2 rounded-lg bg-muted/50">
+                          <Avatar className="h-8 w-8">
+                            <AvatarFallback className="text-xs">
+                              {p.name.split(" ").map((n) => n[0]).join("")}
+                            </AvatarFallback>
+                          </Avatar>
+                          <div className="flex-1 min-w-0">
+                            <p className="text-sm font-medium truncate flex items-center gap-1">
+                              {p.name}
+                              {p.isHost && <Crown className="h-3 w-3 text-warning" />}
+                            </p>
+                            <p className="text-xs text-muted-foreground">{p.specialty || p.role}</p>
+                          </div>
+                          {p.isMuted && <MicOff className="h-4 w-4 text-muted-foreground" />}
+                        </div>
+                      ))}
+                    </div>
+                  </CardContent>
+                </Card>
+
+                {/* Agenda */}
+                <Card>
+                  <CardHeader className="pb-2">
+                    <CardTitle className="text-base">Agenda</CardTitle>
+                  </CardHeader>
+                  <CardContent>
+                    <div className="space-y-2">
+                      {agenda.map((item) => (
+                        <div
+                          key={item.id}
+                          className={cn(
+                            "flex items-center gap-2 p-2 rounded-lg border",
+                            item.status === 'current' && "border-primary bg-primary/5",
+                            item.status === 'completed' && "border-success bg-success/5",
+                            item.status === 'pending' && "border-muted"
+                          )}
+                        >
+                          {item.status === 'completed' ? (
+                            <CheckCircle className="h-4 w-4 text-success" />
+                          ) : item.status === 'current' ? (
+                            <CircleDot className="h-4 w-4 text-primary animate-pulse" />
+                          ) : (
+                            <div className="h-4 w-4 rounded-full border-2" />
+                          )}
+                          <span className="flex-1 text-sm">{item.title}</span>
+                          <Badge variant="outline" className="text-xs">{item.duration}m</Badge>
+                        </div>
+                      ))}
+                    </div>
+                    {agenda.some(a => a.status === 'current') && (
+                      <Button className="w-full mt-4" onClick={handleNextAgendaItem}>
+                        Next Item
+                      </Button>
+                    )}
+                  </CardContent>
+                </Card>
+              </div>
+
+              {/* Discussion Notes */}
+              <Card className="mt-6">
+                <CardHeader className="pb-2">
+                  <CardTitle className="text-base">
+                    Current Discussion: {agenda.find(a => a.status === 'current')?.title || 'None'}
+                  </CardTitle>
                 </CardHeader>
-                <CardContent>
+                <CardContent className="space-y-4">
                   <Textarea
                     value={currentDiscussionNotes}
                     onChange={(e) => setCurrentDiscussionNotes(e.target.value)}
-                    placeholder="Capture key discussion points, findings, and recommendations..."
-                    className="min-h-[150px]"
+                    placeholder="Capture key discussion points..."
+                    className="min-h-[120px]"
                   />
-                  
-                  <div className="flex gap-2 mt-3">
-                    <Button variant="outline" size="sm" onClick={() => setShowVoteDialog(true)}>
-                      <Vote className="h-4 w-4 mr-1" />
+                  <div className="flex gap-2">
+                    <Button variant="outline" onClick={() => setShowVoteDialog(true)}>
+                      <ThumbsUp className="h-4 w-4 mr-1" />
                       Call Vote
-                    </Button>
-                    <Button
-                      variant={participants.find((p) => p.id === "current")?.hasHandRaised ? "secondary" : "outline"}
-                      size="sm"
-                      onClick={handleRaiseHand}
-                    >
-                      <Hand className="h-4 w-4 mr-1" />
-                      {participants.find((p) => p.id === "current")?.hasHandRaised ? "Lower Hand" : "Raise Hand"}
                     </Button>
                   </div>
                 </CardContent>
               </Card>
-
-              {/* Agenda Progress */}
-              <div className="space-y-2">
-                <h4 className="font-medium">Agenda</h4>
-                {agenda.map((item, idx) => (
-                  <div
-                    key={item.id}
-                    className={cn(
-                      "flex items-center gap-3 p-2 rounded-lg",
-                      item.status === 'current' && "bg-primary/10 border border-primary",
-                      item.status === 'completed' && "bg-success/10",
-                      item.status === 'pending' && "bg-muted/50"
-                    )}
-                  >
-                    {item.status === 'completed' ? (
-                      <CheckCircle className="h-5 w-5 text-success" />
-                    ) : (
-                      <span className={cn(
-                        "w-5 h-5 rounded-full flex items-center justify-center text-xs font-medium",
-                        item.status === 'current' ? "bg-primary text-primary-foreground" : "bg-muted"
-                      )}>
-                        {idx + 1}
-                      </span>
-                    )}
-                    <span className="flex-1">{item.title}</span>
-                    <Badge variant="outline" className="text-xs">{item.duration}m</Badge>
-                  </div>
-                ))}
-              </div>
             </TabsContent>
 
             <TabsContent value="case" className="flex-1 p-4 overflow-auto">
@@ -562,30 +667,34 @@ export function CaseReviewBoardSession({
             <TabsContent value="decisions" className="flex-1 p-4 overflow-auto">
               {decisions.length === 0 ? (
                 <div className="text-center py-12 text-muted-foreground">
-                  <Vote className="h-12 w-12 mx-auto mb-4 opacity-30" />
+                  <Clipboard className="h-12 w-12 mx-auto mb-4 opacity-50" />
                   <p>No decisions recorded yet</p>
-                  <p className="text-sm">Use "Call Vote" to record board decisions</p>
+                  <p className="text-sm">Use "Call Vote" during discussions to record decisions</p>
                 </div>
               ) : (
                 <div className="space-y-4">
                   {decisions.map((d, idx) => (
                     <Card key={idx}>
-                      <CardContent className="p-4">
-                        <h4 className="font-medium mb-2">{d.topic}</h4>
-                        <Badge variant={d.decision === "Approved" ? "default" : "secondary"}>
-                          {d.decision}
-                        </Badge>
-                        <div className="flex gap-4 mt-2 text-sm">
-                          <span className="flex items-center gap-1 text-success">
-                            <ThumbsUp className="h-3 w-3" /> {d.votes.agree}
+                      <CardHeader className="pb-2">
+                        <CardTitle className="text-base flex items-center justify-between">
+                          {d.topic}
+                          <Badge variant={d.decision === 'Approved' ? 'default' : 'secondary'}>
+                            {d.decision}
+                          </Badge>
+                        </CardTitle>
+                      </CardHeader>
+                      <CardContent>
+                        <div className="flex gap-4 text-sm text-muted-foreground mb-2">
+                          <span className="flex items-center gap-1">
+                            <ThumbsUp className="h-4 w-4 text-success" /> {d.votes.agree}
                           </span>
-                          <span className="flex items-center gap-1 text-destructive">
-                            <ThumbsDown className="h-3 w-3" /> {d.votes.disagree}
+                          <span className="flex items-center gap-1">
+                            <ThumbsDown className="h-4 w-4 text-destructive" /> {d.votes.disagree}
                           </span>
-                          <span className="text-muted-foreground">{d.votes.abstain} abstain</span>
+                          <span>Abstain: {d.votes.abstain}</span>
                         </div>
                         {d.rationale && (
-                          <p className="text-sm text-muted-foreground mt-2">{d.rationale}</p>
+                          <p className="text-sm">{d.rationale}</p>
                         )}
                       </CardContent>
                     </Card>
@@ -595,63 +704,20 @@ export function CaseReviewBoardSession({
             </TabsContent>
           </Tabs>
         </div>
-
-        {/* Right: Participants */}
-        <div className="w-64 flex flex-col">
-          <div className="p-3 border-b font-medium flex items-center justify-between">
-            <span>Participants</span>
-            <Button variant="ghost" size="icon" onClick={() => setShowAddParticipantDialog(true)}>
-              <UserPlus className="h-4 w-4" />
-            </Button>
-          </div>
-          <ScrollArea className="flex-1 p-2">
-            <div className="space-y-2">
-              {participants.map((p) => (
-                <div
-                  key={p.id}
-                  className={cn(
-                    "p-2 rounded-lg flex items-center gap-2",
-                    p.hasHandRaised && "bg-warning/10 border border-warning"
-                  )}
-                >
-                  <div className="relative">
-                    <Avatar className="h-8 w-8">
-                      <AvatarFallback className="text-xs">
-                        {p.name.split(" ").map((n) => n[0]).join("")}
-                      </AvatarFallback>
-                    </Avatar>
-                    {p.isPresent && (
-                      <span className="absolute -bottom-0.5 -right-0.5 w-3 h-3 bg-success rounded-full border-2 border-background" />
-                    )}
-                  </div>
-                  <div className="flex-1 min-w-0">
-                    <p className="text-sm font-medium truncate flex items-center gap-1">
-                      {p.id === "current" ? "You" : p.name}
-                      {p.isLead && <Crown className="h-3 w-3 text-warning" />}
-                      {p.hasHandRaised && <Hand className="h-3 w-3 text-warning" />}
-                    </p>
-                    <p className="text-xs text-muted-foreground truncate">{p.specialty}</p>
-                  </div>
-                  {p.isMuted && <MicOff className="h-3 w-3 text-muted-foreground" />}
-                </div>
-              ))}
-            </div>
-          </ScrollArea>
-        </div>
       </div>
 
       {/* Vote Dialog */}
       <Dialog open={showVoteDialog} onOpenChange={setShowVoteDialog}>
         <DialogContent>
           <DialogHeader>
-            <DialogTitle>Call for Vote</DialogTitle>
+            <DialogTitle>Call Vote</DialogTitle>
             <DialogDescription>
-              Record a formal decision from the board
+              Record a decision from the board discussion
             </DialogDescription>
           </DialogHeader>
-          <div className="space-y-4">
+          <div className="space-y-4 py-4">
             <div className="space-y-2">
-              <Label>Question / Decision Topic</Label>
+              <Label>Question / Topic</Label>
               <Input
                 value={voteQuestion}
                 onChange={(e) => setVoteQuestion(e.target.value)}
@@ -660,8 +726,12 @@ export function CaseReviewBoardSession({
             </div>
           </div>
           <DialogFooter>
-            <Button variant="outline" onClick={() => setShowVoteDialog(false)}>Cancel</Button>
-            <Button onClick={handleCallVote}>Record Vote</Button>
+            <Button variant="outline" onClick={() => setShowVoteDialog(false)}>
+              Cancel
+            </Button>
+            <Button onClick={handleCallVote}>
+              Record Vote
+            </Button>
           </DialogFooter>
         </DialogContent>
       </Dialog>
@@ -670,55 +740,58 @@ export function CaseReviewBoardSession({
       <Dialog open={showCompleteDialog} onOpenChange={setShowCompleteDialog}>
         <DialogContent>
           <DialogHeader>
-            <DialogTitle>Complete Case Review</DialogTitle>
+            <DialogTitle>Complete Board Session</DialogTitle>
             <DialogDescription>
-              Finalize the board session and submit the consultation response
+              This will finalize the case review and submit recommendations.
             </DialogDescription>
           </DialogHeader>
           <div className="space-y-4 py-4">
-            <div className="flex items-center gap-2 text-sm">
-              <CheckCircle className="h-4 w-4 text-success" />
-              <span>{completedItems} of {agenda.length} agenda items completed</span>
+            <div className="flex items-center justify-between">
+              <span>Agenda completed</span>
+              <Badge>{completedItems}/{agenda.length}</Badge>
             </div>
-            <div className="flex items-center gap-2 text-sm">
-              <Vote className="h-4 w-4 text-primary" />
-              <span>{decisions.length} decisions recorded</span>
+            <div className="flex items-center justify-between">
+              <span>Decisions recorded</span>
+              <Badge>{decisions.length}</Badge>
             </div>
-            <div className="flex items-center gap-2 text-sm">
-              <Clock className="h-4 w-4 text-muted-foreground" />
-              <span>Session duration: {formatDuration(duration)}</span>
+            <div className="flex items-center justify-between">
+              <span>Duration</span>
+              <Badge variant="outline">{formatDuration(duration)}</Badge>
             </div>
           </div>
           <DialogFooter>
-            <Button variant="outline" onClick={() => setShowCompleteDialog(false)}>Continue Session</Button>
-            <Button onClick={handleCompleteReview}>Complete & Submit</Button>
+            <Button variant="outline" onClick={() => setShowCompleteDialog(false)}>
+              Cancel
+            </Button>
+            <Button onClick={handleCompleteReview}>
+              <CheckCircle className="h-4 w-4 mr-2" />
+              Complete Session
+            </Button>
           </DialogFooter>
         </DialogContent>
       </Dialog>
 
       {/* Add Participant Dialog */}
-      <Dialog open={showAddParticipantDialog} onOpenChange={setShowAddParticipantDialog}>
-        <DialogContent>
-          <DialogHeader>
-            <DialogTitle>Add Participant</DialogTitle>
-            <DialogDescription>
-              Invite another clinician to join the case review
-            </DialogDescription>
-          </DialogHeader>
-          <div className="space-y-4">
-            <div className="space-y-2">
-              <Label>Search Provider</Label>
-              <Input placeholder="Search by name or specialty..." />
-            </div>
-          </div>
-          <DialogFooter>
-            <Button variant="outline" onClick={() => setShowAddParticipantDialog(false)}>Cancel</Button>
-            <Button onClick={() => { setShowAddParticipantDialog(false); toast.info("Invitation sent"); }}>
-              Send Invitation
-            </Button>
-          </DialogFooter>
-        </DialogContent>
-      </Dialog>
+      <AddParticipantDialog
+        open={showAddParticipant}
+        onOpenChange={setShowAddParticipant}
+        onInvite={handleAddParticipant}
+        currentParticipantCount={activeCount}
+        maxParticipants={25}
+      />
+
+      {/* Referral Builder */}
+      <ReferralPackageBuilderDialog
+        open={showReferralBuilder}
+        onOpenChange={setShowReferralBuilder}
+        patientId={referral.patientId}
+        patientHID={referral.patientHID}
+        linkedSessionId={sessionId}
+        onReferralCreated={() => {
+          toast.success("Referral linked to board session");
+          setShowReferralBuilder(false);
+        }}
+      />
     </div>
   );
 }

@@ -1,6 +1,6 @@
 /**
  * AsyncReviewSession - Asynchronous case review with save/pause/resume functionality
- * Allows practitioners to review cases, save progress, and return later
+ * Enhanced with: instant communication (call/chat), referral linking, recording integration
  */
 import { useState, useCallback } from "react";
 import {
@@ -14,6 +14,10 @@ import {
   ArrowLeft,
   Loader2,
   ExternalLink,
+  Phone,
+  Video,
+  MessageSquare,
+  Link,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
@@ -33,14 +37,10 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog";
-import {
-  Alert,
-  AlertDescription,
-  AlertTitle,
-} from "@/components/ui/alert";
 import { format } from "date-fns";
 import { toast } from "sonner";
 import { useTeleconsultSessionDraft, type SessionDraftData } from "@/hooks/useTeleconsultSessionDraft";
+import { InstantCommunicationPanel } from "./InstantCommunicationPanel";
 import type { ReferralPackage, ConsultationResponse, DispositionType, FollowUpType } from "@/types/telehealth";
 import { ReferralPackageViewer } from "./ReferralPackageViewer";
 
@@ -50,6 +50,8 @@ interface AsyncReviewSessionProps {
   onComplete: (response: ConsultationResponse) => void;
   onBack: () => void;
   onConvertToLive?: () => void;
+  onStartCall?: (mode: 'audio' | 'video') => void;
+  onStartChat?: () => void;
 }
 
 export function AsyncReviewSession({
@@ -58,6 +60,8 @@ export function AsyncReviewSession({
   onComplete,
   onBack,
   onConvertToLive,
+  onStartCall,
+  onStartChat,
 }: AsyncReviewSessionProps) {
   // Session draft management
   const {
@@ -84,6 +88,7 @@ export function AsyncReviewSession({
   const [showPauseDialog, setShowPauseDialog] = useState(false);
   const [pauseReason, setPauseReason] = useState("");
   const [showCompleteDialog, setShowCompleteDialog] = useState(false);
+  const [showInstantComm, setShowInstantComm] = useState(false);
 
   // Calculate completion percentage
   const calculateCompletion = (): number => {
@@ -118,6 +123,24 @@ export function AsyncReviewSession({
   // Handle resume
   const handleResume = async () => {
     await resumeSession();
+  };
+
+  // Handle instant call
+  const handleInstantCall = (mode: 'audio' | 'video') => {
+    if (onStartCall) {
+      onStartCall(mode);
+    } else {
+      toast.info(`${mode === 'video' ? 'Video' : 'Audio'} call initiated to ${referral.context.referringProviderName}`);
+    }
+  };
+
+  // Handle instant chat
+  const handleInstantChat = () => {
+    if (onStartChat) {
+      onStartChat();
+    } else {
+      toast.info(`Chat started with ${referral.context.referringProviderName}`);
+    }
   };
 
   // Handle complete review
@@ -228,6 +251,22 @@ export function AsyncReviewSession({
 
             <Progress value={completionPercent} className="h-2" />
 
+            {/* Quick communication options even while paused */}
+            <div className="flex gap-2 justify-center pt-2">
+              <Button variant="outline" size="sm" onClick={() => handleInstantCall('audio')}>
+                <Phone className="h-4 w-4 mr-1" />
+                Call
+              </Button>
+              <Button variant="outline" size="sm" onClick={() => handleInstantCall('video')}>
+                <Video className="h-4 w-4 mr-1" />
+                Video
+              </Button>
+              <Button variant="outline" size="sm" onClick={handleInstantChat}>
+                <MessageSquare className="h-4 w-4 mr-1" />
+                Chat
+              </Button>
+            </div>
+
             <div className="flex gap-3 pt-4">
               <Button variant="outline" onClick={onBack} className="flex-1">
                 <ArrowLeft className="h-4 w-4 mr-2" />
@@ -288,8 +327,21 @@ export function AsyncReviewSession({
             <span className="text-sm font-medium">{completionPercent}%</span>
           </div>
 
+          {/* Instant communication */}
+          <div className="flex gap-1 border-l pl-3 ml-2">
+            <Button variant="outline" size="icon" onClick={() => handleInstantCall('audio')} title="Quick call">
+              <Phone className="h-4 w-4" />
+            </Button>
+            <Button variant="outline" size="icon" onClick={() => handleInstantCall('video')} title="Video call">
+              <Video className="h-4 w-4" />
+            </Button>
+            <Button variant="outline" size="icon" onClick={handleInstantChat} title="Chat">
+              <MessageSquare className="h-4 w-4" />
+            </Button>
+          </div>
+
           {/* Action buttons */}
-          <div className="flex gap-2">
+          <div className="flex gap-2 border-l pl-3 ml-2">
             <Button
               variant="outline"
               size="sm"
@@ -323,7 +375,7 @@ export function AsyncReviewSession({
               disabled={completionPercent < 60}
             >
               <CheckCircle className="h-4 w-4 mr-1" />
-              Mark Complete
+              Complete
             </Button>
           </div>
         </div>
@@ -491,57 +543,32 @@ export function AsyncReviewSession({
 
               {/* Follow-up */}
               <div className="space-y-4">
-                <h4 className="font-medium">Follow-Up Instructions</h4>
-                <div className="grid grid-cols-2 gap-4">
-                  <div className="space-y-2">
-                    <Label>When</Label>
-                    <Select
-                      value={draftData?.followUp?.when || ''}
-                      onValueChange={(v) => updateDraftData({
-                        followUp: {
-                          ...draftData?.followUp!,
-                          when: v,
-                        }
-                      })}
-                    >
-                      <SelectTrigger>
-                        <SelectValue placeholder="Select timeframe" />
-                      </SelectTrigger>
-                      <SelectContent>
-                        <SelectItem value="24h">Within 24 hours</SelectItem>
-                        <SelectItem value="48h">Within 48 hours</SelectItem>
-                        <SelectItem value="1w">Within 1 week</SelectItem>
-                        <SelectItem value="2w">Within 2 weeks</SelectItem>
-                        <SelectItem value="1m">Within 1 month</SelectItem>
-                        <SelectItem value="prn">As needed</SelectItem>
-                      </SelectContent>
-                    </Select>
-                  </div>
-                  <div className="space-y-2">
-                    <Label>Follow-up Type</Label>
-                    <Select
-                      value={draftData?.followUp?.type || 'none'}
-                      onValueChange={(v) => updateDraftData({
-                        followUp: {
-                          ...draftData?.followUp!,
-                          type: v,
-                        }
-                      })}
-                    >
-                      <SelectTrigger>
-                        <SelectValue />
-                      </SelectTrigger>
-                      <SelectContent>
-                        <SelectItem value="tele_follow_up">Teleconsult Review</SelectItem>
-                        <SelectItem value="in_person">In-person Visit</SelectItem>
-                        <SelectItem value="none">None Required</SelectItem>
-                      </SelectContent>
-                    </Select>
-                  </div>
+                <h4 className="font-medium">Follow-up</h4>
+                <div className="space-y-2">
+                  <Label>Follow-up Type</Label>
+                  <Select
+                    value={draftData?.followUp?.type || 'none'}
+                    onValueChange={(v) => updateDraftData({
+                      followUp: {
+                        ...draftData?.followUp!,
+                        type: v,
+                      }
+                    })}
+                  >
+                    <SelectTrigger>
+                      <SelectValue />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="none">No Follow-up Required</SelectItem>
+                      <SelectItem value="tele_follow_up">Tele Follow-up</SelectItem>
+                      <SelectItem value="in_person">In-Person Follow-up</SelectItem>
+                      <SelectItem value="prn">PRN (As Needed)</SelectItem>
+                    </SelectContent>
+                  </Select>
                 </div>
                 <div className="space-y-2">
                   <Label className="flex items-center gap-1">
-                    Instructions
+                    Follow-up Instructions
                     <span className="text-destructive">*</span>
                   </Label>
                   <Textarea
@@ -552,7 +579,7 @@ export function AsyncReviewSession({
                         instructions: e.target.value,
                       }
                     })}
-                    placeholder="Specific follow-up instructions..."
+                    placeholder="Follow-up care instructions..."
                   />
                 </div>
               </div>
@@ -565,37 +592,29 @@ export function AsyncReviewSession({
       <Dialog open={showPauseDialog} onOpenChange={setShowPauseDialog}>
         <DialogContent>
           <DialogHeader>
-            <DialogTitle className="flex items-center gap-2">
-              <Pause className="h-5 w-5" />
-              Pause Review Session
-            </DialogTitle>
+            <DialogTitle>Pause Review Session</DialogTitle>
             <DialogDescription>
-              Your progress will be saved automatically. You can resume this review later.
+              Your progress will be saved. You can resume this review later.
             </DialogDescription>
           </DialogHeader>
           <div className="space-y-4 py-4">
             <div className="space-y-2">
-              <Label>Reason for pausing (required)</Label>
+              <Label>Reason for pausing (optional but recommended)</Label>
               <Textarea
                 value={pauseReason}
                 onChange={(e) => setPauseReason(e.target.value)}
-                placeholder="e.g., Called to emergency, Need additional information..."
+                placeholder="e.g., Awaiting additional lab results, Need to consult with colleague..."
               />
             </div>
-            <Alert>
-              <Clock className="h-4 w-4" />
-              <AlertTitle>Session will be saved</AlertTitle>
-              <AlertDescription>
-                Your current progress ({completionPercent}%) will be preserved. 
-                You can resume from where you left off at any time.
-              </AlertDescription>
-            </Alert>
+            <div className="text-sm text-muted-foreground">
+              Current progress: {completionPercent}% complete
+            </div>
           </div>
           <DialogFooter>
             <Button variant="outline" onClick={() => setShowPauseDialog(false)}>
               Cancel
             </Button>
-            <Button onClick={handlePause} disabled={!pauseReason.trim()}>
+            <Button onClick={handlePause}>
               <Pause className="h-4 w-4 mr-2" />
               Pause & Save
             </Button>
@@ -607,38 +626,33 @@ export function AsyncReviewSession({
       <Dialog open={showCompleteDialog} onOpenChange={setShowCompleteDialog}>
         <DialogContent>
           <DialogHeader>
-            <DialogTitle className="flex items-center gap-2">
-              <CheckCircle className="h-5 w-5 text-success" />
-              Complete Review
-            </DialogTitle>
+            <DialogTitle>Complete Consultation</DialogTitle>
             <DialogDescription>
-              Mark this review as complete and proceed to submit your response.
+              This will finalize and submit your consultation response.
             </DialogDescription>
           </DialogHeader>
           <div className="space-y-4 py-4">
-            <div className="bg-muted/50 rounded-lg p-4 space-y-2 text-sm">
-              <p><strong>Patient:</strong> {referral.patientHID}</p>
-              <p><strong>Diagnosis:</strong> {draftData?.responseNote?.workingDiagnosis || 'Not specified'}</p>
-              <p><strong>Disposition:</strong> {draftData?.disposition?.type?.replace(/_/g, ' ') || 'Not specified'}</p>
-              <p><strong>Completion:</strong> {completionPercent}%</p>
+            <div className="flex items-center justify-between">
+              <span>Response completion</span>
+              <Badge variant={completionPercent >= 80 ? "default" : "secondary"}>
+                {completionPercent}%
+              </Badge>
             </div>
-            {completionPercent < 100 && (
-              <Alert variant="default">
+            <Progress value={completionPercent} />
+            {completionPercent < 80 && (
+              <p className="text-sm text-warning flex items-center gap-2">
                 <AlertTriangle className="h-4 w-4" />
-                <AlertTitle>Some fields are incomplete</AlertTitle>
-                <AlertDescription>
-                  You can still submit, but consider completing all required fields for a comprehensive response.
-                </AlertDescription>
-              </Alert>
+                Consider completing more fields for a comprehensive response
+              </p>
             )}
           </div>
           <DialogFooter>
             <Button variant="outline" onClick={() => setShowCompleteDialog(false)}>
-              Continue Editing
+              Cancel
             </Button>
             <Button onClick={handleCompleteReview}>
               <CheckCircle className="h-4 w-4 mr-2" />
-              Complete & Proceed
+              Complete & Submit
             </Button>
           </DialogFooter>
         </DialogContent>

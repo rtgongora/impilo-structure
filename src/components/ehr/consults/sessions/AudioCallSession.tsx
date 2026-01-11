@@ -1,6 +1,6 @@
 /**
  * AudioCallSession - VOIP audio-only consultation
- * For voice consultations without video overhead
+ * Enhanced with: recording, multi-participant support, instant messaging, referral linking
  */
 import { useState, useEffect, useRef, useCallback } from "react";
 import {
@@ -18,17 +18,22 @@ import {
   ArrowLeft,
   MessageSquare,
   FileText,
-  AlertCircle,
   Radio,
+  UserPlus,
+  Users,
+  Link,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { Slider } from "@/components/ui/slider";
-import { Progress } from "@/components/ui/progress";
 import { cn } from "@/lib/utils";
 import { toast } from "sonner";
+import { useTelemedicineRecording } from "@/hooks/useTelemedicineRecording";
+import { useMultiParticipantSession, type SessionParticipant, type ParticipantInvite } from "@/hooks/useMultiParticipantSession";
+import { RecordingIndicator } from "../RecordingIndicator";
+import { AddParticipantDialog } from "../AddParticipantDialog";
+import { ReferralPackageBuilderDialog } from "../ReferralPackageBuilderDialog";
 import type { ReferralPackage } from "@/types/telehealth";
 
 interface AudioCallSessionProps {
@@ -54,8 +59,46 @@ export function AudioCallSession({
   const [volume, setVolume] = useState([80]);
   const [duration, setDuration] = useState(0);
   const [audioLevel, setAudioLevel] = useState(0);
+  const [showAddParticipant, setShowAddParticipant] = useState(false);
+  const [showReferralBuilder, setShowReferralBuilder] = useState(false);
+  const [showParticipants, setShowParticipants] = useState(false);
+  
   const timerRef = useRef<NodeJS.Timeout | null>(null);
   const audioLevelRef = useRef<NodeJS.Timeout | null>(null);
+
+  // Recording hook
+  const recording = useTelemedicineRecording({
+    sessionId,
+    patientId: referral.patientId,
+    referralId: referral.id,
+    mode: 'audio',
+  });
+
+  // Multi-participant hook
+  const {
+    participants,
+    activeCount,
+    canAddMore,
+    addParticipant,
+    removeParticipant,
+    toggleParticipantMute,
+    convertToGroupCall,
+  } = useMultiParticipantSession({
+    sessionId,
+    hostId: 'current-user',
+    hostName: 'You',
+    initialParticipants: [{
+      id: referral.context.referringProviderId,
+      name: referral.context.referringProviderName,
+      role: 'Referring Clinician',
+      facility: referral.context.referringFacilityName,
+      isHost: false,
+      isActive: true,
+      isMuted: false,
+      isVideoOff: true,
+      connectionStatus: 'connected',
+    }],
+  });
 
   // Simulate connection
   useEffect(() => {
@@ -66,6 +109,7 @@ export function AudioCallSession({
     const ringTimer = setTimeout(() => {
       setCallState('connected');
       toast.success("Call connected");
+      recording.startRecording(); // Auto-start recording
     }, 4000);
 
     return () => {
@@ -110,11 +154,12 @@ export function AudioCallSession({
     return `${mins}:${secs.toString().padStart(2, "0")}`;
   };
 
-  const handleEndCall = useCallback(() => {
+  const handleEndCall = useCallback(async () => {
     setCallState('ended');
+    await recording.stopRecording();
     toast.info(`Call ended. Duration: ${formatDuration(duration)}`);
     setTimeout(onComplete, 1500);
-  }, [duration, onComplete]);
+  }, [duration, onComplete, recording]);
 
   const handleHold = () => {
     if (callState === 'connected') {
@@ -124,6 +169,19 @@ export function AudioCallSession({
       setCallState('connected');
       toast.info("Call resumed");
     }
+  };
+
+  const handleAddParticipant = async (invite: ParticipantInvite) => {
+    const success = await addParticipant(invite);
+    if (success) {
+      setShowAddParticipant(false);
+      toast.success(`Converting to group call with ${invite.targetName}`);
+    }
+  };
+
+  const handleReferralCreated = (referralId: string) => {
+    toast.success("Referral package created and linked to this call");
+    setShowReferralBuilder(false);
   };
 
   const getCallStateUI = () => {
@@ -159,24 +217,47 @@ export function AudioCallSession({
       case 'on_hold':
         return (
           <div className="text-center">
-            <div className={cn(
-              "w-32 h-32 rounded-full mx-auto mb-6 flex items-center justify-center relative",
-              callState === 'on_hold' ? "border-4 border-warning bg-warning/10" : "border-4 border-success bg-success/10"
-            )}>
-              <Avatar className="h-24 w-24">
-                <AvatarFallback className="text-3xl">
-                  {referral.context.referringProviderName.split(" ").map((n) => n[0]).join("")}
-                </AvatarFallback>
-              </Avatar>
-              {callState === 'on_hold' && (
-                <div className="absolute inset-0 flex items-center justify-center bg-background/50 rounded-full">
-                  <Pause className="h-12 w-12 text-warning" />
-                </div>
-              )}
-            </div>
+            {/* Multi-participant grid */}
+            {activeCount > 2 ? (
+              <div className="grid grid-cols-3 gap-4 mb-6 max-w-md mx-auto">
+                {participants.filter(p => p.isActive).map((p) => (
+                  <div key={p.id} className="flex flex-col items-center">
+                    <div className={cn(
+                      "w-20 h-20 rounded-full flex items-center justify-center relative",
+                      p.connectionStatus === 'connected' ? "border-2 border-success" : "border-2 border-muted"
+                    )}>
+                      <Avatar className="h-16 w-16">
+                        <AvatarFallback>{p.name.split(" ").map((n) => n[0]).join("")}</AvatarFallback>
+                      </Avatar>
+                      {p.isMuted && (
+                        <MicOff className="absolute -bottom-1 -right-1 h-5 w-5 text-destructive bg-background rounded-full p-0.5" />
+                      )}
+                    </div>
+                    <p className="text-sm font-medium mt-2 truncate max-w-[80px]">{p.name}</p>
+                    <p className="text-xs text-muted-foreground">{p.role}</p>
+                  </div>
+                ))}
+              </div>
+            ) : (
+              <div className={cn(
+                "w-32 h-32 rounded-full mx-auto mb-6 flex items-center justify-center relative",
+                callState === 'on_hold' ? "border-4 border-warning bg-warning/10" : "border-4 border-success bg-success/10"
+              )}>
+                <Avatar className="h-24 w-24">
+                  <AvatarFallback className="text-3xl">
+                    {referral.context.referringProviderName.split(" ").map((n) => n[0]).join("")}
+                  </AvatarFallback>
+                </Avatar>
+                {callState === 'on_hold' && (
+                  <div className="absolute inset-0 flex items-center justify-center bg-background/50 rounded-full">
+                    <Pause className="h-12 w-12 text-warning" />
+                  </div>
+                )}
+              </div>
+            )}
             
             <h2 className="text-xl font-semibold mb-1">
-              {referral.context.referringProviderName}
+              {activeCount > 2 ? `Group Call (${activeCount})` : referral.context.referringProviderName}
             </h2>
             <p className="text-muted-foreground mb-4">{referral.context.referringFacilityName}</p>
             
@@ -235,7 +316,8 @@ export function AudioCallSession({
           <div>
             <h3 className="font-semibold flex items-center gap-2">
               <Phone className="h-4 w-4 text-primary" />
-              Audio Consultation
+              {activeCount > 2 ? 'Group Audio Call' : 'Audio Consultation'}
+              <RecordingIndicator recording={recording} compact />
             </h3>
             <p className="text-xs text-muted-foreground">
               {referral.context.specialty} • {referral.patientHID}
@@ -243,13 +325,73 @@ export function AudioCallSession({
           </div>
         </div>
 
-        {callState === 'connected' && onEscalateToVideo && (
-          <Button variant="outline" onClick={onEscalateToVideo}>
-            <Video className="h-4 w-4 mr-2" />
-            Switch to Video
+        <div className="flex items-center gap-2">
+          {/* Participant count */}
+          <Button
+            variant={showParticipants ? "secondary" : "outline"}
+            size="sm"
+            onClick={() => setShowParticipants(!showParticipants)}
+          >
+            <Users className="h-4 w-4 mr-1" />
+            {activeCount}
           </Button>
-        )}
+
+          {callState === 'connected' && (
+            <>
+              {/* Add participant */}
+              {canAddMore && (
+                <Button variant="outline" size="sm" onClick={() => setShowAddParticipant(true)}>
+                  <UserPlus className="h-4 w-4 mr-1" />
+                  Add
+                </Button>
+              )}
+
+              {/* Build referral */}
+              <Button variant="outline" size="sm" onClick={() => setShowReferralBuilder(true)}>
+                <Link className="h-4 w-4 mr-1" />
+                Link Referral
+              </Button>
+
+              {/* Escalate to video */}
+              {onEscalateToVideo && (
+                <Button variant="outline" size="sm" onClick={onEscalateToVideo}>
+                  <Video className="h-4 w-4 mr-1" />
+                  Video
+                </Button>
+              )}
+            </>
+          )}
+        </div>
       </div>
+
+      {/* Participants panel */}
+      {showParticipants && callState === 'connected' && (
+        <div className="border-b p-3 bg-muted/30">
+          <h4 className="text-sm font-medium mb-2">Participants ({activeCount})</h4>
+          <div className="flex flex-wrap gap-2">
+            {participants.filter(p => p.isActive).map((p) => (
+              <div key={p.id} className="flex items-center gap-2 bg-background rounded-lg px-3 py-1.5 border">
+                <Avatar className="h-6 w-6">
+                  <AvatarFallback className="text-xs">{p.name.split(" ").map((n) => n[0]).join("")}</AvatarFallback>
+                </Avatar>
+                <span className="text-sm">{p.name}</span>
+                {p.isHost && <Badge variant="secondary" className="text-xs">Host</Badge>}
+                {p.isMuted && <MicOff className="h-3 w-3 text-muted-foreground" />}
+                {!p.isHost && (
+                  <Button
+                    variant="ghost"
+                    size="icon"
+                    className="h-5 w-5"
+                    onClick={() => toggleParticipantMute(p.id)}
+                  >
+                    {p.isMuted ? <Mic className="h-3 w-3" /> : <MicOff className="h-3 w-3" />}
+                  </Button>
+                )}
+              </div>
+            ))}
+          </div>
+        </div>
+      )}
 
       {/* Main Call Area */}
       <div className="flex-1 flex items-center justify-center p-8">
@@ -358,8 +500,28 @@ export function AudioCallSession({
         {" • "}
         <span>{referral.clinicalNarrative.chiefComplaint}</span>
         {" • "}
-        <span>Call is encrypted and recorded for clinical documentation</span>
+        <span className={cn(recording.isRecording && "text-destructive font-medium")}>
+          {recording.isRecording ? "🔴 Recording in progress" : "Call encrypted for clinical documentation"}
+        </span>
       </div>
+
+      {/* Dialogs */}
+      <AddParticipantDialog
+        open={showAddParticipant}
+        onOpenChange={setShowAddParticipant}
+        onInvite={handleAddParticipant}
+        currentParticipantCount={activeCount}
+        maxParticipants={25}
+      />
+
+      <ReferralPackageBuilderDialog
+        open={showReferralBuilder}
+        onOpenChange={setShowReferralBuilder}
+        patientId={referral.patientId}
+        patientHID={referral.patientHID}
+        linkedSessionId={sessionId}
+        onReferralCreated={handleReferralCreated}
+      />
     </div>
   );
 }

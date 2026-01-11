@@ -1,6 +1,6 @@
 /**
  * VideoCallSession - Full audio/video consultation
- * For comprehensive visual examinations and live consultations
+ * Enhanced with: recording, multi-participant MDT support, screen sharing, modern call tools
  */
 import { useState, useEffect, useRef, useCallback } from "react";
 import {
@@ -19,15 +19,20 @@ import {
   Users,
   Grid,
   Clock,
-  Camera,
   ArrowLeft,
   MoreVertical,
   PictureInPicture,
   FileText,
   Loader2,
+  UserPlus,
+  Link,
+  Hand,
+  Crown,
+  CircleDot,
+  Layout,
+  Sparkles,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { ScrollArea } from "@/components/ui/scroll-area";
@@ -39,10 +44,14 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { Separator } from "@/components/ui/separator";
 import { format } from "date-fns";
 import { cn } from "@/lib/utils";
 import { toast } from "sonner";
+import { useTelemedicineRecording } from "@/hooks/useTelemedicineRecording";
+import { useMultiParticipantSession, type ParticipantInvite } from "@/hooks/useMultiParticipantSession";
+import { RecordingIndicator } from "../RecordingIndicator";
+import { AddParticipantDialog } from "../AddParticipantDialog";
+import { ReferralPackageBuilderDialog } from "../ReferralPackageBuilderDialog";
 import type { ReferralPackage, ChatMessage } from "@/types/telehealth";
 
 interface VideoCallSessionProps {
@@ -54,17 +63,7 @@ interface VideoCallSessionProps {
 }
 
 type ConnectionState = 'connecting' | 'connected' | 'reconnecting' | 'ended';
-type LayoutMode = 'speaker' | 'grid' | 'presentation';
-
-interface Participant {
-  id: string;
-  name: string;
-  role: string;
-  isLocal: boolean;
-  isMuted: boolean;
-  isVideoOff: boolean;
-  isPresenting?: boolean;
-}
+type LayoutMode = 'speaker' | 'grid' | 'presentation' | 'sidebar';
 
 export function VideoCallSession({
   referral,
@@ -82,36 +81,56 @@ export function VideoCallSession({
   const [duration, setDuration] = useState(0);
   const [showChat, setShowChat] = useState(false);
   const [showParticipants, setShowParticipants] = useState(false);
+  const [showAddParticipant, setShowAddParticipant] = useState(false);
+  const [showReferralBuilder, setShowReferralBuilder] = useState(false);
   const [chatMessages, setChatMessages] = useState<ChatMessage[]>([]);
   const [newMessage, setNewMessage] = useState("");
+  const [handRaised, setHandRaised] = useState(false);
   
   const timerRef = useRef<NodeJS.Timeout | null>(null);
   const containerRef = useRef<HTMLDivElement>(null);
 
-  const [participants, setParticipants] = useState<Participant[]>([
-    {
-      id: "local",
-      name: "You",
-      role: "Consultant",
-      isLocal: true,
-      isMuted: false,
-      isVideoOff: false,
-    },
-    {
+  // Recording hook
+  const recording = useTelemedicineRecording({
+    sessionId,
+    patientId: referral.patientId,
+    referralId: referral.id,
+    mode: 'video',
+  });
+
+  // Multi-participant hook
+  const {
+    participants,
+    activeCount,
+    host,
+    canAddMore,
+    addParticipant,
+    removeParticipant,
+    promoteToHost,
+    toggleParticipantMute,
+  } = useMultiParticipantSession({
+    sessionId,
+    hostId: 'current-user',
+    hostName: 'You',
+    initialParticipants: [{
       id: referral.context.referringProviderId,
       name: referral.context.referringProviderName,
-      role: "Referring Clinician",
-      isLocal: false,
+      role: 'Referring Clinician',
+      facility: referral.context.referringFacilityName,
+      isHost: false,
+      isActive: true,
       isMuted: false,
       isVideoOff: false,
-    },
-  ]);
+      connectionStatus: 'connected',
+    }],
+  });
 
   // Simulate connection
   useEffect(() => {
     const timer = setTimeout(() => {
       setConnectionState('connected');
       toast.success("Video call connected");
+      recording.startRecording();
     }, 2500);
     return () => clearTimeout(timer);
   }, []);
@@ -128,15 +147,6 @@ export function VideoCallSession({
     };
   }, [connectionState]);
 
-  // Update local participant state
-  useEffect(() => {
-    setParticipants((prev) =>
-      prev.map((p) =>
-        p.isLocal ? { ...p, isMuted, isVideoOff, isPresenting: isScreenSharing } : p
-      )
-    );
-  }, [isMuted, isVideoOff, isScreenSharing]);
-
   const formatDuration = (seconds: number) => {
     const hrs = Math.floor(seconds / 3600);
     const mins = Math.floor((seconds % 3600) / 60);
@@ -147,11 +157,12 @@ export function VideoCallSession({
     return `${mins}:${secs.toString().padStart(2, "0")}`;
   };
 
-  const handleEndCall = useCallback(() => {
+  const handleEndCall = useCallback(async () => {
     setConnectionState('ended');
+    await recording.stopRecording();
     toast.info(`Video call ended. Duration: ${formatDuration(duration)}`);
     setTimeout(onComplete, 1500);
-  }, [duration, onComplete]);
+  }, [duration, onComplete, recording]);
 
   const handleScreenShare = () => {
     setIsScreenSharing(!isScreenSharing);
@@ -174,6 +185,13 @@ export function VideoCallSession({
     }
   };
 
+  const handleRaiseHand = () => {
+    setHandRaised(!handRaised);
+    if (!handRaised) {
+      toast.info("Hand raised - other participants have been notified");
+    }
+  };
+
   const sendChatMessage = () => {
     if (!newMessage.trim()) return;
     const message: ChatMessage = {
@@ -187,6 +205,16 @@ export function VideoCallSession({
     };
     setChatMessages((prev) => [...prev, message]);
     setNewMessage("");
+  };
+
+  const handleAddParticipant = async (invite: ParticipantInvite) => {
+    await addParticipant(invite);
+    setShowAddParticipant(false);
+  };
+
+  const handleReferralCreated = (referralId: string) => {
+    toast.success("Referral package created and linked to this session");
+    setShowReferralBuilder(false);
   };
 
   const renderVideoGrid = () => {
@@ -214,120 +242,128 @@ export function VideoCallSession({
       );
     }
 
-    const remoteParticipants = participants.filter((p) => !p.isLocal);
-    const localParticipant = participants.find((p) => p.isLocal);
+    const activeParticipants = participants.filter((p) => p.isActive);
+    const localParticipant = activeParticipants.find((p) => p.isHost);
+    const remoteParticipants = activeParticipants.filter((p) => !p.isHost);
 
+    // Presentation mode (screen sharing)
     if (layoutMode === 'presentation' && isScreenSharing) {
       return (
         <div className="h-full flex">
-          {/* Main presentation area */}
           <div className="flex-1 bg-muted rounded-lg flex items-center justify-center">
             <div className="text-center">
               <Monitor className="h-24 w-24 text-primary mx-auto mb-4" />
               <p className="text-lg font-medium">You are sharing your screen</p>
             </div>
           </div>
-          
-          {/* Participant strip */}
           <div className="w-48 ml-2 flex flex-col gap-2">
-            {participants.map((p) => (
-              <div
-                key={p.id}
-                className="aspect-video bg-muted rounded-lg flex items-center justify-center relative"
-              >
-                {p.isVideoOff ? (
-                  <Avatar>
-                    <AvatarFallback>{p.name.split(" ").map((n) => n[0]).join("")}</AvatarFallback>
-                  </Avatar>
-                ) : (
-                  <div className="absolute inset-0 bg-gradient-to-br from-primary/20 to-primary/10 rounded-lg" />
-                )}
-                <span className="absolute bottom-1 left-1 text-xs bg-background/80 px-1 rounded">
-                  {p.name}
-                </span>
-                {p.isMuted && (
-                  <MicOff className="absolute bottom-1 right-1 h-3 w-3 text-destructive" />
-                )}
-              </div>
+            {activeParticipants.map((p) => (
+              <ParticipantVideo key={p.id} participant={p} size="small" />
             ))}
           </div>
         </div>
       );
     }
 
-    if (layoutMode === 'grid' || remoteParticipants.length > 1) {
+    // Grid mode for multiple participants
+    if (layoutMode === 'grid' || activeParticipants.length > 3) {
+      const gridCols = activeParticipants.length <= 4 ? 2 : 3;
       return (
         <div className={cn(
           "h-full grid gap-2 p-2",
-          participants.length === 2 && "grid-cols-2",
-          participants.length > 2 && participants.length <= 4 && "grid-cols-2 grid-rows-2",
-          participants.length > 4 && "grid-cols-3 grid-rows-2"
+          gridCols === 2 && "grid-cols-2",
+          gridCols === 3 && "grid-cols-3"
         )}>
-          {participants.map((p) => (
-            <div
-              key={p.id}
-              className="bg-muted rounded-lg flex items-center justify-center relative overflow-hidden"
-            >
-              {p.isVideoOff ? (
-                <Avatar className="h-20 w-20">
-                  <AvatarFallback className="text-2xl">
-                    {p.name.split(" ").map((n) => n[0]).join("")}
-                  </AvatarFallback>
-                </Avatar>
-              ) : (
-                <div className="absolute inset-0 bg-gradient-to-br from-primary/20 to-primary/10" />
-              )}
-              <div className="absolute bottom-2 left-2 flex items-center gap-2">
-                <span className="text-sm bg-background/80 px-2 py-0.5 rounded">
-                  {p.isLocal ? "You" : p.name}
-                </span>
-                {p.isMuted && <MicOff className="h-4 w-4 text-destructive" />}
-              </div>
-            </div>
+          {activeParticipants.map((p) => (
+            <ParticipantVideo key={p.id} participant={p} size="medium" />
           ))}
+        </div>
+      );
+    }
+
+    // Sidebar mode
+    if (layoutMode === 'sidebar') {
+      return (
+        <div className="h-full flex">
+          <div className="flex-1 p-2">
+            {remoteParticipants[0] && (
+              <ParticipantVideo participant={remoteParticipants[0]} size="large" />
+            )}
+          </div>
+          <div className="w-64 flex flex-col gap-2 p-2">
+            {localParticipant && (
+              <ParticipantVideo participant={localParticipant} size="small" />
+            )}
+            {remoteParticipants.slice(1).map((p) => (
+              <ParticipantVideo key={p.id} participant={p} size="small" />
+            ))}
+          </div>
         </div>
       );
     }
 
     // Speaker view (default)
     return (
-      <div className="h-full relative">
-        {/* Main video (remote) */}
-        <div className="absolute inset-0 bg-muted rounded-lg flex items-center justify-center">
-          {remoteParticipants[0]?.isVideoOff ? (
-            <Avatar className="h-32 w-32">
-              <AvatarFallback className="text-4xl">
-                {remoteParticipants[0]?.name.split(" ").map((n) => n[0]).join("")}
-              </AvatarFallback>
-            </Avatar>
+      <div className="h-full relative p-2">
+        {/* Main video (first remote participant) */}
+        <div className="absolute inset-2 bg-muted rounded-lg flex items-center justify-center overflow-hidden">
+          {remoteParticipants[0] ? (
+            <>
+              {remoteParticipants[0].isVideoOff ? (
+                <Avatar className="h-32 w-32">
+                  <AvatarFallback className="text-4xl">
+                    {remoteParticipants[0].name.split(" ").map((n) => n[0]).join("")}
+                  </AvatarFallback>
+                </Avatar>
+              ) : (
+                <div className="absolute inset-0 bg-gradient-to-br from-primary/20 to-primary/10 rounded-lg" />
+              )}
+              <div className="absolute bottom-4 left-4 flex items-center gap-2">
+                <span className="text-sm bg-background/80 px-2 py-1 rounded font-medium">
+                  {remoteParticipants[0].name}
+                </span>
+                {remoteParticipants[0].isMuted && (
+                  <Badge variant="destructive" className="h-6">
+                    <MicOff className="h-3 w-3" />
+                  </Badge>
+                )}
+              </div>
+            </>
           ) : (
-            <div className="absolute inset-0 bg-gradient-to-br from-primary/20 to-primary/10 rounded-lg" />
+            <p className="text-muted-foreground">Waiting for participants...</p>
           )}
-          <div className="absolute bottom-4 left-4 flex items-center gap-2">
-            <span className="text-sm bg-background/80 px-2 py-1 rounded font-medium">
-              {remoteParticipants[0]?.name}
-            </span>
-            {remoteParticipants[0]?.isMuted && (
-              <Badge variant="destructive" className="h-6">
-                <MicOff className="h-3 w-3" />
-              </Badge>
-            )}
-          </div>
         </div>
 
         {/* PiP local video */}
         <div className="absolute bottom-4 right-4 w-48 aspect-video bg-muted rounded-lg border-2 border-background shadow-lg flex items-center justify-center overflow-hidden">
-          {localParticipant?.isVideoOff ? (
+          {isVideoOff ? (
             <Avatar>
               <AvatarFallback>You</AvatarFallback>
             </Avatar>
           ) : (
             <div className="absolute inset-0 bg-gradient-to-br from-secondary/20 to-secondary/10" />
           )}
-          {localParticipant?.isMuted && (
+          {isMuted && (
             <MicOff className="absolute bottom-1 right-1 h-4 w-4 text-destructive" />
           )}
+          {handRaised && (
+            <Hand className="absolute top-1 right-1 h-5 w-5 text-warning" />
+          )}
         </div>
+
+        {/* Other participants strip */}
+        {remoteParticipants.length > 1 && (
+          <div className="absolute top-4 right-4 flex flex-col gap-2">
+            {remoteParticipants.slice(1, 4).map((p) => (
+              <ParticipantVideo key={p.id} participant={p} size="thumbnail" />
+            ))}
+            {remoteParticipants.length > 4 && (
+              <div className="w-24 h-16 bg-muted rounded-lg flex items-center justify-center">
+                <span className="text-sm font-medium">+{remoteParticipants.length - 4}</span>
+              </div>
+            )}
+          </div>
+        )}
       </div>
     );
   };
@@ -343,7 +379,8 @@ export function VideoCallSession({
           <div>
             <h3 className="font-semibold flex items-center gap-2">
               <Video className="h-4 w-4 text-primary" />
-              Video Consultation
+              {activeCount > 2 ? 'Group Video Call' : 'Video Consultation'}
+              <RecordingIndicator recording={recording} compact />
               {connectionState === 'connected' && (
                 <Badge variant="outline" className="ml-2">
                   <Clock className="h-3 w-3 mr-1" />
@@ -360,8 +397,18 @@ export function VideoCallSession({
         <div className="flex items-center gap-2">
           <Badge variant="outline">
             <Users className="h-3 w-3 mr-1" />
-            {participants.length}
+            {activeCount}
           </Badge>
+          
+          {canAddMore && connectionState === 'connected' && (
+            <Button variant="outline" size="sm" onClick={() => setShowAddParticipant(true)}>
+              <UserPlus className="h-4 w-4" />
+            </Button>
+          )}
+
+          <Button variant="outline" size="sm" onClick={() => setShowReferralBuilder(true)}>
+            <Link className="h-4 w-4" />
+          </Button>
           
           <Button
             variant={showChat ? "secondary" : "ghost"}
@@ -394,6 +441,19 @@ export function VideoCallSession({
                 <Grid className="h-4 w-4 mr-2" />
                 Grid View
               </DropdownMenuItem>
+              <DropdownMenuItem onClick={() => setLayoutMode('sidebar')}>
+                <Layout className="h-4 w-4 mr-2" />
+                Sidebar View
+              </DropdownMenuItem>
+              <DropdownMenuSeparator />
+              <DropdownMenuItem onClick={handleFullscreen}>
+                {isFullscreen ? (
+                  <Minimize2 className="h-4 w-4 mr-2" />
+                ) : (
+                  <Maximize2 className="h-4 w-4 mr-2" />
+                )}
+                {isFullscreen ? 'Exit Fullscreen' : 'Fullscreen'}
+              </DropdownMenuItem>
               <DropdownMenuSeparator />
               <DropdownMenuItem>
                 <Settings className="h-4 w-4 mr-2" />
@@ -407,7 +467,7 @@ export function VideoCallSession({
       {/* Main Content */}
       <div className="flex-1 flex overflow-hidden">
         {/* Video Area */}
-        <div className="flex-1 p-2">
+        <div className="flex-1">
           {renderVideoGrid()}
         </div>
 
@@ -451,31 +511,64 @@ export function VideoCallSession({
             {showParticipants && (
               <>
                 <div className="p-3 border-b font-medium">
-                  Participants ({participants.length})
+                  Participants ({activeCount})
                 </div>
                 <ScrollArea className="flex-1 p-3">
                   <div className="space-y-2">
-                    {participants.map((p) => (
-                      <div key={p.id} className="flex items-center gap-3 p-2 rounded hover:bg-muted">
+                    {participants.filter(p => p.isActive).map((p) => (
+                      <div key={p.id} className="flex items-center gap-3 p-2 rounded hover:bg-muted group">
                         <Avatar>
                           <AvatarFallback>
                             {p.name.split(" ").map((n) => n[0]).join("")}
                           </AvatarFallback>
                         </Avatar>
                         <div className="flex-1 min-w-0">
-                          <p className="font-medium text-sm truncate">
-                            {p.name} {p.isLocal && "(You)"}
+                          <p className="font-medium text-sm truncate flex items-center gap-1">
+                            {p.name}
+                            {p.isHost && <Crown className="h-3 w-3 text-warning" />}
                           </p>
                           <p className="text-xs text-muted-foreground">{p.role}</p>
                         </div>
-                        <div className="flex gap-1">
+                        <div className="flex gap-1 items-center">
                           {p.isMuted && <MicOff className="h-4 w-4 text-muted-foreground" />}
                           {p.isVideoOff && <VideoOff className="h-4 w-4 text-muted-foreground" />}
+                          {!p.isHost && (
+                            <DropdownMenu>
+                              <DropdownMenuTrigger asChild>
+                                <Button variant="ghost" size="icon" className="h-6 w-6 opacity-0 group-hover:opacity-100">
+                                  <MoreVertical className="h-3 w-3" />
+                                </Button>
+                              </DropdownMenuTrigger>
+                              <DropdownMenuContent>
+                                <DropdownMenuItem onClick={() => toggleParticipantMute(p.id)}>
+                                  {p.isMuted ? 'Unmute' : 'Mute'}
+                                </DropdownMenuItem>
+                                <DropdownMenuItem onClick={() => promoteToHost(p.id)}>
+                                  Make Host
+                                </DropdownMenuItem>
+                                <DropdownMenuSeparator />
+                                <DropdownMenuItem 
+                                  className="text-destructive"
+                                  onClick={() => removeParticipant(p.id)}
+                                >
+                                  Remove
+                                </DropdownMenuItem>
+                              </DropdownMenuContent>
+                            </DropdownMenu>
+                          )}
                         </div>
                       </div>
                     ))}
                   </div>
                 </ScrollArea>
+                {canAddMore && (
+                  <div className="p-3 border-t">
+                    <Button variant="outline" className="w-full" onClick={() => setShowAddParticipant(true)}>
+                      <UserPlus className="h-4 w-4 mr-2" />
+                      Add Participant
+                    </Button>
+                  </div>
+                )}
               </>
             )}
           </div>
@@ -486,6 +579,7 @@ export function VideoCallSession({
       {connectionState === 'connected' && (
         <div className="p-4 border-t bg-background">
           <div className="flex items-center justify-center gap-3">
+            {/* Mute */}
             <Button
               variant="outline"
               size="lg"
@@ -495,6 +589,7 @@ export function VideoCallSession({
               {isMuted ? <MicOff className="h-6 w-6" /> : <Mic className="h-6 w-6" />}
             </Button>
 
+            {/* Video */}
             <Button
               variant="outline"
               size="lg"
@@ -504,6 +599,7 @@ export function VideoCallSession({
               {isVideoOff ? <VideoOff className="h-6 w-6" /> : <Video className="h-6 w-6" />}
             </Button>
 
+            {/* Screen Share */}
             <Button
               variant="outline"
               size="lg"
@@ -513,6 +609,17 @@ export function VideoCallSession({
               {isScreenSharing ? <MonitorOff className="h-6 w-6" /> : <Monitor className="h-6 w-6" />}
             </Button>
 
+            {/* Raise Hand */}
+            <Button
+              variant="outline"
+              size="lg"
+              className={cn("h-14 w-14 rounded-full", handRaised && "bg-warning/20 border-warning")}
+              onClick={handleRaiseHand}
+            >
+              <Hand className={cn("h-6 w-6", handRaised && "text-warning")} />
+            </Button>
+
+            {/* End Call */}
             <Button
               variant="destructive"
               size="lg"
@@ -521,14 +628,84 @@ export function VideoCallSession({
             >
               <PhoneOff className="h-6 w-6" />
             </Button>
-
-            <Separator orientation="vertical" className="h-8 mx-2" />
-
-            <Button variant="ghost" size="lg" className="h-14 w-14 rounded-full" onClick={handleFullscreen}>
-              {isFullscreen ? <Minimize2 className="h-6 w-6" /> : <Maximize2 className="h-6 w-6" />}
-            </Button>
           </div>
+
+          {/* Recording status footer */}
+          {recording.isRecording && (
+            <div className="text-center mt-3">
+              <Badge variant="destructive" className="animate-pulse">
+                <CircleDot className="h-3 w-3 mr-1" />
+                Recording • {formatDuration(recording.duration)}
+              </Badge>
+            </div>
+          )}
         </div>
+      )}
+
+      {/* Dialogs */}
+      <AddParticipantDialog
+        open={showAddParticipant}
+        onOpenChange={setShowAddParticipant}
+        onInvite={handleAddParticipant}
+        currentParticipantCount={activeCount}
+        maxParticipants={25}
+      />
+
+      <ReferralPackageBuilderDialog
+        open={showReferralBuilder}
+        onOpenChange={setShowReferralBuilder}
+        patientId={referral.patientId}
+        patientHID={referral.patientHID}
+        linkedSessionId={sessionId}
+        onReferralCreated={handleReferralCreated}
+      />
+    </div>
+  );
+}
+
+// Participant video component
+interface ParticipantVideoProps {
+  participant: {
+    id: string;
+    name: string;
+    role: string;
+    isMuted: boolean;
+    isVideoOff: boolean;
+    isHost?: boolean;
+  };
+  size: 'thumbnail' | 'small' | 'medium' | 'large';
+}
+
+function ParticipantVideo({ participant, size }: ParticipantVideoProps) {
+  const sizeClasses = {
+    thumbnail: 'w-24 h-16',
+    small: 'w-full aspect-video',
+    medium: 'w-full h-full',
+    large: 'w-full h-full',
+  };
+
+  return (
+    <div className={cn(
+      "bg-muted rounded-lg flex items-center justify-center relative overflow-hidden",
+      sizeClasses[size]
+    )}>
+      {participant.isVideoOff ? (
+        <Avatar className={size === 'large' ? 'h-20 w-20' : 'h-10 w-10'}>
+          <AvatarFallback className={size === 'large' ? 'text-2xl' : 'text-sm'}>
+            {participant.name.split(" ").map((n) => n[0]).join("")}
+          </AvatarFallback>
+        </Avatar>
+      ) : (
+        <div className="absolute inset-0 bg-gradient-to-br from-primary/20 to-primary/10" />
+      )}
+      <div className="absolute bottom-1 left-1 flex items-center gap-1">
+        <span className="text-xs bg-background/80 px-1 rounded truncate max-w-[80px]">
+          {participant.name}
+        </span>
+        {participant.isHost && <Crown className="h-3 w-3 text-warning" />}
+      </div>
+      {participant.isMuted && (
+        <MicOff className="absolute bottom-1 right-1 h-3 w-3 text-destructive" />
       )}
     </div>
   );
