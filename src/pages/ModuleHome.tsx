@@ -590,107 +590,81 @@ export default function ModuleHome() {
             </TabsList>
 
             {/* My Work Tab */}
-            <TabsContent value="work" className="mt-0 flex-1 flex flex-col gap-4 min-h-0">
-              {/* Row 1: Communication + Scanner */}
-              <div className="flex items-center gap-3 flex-shrink-0">
-                <span className="text-sm font-medium text-muted-foreground">Comm:</span>
-                <div className="flex gap-2">
-                  <Button variant="outline" size="sm" className="h-9 px-3 flex items-center gap-2" onClick={() => navigate("/communication?tab=messages")}>
-                    <MessageSquare className="h-4 w-4 text-primary" />
-                    <span className="text-sm">Messages</span>
+            <TabsContent value="work" className="mt-0 flex-1 flex flex-col gap-3 min-h-0">
+              {/* Row 1: Communication + Noticeboard */}
+              <div className="flex items-center gap-4 flex-shrink-0">
+                <div className="flex items-center gap-2">
+                  <span className="text-xs font-medium text-muted-foreground">Comm:</span>
+                  <Button variant="outline" size="sm" className="h-8 px-2.5 flex items-center gap-1.5" onClick={() => navigate("/communication?tab=messages")}>
+                    <MessageSquare className="h-3.5 w-3.5 text-primary" />
+                    <span className="text-xs">Messages</span>
                   </Button>
-                  <Button variant="outline" size="sm" className="h-9 px-3 flex items-center gap-2" onClick={() => navigate("/communication?tab=pages")}>
-                    <Bell className="h-4 w-4 text-warning" />
-                    <span className="text-sm">Pages</span>
+                  <Button variant="outline" size="sm" className="h-8 px-2.5 flex items-center gap-1.5" onClick={() => navigate("/communication?tab=pages")}>
+                    <Bell className="h-3.5 w-3.5 text-warning" />
+                    <span className="text-xs">Pages</span>
                   </Button>
-                  <Button variant="outline" size="sm" className="h-9 px-3 flex items-center gap-2" onClick={() => navigate("/communication?tab=calls")}>
-                    <Phone className="h-4 w-4 text-success" />
-                    <span className="text-sm">Calls</span>
+                  <Button variant="outline" size="sm" className="h-8 px-2.5 flex items-center gap-1.5" onClick={() => navigate("/communication?tab=calls")}>
+                    <Phone className="h-3.5 w-3.5 text-success" />
+                    <span className="text-xs">Calls</span>
                   </Button>
                 </div>
                 <div className="ml-auto">
-                  <HealthDocumentScanner variant="button" className="h-9" />
+                  <HealthDocumentScanner variant="button" className="h-8" />
                 </div>
               </div>
 
-              {/* Row 2: My Practice (Collapsible) */}
-              <Collapsible defaultOpen={false} className="flex-shrink-0">
-                <div className="flex items-center gap-3">
-                  <CollapsibleTrigger asChild>
-                    <Button variant="ghost" size="sm" className="h-9 px-3 gap-2 hover:bg-muted">
-                      <Briefcase className="h-4 w-4 text-teal-500" />
-                      <span className="text-sm font-medium">My Practice</span>
-                      <ChevronRight className="h-4 w-4 text-muted-foreground transition-transform duration-200 [[data-state=open]>&]:rotate-90" />
-                    </Button>
-                  </CollapsibleTrigger>
-                  <Button variant="outline" size="sm" className="h-8 text-sm px-3" onClick={() => navigate("/practice")}>
-                    Dashboard
-                  </Button>
-                </div>
-                <CollapsibleContent className="pt-2">
-                  <div className="grid grid-cols-6 gap-2">
-                    <Button variant="outline" size="sm" className="h-auto py-2 flex flex-col items-center gap-1" onClick={() => navigate("/appointments")}>
-                      <Calendar className="h-4 w-4 text-teal-500" />
-                      <span className="text-xs">Schedule</span>
-                    </Button>
-                    <Button variant="outline" size="sm" className="h-auto py-2 flex flex-col items-center gap-1" onClick={() => navigate("/patients")}>
-                      <Users className="h-4 w-4 text-blue-500" />
-                      <span className="text-xs">Patients</span>
-                    </Button>
-                    <Button variant="outline" size="sm" className="h-auto py-2 flex flex-col items-center gap-1" onClick={() => navigate("/charges")}>
-                      <Wallet className="h-4 w-4 text-green-500" />
-                      <span className="text-xs">Billing</span>
-                    </Button>
-                    <Button variant="outline" size="sm" className="h-auto py-2 flex flex-col items-center gap-1" onClick={() => navigate("/reports")}>
-                      <TrendingUp className="h-4 w-4 text-purple-500" />
-                      <span className="text-xs">Analytics</span>
-                    </Button>
-                    <Button variant="outline" size="sm" className="h-auto py-2 flex flex-col items-center gap-1" onClick={() => navigate("/admin")}>
-                      <UserCog className="h-4 w-4 text-orange-500" />
-                      <span className="text-xs">Staff</span>
-                    </Button>
-                    <Button variant="outline" size="sm" className="h-auto py-2 flex flex-col items-center gap-1" onClick={() => navigate("/stock")}>
-                      <Package className="h-4 w-4 text-amber-500" />
-                      <span className="text-xs">Inventory</span>
-                    </Button>
-                  </div>
-                </CollapsibleContent>
-              </Collapsible>
-
-              {/* Row 3: Quick Access */}
+              {/* Row 2: Quick Access */}
               <div className="flex items-center gap-3 flex-shrink-0">
-                <span className="text-sm font-medium text-muted-foreground">Quick:</span>
-                <div className="grid grid-cols-6 gap-2 flex-1">
-                  <Button variant="outline" size="sm" className="h-auto py-2 flex flex-col items-center gap-1 hover:bg-primary hover:text-primary-foreground group" onClick={() => navigate("/dashboard")}>
-                    <ClipboardList className="h-4 w-4 text-primary group-hover:text-primary-foreground" />
+                <span className="text-xs font-medium text-muted-foreground">Quick:</span>
+                <div className="flex gap-2">
+                  <Button variant="outline" size="sm" className="h-8 px-2.5 flex items-center gap-1.5 hover:bg-primary hover:text-primary-foreground group" onClick={() => navigate("/dashboard")}>
+                    <ClipboardList className="h-3.5 w-3.5 text-primary group-hover:text-primary-foreground" />
                     <span className="text-xs">Dashboard</span>
                   </Button>
-                  <Button variant="outline" size="sm" className="h-auto py-2 flex flex-col items-center gap-1 hover:bg-blue-500 hover:text-white group" onClick={() => navigate("/queue")}>
-                    <Users className="h-4 w-4 text-blue-500 group-hover:text-white" />
+                  <Button variant="outline" size="sm" className="h-8 px-2.5 flex items-center gap-1.5 hover:bg-blue-500 hover:text-white group" onClick={() => navigate("/queue")}>
+                    <Users className="h-3.5 w-3.5 text-blue-500 group-hover:text-white" />
                     <span className="text-xs">Queue</span>
                   </Button>
-                  <Button variant="outline" size="sm" className="h-auto py-2 flex flex-col items-center gap-1 hover:bg-emerald-600 hover:text-white group" onClick={() => navigate("/pharmacy")}>
-                    <Pill className="h-4 w-4 text-emerald-600 group-hover:text-white" />
+                  <Button variant="outline" size="sm" className="h-8 px-2.5 flex items-center gap-1.5 hover:bg-emerald-600 hover:text-white group" onClick={() => navigate("/pharmacy")}>
+                    <Pill className="h-3.5 w-3.5 text-emerald-600 group-hover:text-white" />
                     <span className="text-xs">Prescribe</span>
                   </Button>
-                  <Button variant="outline" size="sm" className="h-auto py-2 flex flex-col items-center gap-1 hover:bg-cyan-600 hover:text-white group" onClick={() => navigate("/orders")}>
-                    <ClipboardCheck className="h-4 w-4 text-cyan-600 group-hover:text-white" />
+                  <Button variant="outline" size="sm" className="h-8 px-2.5 flex items-center gap-1.5 hover:bg-cyan-600 hover:text-white group" onClick={() => navigate("/orders")}>
+                    <ClipboardCheck className="h-3.5 w-3.5 text-cyan-600 group-hover:text-white" />
                     <span className="text-xs">Orders</span>
                   </Button>
-                  <Button variant="outline" size="sm" className="h-auto py-2 flex flex-col items-center gap-1 hover:bg-green-500 hover:text-white group" onClick={() => navigate("/registration")}>
-                    <UserPlus className="h-4 w-4 text-green-500 group-hover:text-white" />
+                  <Button variant="outline" size="sm" className="h-8 px-2.5 flex items-center gap-1.5 hover:bg-green-500 hover:text-white group" onClick={() => navigate("/registration")}>
+                    <UserPlus className="h-3.5 w-3.5 text-green-500 group-hover:text-white" />
                     <span className="text-xs">Register</span>
                   </Button>
-                  <Button variant="outline" size="sm" className="h-auto py-2 flex flex-col items-center gap-1 hover:bg-purple-500 hover:text-white group" onClick={() => navigate("/encounter")}>
-                    <Stethoscope className="h-4 w-4 text-purple-500 group-hover:text-white" />
+                  <Button variant="outline" size="sm" className="h-8 px-2.5 flex items-center gap-1.5 hover:bg-purple-500 hover:text-white group" onClick={() => navigate("/encounter")}>
+                    <Stethoscope className="h-3.5 w-3.5 text-purple-500 group-hover:text-white" />
                     <span className="text-xs">EHR</span>
                   </Button>
                 </div>
               </div>
 
-              {/* Row 4: Module Categories - Fill remaining space */}
-              <div className="flex-1 min-h-0">
-                <div className="grid grid-cols-3 sm:grid-cols-4 lg:grid-cols-5 gap-3 h-full auto-rows-fr">
+              {/* Row 3: Module Categories - Fill remaining space */}
+              <div className="flex-1 min-h-0 overflow-hidden">
+                <div className="grid grid-cols-4 sm:grid-cols-5 lg:grid-cols-6 gap-2 h-full" style={{ gridAutoRows: '1fr' }}>
+                  {/* My Practice as first card */}
+                  <ExpandableCategoryCard
+                    id="my-practice"
+                    title="My Practice"
+                    description="Manage your practice operations"
+                    modules={[
+                      { id: "schedule", label: "Schedule", description: "Appointments", icon: Calendar, path: "/appointments", color: "bg-teal-500" },
+                      { id: "patients", label: "Patients", description: "Patient panel", icon: Users, path: "/patients", color: "bg-blue-500" },
+                      { id: "billing", label: "Billing", description: "Charges", icon: Wallet, path: "/charges", color: "bg-green-500" },
+                      { id: "analytics", label: "Analytics", description: "Reports", icon: TrendingUp, path: "/reports", color: "bg-purple-500" },
+                      { id: "staff", label: "Staff", description: "Administration", icon: UserCog, path: "/admin", color: "bg-orange-500" },
+                      { id: "inventory", label: "Inventory", description: "Stock", icon: Package, path: "/stock", color: "bg-amber-500" },
+                    ]}
+                    icon={Briefcase}
+                    color="bg-teal-500"
+                    onModuleClick={handleModuleClick}
+                    defaultExpanded={false}
+                  />
                   {visibleCategories.map((category) => (
                     <ExpandableCategoryCard
                       key={category.id}
