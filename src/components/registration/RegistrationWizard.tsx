@@ -19,7 +19,8 @@ import {
   Loader2,
   BadgeCheck,
   Copy,
-  CheckCircle2
+  CheckCircle2,
+  Search
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -31,6 +32,7 @@ import { Progress } from "@/components/ui/progress";
 import { Badge } from "@/components/ui/badge";
 import { BiometricCapture, BiometricData, BiometricSummary, BiometricType } from "./BiometricCapture";
 import { ConsentCapture, ConsentData } from "./ConsentCapture";
+import { DuplicateSearchStep } from "./DuplicateSearchStep";
 import { cn } from "@/lib/utils";
 import { supabase } from "@/integrations/supabase/client";
 import { ClientRegistryService, BiometricUtils } from "@/services/registryServices";
@@ -48,6 +50,7 @@ const STEPS: RegistrationStep[] = [
   { id: "contact", title: "Contact", description: "Address & phone", icon: MapPin },
   { id: "identity", title: "Identity", description: "ID documents", icon: IdCard },
   { id: "biometrics", title: "Biometrics", description: "Fingerprint, iris & facial", icon: Fingerprint },
+  { id: "duplicate-check", title: "Duplicate Check", description: "Search for matches", icon: Search },
   { id: "consent", title: "Consent", description: "Data & treatment consent", icon: Shield },
   { id: "review", title: "Review", description: "Confirm details", icon: FileCheck },
   { id: "complete", title: "Complete", description: "Registration confirmed", icon: BadgeCheck },
@@ -703,6 +706,32 @@ export function RegistrationWizard({ onComplete, onCancel }: RegistrationWizardP
               </div>
             )}
           </div>
+        );
+
+      case "duplicate-check":
+        return (
+          <DuplicateSearchStep
+            clientData={{
+              firstName: clientData.firstName,
+              middleName: clientData.middleName,
+              lastName: clientData.lastName,
+              dateOfBirth: clientData.dateOfBirth,
+              gender: clientData.gender,
+              phone: clientData.phone,
+              email: clientData.email,
+              nationalId: clientData.nationalId,
+              idNumber: clientData.idNumber,
+            }}
+            onNoDuplicates={() => nextStep()}
+            onSelectExisting={(clientId, healthId) => {
+              // Navigate to existing client - for now just show toast
+              toast.info(`Existing client selected: ${healthId}`, {
+                description: 'The client record will be used instead of creating a new one'
+              });
+              onCancel?.();
+            }}
+            onProceedAnyway={() => nextStep()}
+          />
         );
         
       case "consent":
