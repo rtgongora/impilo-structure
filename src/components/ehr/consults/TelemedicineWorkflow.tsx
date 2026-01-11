@@ -17,12 +17,14 @@ import {
   Users,
   Play,
   Pause,
+  Bell,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Progress } from "@/components/ui/progress";
 import { Separator } from "@/components/ui/separator";
+import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { cn } from "@/lib/utils";
 import { toast } from "sonner";
 import type { 
@@ -39,6 +41,9 @@ import { LiveSessionWorkspace } from "./LiveSessionWorkspace";
 import { ConsultationResponseBuilder } from "./ConsultationResponseBuilder";
 import { CompletionNoteForm } from "./CompletionNote";
 import { TelemedicineModeSelection } from "./TelemedicineModeSelection";
+import { InstantCallOverlay } from "./InstantCallOverlay";
+import { TeleconsultStatusTracker } from "./TeleconsultStatusTracker";
+import { useTeleconsultSession, type TeleconsultStatus, type TeleconsultSessionData } from "@/hooks/useTeleconsultSession";
 import type { ReferralUrgency } from "@/types/telehealth";
 
 // 7 Stage Workflow Definition
@@ -136,6 +141,43 @@ export function TelemedicineWorkflow({
   const [preferredMode, setPreferredMode] = useState<TelemedicineMode | null>(null);
   const [urgency, setUrgency] = useState<ReferralUrgency>("routine");
   const [scheduledAt, setScheduledAt] = useState<string | undefined>();
+  
+  // Instant call state
+  const [showCallOverlay, setShowCallOverlay] = useState(false);
+  const [callStatus, setCallStatus] = useState<TeleconsultStatus>("pending");
+  
+  // Session tracking hook
+  const {
+    session: teleconsultSession,
+    isRinging,
+    ringingTimeLeft,
+    createSession,
+    acceptSession,
+    declineSession,
+    cancelSession,
+    startSession,
+  } = useTeleconsultSession({
+    onStatusChange: (status, session) => {
+      setCallStatus(status);
+      if (status === "accepted") {
+        setShowCallOverlay(false);
+        setCurrentStage(5);
+        setIsSessionActive(true);
+      }
+    },
+    onCallAnswered: () => {
+      setShowCallOverlay(false);
+      setCurrentStage(5);
+      setIsSessionActive(true);
+      toast.success("Call connected!");
+    },
+    onCallDeclined: () => {
+      setCallStatus("declined");
+    },
+    onCallMissed: () => {
+      setCallStatus("missed");
+    },
+  });
 
   const currentStageInfo = TELEMEDICINE_STAGES.find(s => s.stage === currentStage)!;
   const progress = (currentStage / 7) * 100;
@@ -248,7 +290,7 @@ export function TelemedicineWorkflow({
     switch (currentStage) {
       case 1:
         // Case Identified - Mode Selection Entry Point
-        const handleStartInstantSession = (mode: TelemedicineMode) => {
+        const handleStartInstantSession = async (mode: TelemedicineMode) => {
           // Create an auto-generated minimal referral package for instant sessions
           const instantReferral: ReferralPackage = {
             id: `INSTANT-${Date.now()}`,
@@ -280,7 +322,7 @@ export function TelemedicineWorkflow({
               referringProviderName: "Current User",
               targetType: "provider",
               targetId: "",
-              targetName: "Instant Session",
+              targetName: "On-Call Specialist",
               specialty: "",
             },
             urgency: "urgent",
@@ -292,11 +334,10 @@ export function TelemedicineWorkflow({
               timestamp: new Date().toISOString(),
               obtainedBy: "current-user",
             },
-            status: "accepted",
+            status: "pending",
             timestamps: {
               createdAt: new Date().toISOString(),
               sentAt: new Date().toISOString(),
-              acceptedAt: new Date().toISOString(),
             },
           };
           
@@ -304,11 +345,20 @@ export function TelemedicineWorkflow({
           setActiveMode(mode);
           setSelectedModes([mode]);
           setPreferredMode(mode);
-          setIsSessionActive(true);
+          setCallStatus("ringing");
+          setShowCallOverlay(true);
           
-          toast.success(`Starting ${mode} session...`);
-          // Skip directly to Stage 5 (Live Session)
-          setCurrentStage(5);
+          // Create a database session for tracking
+          await createSession({
+            patientId: patientId || "",
+            mode,
+            urgency: "urgent",
+            targetType: "provider",
+            targetId: "on-call",
+            targetName: "On-Call Specialist",
+            reasonForConsult: `Instant ${mode} consultation`,
+            isInstant: true,
+          });
         };
 
         const handleContinueToReferral = () => {
@@ -455,34 +505,79 @@ export function TelemedicineWorkflow({
         );
 
       case 4:
-        // Review & Accept (Consultant view)
+        // Review & Accept - ROLE-SPECIFIC VIEWS
         if (role === "consultant" && referralPackage) {
+          // CONSULTANT VIEW: Review and accept/decline the referral
           return (
-            <ReferralPackageViewer
-              referral={referralPackage}
-              onAccept={handleAcceptReferral}
-              onReassign={() => toast.info("Reassign functionality")}
-              onDecline={() => {
-                toast.error("Referral declined");
-                onBack?.();
-              }}
-            />
+            <div className="max-w-4xl mx-auto space-y-4">
+              {/* Role Alert */}
+              <Alert className="border-primary/50 bg-primary/5">
+                <User className="h-4 w-4" />
+                <AlertTitle className="flex items-center gap-2">
+                  <Badge variant="default">Consulting Practitioner</Badge>
+                  Referral Awaiting Your Review
+                </AlertTitle>
+                <AlertDescription>
+                  You are the receiving consultant. Review the referral package below and accept responsibility for this case, reassign to a colleague, or decline with a reason.
+                </AlertDescription>
+              </Alert>
+              
+              <ReferralPackageViewer
+                referral={referralPackage}
+                onAccept={handleAcceptReferral}
+                onReassign={() => toast.info("Reassign functionality")}
+                onDecline={() => {
+                  toast.error("Referral declined");
+                  onBack?.();
+                }}
+              />
+            </div>
           );
         }
-        // Referrer waiting view
+        
+        // REFERRER VIEW: Waiting for consultant to accept
         return (
-          <Card className="max-w-2xl mx-auto">
-            <CardContent className="py-12 text-center">
-              <Clock className="w-16 h-16 text-muted-foreground mx-auto mb-6 animate-pulse" />
-              <CardTitle className="mb-2">Awaiting Acceptance</CardTitle>
-              <CardDescription>
-                Your referral has been sent to {referralPackage?.context.targetName}
-              </CardDescription>
-              <Badge className="mt-4" variant="secondary">
-                {referralPackage?.urgency.toUpperCase()}
-              </Badge>
-            </CardContent>
-          </Card>
+          <div className="max-w-2xl mx-auto space-y-4">
+            {/* Role Alert */}
+            <Alert className="border-yellow-500/50 bg-yellow-50 dark:bg-yellow-950/20">
+              <Building className="h-4 w-4" />
+              <AlertTitle className="flex items-center gap-2">
+                <Badge variant="secondary">Referring Practitioner</Badge>
+                Awaiting Consultant Response
+              </AlertTitle>
+              <AlertDescription>
+                Your referral has been routed. The consulting practitioner will review and accept the case.
+              </AlertDescription>
+            </Alert>
+            
+            {/* Status Tracker */}
+            {teleconsultSession && (
+              <TeleconsultStatusTracker
+                session={teleconsultSession}
+                userRole="referrer"
+                onRetry={() => setCurrentStage(1)}
+              />
+            )}
+            
+            {/* Fallback if no session */}
+            {!teleconsultSession && (
+              <Card>
+                <CardContent className="py-12 text-center">
+                  <Clock className="w-16 h-16 text-muted-foreground mx-auto mb-6 animate-pulse" />
+                  <CardTitle className="mb-2">Awaiting Acceptance</CardTitle>
+                  <CardDescription>
+                    Your referral has been sent to {referralPackage?.context.targetName}
+                  </CardDescription>
+                  <Badge className="mt-4" variant="secondary">
+                    {referralPackage?.urgency.toUpperCase()}
+                  </Badge>
+                  <div className="mt-6 text-sm text-muted-foreground">
+                    <p>You will be notified when the consultant accepts the referral.</p>
+                  </div>
+                </CardContent>
+              </Card>
+            )}
+          </div>
         );
 
       case 5:
@@ -563,6 +658,42 @@ export function TelemedicineWorkflow({
   };
 
   return (
+    <>
+      {/* Instant Call Overlay */}
+      {showCallOverlay && (
+        <InstantCallOverlay
+          mode={activeMode}
+          status={callStatus}
+          isOutgoing={role === "referrer"}
+          caller={{
+            id: "current-user",
+            name: "Current User",
+            role: "Referring Clinician",
+            facility: "Current Facility",
+          }}
+          callee={{
+            id: "consultant",
+            name: referralPackage?.context.targetName || "On-Call Specialist",
+            role: "Consultant",
+          }}
+          patientName={patientName}
+          ringingTimeLeft={ringingTimeLeft}
+          maxRingingTime={60}
+          onAnswer={() => {
+            acceptSession(teleconsultSession?.id || "");
+          }}
+          onDecline={() => {
+            declineSession(teleconsultSession?.id || "");
+            setShowCallOverlay(false);
+          }}
+          onCancel={() => {
+            cancelSession(teleconsultSession?.id || "");
+            setShowCallOverlay(false);
+          }}
+          onClose={() => setShowCallOverlay(false)}
+        />
+      )}
+      
     <div className="h-full flex flex-col">
       {/* Workflow Progress Header */}
       <div className="p-4 border-b bg-muted/30">
@@ -649,5 +780,6 @@ export function TelemedicineWorkflow({
         </AnimatePresence>
       </div>
     </div>
+    </>
   );
 }
