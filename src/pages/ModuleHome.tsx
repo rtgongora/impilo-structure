@@ -642,6 +642,14 @@ export default function ModuleHome() {
                   <div className="flex flex-wrap gap-2">
                     <Button
                       variant="outline"
+                      className="h-12 px-5 flex items-center gap-2 text-base hover:bg-red-600 hover:text-white group"
+                      onClick={() => navigate("/encounter")}
+                    >
+                      <FileHeart className="h-5 w-5 text-red-600 group-hover:text-white" />
+                      EHR
+                    </Button>
+                    <Button
+                      variant="outline"
                       className="h-12 px-5 flex items-center gap-2 text-base hover:bg-primary hover:text-primary-foreground group"
                       onClick={() => navigate("/dashboard")}
                     >
