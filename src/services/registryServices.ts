@@ -415,6 +415,7 @@ export const ClientRegistryService = {
    */
   async registerClient(patientId: string, nationalId?: string): Promise<{ 
     impiloId: string; 
+    memorableId: string; // Easy to remember PHID (DDDSDDDX format)
     clientRegistryId: string;
     shrId: string;
     mosipUin: string 
@@ -428,6 +429,7 @@ export const ClientRegistryService = {
     await supabase.from('patient_identifiers').insert({
       patient_id: patientId,
       impilo_id: compositeId.impiloId,
+      memorable_id: compositeId.memorableId, // Store the memorable ID too
       client_registry_id: compositeId.clientRegistryId,
       shr_id: compositeId.shrId,
       mosip_uin: mosipUin,
@@ -441,6 +443,7 @@ export const ClientRegistryService = {
     
     return { 
       impiloId: compositeId.impiloId, 
+      memorableId: compositeId.memorableId,
       clientRegistryId: compositeId.clientRegistryId,
       shrId: compositeId.shrId,
       mosipUin 
