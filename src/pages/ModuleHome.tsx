@@ -560,154 +560,256 @@ export default function ModuleHome() {
         </div>
       </header>
 
-      {/* Main Content - No Scrolling */}
-      <main className="flex-1 overflow-hidden">
-        <div className="max-w-7xl mx-auto px-3 py-2 h-full flex flex-col">
+      {/* Main Content - Scrollable */}
+      <main className="flex-1 overflow-y-auto">
+        <div className="max-w-7xl mx-auto px-3 py-3">
           {/* Compact Welcome */}
-          <div className="mb-2">
-            <h2 className="text-base sm:text-lg font-bold leading-tight">Welcome, {getDisplayTitle()}</h2>
+          <div className="mb-3">
+            <h2 className="text-lg font-bold leading-tight">Welcome, {getDisplayTitle()}</h2>
             <p className="text-xs text-muted-foreground">Select a module to get started</p>
           </div>
 
           {/* Compact Tabs */}
-          <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full flex-1 flex flex-col">
-            <TabsList className="grid w-full grid-cols-3 mb-2 h-8 p-0.5">
-              <TabsTrigger value="work" className="flex items-center justify-center gap-1 py-1 text-xs data-[state=active]:bg-primary data-[state=active]:text-primary-foreground">
-                <Briefcase className="h-3 w-3" />
+          <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
+            <TabsList className="grid w-full grid-cols-3 mb-3 h-9 p-0.5">
+              <TabsTrigger value="work" className="flex items-center justify-center gap-1 py-1.5 text-xs data-[state=active]:bg-primary data-[state=active]:text-primary-foreground">
+                <Briefcase className="h-3.5 w-3.5" />
                 Work
               </TabsTrigger>
-              <TabsTrigger value="portal" className="flex items-center justify-center gap-1 py-1 text-xs data-[state=active]:bg-pink-500 data-[state=active]:text-white">
-                <Heart className="h-3 w-3" />
+              <TabsTrigger value="portal" className="flex items-center justify-center gap-1 py-1.5 text-xs data-[state=active]:bg-pink-500 data-[state=active]:text-white">
+                <Heart className="h-3.5 w-3.5" />
                 Health
               </TabsTrigger>
-              <TabsTrigger value="social" className="flex items-center justify-center gap-1 py-1 text-xs data-[state=active]:bg-purple-500 data-[state=active]:text-white">
-                <Users className="h-3 w-3" />
+              <TabsTrigger value="social" className="flex items-center justify-center gap-1 py-1.5 text-xs data-[state=active]:bg-purple-500 data-[state=active]:text-white">
+                <Users className="h-3.5 w-3.5" />
                 Social
               </TabsTrigger>
             </TabsList>
 
             {/* My Work Tab */}
-            <TabsContent value="work" className="mt-0 space-y-2 flex-1">
-            {/* Communication & Scanner Row - Ultra Compact */}
-            <div className="flex items-center gap-2">
-              <Button variant="outline" size="sm" className="h-7 text-xs gap-1" onClick={() => navigate("/communication?tab=messages")}>
-                <MessageSquare className="h-3 w-3" /> Messages
-              </Button>
-              <Button variant="outline" size="sm" className="h-7 text-xs gap-1" onClick={() => navigate("/communication?tab=pages")}>
-                <Bell className="h-3 w-3" /> Pages
-              </Button>
-              <Button variant="outline" size="sm" className="h-7 text-xs gap-1" onClick={() => navigate("/communication?tab=calls")}>
-                <Phone className="h-3 w-3" /> Calls
-              </Button>
-              <div className="ml-auto">
-                <HealthDocumentScanner variant="button" className="h-7 text-xs" />
+            <TabsContent value="work" className="mt-0 space-y-3">
+            {/* Communication Quick Access - Compact */}
+            <div>
+              <div className="flex items-center justify-between mb-2">
+                <Badge variant="secondary" className="px-2 py-0.5 text-xs">Communication</Badge>
+                <Button variant="outline" size="sm" className="h-7 text-xs px-2" onClick={() => navigate("/communication")}>
+                  Hub <ChevronRight className="h-3 w-3 ml-0.5" />
+                </Button>
+              </div>
+
+              <div className="grid grid-cols-3 gap-2">
+                <Button
+                  variant="outline"
+                  className="h-auto py-2 flex flex-col items-center gap-1 hover:bg-accent"
+                  onClick={() => navigate("/communication?tab=messages")}
+                >
+                  <div className="h-7 w-7 rounded-md bg-primary/10 flex items-center justify-center">
+                    <MessageSquare className="h-3.5 w-3.5 text-primary" />
+                  </div>
+                  <span className="font-medium text-xs">Messages</span>
+                </Button>
+
+                <Button
+                  variant="outline"
+                  className="h-auto py-2 flex flex-col items-center gap-1 hover:bg-accent"
+                  onClick={() => navigate("/communication?tab=pages")}
+                >
+                  <div className="h-7 w-7 rounded-md bg-warning/10 flex items-center justify-center">
+                    <Bell className="h-3.5 w-3.5 text-warning" />
+                  </div>
+                  <span className="font-medium text-xs">Pages</span>
+                </Button>
+
+                <Button
+                  variant="outline"
+                  className="h-auto py-2 flex flex-col items-center gap-1 hover:bg-accent"
+                  onClick={() => navigate("/communication?tab=calls")}
+                >
+                  <div className="h-7 w-7 rounded-md bg-success/10 flex items-center justify-center">
+                    <Phone className="h-3.5 w-3.5 text-success" />
+                  </div>
+                  <span className="font-medium text-xs">Calls</span>
+                </Button>
               </div>
             </div>
 
-            {/* My Practice & Quick Access Combined */}
-            <div className="grid grid-cols-6 sm:grid-cols-9 lg:grid-cols-12 gap-1.5">
-              {/* My Practice Items */}
-              <Card className="cursor-pointer hover:shadow-md hover:border-teal-500/50 transition-all group" onClick={() => navigate("/appointments")}>
-                <CardContent className="p-1.5 text-center">
-                  <div className="w-7 h-7 mx-auto rounded-lg bg-teal-500/10 flex items-center justify-center mb-1 group-hover:bg-teal-500 transition-colors">
-                    <Calendar className="h-3.5 w-3.5 text-teal-500 group-hover:text-white" />
+            {/* Document Scanner - Compact */}
+            <Card className="p-2">
+              <div className="flex items-center gap-2">
+                <HealthDocumentScanner variant="button" className="h-8 text-xs" />
+                <span className="text-xs text-muted-foreground">Scan prescriptions, labs & more</span>
+              </div>
+            </Card>
+
+            {/* My Practice Section */}
+            <div>
+              <div className="flex items-center justify-between mb-3 sm:mb-4">
+                <div className="flex items-center gap-2">
+                  <Badge variant="secondary" className="px-2 sm:px-3 py-0.5 sm:py-1 text-xs sm:text-sm bg-gradient-to-r from-teal-500/10 to-cyan-500/10">
+                    <Briefcase className="h-3 w-3 mr-1" />
+                    My Practice
+                  </Badge>
+                  <p className="hidden md:block text-sm text-muted-foreground">Manage your practice operations</p>
+                </div>
+                <Button variant="outline" size="sm" className="h-8 text-xs sm:text-sm" onClick={() => navigate("/practice")}>
+                  <span className="hidden sm:inline">Practice Dashboard</span>
+                  <span className="sm:hidden">Dashboard</span>
+                  <ChevronRight className="h-3.5 w-3.5 sm:h-4 sm:w-4 ml-1" />
+                </Button>
+              </div>
+
+              <div className="grid grid-cols-3 sm:grid-cols-3 lg:grid-cols-6 gap-2 sm:gap-4">
+                <Card 
+                  className="cursor-pointer hover:shadow-md sm:hover:shadow-lg hover:border-teal-500/50 transition-all group"
+                  onClick={() => navigate("/appointments")}
+                >
+                  <CardContent className="p-2.5 sm:pt-5 sm:pb-4 text-center">
+                    <div className="w-9 h-9 sm:w-11 sm:h-11 mx-auto rounded-lg sm:rounded-xl bg-teal-500/10 flex items-center justify-center mb-1.5 sm:mb-2 group-hover:bg-teal-500 transition-colors">
+                      <Calendar className="h-4 w-4 sm:h-5 sm:w-5 text-teal-500 group-hover:text-white" />
+                    </div>
+                    <p className="text-xs sm:text-sm font-medium">Schedule</p>
+                    <p className="hidden sm:block text-xs text-muted-foreground">Appointments</p>
+                  </CardContent>
+                </Card>
+
+                <Card 
+                  className="cursor-pointer hover:shadow-md sm:hover:shadow-lg hover:border-teal-500/50 transition-all group"
+                  onClick={() => navigate("/patients")}
+                >
+                  <CardContent className="p-2.5 sm:pt-5 sm:pb-4 text-center">
+                    <div className="w-9 h-9 sm:w-11 sm:h-11 mx-auto rounded-lg sm:rounded-xl bg-blue-500/10 flex items-center justify-center mb-1.5 sm:mb-2 group-hover:bg-blue-500 transition-colors">
+                      <Users className="h-4 w-4 sm:h-5 sm:w-5 text-blue-500 group-hover:text-white" />
+                    </div>
+                    <p className="text-xs sm:text-sm font-medium">Patients</p>
+                    <p className="hidden sm:block text-xs text-muted-foreground">My patients</p>
+                  </CardContent>
+                </Card>
+
+                <Card 
+                  className="cursor-pointer hover:shadow-md sm:hover:shadow-lg hover:border-teal-500/50 transition-all group"
+                  onClick={() => navigate("/charges")}
+                >
+                  <CardContent className="p-2.5 sm:pt-5 sm:pb-4 text-center">
+                    <div className="w-9 h-9 sm:w-11 sm:h-11 mx-auto rounded-lg sm:rounded-xl bg-green-500/10 flex items-center justify-center mb-1.5 sm:mb-2 group-hover:bg-green-500 transition-colors">
+                      <Wallet className="h-4 w-4 sm:h-5 sm:w-5 text-green-500 group-hover:text-white" />
+                    </div>
+                    <p className="text-xs sm:text-sm font-medium">Billing</p>
+                    <p className="hidden sm:block text-xs text-muted-foreground">Revenue & claims</p>
+                  </CardContent>
+                </Card>
+
+                <Card 
+                  className="cursor-pointer hover:shadow-md sm:hover:shadow-lg hover:border-teal-500/50 transition-all group"
+                  onClick={() => navigate("/reports")}
+                >
+                  <CardContent className="p-2.5 sm:pt-5 sm:pb-4 text-center">
+                    <div className="w-9 h-9 sm:w-11 sm:h-11 mx-auto rounded-lg sm:rounded-xl bg-purple-500/10 flex items-center justify-center mb-1.5 sm:mb-2 group-hover:bg-purple-500 transition-colors">
+                      <TrendingUp className="h-4 w-4 sm:h-5 sm:w-5 text-purple-500 group-hover:text-white" />
+                    </div>
+                    <p className="text-xs sm:text-sm font-medium">Analytics</p>
+                    <p className="hidden sm:block text-xs text-muted-foreground">Performance</p>
+                  </CardContent>
+                </Card>
+
+                <Card 
+                  className="cursor-pointer hover:shadow-md sm:hover:shadow-lg hover:border-teal-500/50 transition-all group"
+                  onClick={() => navigate("/admin")}
+                >
+                  <CardContent className="p-2.5 sm:pt-5 sm:pb-4 text-center">
+                    <div className="w-9 h-9 sm:w-11 sm:h-11 mx-auto rounded-lg sm:rounded-xl bg-orange-500/10 flex items-center justify-center mb-1.5 sm:mb-2 group-hover:bg-orange-500 transition-colors">
+                      <UserCog className="h-4 w-4 sm:h-5 sm:w-5 text-orange-500 group-hover:text-white" />
+                    </div>
+                    <p className="text-xs sm:text-sm font-medium">Staff</p>
+                    <p className="hidden sm:block text-xs text-muted-foreground">Team & roles</p>
+                  </CardContent>
+                </Card>
+
+                <Card 
+                  className="cursor-pointer hover:shadow-md sm:hover:shadow-lg hover:border-teal-500/50 transition-all group"
+                  onClick={() => navigate("/stock")}
+                >
+                  <CardContent className="p-2.5 sm:pt-5 sm:pb-4 text-center">
+                    <div className="w-9 h-9 sm:w-11 sm:h-11 mx-auto rounded-lg sm:rounded-xl bg-amber-500/10 flex items-center justify-center mb-1.5 sm:mb-2 group-hover:bg-amber-500 transition-colors">
+                      <Package className="h-4 w-4 sm:h-5 sm:w-5 text-amber-500 group-hover:text-white" />
+                    </div>
+                    <p className="text-xs sm:text-sm font-medium">Inventory</p>
+                    <p className="hidden sm:block text-xs text-muted-foreground">Supplies & stock</p>
+                  </CardContent>
+                </Card>
+              </div>
+            </div>
+
+            {/* Quick Access */}
+            <div>
+              <div className="flex items-center gap-2 mb-3 sm:mb-4">
+                <Badge variant="secondary" className="px-2 sm:px-3 py-0.5 sm:py-1 text-xs sm:text-sm">Quick Access</Badge>
+              </div>
+              <div className="grid grid-cols-3 sm:grid-cols-3 lg:grid-cols-6 gap-2 sm:gap-4">
+                <Button
+                  variant="outline"
+                  className="h-auto py-3 sm:py-6 flex flex-col items-center gap-1.5 sm:gap-3 hover:bg-primary hover:text-primary-foreground hover:border-primary transition-all group"
+                  onClick={() => navigate("/dashboard")}
+                >
+                  <div className="w-9 h-9 sm:w-12 sm:h-12 rounded-lg sm:rounded-xl bg-primary/10 group-hover:bg-primary-foreground/20 flex items-center justify-center transition-colors">
+                    <ClipboardList className="h-4 w-4 sm:h-6 sm:w-6 text-primary group-hover:text-primary-foreground" />
                   </div>
-                  <p className="text-xs font-medium leading-tight">Schedule</p>
-                </CardContent>
-              </Card>
-              <Card className="cursor-pointer hover:shadow-md hover:border-teal-500/50 transition-all group" onClick={() => navigate("/patients")}>
-                <CardContent className="p-1.5 text-center">
-                  <div className="w-7 h-7 mx-auto rounded-lg bg-blue-500/10 flex items-center justify-center mb-1 group-hover:bg-blue-500 transition-colors">
-                    <Users className="h-3.5 w-3.5 text-blue-500 group-hover:text-white" />
+                  <span className="font-medium text-[10px] sm:text-sm">Dashboard</span>
+                </Button>
+                <Button
+                  variant="outline"
+                  className="h-auto py-3 sm:py-6 flex flex-col items-center gap-1.5 sm:gap-3 hover:bg-blue-500 hover:text-white hover:border-blue-500 transition-all group"
+                  onClick={() => navigate("/queue")}
+                >
+                  <div className="w-9 h-9 sm:w-12 sm:h-12 rounded-lg sm:rounded-xl bg-blue-500/10 group-hover:bg-white/20 flex items-center justify-center transition-colors">
+                    <Users className="h-4 w-4 sm:h-6 sm:w-6 text-blue-500 group-hover:text-white" />
                   </div>
-                  <p className="text-xs font-medium leading-tight">Patients</p>
-                </CardContent>
-              </Card>
-              <Card className="cursor-pointer hover:shadow-md hover:border-teal-500/50 transition-all group" onClick={() => navigate("/charges")}>
-                <CardContent className="p-1.5 text-center">
-                  <div className="w-7 h-7 mx-auto rounded-lg bg-green-500/10 flex items-center justify-center mb-1 group-hover:bg-green-500 transition-colors">
-                    <Wallet className="h-3.5 w-3.5 text-green-500 group-hover:text-white" />
+                  <span className="font-medium text-[10px] sm:text-sm">Queue</span>
+                </Button>
+                <Button
+                  variant="outline"
+                  className="h-auto py-3 sm:py-6 flex flex-col items-center gap-1.5 sm:gap-3 hover:bg-emerald-600 hover:text-white hover:border-emerald-600 transition-all group"
+                  onClick={() => navigate("/pharmacy")}
+                >
+                  <div className="w-9 h-9 sm:w-12 sm:h-12 rounded-lg sm:rounded-xl bg-emerald-600/10 group-hover:bg-white/20 flex items-center justify-center transition-colors">
+                    <Pill className="h-4 w-4 sm:h-6 sm:w-6 text-emerald-600 group-hover:text-white" />
                   </div>
-                  <p className="text-xs font-medium leading-tight">Billing</p>
-                </CardContent>
-              </Card>
-              <Card className="cursor-pointer hover:shadow-md hover:border-teal-500/50 transition-all group" onClick={() => navigate("/reports")}>
-                <CardContent className="p-1.5 text-center">
-                  <div className="w-7 h-7 mx-auto rounded-lg bg-purple-500/10 flex items-center justify-center mb-1 group-hover:bg-purple-500 transition-colors">
-                    <TrendingUp className="h-3.5 w-3.5 text-purple-500 group-hover:text-white" />
+                  <span className="font-medium text-[10px] sm:text-sm">Prescribe</span>
+                </Button>
+                <Button
+                  variant="outline"
+                  className="h-auto py-3 sm:py-6 flex flex-col items-center gap-1.5 sm:gap-3 hover:bg-cyan-600 hover:text-white hover:border-cyan-600 transition-all group"
+                  onClick={() => navigate("/orders")}
+                >
+                  <div className="w-9 h-9 sm:w-12 sm:h-12 rounded-lg sm:rounded-xl bg-cyan-600/10 group-hover:bg-white/20 flex items-center justify-center transition-colors">
+                    <ClipboardCheck className="h-4 w-4 sm:h-6 sm:w-6 text-cyan-600 group-hover:text-white" />
                   </div>
-                  <p className="text-xs font-medium leading-tight">Analytics</p>
-                </CardContent>
-              </Card>
-              <Card className="cursor-pointer hover:shadow-md hover:border-teal-500/50 transition-all group" onClick={() => navigate("/admin")}>
-                <CardContent className="p-1.5 text-center">
-                  <div className="w-7 h-7 mx-auto rounded-lg bg-orange-500/10 flex items-center justify-center mb-1 group-hover:bg-orange-500 transition-colors">
-                    <UserCog className="h-3.5 w-3.5 text-orange-500 group-hover:text-white" />
+                  <span className="font-medium text-[10px] sm:text-sm">Orders</span>
+                </Button>
+                <Button
+                  variant="outline"
+                  className="h-auto py-3 sm:py-6 flex flex-col items-center gap-1.5 sm:gap-3 hover:bg-green-500 hover:text-white hover:border-green-500 transition-all group"
+                  onClick={() => navigate("/registration")}
+                >
+                  <div className="w-9 h-9 sm:w-12 sm:h-12 rounded-lg sm:rounded-xl bg-green-500/10 group-hover:bg-white/20 flex items-center justify-center transition-colors">
+                    <UserPlus className="h-4 w-4 sm:h-6 sm:w-6 text-green-500 group-hover:text-white" />
                   </div>
-                  <p className="text-xs font-medium leading-tight">Staff</p>
-                </CardContent>
-              </Card>
-              <Card className="cursor-pointer hover:shadow-md hover:border-teal-500/50 transition-all group" onClick={() => navigate("/stock")}>
-                <CardContent className="p-1.5 text-center">
-                  <div className="w-7 h-7 mx-auto rounded-lg bg-amber-500/10 flex items-center justify-center mb-1 group-hover:bg-amber-500 transition-colors">
-                    <Package className="h-3.5 w-3.5 text-amber-500 group-hover:text-white" />
+                  <span className="font-medium text-[10px] sm:text-sm">Register</span>
+                </Button>
+                <Button
+                  variant="outline"
+                  className="h-auto py-3 sm:py-6 flex flex-col items-center gap-1.5 sm:gap-3 hover:bg-purple-500 hover:text-white hover:border-purple-500 transition-all group"
+                  onClick={() => navigate("/encounter")}
+                >
+                  <div className="w-9 h-9 sm:w-12 sm:h-12 rounded-lg sm:rounded-xl bg-purple-500/10 group-hover:bg-white/20 flex items-center justify-center transition-colors">
+                    <Stethoscope className="h-4 w-4 sm:h-6 sm:w-6 text-purple-500 group-hover:text-white" />
                   </div>
-                  <p className="text-xs font-medium leading-tight">Inventory</p>
-                </CardContent>
-              </Card>
-              {/* Quick Access Items */}
-              <Card className="cursor-pointer hover:shadow-md hover:border-primary/50 transition-all group" onClick={() => navigate("/dashboard")}>
-                <CardContent className="p-1.5 text-center">
-                  <div className="w-7 h-7 mx-auto rounded-lg bg-primary/10 flex items-center justify-center mb-1 group-hover:bg-primary transition-colors">
-                    <ClipboardList className="h-3.5 w-3.5 text-primary group-hover:text-white" />
-                  </div>
-                  <p className="text-xs font-medium leading-tight">Dashboard</p>
-                </CardContent>
-              </Card>
-              <Card className="cursor-pointer hover:shadow-md hover:border-blue-500/50 transition-all group" onClick={() => navigate("/queue")}>
-                <CardContent className="p-1.5 text-center">
-                  <div className="w-7 h-7 mx-auto rounded-lg bg-blue-500/10 flex items-center justify-center mb-1 group-hover:bg-blue-500 transition-colors">
-                    <Users className="h-3.5 w-3.5 text-blue-500 group-hover:text-white" />
-                  </div>
-                  <p className="text-xs font-medium leading-tight">Queue</p>
-                </CardContent>
-              </Card>
-              <Card className="cursor-pointer hover:shadow-md hover:border-emerald-600/50 transition-all group" onClick={() => navigate("/pharmacy")}>
-                <CardContent className="p-1.5 text-center">
-                  <div className="w-7 h-7 mx-auto rounded-lg bg-emerald-600/10 flex items-center justify-center mb-1 group-hover:bg-emerald-600 transition-colors">
-                    <Pill className="h-3.5 w-3.5 text-emerald-600 group-hover:text-white" />
-                  </div>
-                  <p className="text-xs font-medium leading-tight">Prescribe</p>
-                </CardContent>
-              </Card>
-              <Card className="cursor-pointer hover:shadow-md hover:border-cyan-600/50 transition-all group" onClick={() => navigate("/orders")}>
-                <CardContent className="p-1.5 text-center">
-                  <div className="w-7 h-7 mx-auto rounded-lg bg-cyan-600/10 flex items-center justify-center mb-1 group-hover:bg-cyan-600 transition-colors">
-                    <ClipboardCheck className="h-3.5 w-3.5 text-cyan-600 group-hover:text-white" />
-                  </div>
-                  <p className="text-xs font-medium leading-tight">Orders</p>
-                </CardContent>
-              </Card>
-              <Card className="cursor-pointer hover:shadow-md hover:border-green-500/50 transition-all group" onClick={() => navigate("/registration")}>
-                <CardContent className="p-1.5 text-center">
-                  <div className="w-7 h-7 mx-auto rounded-lg bg-green-500/10 flex items-center justify-center mb-1 group-hover:bg-green-500 transition-colors">
-                    <UserPlus className="h-3.5 w-3.5 text-green-500 group-hover:text-white" />
-                  </div>
-                  <p className="text-xs font-medium leading-tight">Register</p>
-                </CardContent>
-              </Card>
-              <Card className="cursor-pointer hover:shadow-md hover:border-purple-500/50 transition-all group" onClick={() => navigate("/encounter")}>
-                <CardContent className="p-1.5 text-center">
-                  <div className="w-7 h-7 mx-auto rounded-lg bg-purple-500/10 flex items-center justify-center mb-1 group-hover:bg-purple-500 transition-colors">
-                    <Stethoscope className="h-3.5 w-3.5 text-purple-500 group-hover:text-white" />
-                  </div>
-                  <p className="text-xs font-medium leading-tight">EHR</p>
-                </CardContent>
-              </Card>
+                  <span className="font-medium text-[10px] sm:text-sm">EHR</span>
+                </Button>
+              </div>
             </div>
 
             {/* Module Categories - Expandable Cards Grid */}
-            <div className="grid grid-cols-4 sm:grid-cols-6 lg:grid-cols-8 xl:grid-cols-12 gap-1.5 pb-1">
+            <div className="grid grid-cols-3 sm:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-1.5 sm:gap-2 pb-2">
               {visibleCategories.map((category) => (
                 <ExpandableCategoryCard
                   key={category.id}
