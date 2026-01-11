@@ -13,27 +13,50 @@ import {
 } from "@/components/ui/tooltip";
 import { cn } from "@/lib/utils";
 
-interface RecordingIndicatorProps {
+interface RecordingState {
   isRecording: boolean;
   isPaused: boolean;
-  duration: string;
+  duration: number;
   hasConsent: boolean;
+  formattedDuration: string;
+  pauseRecording?: () => void;
+  resumeRecording?: () => void;
+}
+
+interface RecordingIndicatorProps {
+  recording?: RecordingState;
+  // Individual props as alternative
+  isRecording?: boolean;
+  isPaused?: boolean;
+  duration?: string;
+  hasConsent?: boolean;
   onPause?: () => void;
   onResume?: () => void;
   showControls?: boolean;
   size?: 'sm' | 'md' | 'lg';
+  compact?: boolean;
 }
 
 export function RecordingIndicator({
-  isRecording,
-  isPaused,
-  duration,
-  hasConsent,
+  recording,
+  isRecording: isRecordingProp,
+  isPaused: isPausedProp,
+  duration: durationProp,
+  hasConsent: hasConsentProp,
   onPause,
   onResume,
   showControls = false,
   size = 'md',
+  compact = false,
 }: RecordingIndicatorProps) {
+  // Support both recording object and individual props
+  const isRecording = recording?.isRecording ?? isRecordingProp ?? false;
+  const isPaused = recording?.isPaused ?? isPausedProp ?? false;
+  const duration = recording?.formattedDuration ?? durationProp ?? '00:00';
+  const hasConsent = recording?.hasConsent ?? hasConsentProp ?? false;
+  const handlePause = onPause ?? recording?.pauseRecording;
+  const handleResume = onResume ?? recording?.resumeRecording;
+
   const sizeClasses = {
     sm: 'text-xs px-2 py-0.5',
     md: 'text-sm px-3 py-1',
@@ -98,7 +121,7 @@ export function RecordingIndicator({
           <TooltipProvider>
             <Tooltip>
               <TooltipTrigger asChild>
-                <Button variant="ghost" size="icon" className="h-6 w-6" onClick={onResume}>
+                <Button variant="ghost" size="icon" className="h-6 w-6" onClick={handleResume}>
                   <Play className="h-3 w-3" />
                 </Button>
               </TooltipTrigger>
@@ -109,7 +132,7 @@ export function RecordingIndicator({
           <TooltipProvider>
             <Tooltip>
               <TooltipTrigger asChild>
-                <Button variant="ghost" size="icon" className="h-6 w-6" onClick={onPause}>
+                <Button variant="ghost" size="icon" className="h-6 w-6" onClick={handlePause}>
                   <Pause className="h-3 w-3" />
                 </Button>
               </TooltipTrigger>

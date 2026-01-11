@@ -127,10 +127,16 @@ export function VideoCallSession({
 
   // Simulate connection
   useEffect(() => {
-    const timer = setTimeout(() => {
+    const timer = setTimeout(async () => {
       setConnectionState('connected');
       toast.success("Video call connected");
-      recording.startRecording();
+      // Auto-start recording with initial participants
+      const initialParticipants = [
+        { id: 'current-user', name: 'You', role: 'Consultant' },
+        { id: referral.context.referringProviderId, name: referral.context.referringProviderName, role: 'Referring Clinician' },
+      ];
+      await recording.obtainConsent();
+      await recording.startRecording(initialParticipants);
     }, 2500);
     return () => clearTimeout(timer);
   }, []);

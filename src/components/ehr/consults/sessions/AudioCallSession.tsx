@@ -106,10 +106,16 @@ export function AudioCallSession({
       setCallState('ringing');
     }, 1500);
 
-    const ringTimer = setTimeout(() => {
+    const ringTimer = setTimeout(async () => {
       setCallState('connected');
       toast.success("Call connected");
-      recording.startRecording(); // Auto-start recording
+      // Auto-start recording with initial participants
+      const initialParticipants = [
+        { id: 'current-user', name: 'You', role: 'Consultant' },
+        { id: referral.context.referringProviderId, name: referral.context.referringProviderName, role: 'Referring Clinician' },
+      ];
+      await recording.obtainConsent();
+      await recording.startRecording(initialParticipants);
     }, 4000);
 
     return () => {

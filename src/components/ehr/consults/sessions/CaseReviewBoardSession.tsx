@@ -209,12 +209,19 @@ export function CaseReviewBoardSession({
     return `${mins}:${secs.toString().padStart(2, "0")}`;
   };
 
-  const handleStartSession = () => {
+  const handleStartSession = async () => {
     setIsSessionStarted(true);
     setAgenda((prev) => prev.map((item, idx) => 
       idx === 0 ? { ...item, status: 'current' } : item
     ));
-    recording.startRecording();
+    // Start recording with participants
+    const boardParticipants = participants.filter(p => p.isActive).map(p => ({
+      id: p.id,
+      name: p.name,
+      role: p.role || 'Participant',
+    }));
+    await recording.obtainConsent();
+    await recording.startRecording(boardParticipants);
     toast.success("Case review board session started");
   };
 
@@ -327,7 +334,6 @@ export function CaseReviewBoardSession({
           sessionDuration: duration,
           attachmentsUsed: [],
           boardParticipants: participants.filter(p => p.isActive).map((p) => p.id),
-          recordingId: recording.recordingId,
         },
         status: "submitted",
         timestamps: {
