@@ -68,6 +68,8 @@ import {
   Lock,
   Search,
   Zap,
+  TestTube2,
+  Scan,
 } from "lucide-react";
 import { Dialog, DialogContent, DialogTrigger } from "@/components/ui/dialog";
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible";
@@ -591,13 +593,13 @@ export default function ModuleHome() {
             </TabsList>
 
             {/* My Work Tab */}
-            <TabsContent value="work" className="mt-0 flex-1 flex flex-col gap-4 min-h-0">
-              {/* Communication and Quick Access - More prominent */}
-              <div className="grid grid-cols-2 gap-4 flex-shrink-0">
+            <TabsContent value="work" className="mt-0 flex-1 flex flex-col gap-3 min-h-0">
+              {/* Communication and Quick Access - Stacked vertically */}
+              <div className="flex flex-col gap-3 flex-shrink-0">
                 {/* Communication Noticeboard */}
                 <div className="bg-card border rounded-lg p-4">
                   <div className="flex items-center justify-between mb-3">
-                    <h3 className="text-base font-semibold flex items-center gap-2">
+                    <h3 className="text-lg font-semibold flex items-center gap-2">
                       <MessageSquare className="h-5 w-5 text-primary" />
                       Communication Noticeboard
                     </h3>
@@ -606,7 +608,7 @@ export default function ModuleHome() {
                   <div className="flex flex-wrap gap-2">
                     <Button
                       variant="outline"
-                      className="h-11 px-4 flex items-center gap-2 text-base"
+                      className="h-12 px-5 flex items-center gap-2 text-base"
                       onClick={() => navigate("/communication?tab=messages")}
                     >
                       <MessageSquare className="h-5 w-5 text-primary" />
@@ -614,7 +616,7 @@ export default function ModuleHome() {
                     </Button>
                     <Button
                       variant="outline"
-                      className="h-11 px-4 flex items-center gap-2 text-base"
+                      className="h-12 px-5 flex items-center gap-2 text-base"
                       onClick={() => navigate("/communication?tab=pages")}
                     >
                       <Bell className="h-5 w-5 text-warning" />
@@ -622,7 +624,7 @@ export default function ModuleHome() {
                     </Button>
                     <Button
                       variant="outline"
-                      className="h-11 px-4 flex items-center gap-2 text-base"
+                      className="h-12 px-5 flex items-center gap-2 text-base"
                       onClick={() => navigate("/communication?tab=calls")}
                     >
                       <Phone className="h-5 w-5 text-success" />
@@ -633,14 +635,14 @@ export default function ModuleHome() {
                 
                 {/* Quick Access */}
                 <div className="bg-card border rounded-lg p-4">
-                  <h3 className="text-base font-semibold mb-3 flex items-center gap-2">
+                  <h3 className="text-lg font-semibold mb-3 flex items-center gap-2">
                     <Zap className="h-5 w-5 text-amber-500" />
                     Quick Access
                   </h3>
                   <div className="flex flex-wrap gap-2">
                     <Button
                       variant="outline"
-                      className="h-11 px-4 flex items-center gap-2 text-base hover:bg-primary hover:text-primary-foreground group"
+                      className="h-12 px-5 flex items-center gap-2 text-base hover:bg-primary hover:text-primary-foreground group"
                       onClick={() => navigate("/dashboard")}
                     >
                       <ClipboardList className="h-5 w-5 text-primary group-hover:text-primary-foreground" />
@@ -648,7 +650,7 @@ export default function ModuleHome() {
                     </Button>
                     <Button
                       variant="outline"
-                      className="h-11 px-4 flex items-center gap-2 text-base hover:bg-blue-500 hover:text-white group"
+                      className="h-12 px-5 flex items-center gap-2 text-base hover:bg-blue-500 hover:text-white group"
                       onClick={() => navigate("/queue")}
                     >
                       <Users className="h-5 w-5 text-blue-500 group-hover:text-white" />
@@ -656,7 +658,7 @@ export default function ModuleHome() {
                     </Button>
                     <Button
                       variant="outline"
-                      className="h-11 px-4 flex items-center gap-2 text-base hover:bg-emerald-600 hover:text-white group"
+                      className="h-12 px-5 flex items-center gap-2 text-base hover:bg-emerald-600 hover:text-white group"
                       onClick={() => navigate("/pharmacy")}
                     >
                       <Pill className="h-5 w-5 text-emerald-600 group-hover:text-white" />
@@ -664,19 +666,43 @@ export default function ModuleHome() {
                     </Button>
                     <Button
                       variant="outline"
-                      className="h-11 px-4 flex items-center gap-2 text-base hover:bg-green-500 hover:text-white group"
+                      className="h-12 px-5 flex items-center gap-2 text-base hover:bg-green-500 hover:text-white group"
                       onClick={() => navigate("/registration")}
                     >
                       <UserPlus className="h-5 w-5 text-green-500 group-hover:text-white" />
                       Register
                     </Button>
+                    <Button
+                      variant="outline"
+                      className="h-12 px-5 flex items-center gap-2 text-base hover:bg-purple-500 hover:text-white group"
+                      onClick={() => navigate("/lab")}
+                    >
+                      <TestTube2 className="h-5 w-5 text-purple-500 group-hover:text-white" />
+                      Lab
+                    </Button>
+                    <Button
+                      variant="outline"
+                      className="h-12 px-5 flex items-center gap-2 text-base hover:bg-rose-500 hover:text-white group"
+                      onClick={() => navigate("/radiology")}
+                    >
+                      <Scan className="h-5 w-5 text-rose-500 group-hover:text-white" />
+                      Radiology
+                    </Button>
+                    <Button
+                      variant="outline"
+                      className="h-12 px-5 flex items-center gap-2 text-base hover:bg-orange-500 hover:text-white group"
+                      onClick={() => navigate("/appointments")}
+                    >
+                      <Calendar className="h-5 w-5 text-orange-500 group-hover:text-white" />
+                      Schedule
+                    </Button>
                   </div>
                 </div>
               </div>
 
-              {/* Module Categories - Compact horizontal cards */}
+              {/* Module Categories - Larger cards, 3-4 per row */}
               <section className="flex-1 min-h-0 overflow-auto">
-                <div className="grid grid-cols-4 sm:grid-cols-5 lg:grid-cols-6 xl:grid-cols-7 gap-2">
+                <div className="grid grid-cols-3 lg:grid-cols-4 gap-3 h-full" style={{ gridAutoRows: '1fr' }}>
                   {/* My Practice as first card */}
                   <ExpandableCategoryCard
                     id="my-practice"
