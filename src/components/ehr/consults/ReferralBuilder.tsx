@@ -625,11 +625,23 @@ export function ReferralBuilder({ onSubmit, onCancel }: ReferralBuilderProps) {
                   </div>
                 </div>
                 
+                {/* Show incomplete steps warning if any */}
+                {!canSubmit && (
+                  <div className="p-3 bg-warning/10 border border-warning/50 rounded-lg">
+                    <p className="text-sm text-warning font-medium mb-2">Please complete the following before sending:</p>
+                    <ul className="text-xs text-muted-foreground space-y-1">
+                      {!isStepComplete("letter") && <li>• Letter: Add content and presenting problems</li>}
+                      {!isStepComplete("routing") && <li>• Routing: Select a recipient</li>}
+                      {!isStepComplete("modality") && <li>• Modality: Choose communication modes</li>}
+                    </ul>
+                  </div>
+                )}
+                
                 {/* Direct send button after consent */}
                 <Button 
                   onClick={handleSubmit} 
                   disabled={!canSubmit}
-                  className="w-full bg-success hover:bg-success/90"
+                  className={`w-full ${canSubmit ? 'bg-success hover:bg-success/90' : ''}`}
                   size="lg"
                 >
                   <Send className="w-5 h-5 mr-2" />
