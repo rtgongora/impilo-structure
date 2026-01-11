@@ -81,8 +81,8 @@ export function useQueueItems(queueId?: string) {
 
     try {
       setLoading(true);
-      const today = new Date().toISOString().split('T')[0];
 
+      // Fetch queue items - don't filter by date since patients waiting should persist
       const { data, error: fetchError } = await supabase
         .from('queue_items')
         .select(`
@@ -90,7 +90,6 @@ export function useQueueItems(queueId?: string) {
           patient:patients(first_name, last_name, mrn)
         `)
         .eq('queue_id', queueId)
-        .eq('arrival_date', today)
         .in('status', ['waiting', 'called', 'in_service', 'paused'])
         .order('priority')
         .order('arrival_time');
