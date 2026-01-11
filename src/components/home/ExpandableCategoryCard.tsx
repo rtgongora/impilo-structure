@@ -41,25 +41,18 @@ export function ExpandableCategoryCard({
 
   return (
     <>
-      {/* Compact Category Card */}
+      {/* Compact Category Card - Fixed small height */}
       <Card
-        className="cursor-pointer transition-all duration-200 hover:shadow-md hover:border-primary/50 group h-full flex"
+        className="cursor-pointer transition-all duration-200 hover:shadow-md hover:border-primary/50 group"
         onClick={() => setIsOpen(true)}
       >
-        <CardContent className="p-2 flex items-center gap-2 flex-1">
-          <div className={cn("w-8 h-8 shrink-0 rounded-md flex items-center justify-center group-hover:scale-105 transition-transform", color)}>
-            <Icon className="h-4 w-4 text-white" />
+        <CardContent className="p-1.5 flex items-center gap-1.5">
+          <div className={cn("w-6 h-6 shrink-0 rounded flex items-center justify-center", color)}>
+            <Icon className="h-3 w-3 text-white" />
           </div>
           <div className="min-w-0 flex-1">
-            <p className="text-xs font-semibold leading-tight truncate">{title}</p>
-            <div className="flex items-center gap-1">
-              <Badge variant="secondary" className="text-[10px] px-1 py-0 h-3.5">
-                {modules.length}
-              </Badge>
-              {roles && roles.length > 0 && (
-                <Lock className="h-2.5 w-2.5 text-muted-foreground/50" />
-              )}
-            </div>
+            <p className="text-[11px] font-medium leading-tight truncate">{title}</p>
+            <span className="text-[9px] text-muted-foreground">{modules.length} modules</span>
           </div>
         </CardContent>
       </Card>
