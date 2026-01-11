@@ -195,7 +195,7 @@ export function TelemedicineWorkflow({
   }, []);
 
   // Handle referral submission (Stage 2 → 3)
-  const handleReferralSubmit = (pkg: any) => {
+  const handleReferralSubmit = async (pkg: any) => {
     // Convert the builder output to our ReferralPackage type
     const fullPackage: ReferralPackage = {
       id: `REF-${Date.now()}`,
@@ -245,11 +245,42 @@ export function TelemedicineWorkflow({
         sentAt: new Date().toISOString(),
       },
     };
+
     setReferralPackage(fullPackage);
     setCurrentStage(3);
     toast.success("Referral package sent successfully");
-    
-    // Simulate routing delay then advance
+
+    // Create a backend session so Stage 4 can show live status updates.
+    const targetType = (() => {
+      switch (pkg.routingType) {
+        case "practitioner":
+          return "provider" as const;
+        case "facility-service":
+        case "workspace":
+          return "facility" as const;
+        case "pool":
+          return "pool" as const;
+        case "on-call":
+          return "on_call" as const;
+        default:
+          return "provider" as const;
+      }
+    })();
+
+    await createSession({
+      patientId: patientId || "",
+      mode: (pkg.preferredMode || "async"),
+      urgency: (pkg.urgency || "routine"),
+      targetType,
+      targetId: pkg.routingTarget || "",
+      targetName: pkg.routingTargetName || "",
+      reasonForConsult: pkg.clinicalQuestion || pkg.letterContent || "Teleconsult request",
+      clinicalQuestions: pkg.presentingProblems || [],
+      scheduledAt: pkg.scheduledAt,
+      isInstant: false,
+    });
+
+    // Routing delay then advance
     setTimeout(() => {
       setCurrentStage(4);
     }, 1500);
