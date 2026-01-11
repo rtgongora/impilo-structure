@@ -282,7 +282,7 @@ export function ClientRegistrationWizard({
       </p>
 
       {/* Step Content */}
-      <div className="min-h-[300px]">
+      <div className="min-h-[300px] max-h-[60vh] overflow-y-auto pr-2">
         {/* Step 1: Identity */}
         {currentStep === 0 && (
           <div className="space-y-4">
