@@ -20,6 +20,7 @@ import {
   CheckCircle,
   ChevronLeft,
   ChevronRight,
+  Briefcase,
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 
@@ -66,6 +67,8 @@ export function ClientRegistrationWizard({
     // Demographics
     place_of_birth: '',
     nationality: 'ZW',
+    employment_status: '',
+    occupation: '',
     
     // Address
     address_line1: '',
@@ -146,6 +149,89 @@ export function ClientRegistrationWizard({
     'Mashonaland East', 'Mashonaland West', 'Masvingo',
     'Matabeleland North', 'Matabeleland South', 'Midlands',
   ];
+
+  const employmentStatuses = [
+    { value: 'employed', label: 'Employed (Full-time)' },
+    { value: 'employed_part_time', label: 'Employed (Part-time)' },
+    { value: 'self_employed', label: 'Self-Employed' },
+    { value: 'unemployed', label: 'Unemployed' },
+    { value: 'student', label: 'Student' },
+    { value: 'retired', label: 'Retired' },
+    { value: 'homemaker', label: 'Homemaker' },
+    { value: 'disabled', label: 'Unable to Work (Disability)' },
+    { value: 'informal', label: 'Informal Sector' },
+    { value: 'other', label: 'Other' },
+  ];
+
+  const occupations = [
+    // Healthcare
+    { value: 'doctor', label: 'Doctor / Physician', category: 'Healthcare' },
+    { value: 'nurse', label: 'Nurse', category: 'Healthcare' },
+    { value: 'pharmacist', label: 'Pharmacist', category: 'Healthcare' },
+    { value: 'lab_technician', label: 'Laboratory Technician', category: 'Healthcare' },
+    { value: 'community_health_worker', label: 'Community Health Worker', category: 'Healthcare' },
+    { value: 'midwife', label: 'Midwife', category: 'Healthcare' },
+    // Education
+    { value: 'teacher', label: 'Teacher', category: 'Education' },
+    { value: 'lecturer', label: 'Lecturer / Professor', category: 'Education' },
+    { value: 'education_admin', label: 'Education Administrator', category: 'Education' },
+    // Agriculture
+    { value: 'farmer', label: 'Farmer', category: 'Agriculture' },
+    { value: 'farm_worker', label: 'Farm Worker', category: 'Agriculture' },
+    { value: 'agricultural_extension', label: 'Agricultural Extension Officer', category: 'Agriculture' },
+    // Business & Finance
+    { value: 'accountant', label: 'Accountant', category: 'Business & Finance' },
+    { value: 'banker', label: 'Banker', category: 'Business & Finance' },
+    { value: 'business_owner', label: 'Business Owner', category: 'Business & Finance' },
+    { value: 'sales_representative', label: 'Sales Representative', category: 'Business & Finance' },
+    { value: 'shop_keeper', label: 'Shop Keeper / Vendor', category: 'Business & Finance' },
+    // Trades & Construction
+    { value: 'carpenter', label: 'Carpenter', category: 'Trades & Construction' },
+    { value: 'electrician', label: 'Electrician', category: 'Trades & Construction' },
+    { value: 'plumber', label: 'Plumber', category: 'Trades & Construction' },
+    { value: 'builder', label: 'Builder / Mason', category: 'Trades & Construction' },
+    { value: 'mechanic', label: 'Mechanic', category: 'Trades & Construction' },
+    { value: 'welder', label: 'Welder', category: 'Trades & Construction' },
+    // Transport
+    { value: 'driver', label: 'Driver', category: 'Transport' },
+    { value: 'pilot', label: 'Pilot', category: 'Transport' },
+    { value: 'transport_operator', label: 'Transport Operator', category: 'Transport' },
+    // Public Service
+    { value: 'civil_servant', label: 'Civil Servant', category: 'Public Service' },
+    { value: 'police_officer', label: 'Police Officer', category: 'Public Service' },
+    { value: 'military', label: 'Military Personnel', category: 'Public Service' },
+    { value: 'social_worker', label: 'Social Worker', category: 'Public Service' },
+    // Legal
+    { value: 'lawyer', label: 'Lawyer / Attorney', category: 'Legal' },
+    { value: 'magistrate', label: 'Magistrate / Judge', category: 'Legal' },
+    // IT & Technology
+    { value: 'software_developer', label: 'Software Developer', category: 'IT & Technology' },
+    { value: 'it_technician', label: 'IT Technician', category: 'IT & Technology' },
+    // Services
+    { value: 'domestic_worker', label: 'Domestic Worker', category: 'Services' },
+    { value: 'security_guard', label: 'Security Guard', category: 'Services' },
+    { value: 'hairdresser', label: 'Hairdresser / Barber', category: 'Services' },
+    { value: 'chef', label: 'Chef / Cook', category: 'Services' },
+    { value: 'cleaner', label: 'Cleaner', category: 'Services' },
+    // Mining
+    { value: 'miner', label: 'Miner', category: 'Mining' },
+    { value: 'mining_engineer', label: 'Mining Engineer', category: 'Mining' },
+    // Arts & Media
+    { value: 'journalist', label: 'Journalist', category: 'Arts & Media' },
+    { value: 'artist', label: 'Artist', category: 'Arts & Media' },
+    { value: 'musician', label: 'Musician', category: 'Arts & Media' },
+    // Other
+    { value: 'clergy', label: 'Clergy / Religious Leader', category: 'Other' },
+    { value: 'artisan', label: 'Artisan / Craftsperson', category: 'Other' },
+    { value: 'other', label: 'Other (Not Listed)', category: 'Other' },
+  ];
+
+  // Group occupations by category
+  const occupationsByCategory = occupations.reduce((acc, occ) => {
+    if (!acc[occ.category]) acc[occ.category] = [];
+    acc[occ.category].push(occ);
+    return acc;
+  }, {} as Record<string, typeof occupations>);
 
   const canProceed = () => {
     switch (currentStep) {
@@ -277,78 +363,143 @@ export function ClientRegistrationWizard({
         {/* Step 2: Demographics */}
         {currentStep === 1 && (
           <div className="space-y-4">
-            <div>
-              <Label>Place of Birth</Label>
-              <Input
-                placeholder="City or village of birth"
-                value={formData.place_of_birth}
-                onChange={(e) => updateField('place_of_birth', e.target.value)}
-              />
-            </div>
-            <div>
-              <Label>Nationality</Label>
-              <Select value={formData.nationality} onValueChange={(v) => updateField('nationality', v)}>
-                <SelectTrigger>
-                  <SelectValue placeholder="Select nationality" />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="ZW">Zimbabwe</SelectItem>
-                  <SelectItem value="ZA">South Africa</SelectItem>
-                  <SelectItem value="MZ">Mozambique</SelectItem>
-                  <SelectItem value="ZM">Zambia</SelectItem>
-                  <SelectItem value="BW">Botswana</SelectItem>
-                  <SelectItem value="MW">Malawi</SelectItem>
-                  <SelectItem value="OTHER">Other</SelectItem>
-                </SelectContent>
-              </Select>
-            </div>
-            <div>
-              <Label>Address Line 1</Label>
-              <Input
-                placeholder="Street address or stand number"
-                value={formData.address_line1}
-                onChange={(e) => updateField('address_line1', e.target.value)}
-              />
-            </div>
             <div className="grid grid-cols-2 gap-4">
               <div>
-                <Label>Village/Suburb</Label>
+                <Label>Place of Birth</Label>
                 <Input
-                  placeholder="Village or suburb"
-                  value={formData.village}
-                  onChange={(e) => updateField('village', e.target.value)}
+                  placeholder="City or village of birth"
+                  value={formData.place_of_birth}
+                  onChange={(e) => updateField('place_of_birth', e.target.value)}
                 />
               </div>
               <div>
-                <Label>Ward</Label>
-                <Input
-                  placeholder="Ward"
-                  value={formData.ward}
-                  onChange={(e) => updateField('ward', e.target.value)}
-                />
-              </div>
-            </div>
-            <div className="grid grid-cols-2 gap-4">
-              <div>
-                <Label>District</Label>
-                <Input
-                  placeholder="District"
-                  value={formData.district}
-                  onChange={(e) => updateField('district', e.target.value)}
-                />
-              </div>
-              <div>
-                <Label>Province</Label>
-                <Select value={formData.province} onValueChange={(v) => updateField('province', v)}>
+                <Label>Nationality</Label>
+                <Select value={formData.nationality} onValueChange={(v) => updateField('nationality', v)}>
                   <SelectTrigger>
-                    <SelectValue placeholder="Select province" />
+                    <SelectValue placeholder="Select nationality" />
                   </SelectTrigger>
                   <SelectContent>
-                    {provinces.map(p => (
-                      <SelectItem key={p} value={p}>{p}</SelectItem>
-                    ))}
+                    <SelectItem value="ZW">Zimbabwe</SelectItem>
+                    <SelectItem value="ZA">South Africa</SelectItem>
+                    <SelectItem value="MZ">Mozambique</SelectItem>
+                    <SelectItem value="ZM">Zambia</SelectItem>
+                    <SelectItem value="BW">Botswana</SelectItem>
+                    <SelectItem value="MW">Malawi</SelectItem>
+                    <SelectItem value="OTHER">Other</SelectItem>
                   </SelectContent>
                 </Select>
+              </div>
+            </div>
+
+            {/* Employment Status & Occupation */}
+            <div className="border-t pt-4 mt-4">
+              <div className="flex items-center gap-2 mb-3">
+                <Briefcase className="h-4 w-4 text-muted-foreground" />
+                <Label className="text-sm font-medium">Employment Information</Label>
+              </div>
+              <div className="grid grid-cols-2 gap-4">
+                <div>
+                  <Label>Employment Status</Label>
+                  <Select 
+                    value={formData.employment_status} 
+                    onValueChange={(v) => updateField('employment_status', v)}
+                  >
+                    <SelectTrigger>
+                      <SelectValue placeholder="Select employment status" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      {employmentStatuses.map(status => (
+                        <SelectItem key={status.value} value={status.value}>
+                          {status.label}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                </div>
+                <div>
+                  <Label>Occupation</Label>
+                  <Select 
+                    value={formData.occupation} 
+                    onValueChange={(v) => updateField('occupation', v)}
+                  >
+                    <SelectTrigger>
+                      <SelectValue placeholder="Select occupation" />
+                    </SelectTrigger>
+                    <SelectContent className="max-h-[300px]">
+                      {Object.entries(occupationsByCategory).map(([category, occs]) => (
+                        <div key={category}>
+                          <div className="px-2 py-1.5 text-xs font-semibold text-muted-foreground bg-muted/50 sticky top-0">
+                            {category}
+                          </div>
+                          {occs.map(occ => (
+                            <SelectItem key={occ.value} value={occ.value}>
+                              {occ.label}
+                            </SelectItem>
+                          ))}
+                        </div>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                </div>
+              </div>
+            </div>
+
+            {/* Address Section */}
+            <div className="border-t pt-4 mt-4">
+              <div className="flex items-center gap-2 mb-3">
+                <MapPin className="h-4 w-4 text-muted-foreground" />
+                <Label className="text-sm font-medium">Address</Label>
+              </div>
+              <div className="space-y-4">
+                <div>
+                  <Label>Address Line 1</Label>
+                  <Input
+                    placeholder="Street address or stand number"
+                    value={formData.address_line1}
+                    onChange={(e) => updateField('address_line1', e.target.value)}
+                  />
+                </div>
+                <div className="grid grid-cols-2 gap-4">
+                  <div>
+                    <Label>Village/Suburb</Label>
+                    <Input
+                      placeholder="Village or suburb"
+                      value={formData.village}
+                      onChange={(e) => updateField('village', e.target.value)}
+                    />
+                  </div>
+                  <div>
+                    <Label>Ward</Label>
+                    <Input
+                      placeholder="Ward"
+                      value={formData.ward}
+                      onChange={(e) => updateField('ward', e.target.value)}
+                    />
+                  </div>
+                </div>
+                <div className="grid grid-cols-2 gap-4">
+                  <div>
+                    <Label>District</Label>
+                    <Input
+                      placeholder="District"
+                      value={formData.district}
+                      onChange={(e) => updateField('district', e.target.value)}
+                    />
+                  </div>
+                  <div>
+                    <Label>Province</Label>
+                    <Select value={formData.province} onValueChange={(v) => updateField('province', v)}>
+                      <SelectTrigger>
+                        <SelectValue placeholder="Select province" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        {provinces.map(p => (
+                          <SelectItem key={p} value={p}>{p}</SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                  </div>
+                </div>
               </div>
             </div>
           </div>
@@ -490,6 +641,22 @@ export function ClientRegistrationWizard({
                 <div>
                   <p className="text-muted-foreground">Phone</p>
                   <p className="font-medium">{formData.phone_primary || 'Not provided'}</p>
+                </div>
+                <div>
+                  <p className="text-muted-foreground">Employment Status</p>
+                  <p className="font-medium">
+                    {formData.employment_status 
+                      ? employmentStatuses.find(s => s.value === formData.employment_status)?.label 
+                      : 'Not provided'}
+                  </p>
+                </div>
+                <div>
+                  <p className="text-muted-foreground">Occupation</p>
+                  <p className="font-medium">
+                    {formData.occupation 
+                      ? occupations.find(o => o.value === formData.occupation)?.label 
+                      : 'Not provided'}
+                  </p>
                 </div>
                 <div>
                   <p className="text-muted-foreground">Province</p>
