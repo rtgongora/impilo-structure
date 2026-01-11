@@ -686,9 +686,9 @@ export default function ModuleHome() {
                 </div>
               </div>
 
-              {/* Row 4: Module Categories - Fill remaining space */}
-              <div className="flex-1 min-h-0">
-                <div className="grid grid-cols-4 sm:grid-cols-6 lg:grid-cols-6 gap-1.5 h-full auto-rows-fr">
+              {/* Row 4: Module Categories */}
+              <div className="flex-shrink-0">
+                <div className="grid grid-cols-4 sm:grid-cols-6 gap-1">
                   {visibleCategories.map((category) => (
                     <ExpandableCategoryCard
                       key={category.id}
