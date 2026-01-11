@@ -44,13 +44,16 @@ import { useReferralPackageBuilder } from "@/hooks/useReferralPackageBuilder";
 import type { TelemedicineMode, ReferralUrgency } from "@/types/telehealth";
 
 interface ReferralPackageBuilderDialogProps {
-  isOpen: boolean;
-  onClose: () => void;
+  isOpen?: boolean;
+  open?: boolean;
+  onClose?: () => void;
+  onOpenChange?: (open: boolean) => void;
   patientId: string;
   patientHID: string;
   linkedSessionId?: string;
   linkedSessionMode?: TelemedicineMode;
   onPackageSent?: (referralId: string, link: string) => void;
+  onReferralCreated?: (referralId: string) => void;
   prefillContext?: {
     chiefComplaint?: string;
     discussionSummary?: string;
@@ -60,14 +63,27 @@ interface ReferralPackageBuilderDialogProps {
 
 export function ReferralPackageBuilderDialog({
   isOpen,
+  open,
   onClose,
+  onOpenChange,
   patientId,
   patientHID,
   linkedSessionId,
   linkedSessionMode,
   onPackageSent,
+  onReferralCreated,
   prefillContext,
 }: ReferralPackageBuilderDialogProps) {
+  // Support both prop patterns
+  const dialogOpen = open ?? isOpen ?? false;
+  const handleClose = () => {
+    onClose?.();
+    onOpenChange?.(false);
+  };
+  const handleReferralSuccess = (referralId: string, link: string) => {
+    onPackageSent?.(referralId, link);
+    onReferralCreated?.(referralId);
+  };
   const {
     draft,
     isSaving,
@@ -129,12 +145,12 @@ export function ReferralPackageBuilderDialog({
   const handleSendPackage = async () => {
     const pkg = await sendPackage();
     if (pkg && generatedLink) {
-      onPackageSent?.(pkg.id, generatedLink);
+      handleReferralSuccess(pkg.id, generatedLink);
     }
   };
 
   return (
-    <Dialog open={isOpen} onOpenChange={onClose}>
+    <Dialog open={dialogOpen} onOpenChange={(v) => !v && handleClose()}>
       <DialogContent className="sm:max-w-2xl max-h-[90vh] flex flex-col">
         <DialogHeader>
           <DialogTitle className="flex items-center gap-2">

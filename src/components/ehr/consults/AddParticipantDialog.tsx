@@ -36,9 +36,12 @@ import { toast } from "sonner";
 import type { ParticipantInvite } from "@/hooks/useMultiParticipantSession";
 
 interface AddParticipantDialogProps {
-  isOpen: boolean;
-  onClose: () => void;
-  onAddParticipant: (invite: ParticipantInvite) => Promise<boolean>;
+  isOpen?: boolean;
+  open?: boolean;
+  onClose?: () => void;
+  onOpenChange?: (open: boolean) => void;
+  onAddParticipant?: (invite: ParticipantInvite) => Promise<boolean>;
+  onInvite?: (invite: ParticipantInvite) => Promise<void>;
   currentParticipantCount: number;
   maxParticipants: number;
 }
@@ -59,11 +62,30 @@ const SPECIALTIES = [
 
 export function AddParticipantDialog({
   isOpen,
+  open,
   onClose,
+  onOpenChange,
   onAddParticipant,
+  onInvite,
   currentParticipantCount,
   maxParticipants,
 }: AddParticipantDialogProps) {
+  // Support both prop patterns
+  const dialogOpen = open ?? isOpen ?? false;
+  const handleClose = () => {
+    onClose?.();
+    onOpenChange?.(false);
+  };
+  const handleAddParticipant = async (invite: ParticipantInvite) => {
+    if (onAddParticipant) {
+      return onAddParticipant(invite);
+    }
+    if (onInvite) {
+      await onInvite(invite);
+      return true;
+    }
+    return false;
+  };
   const [searchType, setSearchType] = useState<'provider' | 'specialty' | 'on_call'>('provider');
   const [searchQuery, setSearchQuery] = useState("");
   const [selectedProvider, setSelectedProvider] = useState<typeof MOCK_PROVIDERS[0] | null>(null);
@@ -115,7 +137,7 @@ export function AddParticipantDialog({
     }
 
     setIsInviting(true);
-    const success = await onAddParticipant(invite);
+    const success = await handleAddParticipant(invite);
     setIsInviting(false);
 
     if (success) {
@@ -123,12 +145,12 @@ export function AddParticipantDialog({
       setSelectedSpecialty("");
       setInviteReason("");
       setIsUrgent(false);
-      onClose();
+      handleClose();
     }
   };
 
   return (
-    <Dialog open={isOpen} onOpenChange={onClose}>
+    <Dialog open={dialogOpen} onOpenChange={(v) => !v && handleClose()}>
       <DialogContent className="sm:max-w-lg">
         <DialogHeader>
           <DialogTitle className="flex items-center gap-2">
