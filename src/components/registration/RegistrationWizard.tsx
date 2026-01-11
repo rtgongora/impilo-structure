@@ -20,7 +20,9 @@ import {
   BadgeCheck,
   Copy,
   CheckCircle2,
-  Search
+  Search,
+  Building2,
+  Trees
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -33,6 +35,7 @@ import { Badge } from "@/components/ui/badge";
 import { BiometricCapture, BiometricData, BiometricSummary, BiometricType } from "./BiometricCapture";
 import { ConsentCapture, ConsentData } from "./ConsentCapture";
 import { DuplicateSearchStep } from "./DuplicateSearchStep";
+import { AddressCapture, AddressData, initialAddressData, formatAddress } from "./AddressCapture";
 import { cn } from "@/lib/utils";
 import { supabase } from "@/integrations/supabase/client";
 import { ClientRegistryService, BiometricUtils } from "@/services/registryServices";
@@ -71,18 +74,13 @@ interface ClientData {
   religion: string;
   educationLevel: string;
   
-  // Contact / Address
+  // Contact
   phone: string;
   alternatePhone: string;
   email: string;
-  addressLine1: string;
-  addressLine2: string;
-  suburb: string;
-  city: string;
-  district: string;
-  province: string;
-  postalCode: string;
-  country: string;
+  
+  // Address (Zimbabwe model)
+  address: AddressData;
   
   // Identity
   idType: string;
@@ -117,14 +115,7 @@ const initialClientData: ClientData = {
   phone: "",
   alternatePhone: "",
   email: "",
-  addressLine1: "",
-  addressLine2: "",
-  suburb: "",
-  city: "",
-  district: "",
-  province: "",
-  postalCode: "",
-  country: "",
+  address: initialAddressData,
   idType: "",
   idNumber: "",
   nationalId: "",
@@ -206,10 +197,12 @@ export function RegistrationWizard({ onComplete, onCancel }: RegistrationWizardP
           phone_primary: clientData.phone,
           phone_secondary: clientData.alternatePhone || null,
           email: clientData.email || null,
-          address_line1: clientData.addressLine1,
-          city: clientData.city,
-          province: clientData.province || clientData.district,
-          postal_code: clientData.postalCode || null,
+          address_line1: clientData.address.settlementType === 'urban' 
+            ? `${clientData.address.houseNumber} ${clientData.address.streetName} ${clientData.address.streetType}`.trim()
+            : clientData.address.villageName || clientData.address.householdName || '',
+          city: clientData.address.townCity || clientData.address.villageName || '',
+          province: clientData.address.province || clientData.address.district,
+          postal_code: null,
           emergency_contact_name: clientData.nokName,
           emergency_contact_phone: clientData.nokPhone,
           emergency_contact_relationship: clientData.nokRelationship,
@@ -616,6 +609,7 @@ export function RegistrationWizard({ onComplete, onCancel }: RegistrationWizardP
       case "contact":
         return (
           <div className="space-y-6">
+            {/* Phone & Email */}
             <div className="grid grid-cols-2 gap-4">
               <div className="space-y-2">
                 <Label htmlFor="phone">Phone Number *</Label>
@@ -660,108 +654,16 @@ export function RegistrationWizard({ onComplete, onCancel }: RegistrationWizardP
               </div>
             </div>
             
-            <div className="grid grid-cols-2 gap-4">
-              <div className="space-y-2">
-                <Label htmlFor="addressLine1">Street Address Line 1 *</Label>
-                <div className="relative">
-                  <Home className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
-                  <Input
-                    id="addressLine1"
-                    value={clientData.addressLine1}
-                    onChange={(e) => updateField("addressLine1", e.target.value)}
-                    placeholder="123 Main Street"
-                    className="pl-10"
-                  />
-                </div>
-              </div>
-              <div className="space-y-2">
-                <Label htmlFor="addressLine2">Street Address Line 2</Label>
-                <Input
-                  id="addressLine2"
-                  value={clientData.addressLine2}
-                  onChange={(e) => updateField("addressLine2", e.target.value)}
-                  placeholder="Apartment, suite, unit, etc."
-                />
-              </div>
-            </div>
-            
-            <div className="grid grid-cols-3 gap-4">
-              <div className="space-y-2">
-                <Label htmlFor="suburb">Suburb / Area</Label>
-                <Input
-                  id="suburb"
-                  value={clientData.suburb}
-                  onChange={(e) => updateField("suburb", e.target.value)}
-                  placeholder="Avondale"
-                />
-              </div>
-              <div className="space-y-2">
-                <Label htmlFor="city">City/Town *</Label>
-                <Input
-                  id="city"
-                  value={clientData.city}
-                  onChange={(e) => updateField("city", e.target.value)}
-                  placeholder="Harare"
-                />
-              </div>
-              <div className="space-y-2">
-                <Label htmlFor="district">District</Label>
-                <Input
-                  id="district"
-                  value={clientData.district}
-                  onChange={(e) => updateField("district", e.target.value)}
-                  placeholder="Harare Urban"
-                />
-              </div>
-            </div>
-            
-            <div className="grid grid-cols-3 gap-4">
-              <div className="space-y-2">
-                <Label htmlFor="province">Province *</Label>
-                <Select value={clientData.province} onValueChange={(v) => updateField("province", v)}>
-                  <SelectTrigger>
-                    <SelectValue placeholder="Select province" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="harare">Harare</SelectItem>
-                    <SelectItem value="bulawayo">Bulawayo</SelectItem>
-                    <SelectItem value="mashonaland_central">Mashonaland Central</SelectItem>
-                    <SelectItem value="mashonaland_east">Mashonaland East</SelectItem>
-                    <SelectItem value="mashonaland_west">Mashonaland West</SelectItem>
-                    <SelectItem value="manicaland">Manicaland</SelectItem>
-                    <SelectItem value="masvingo">Masvingo</SelectItem>
-                    <SelectItem value="midlands">Midlands</SelectItem>
-                    <SelectItem value="matabeleland_north">Matabeleland North</SelectItem>
-                    <SelectItem value="matabeleland_south">Matabeleland South</SelectItem>
-                  </SelectContent>
-                </Select>
-              </div>
-              <div className="space-y-2">
-                <Label htmlFor="postal">Postal Code</Label>
-                <Input
-                  id="postal"
-                  value={clientData.postalCode}
-                  onChange={(e) => updateField("postalCode", e.target.value)}
-                  placeholder="00263"
-                />
-              </div>
-              <div className="space-y-2">
-                <Label htmlFor="country">Country *</Label>
-                <Select value={clientData.country} onValueChange={(v) => updateField("country", v)}>
-                  <SelectTrigger>
-                    <SelectValue placeholder="Select country" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="ZW">Zimbabwe</SelectItem>
-                    <SelectItem value="ZA">South Africa</SelectItem>
-                    <SelectItem value="BW">Botswana</SelectItem>
-                    <SelectItem value="MZ">Mozambique</SelectItem>
-                    <SelectItem value="ZM">Zambia</SelectItem>
-                    <SelectItem value="MW">Malawi</SelectItem>
-                    <SelectItem value="OTHER">Other</SelectItem>
-                  </SelectContent>
-                </Select>
-              </div>
+            {/* Address Section with Zimbabwe Model */}
+            <div className="border-t pt-6">
+              <h4 className="font-medium mb-4 flex items-center gap-2">
+                <MapPin className="w-4 h-4" />
+                Physical Address
+              </h4>
+              <AddressCapture
+                data={clientData.address}
+                onChange={(newAddress) => setClientData(prev => ({ ...prev, address: newAddress }))}
+              />
             </div>
             
             {/* Next of Kin */}
@@ -798,12 +700,16 @@ export function RegistrationWizard({ onComplete, onCancel }: RegistrationWizardP
                 </div>
                 <div className="space-y-2">
                   <Label htmlFor="nokPhone">Phone Number *</Label>
-                  <Input
-                    id="nokPhone"
-                    value={clientData.nokPhone}
-                    onChange={(e) => updateField("nokPhone", e.target.value)}
-                    placeholder="+263 77 123 4567"
-                  />
+                  <div className="relative">
+                    <Phone className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
+                    <Input
+                      id="nokPhone"
+                      value={clientData.nokPhone}
+                      onChange={(e) => updateField("nokPhone", e.target.value)}
+                      placeholder="+263 77 123 4567"
+                      className="pl-10"
+                    />
+                  </div>
                 </div>
               </div>
             </div>
@@ -1009,9 +915,7 @@ export function RegistrationWizard({ onComplete, onCancel }: RegistrationWizardP
                 <div className="col-span-2">
                   <span className="text-muted-foreground">Address:</span>
                   <p className="font-medium">
-                    {clientData.addressLine1 
-                      ? `${clientData.addressLine1}${clientData.suburb ? `, ${clientData.suburb}` : ''}, ${clientData.city}${clientData.province ? `, ${clientData.province}` : ''}`
-                      : "Not provided"}
+                    {formatAddress(clientData.address)}
                   </p>
                 </div>
               </CardContent>
