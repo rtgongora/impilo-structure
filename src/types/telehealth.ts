@@ -14,7 +14,9 @@ export type ReferralStatus =
   | 'accepted'     // Specialist has taken ownership
   | 'in_progress'  // Active consultation underway
   | 'completed'    // Consultation Response submitted
-  | 'cancelled';   // Withdrawn with reason
+  | 'cancelled'    // Withdrawn with reason
+  | 'declined'     // Specialist declined the referral
+  | 'routed';      // Routed to another facility/provider
 
 export type ReferralUrgency = 'routine' | 'urgent' | 'stat' | 'emergency';
 
