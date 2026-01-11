@@ -17,6 +17,7 @@ import { ProfessionalPages } from "@/components/social/ProfessionalPages";
 import { CrowdfundingCampaigns } from "@/components/social/CrowdfundingCampaigns";
 import { NewsFeedWidget } from "@/components/social/NewsFeedWidget";
 import { PatientPortal } from "@/components/portal/PatientPortal";
+import { ExpandableCategoryCard } from "@/components/home/ExpandableCategoryCard";
 import { 
   Users,
   Bed,
@@ -70,6 +71,38 @@ import {
 import { Dialog, DialogContent, DialogTrigger } from "@/components/ui/dialog";
 import { EmergencyHub } from "@/components/emergency/EmergencyHub";
 import impiloLogo from "@/assets/impilo-logo.png";
+
+// Category icons mapping for expandable cards
+const categoryIcons: Record<string, React.ComponentType<{ className?: string }>> = {
+  "clinical": Stethoscope,
+  "consults-referrals": Video,
+  "orders": ShoppingCart,
+  "scheduling": Calendar,
+  "marketplace": Store,
+  "finance": DollarSign,
+  "inventory": Package,
+  "identity": Shield,
+  "registries": Database,
+  "admin": Settings,
+  "clinical-tools": Activity,
+  "support": HelpCircle,
+};
+
+// Category colors mapping
+const categoryColors: Record<string, string> = {
+  "clinical": "bg-blue-500",
+  "consults-referrals": "bg-teal-500",
+  "orders": "bg-green-500",
+  "scheduling": "bg-cyan-500",
+  "marketplace": "bg-purple-500",
+  "finance": "bg-emerald-500",
+  "inventory": "bg-orange-500",
+  "identity": "bg-indigo-500",
+  "registries": "bg-rose-500",
+  "admin": "bg-slate-600",
+  "clinical-tools": "bg-pink-500",
+  "support": "bg-teal-500",
+};
 
 interface ModuleItem {
   id: string;
@@ -775,46 +808,21 @@ export default function ModuleHome() {
               </div>
             </div>
 
-            {/* Module Categories */}
-            <div className="space-y-4 pb-4">
+            {/* Module Categories - Expandable Cards */}
+            <div className="space-y-3 pb-4">
               {visibleCategories.map((category) => (
-                <section key={category.id}>
-                  <div className="mb-2">
-                    <div className="flex items-center gap-2">
-                      <h3 className="text-base font-semibold">{category.title}</h3>
-                      {category.roles && category.roles.length > 0 && (
-                        <Badge variant="outline" className="text-xs px-1.5 py-0 h-5 border-muted-foreground/30">
-                          <Lock className="h-3 w-3 mr-0.5" />
-                        </Badge>
-                      )}
-                    </div>
-                    <p className="text-sm text-muted-foreground">{category.description}</p>
-                  </div>
-                  <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-2">
-                    {category.modules.map((module) => (
-                      <Card
-                        key={module.id}
-                        className="cursor-pointer hover:shadow-md hover:border-primary/50 transition-all group"
-                        onClick={() => handleModuleClick(module.path)}
-                      >
-                        <CardContent className="p-3">
-                          <div className="flex items-center gap-3">
-                            <div className={`w-10 h-10 shrink-0 rounded-lg ${module.color} flex items-center justify-center`}>
-                              <module.icon className="h-5 w-5 text-white" />
-                            </div>
-                            <div className="min-w-0 flex-1">
-                              <p className="text-base font-medium truncate">{module.label}</p>
-                              <p className="text-sm text-muted-foreground truncate">{module.description}</p>
-                            </div>
-                            {module.roles && module.roles.length > 0 && (
-                              <Lock className="h-3.5 w-3.5 text-muted-foreground/50 shrink-0" />
-                            )}
-                          </div>
-                        </CardContent>
-                      </Card>
-                    ))}
-                  </div>
-                </section>
+                <ExpandableCategoryCard
+                  key={category.id}
+                  id={category.id}
+                  title={category.title}
+                  description={category.description}
+                  modules={category.modules}
+                  icon={categoryIcons[category.id] || Stethoscope}
+                  color={categoryColors[category.id] || "bg-primary"}
+                  roles={category.roles}
+                  onModuleClick={handleModuleClick}
+                  defaultExpanded={false}
+                />
               ))}
             </div>
           </TabsContent>
