@@ -61,6 +61,7 @@ interface ClientData {
   dateOfBirth: string;
   gender: string;
   maritalStatus: string;
+  employmentStatus: string;
   occupation: string;
   
   // Contact
@@ -96,6 +97,7 @@ const initialClientData: ClientData = {
   dateOfBirth: "",
   gender: "",
   maritalStatus: "",
+  employmentStatus: "",
   occupation: "",
   phone: "",
   alternatePhone: "",
@@ -331,7 +333,7 @@ export function RegistrationWizard({ onComplete, onCancel }: RegistrationWizardP
               </div>
             </div>
             
-            <div className="grid grid-cols-2 gap-4">
+            <div className="grid grid-cols-3 gap-4">
               <div className="space-y-2">
                 <Label htmlFor="marital">Marital Status</Label>
                 <Select value={clientData.maritalStatus} onValueChange={(v) => updateField("maritalStatus", v)}>
@@ -347,13 +349,98 @@ export function RegistrationWizard({ onComplete, onCancel }: RegistrationWizardP
                 </Select>
               </div>
               <div className="space-y-2">
+                <Label htmlFor="employmentStatus">Employment Status</Label>
+                <Select value={clientData.employmentStatus} onValueChange={(v) => updateField("employmentStatus", v)}>
+                  <SelectTrigger>
+                    <SelectValue placeholder="Select status" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="employed">Employed (Full-time)</SelectItem>
+                    <SelectItem value="employed_part_time">Employed (Part-time)</SelectItem>
+                    <SelectItem value="self_employed">Self-Employed</SelectItem>
+                    <SelectItem value="unemployed">Unemployed</SelectItem>
+                    <SelectItem value="student">Student</SelectItem>
+                    <SelectItem value="retired">Retired</SelectItem>
+                    <SelectItem value="homemaker">Homemaker</SelectItem>
+                    <SelectItem value="disabled">Unable to Work (Disability)</SelectItem>
+                    <SelectItem value="informal">Informal Sector</SelectItem>
+                    <SelectItem value="other">Other</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
+              <div className="space-y-2">
                 <Label htmlFor="occupation">Occupation</Label>
-                <Input
-                  id="occupation"
-                  value={clientData.occupation}
-                  onChange={(e) => updateField("occupation", e.target.value)}
-                  placeholder="Enter occupation"
-                />
+                <Select value={clientData.occupation} onValueChange={(v) => updateField("occupation", v)}>
+                  <SelectTrigger>
+                    <SelectValue placeholder="Select occupation" />
+                  </SelectTrigger>
+                  <SelectContent className="max-h-[300px]">
+                    {/* Healthcare */}
+                    <div className="px-2 py-1.5 text-xs font-semibold text-muted-foreground bg-muted/50 sticky top-0">Healthcare</div>
+                    <SelectItem value="doctor">Doctor / Physician</SelectItem>
+                    <SelectItem value="nurse">Nurse</SelectItem>
+                    <SelectItem value="pharmacist">Pharmacist</SelectItem>
+                    <SelectItem value="lab_technician">Laboratory Technician</SelectItem>
+                    <SelectItem value="community_health_worker">Community Health Worker</SelectItem>
+                    <SelectItem value="midwife">Midwife</SelectItem>
+                    {/* Education */}
+                    <div className="px-2 py-1.5 text-xs font-semibold text-muted-foreground bg-muted/50 sticky top-0">Education</div>
+                    <SelectItem value="teacher">Teacher</SelectItem>
+                    <SelectItem value="lecturer">Lecturer / Professor</SelectItem>
+                    <SelectItem value="education_admin">Education Administrator</SelectItem>
+                    {/* Agriculture */}
+                    <div className="px-2 py-1.5 text-xs font-semibold text-muted-foreground bg-muted/50 sticky top-0">Agriculture</div>
+                    <SelectItem value="farmer">Farmer</SelectItem>
+                    <SelectItem value="farm_worker">Farm Worker</SelectItem>
+                    <SelectItem value="agricultural_extension">Agricultural Extension Officer</SelectItem>
+                    {/* Business & Finance */}
+                    <div className="px-2 py-1.5 text-xs font-semibold text-muted-foreground bg-muted/50 sticky top-0">Business & Finance</div>
+                    <SelectItem value="accountant">Accountant</SelectItem>
+                    <SelectItem value="banker">Banker</SelectItem>
+                    <SelectItem value="business_owner">Business Owner</SelectItem>
+                    <SelectItem value="sales_representative">Sales Representative</SelectItem>
+                    <SelectItem value="shop_keeper">Shop Keeper / Vendor</SelectItem>
+                    {/* Trades & Construction */}
+                    <div className="px-2 py-1.5 text-xs font-semibold text-muted-foreground bg-muted/50 sticky top-0">Trades & Construction</div>
+                    <SelectItem value="carpenter">Carpenter</SelectItem>
+                    <SelectItem value="electrician">Electrician</SelectItem>
+                    <SelectItem value="plumber">Plumber</SelectItem>
+                    <SelectItem value="builder">Builder / Mason</SelectItem>
+                    <SelectItem value="mechanic">Mechanic</SelectItem>
+                    <SelectItem value="welder">Welder</SelectItem>
+                    {/* Transport */}
+                    <div className="px-2 py-1.5 text-xs font-semibold text-muted-foreground bg-muted/50 sticky top-0">Transport</div>
+                    <SelectItem value="driver">Driver</SelectItem>
+                    <SelectItem value="pilot">Pilot</SelectItem>
+                    <SelectItem value="transport_operator">Transport Operator</SelectItem>
+                    {/* Public Service */}
+                    <div className="px-2 py-1.5 text-xs font-semibold text-muted-foreground bg-muted/50 sticky top-0">Public Service</div>
+                    <SelectItem value="civil_servant">Civil Servant</SelectItem>
+                    <SelectItem value="police_officer">Police Officer</SelectItem>
+                    <SelectItem value="soldier">Soldier / Military</SelectItem>
+                    <SelectItem value="firefighter">Firefighter</SelectItem>
+                    {/* Domestic & Service */}
+                    <div className="px-2 py-1.5 text-xs font-semibold text-muted-foreground bg-muted/50 sticky top-0">Domestic & Service</div>
+                    <SelectItem value="domestic_worker">Domestic Worker</SelectItem>
+                    <SelectItem value="gardener">Gardener</SelectItem>
+                    <SelectItem value="security_guard">Security Guard</SelectItem>
+                    <SelectItem value="cleaner">Cleaner</SelectItem>
+                    {/* Mining & Industry */}
+                    <div className="px-2 py-1.5 text-xs font-semibold text-muted-foreground bg-muted/50 sticky top-0">Mining & Industry</div>
+                    <SelectItem value="miner">Miner</SelectItem>
+                    <SelectItem value="factory_worker">Factory Worker</SelectItem>
+                    <SelectItem value="engineer">Engineer</SelectItem>
+                    {/* Other */}
+                    <div className="px-2 py-1.5 text-xs font-semibold text-muted-foreground bg-muted/50 sticky top-0">Other</div>
+                    <SelectItem value="clergy">Clergy / Religious Leader</SelectItem>
+                    <SelectItem value="artist">Artist / Musician</SelectItem>
+                    <SelectItem value="journalist">Journalist / Media</SelectItem>
+                    <SelectItem value="lawyer">Lawyer</SelectItem>
+                    <SelectItem value="informal_trader">Informal Trader</SelectItem>
+                    <SelectItem value="other">Other</SelectItem>
+                    <SelectItem value="not_applicable">Not Applicable</SelectItem>
+                  </SelectContent>
+                </Select>
               </div>
             </div>
           </div>
