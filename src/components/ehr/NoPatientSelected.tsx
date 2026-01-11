@@ -13,6 +13,7 @@ import { Badge } from "@/components/ui/badge";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { Skeleton } from "@/components/ui/skeleton";
 import {
   Users,
   Calendar,
@@ -43,7 +44,9 @@ import {
   Send,
   Inbox,
   AlertOctagon,
+  RefreshCw,
 } from "lucide-react";
+import { useProviderQueues } from "@/hooks/useProviderQueues";
 import { Link, useNavigate } from "react-router-dom";
 import { useShift } from "@/contexts/ShiftContext";
 import impiloLogo from "@/assets/impilo-logo.png";
@@ -120,6 +123,7 @@ export function NoPatientSelected() {
   const navigate = useNavigate();
   const { isOnShift, activeShift } = useShift();
   const [activeTab, setActiveTab] = useState("queues");
+  const { queues, loading: queuesLoading, totalWaiting, refetch: refetchQueues } = useProviderQueues();
 
   const handleCallPatient = (queueId: string) => {
     // In production: call next patient from queue and navigate to encounter
@@ -323,7 +327,7 @@ export function NoPatientSelected() {
                 <TabsTrigger value="queues" className="gap-1.5 whitespace-nowrap">
                   <Users className="h-4 w-4" />
                   Queues
-                  <Badge variant="secondary" className="ml-1">{mockQueueData.reduce((sum, q) => sum + q.waiting, 0)}</Badge>
+                  <Badge variant="secondary" className="ml-1">{totalWaiting}</Badge>
                 </TabsTrigger>
                 <TabsTrigger value="results" className="gap-1.5 whitespace-nowrap">
                   <FlaskConical className="h-4 w-4" />
@@ -364,73 +368,124 @@ export function NoPatientSelected() {
 
             {/* Queues Tab */}
             <TabsContent value="queues" className="flex-1 mt-4 overflow-auto">
-              <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-4">
-                {mockQueueData.map((queue) => (
-                  <Card 
-                    key={queue.id} 
-                    className={cn(
-                      "hover:border-primary transition-colors cursor-pointer",
-                      queue.priority === "urgent" && "border-destructive/50 bg-destructive/5"
-                    )}
-                    onClick={() => navigate(`/queue?queue=${queue.id}`)}
-                  >
-                    <CardHeader className="pb-2">
-                      <div className="flex items-center justify-between">
-                        <CardTitle className="text-base font-medium">{queue.name}</CardTitle>
-                        {queue.priority === "urgent" && (
-                          <Badge variant="destructive" className="text-xs">Urgent</Badge>
-                        )}
-                      </div>
-                    </CardHeader>
-                    <CardContent className="space-y-4">
-                      <div className="grid grid-cols-2 gap-4">
-                        <div>
-                          <p className="text-2xl font-bold">{queue.waiting}</p>
-                          <p className="text-xs text-muted-foreground">Waiting</p>
+              <div className="flex items-center justify-between mb-4">
+                <p className="text-sm text-muted-foreground">
+                  {totalWaiting} patient{totalWaiting !== 1 ? 's' : ''} waiting across {queues.length} queue{queues.length !== 1 ? 's' : ''}
+                </p>
+                <Button variant="ghost" size="sm" onClick={() => refetchQueues()}>
+                  <RefreshCw className="h-4 w-4 mr-1" />
+                  Refresh
+                </Button>
+              </div>
+              
+              {queuesLoading ? (
+                <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-4">
+                  {[1, 2, 3].map((i) => (
+                    <Card key={i}>
+                      <CardHeader className="pb-2">
+                        <Skeleton className="h-5 w-32" />
+                      </CardHeader>
+                      <CardContent className="space-y-4">
+                        <div className="grid grid-cols-2 gap-4">
+                          <Skeleton className="h-10 w-16" />
+                          <Skeleton className="h-10 w-16" />
                         </div>
-                        <div>
-                          <p className="text-lg font-medium">{queue.avgWait}</p>
-                          <p className="text-xs text-muted-foreground">Avg Wait</p>
-                        </div>
-                      </div>
-                      
-                      <div className="flex items-center justify-between pt-2 border-t">
-                        <div className="text-sm">
-                          <span className="text-muted-foreground">Next: </span>
-                          <span className="font-medium">{queue.nextPatient}</span>
-                        </div>
-                        <Button 
-                          size="sm" 
-                          onClick={(e) => {
-                            e.stopPropagation();
-                            handleCallPatient(queue.id);
-                          }}
-                          disabled={!isOnShift}
-                        >
-                          Call Next
-                          <ChevronRight className="h-4 w-4 ml-1" />
-                        </Button>
-                      </div>
-                    </CardContent>
-                  </Card>
-                ))}
-
-                {/* Quick Actions Card */}
-                <Card className="border-dashed bg-muted/20">
-                  <CardContent className="p-6 flex flex-col items-center justify-center h-full text-center gap-4">
-                    <div className="h-12 w-12 rounded-full bg-muted flex items-center justify-center">
-                      <Search className="h-6 w-6 text-muted-foreground" />
-                    </div>
-                    <div>
-                      <h3 className="font-medium">Find Patient</h3>
-                      <p className="text-sm text-muted-foreground">Search by name, ID, or MRN</p>
-                    </div>
-                    <Button variant="outline" onClick={() => navigate("/patients")}>
-                      Patient Search
+                        <Skeleton className="h-8 w-full" />
+                      </CardContent>
+                    </Card>
+                  ))}
+                </div>
+              ) : queues.length === 0 ? (
+                <Card className="border-dashed">
+                  <CardContent className="p-8 text-center">
+                    <Users className="h-12 w-12 mx-auto text-muted-foreground mb-4" />
+                    <h3 className="font-medium text-lg mb-2">No Active Queues</h3>
+                    <p className="text-sm text-muted-foreground mb-4">
+                      There are no patients waiting in any queue right now.
+                    </p>
+                    <Button variant="outline" onClick={() => navigate("/queue")}>
+                      Go to Queue Management
                     </Button>
                   </CardContent>
                 </Card>
-              </div>
+              ) : (
+                <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-4">
+                  {queues.map((queue) => (
+                    <Card 
+                      key={queue.id} 
+                      className={cn(
+                        "hover:border-primary transition-colors cursor-pointer",
+                        queue.hasUrgent && "border-destructive/50 bg-destructive/5"
+                      )}
+                      onClick={() => navigate(`/queue?queue=${queue.id}`)}
+                    >
+                      <CardHeader className="pb-2">
+                        <div className="flex items-center justify-between">
+                          <CardTitle className="text-base font-medium">{queue.name}</CardTitle>
+                          {queue.hasUrgent && (
+                            <Badge variant="destructive" className="text-xs">Urgent</Badge>
+                          )}
+                        </div>
+                        {queue.description && (
+                          <CardDescription className="text-xs">{queue.description}</CardDescription>
+                        )}
+                      </CardHeader>
+                      <CardContent className="space-y-4">
+                        <div className="grid grid-cols-3 gap-2">
+                          <div>
+                            <p className="text-2xl font-bold">{queue.waiting}</p>
+                            <p className="text-xs text-muted-foreground">Waiting</p>
+                          </div>
+                          <div>
+                            <p className="text-lg font-medium text-primary">{queue.inService}</p>
+                            <p className="text-xs text-muted-foreground">In Service</p>
+                          </div>
+                          <div>
+                            <p className="text-lg font-medium">
+                              {queue.avgWaitMinutes !== null ? `${queue.avgWaitMinutes}m` : '-'}
+                            </p>
+                            <p className="text-xs text-muted-foreground">Avg Wait</p>
+                          </div>
+                        </div>
+                        
+                        <div className="flex items-center justify-between pt-2 border-t">
+                          <div className="text-sm">
+                            <span className="text-muted-foreground">Next: </span>
+                            <span className="font-medium">{queue.nextPatientName || 'None'}</span>
+                          </div>
+                          <Button 
+                            size="sm" 
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              handleCallPatient(queue.id);
+                            }}
+                            disabled={!isOnShift || queue.waiting === 0}
+                          >
+                            Call Next
+                            <ChevronRight className="h-4 w-4 ml-1" />
+                          </Button>
+                        </div>
+                      </CardContent>
+                    </Card>
+                  ))}
+
+                  {/* Quick Actions Card */}
+                  <Card className="border-dashed bg-muted/20">
+                    <CardContent className="p-6 flex flex-col items-center justify-center h-full text-center gap-4">
+                      <div className="h-12 w-12 rounded-full bg-muted flex items-center justify-center">
+                        <Search className="h-6 w-6 text-muted-foreground" />
+                      </div>
+                      <div>
+                        <h3 className="font-medium">Find Patient</h3>
+                        <p className="text-sm text-muted-foreground">Search by name, ID, or MRN</p>
+                      </div>
+                      <Button variant="outline" onClick={() => navigate("/patients")}>
+                        Patient Search
+                      </Button>
+                    </CardContent>
+                  </Card>
+                </div>
+              )}
             </TabsContent>
 
             {/* Results Tab */}
