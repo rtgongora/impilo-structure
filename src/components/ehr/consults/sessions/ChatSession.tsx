@@ -1,6 +1,7 @@
 /**
  * ChatSession - Text-based instant messaging consultation
  * For quick clinical queries and ongoing text-based discussions
+ * Supports: referral package linking, multi-participant, recording
  */
 import { useState, useRef, useEffect, useCallback } from "react";
 import {
@@ -20,6 +21,9 @@ import {
   MoreVertical,
   ArrowLeft,
   Archive,
+  UserPlus,
+  Link2,
+  CircleDot,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -33,11 +37,13 @@ import {
   DropdownMenuContent,
   DropdownMenuItem,
   DropdownMenuTrigger,
+  DropdownMenuSeparator,
 } from "@/components/ui/dropdown-menu";
 import { format } from "date-fns";
 import { cn } from "@/lib/utils";
 import { toast } from "sonner";
 import type { ReferralPackage, ChatMessage } from "@/types/telehealth";
+import { RecordingIndicator } from "../RecordingIndicator";
 
 interface ChatSessionProps {
   referral: ReferralPackage;
@@ -46,11 +52,14 @@ interface ChatSessionProps {
   onEscalateToAudio?: () => void;
   onComplete: () => void;
   onBack: () => void;
+  onBuildReferral?: () => void;
+  onAddParticipant?: () => void;
 }
 
 interface ExtendedChatMessage extends ChatMessage {
   status?: 'sending' | 'sent' | 'delivered' | 'read';
   attachments?: { name: string; type: string; url: string }[];
+  referralLink?: string;
 }
 
 export function ChatSession({
@@ -60,7 +69,23 @@ export function ChatSession({
   onEscalateToAudio,
   onComplete,
   onBack,
+  onBuildReferral,
+  onAddParticipant,
 }: ChatSessionProps) {
+  // Recording state (auto-enabled for all telemedicine)
+  const [isRecording] = useState(true);
+  const [recordingDuration, setRecordingDuration] = useState(0);
+  
+  useEffect(() => {
+    const timer = setInterval(() => setRecordingDuration(d => d + 1), 1000);
+    return () => clearInterval(timer);
+  }, []);
+  
+  const formatRecordingDuration = (secs: number) => {
+    const m = Math.floor(secs / 60);
+    const s = secs % 60;
+    return `${m}:${s.toString().padStart(2, '0')}`;
+  };
   const [messages, setMessages] = useState<ExtendedChatMessage[]>([
     {
       id: "system-1",
@@ -234,6 +259,23 @@ export function ChatSession({
             </Button>
           )}
 
+          {/* Recording indicator */}
+          <RecordingIndicator
+            isRecording={isRecording}
+            isPaused={false}
+            duration={formatRecordingDuration(recordingDuration)}
+            hasConsent={true}
+            size="sm"
+          />
+
+          {/* Add participant */}
+          {onAddParticipant && (
+            <Button variant="outline" size="sm" onClick={onAddParticipant}>
+              <UserPlus className="h-4 w-4 mr-1" />
+              Add
+            </Button>
+          )}
+
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
               <Button variant="ghost" size="icon">
@@ -241,10 +283,17 @@ export function ChatSession({
               </Button>
             </DropdownMenuTrigger>
             <DropdownMenuContent align="end">
+              {onBuildReferral && (
+                <DropdownMenuItem onClick={onBuildReferral}>
+                  <Link2 className="h-4 w-4 mr-2" />
+                  Build Referral Package
+                </DropdownMenuItem>
+              )}
               <DropdownMenuItem>
                 <Archive className="h-4 w-4 mr-2" />
                 Export Chat Log
               </DropdownMenuItem>
+              <DropdownMenuSeparator />
               <DropdownMenuItem onClick={handleEndChat}>
                 End Chat & Document
               </DropdownMenuItem>
