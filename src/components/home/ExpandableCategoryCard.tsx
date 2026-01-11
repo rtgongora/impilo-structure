@@ -43,24 +43,22 @@ export function ExpandableCategoryCard({
     <>
       {/* Compact Category Card */}
       <Card
-        className="cursor-pointer transition-all duration-200 hover:shadow-md hover:border-primary/50 group h-full"
+        className="cursor-pointer transition-all duration-200 hover:shadow-md hover:border-primary/50 group h-full flex"
         onClick={() => setIsOpen(true)}
       >
-        <CardContent className="p-2.5">
-          <div className="flex items-center gap-2">
-            <div className={cn("w-9 h-9 shrink-0 rounded-lg flex items-center justify-center group-hover:scale-105 transition-transform", color)}>
-              <Icon className="h-4 w-4 text-white" />
-            </div>
-            <div className="min-w-0 flex-1">
-              <div className="flex items-center gap-1">
-                <p className="text-sm font-semibold leading-tight truncate">{title}</p>
-                {roles && roles.length > 0 && (
-                  <Lock className="h-2.5 w-2.5 text-muted-foreground/50 shrink-0" />
-                )}
-              </div>
-              <Badge variant="secondary" className="text-xs px-1.5 py-0 h-4 mt-0.5">
+        <CardContent className="p-2 flex items-center gap-2 flex-1">
+          <div className={cn("w-8 h-8 shrink-0 rounded-md flex items-center justify-center group-hover:scale-105 transition-transform", color)}>
+            <Icon className="h-4 w-4 text-white" />
+          </div>
+          <div className="min-w-0 flex-1">
+            <p className="text-xs font-semibold leading-tight truncate">{title}</p>
+            <div className="flex items-center gap-1">
+              <Badge variant="secondary" className="text-[10px] px-1 py-0 h-3.5">
                 {modules.length}
               </Badge>
+              {roles && roles.length > 0 && (
+                <Lock className="h-2.5 w-2.5 text-muted-foreground/50" />
+              )}
             </div>
           </div>
         </CardContent>
