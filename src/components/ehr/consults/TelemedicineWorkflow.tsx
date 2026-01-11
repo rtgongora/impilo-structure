@@ -249,13 +249,66 @@ export function TelemedicineWorkflow({
       case 1:
         // Case Identified - Mode Selection Entry Point
         const handleStartInstantSession = (mode: TelemedicineMode) => {
+          // Create an auto-generated minimal referral package for instant sessions
+          const instantReferral: ReferralPackage = {
+            id: `INSTANT-${Date.now()}`,
+            referralNumber: `INST-${new Date().getFullYear()}-${Math.random().toString(36).substr(2, 6).toUpperCase()}`,
+            patientId: patientId || "",
+            patientHID: "PHID-ZW-PENDING",
+            clinicalNarrative: {
+              chiefComplaint: "Instant teleconsultation requested",
+              historyOfPresentIllness: "",
+              pastMedicalHistory: "",
+              provisionalDiagnosis: "",
+              interventionsDone: "",
+              reasonForReferral: `Instant ${mode} session initiated`,
+              specificQuestions: [],
+            },
+            supportingData: {
+              problemList: [],
+              currentMedications: [],
+              allergies: [],
+              vitals: [],
+              labResults: [],
+              imaging: [],
+              attachments: [],
+            },
+            context: {
+              referringFacilityId: "current-facility",
+              referringFacilityName: "Current Facility",
+              referringProviderId: "current-user",
+              referringProviderName: "Current User",
+              targetType: "provider",
+              targetId: "",
+              targetName: "Instant Session",
+              specialty: "",
+            },
+            urgency: "urgent",
+            requestedModes: [mode],
+            preferredMode: mode,
+            consent: {
+              status: "pending",
+              type: "verbal",
+              timestamp: new Date().toISOString(),
+              obtainedBy: "current-user",
+            },
+            status: "accepted",
+            timestamps: {
+              createdAt: new Date().toISOString(),
+              sentAt: new Date().toISOString(),
+              acceptedAt: new Date().toISOString(),
+            },
+          };
+          
+          setReferralPackage(instantReferral);
           setActiveMode(mode);
           setSelectedModes([mode]);
           setPreferredMode(mode);
-          // For instant modes, skip to Stage 5 (Live Session) after quick setup
-          toast.info(`Starting ${mode} session...`);
-          // In production, this would create an instant referral and start the session
-          setCurrentStage(2); // For now, still go through referral but with mode pre-selected
+          setIsSessionActive(true);
+          
+          toast.success(`Starting ${mode} session...`);
+          // Skip directly to Stage 5 (Live Session)
+          setCurrentStage(5);
         };
 
         const handleContinueToReferral = () => {
