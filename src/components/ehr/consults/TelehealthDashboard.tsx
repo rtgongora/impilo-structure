@@ -25,6 +25,7 @@ import {
   PhoneCall,
   Timer,
   ArrowLeft,
+  Circle,
 } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { format, formatDistanceToNow } from "date-fns";
@@ -39,6 +40,7 @@ interface TelehealthDashboardProps {
   onViewCase?: (workItem: TelehealthWorkItem) => void;
   onOpenAsyncReview?: (referral: any) => void;
   onJoinSession?: (consultId: string) => void;
+  onOpenChatSidebar?: () => void;
 }
 
 const MODE_ICONS: Record<TelemedicineMode, React.ComponentType<{ className?: string }>> = {
@@ -65,6 +67,7 @@ export function TelehealthDashboard({
   onViewCase,
   onOpenAsyncReview,
   onJoinSession,
+  onOpenChatSidebar,
 }: TelehealthDashboardProps) {
   const [workItems, setWorkItems] = useState<TelehealthWorkItem[]>([]);
   const [loading, setLoading] = useState(true);
@@ -144,6 +147,7 @@ export function TelehealthDashboard({
           status: "in_progress",
           specialty: "Internal Medicine",
           reason: "Query regarding medication adjustment",
+          unreadMessages: 2,
         },
         {
           workItemId: "5",
@@ -178,6 +182,40 @@ export function TelehealthDashboard({
           specialty: "Radiology",
           reason: "CT interpretation needed - possible abdominal mass",
         },
+        {
+          workItemId: "7",
+          type: "chat",
+          referralId: "REF-2025-007",
+          patientName: "Simba Makoni",
+          patientAge: 8,
+          patientHID: "PHID-ZW-2025-456789",
+          priority: "routine",
+          fromFacilityName: "Masvingo Provincial Hospital",
+          fromProviderName: "Dr. Grace Mupfumira",
+          timeWaitingMinutes: 30,
+          requestedModes: ["chat"],
+          status: "in_progress",
+          specialty: "Pediatrics",
+          reason: "Pediatric consult follow-up",
+          unreadMessages: 0,
+        },
+        {
+          workItemId: "8",
+          type: "chat",
+          referralId: "REF-2025-008",
+          patientName: "Nyasha Chigumba",
+          patientAge: 41,
+          patientHID: "PHID-ZW-2025-789012",
+          priority: "urgent",
+          fromFacilityName: "Bindura Hospital",
+          fromProviderName: "Dr. Peter Madziva",
+          timeWaitingMinutes: 2,
+          requestedModes: ["chat", "video"],
+          status: "in_progress",
+          specialty: "Surgery",
+          reason: "Pre-op consultation",
+          unreadMessages: 1,
+        },
       ];
       
       setWorkItems(mockItems);
@@ -197,7 +235,7 @@ export function TelehealthDashboard({
       case "instant":
         return items.filter(i => i.type === "emergency" || i.priority === "emergency");
       case "chats":
-        return items.filter(i => i.type === "chat" || i.requestedModes.includes("chat"));
+        return items.filter(i => i.type === "chat" || (i.requestedModes.includes("chat") && i.status === "in_progress"));
       case "boards":
         return items.filter(i => i.type === "case_review" || i.requestedModes.includes("board"));
       default:
@@ -216,9 +254,14 @@ export function TelehealthDashboard({
     referrals: workItems.filter(i => i.type === "referral" && i.status === "pending").length,
     appointments: workItems.filter(i => i.type === "appointment" || i.scheduledAt).length,
     instant: workItems.filter(i => i.type === "emergency" || i.priority === "emergency").length,
-    chats: workItems.filter(i => i.type === "chat" || i.requestedModes.includes("chat")).length,
+    chats: workItems.filter(i => i.type === "chat" || (i.requestedModes.includes("chat") && i.status === "in_progress")).length,
     boards: workItems.filter(i => i.type === "case_review" || i.requestedModes.includes("board")).length,
   };
+
+  // Calculate unread messages for chats tab
+  const unreadChatsCount = workItems
+    .filter(i => i.type === "chat" || (i.requestedModes.includes("chat") && i.status === "in_progress"))
+    .reduce((acc, i) => acc + (i.unreadMessages || 0), 0);
 
   return (
     <Card className="h-full flex flex-col">
@@ -240,10 +283,31 @@ export function TelehealthDashboard({
               </CardDescription>
             </div>
           </div>
-          <Button variant="outline" size="sm" onClick={loadWorkItems} disabled={loading}>
-            <RefreshCw className={cn("h-4 w-4 mr-2", loading && "animate-spin")} />
-            Refresh
-          </Button>
+          <div className="flex items-center gap-2">
+            {onOpenChatSidebar && (
+              <Button 
+                variant="outline" 
+                size="sm" 
+                onClick={onOpenChatSidebar}
+                className="relative"
+              >
+                <MessageSquare className="h-4 w-4 mr-2" />
+                Open Chats
+                {unreadChatsCount > 0 && (
+                  <Badge 
+                    variant="destructive" 
+                    className="absolute -top-1 -right-1 h-5 min-w-5 p-0 flex items-center justify-center text-[10px]"
+                  >
+                    {unreadChatsCount}
+                  </Badge>
+                )}
+              </Button>
+            )}
+            <Button variant="outline" size="sm" onClick={loadWorkItems} disabled={loading}>
+              <RefreshCw className={cn("h-4 w-4 mr-2", loading && "animate-spin")} />
+              Refresh
+            </Button>
+          </div>
         </div>
 
         <div className="flex gap-2 mt-3">
@@ -292,12 +356,21 @@ export function TelehealthDashboard({
                 </Badge>
               )}
             </TabsTrigger>
-            <TabsTrigger value="chats">
+            <TabsTrigger value="chats" className="relative">
               <MessageSquare className="h-4 w-4 mr-1" />
               Chats
               {tabCounts.chats > 0 && (
-                <Badge variant="outline" className="ml-1 h-5 w-5 p-0 flex items-center justify-center text-[10px]">
+                <Badge 
+                  variant={unreadChatsCount > 0 ? "default" : "outline"} 
+                  className={cn(
+                    "ml-1 h-5 min-w-5 p-0 flex items-center justify-center text-[10px]",
+                    unreadChatsCount > 0 && "bg-primary"
+                  )}
+                >
                   {tabCounts.chats}
+                  {unreadChatsCount > 0 && (
+                    <Circle className="h-2 w-2 ml-0.5 fill-current animate-pulse" />
+                  )}
                 </Badge>
               )}
             </TabsTrigger>
@@ -326,8 +399,9 @@ export function TelehealthDashboard({
                   <WorkItemCard
                     key={item.workItemId}
                     item={item}
-                    onAccept={() => onAcceptCase(item)}
-                    onView={() => onViewCase(item)}
+                    onAccept={() => onAcceptCase?.(item)}
+                    onView={() => onViewCase?.(item)}
+                    showUnreadIndicator={activeTab === "chats"}
                   />
                 ))
               )}
@@ -342,29 +416,40 @@ export function TelehealthDashboard({
 function WorkItemCard({ 
   item, 
   onAccept, 
-  onView 
+  onView,
+  showUnreadIndicator = false,
 }: { 
   item: TelehealthWorkItem; 
   onAccept: () => void; 
   onView: () => void;
+  showUnreadIndicator?: boolean;
 }) {
   const urgencyStyle = URGENCY_STYLES[item.priority];
   const isEmergency = item.priority === "emergency";
+  const hasUnread = showUnreadIndicator && (item.unreadMessages || 0) > 0;
 
   return (
     <div
       className={cn(
         "p-4 rounded-lg border transition-all hover:shadow-md",
-        isEmergency && "border-destructive bg-destructive/5 animate-pulse-slow"
+        isEmergency && "border-destructive bg-destructive/5 animate-pulse-slow",
+        hasUnread && "border-primary bg-primary/5"
       )}
     >
       <div className="flex items-start gap-4">
         {/* Patient Avatar */}
-        <Avatar className="h-12 w-12">
-          <AvatarFallback className={cn(isEmergency && "bg-destructive text-destructive-foreground")}>
-            {item.patientName.split(" ").map(n => n[0]).join("")}
-          </AvatarFallback>
-        </Avatar>
+        <div className="relative">
+          <Avatar className="h-12 w-12">
+            <AvatarFallback className={cn(isEmergency && "bg-destructive text-destructive-foreground")}>
+              {item.patientName.split(" ").map(n => n[0]).join("")}
+            </AvatarFallback>
+          </Avatar>
+          {hasUnread && (
+            <div className="absolute -top-1 -right-1 h-5 min-w-5 bg-primary text-primary-foreground rounded-full flex items-center justify-center text-[10px] font-medium">
+              {item.unreadMessages}
+            </div>
+          )}
+        </div>
 
         {/* Main Content */}
         <div className="flex-1 min-w-0">
@@ -376,6 +461,11 @@ function WorkItemCard({
                   ({item.patientAge}y)
                 </span>
                 {isEmergency && <AlertTriangle className="h-4 w-4 text-destructive" />}
+                {hasUnread && (
+                  <Badge variant="default" className="text-[10px] h-4">
+                    {item.unreadMessages} new
+                  </Badge>
+                )}
               </h4>
               <p className="text-sm text-muted-foreground">{item.patientHID}</p>
             </div>
@@ -447,9 +537,23 @@ function WorkItemCard({
             </Button>
           )}
           {item.status === "in_progress" && (
-            <Button size="sm" variant="default" className="bg-success hover:bg-success/90" onClick={onView}>
-              <Video className="h-4 w-4 mr-1" />
-              Rejoin
+            <Button 
+              size="sm" 
+              variant={hasUnread ? "default" : "default"} 
+              className={cn(hasUnread ? "bg-primary" : "bg-success hover:bg-success/90")} 
+              onClick={onView}
+            >
+              {item.type === "chat" ? (
+                <>
+                  <MessageSquare className="h-4 w-4 mr-1" />
+                  {hasUnread ? "Reply" : "Continue"}
+                </>
+              ) : (
+                <>
+                  <Video className="h-4 w-4 mr-1" />
+                  Rejoin
+                </>
+              )}
             </Button>
           )}
           <Button variant="ghost" size="sm" onClick={onView}>
