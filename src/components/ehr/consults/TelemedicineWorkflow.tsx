@@ -38,6 +38,8 @@ import { ReferralPackageViewer } from "./ReferralPackageViewer";
 import { LiveSessionWorkspace } from "./LiveSessionWorkspace";
 import { ConsultationResponseBuilder } from "./ConsultationResponseBuilder";
 import { CompletionNoteForm } from "./CompletionNote";
+import { TelemedicineModeSelection } from "./TelemedicineModeSelection";
+import type { ReferralUrgency } from "@/types/telehealth";
 
 // 7 Stage Workflow Definition
 export const TELEMEDICINE_STAGES = [
@@ -128,6 +130,12 @@ export function TelemedicineWorkflow({
   const [consultationResponse, setConsultationResponse] = useState<ConsultationResponse | null>(null);
   const [activeMode, setActiveMode] = useState<TelemedicineMode>("async");
   const [isSessionActive, setIsSessionActive] = useState(false);
+  
+  // Stage 1 mode selection state
+  const [selectedModes, setSelectedModes] = useState<TelemedicineMode[]>([]);
+  const [preferredMode, setPreferredMode] = useState<TelemedicineMode | null>(null);
+  const [urgency, setUrgency] = useState<ReferralUrgency>("routine");
+  const [scheduledAt, setScheduledAt] = useState<string | undefined>();
 
   const currentStageInfo = TELEMEDICINE_STAGES.find(s => s.stage === currentStage)!;
   const progress = (currentStage / 7) * 100;
@@ -239,34 +247,131 @@ export function TelemedicineWorkflow({
   const renderStageContent = () => {
     switch (currentStage) {
       case 1:
-        // Case Identified - Entry point
+        // Case Identified - Mode Selection Entry Point
+        const handleStartInstantSession = (mode: TelemedicineMode) => {
+          setActiveMode(mode);
+          setSelectedModes([mode]);
+          setPreferredMode(mode);
+          // For instant modes, skip to Stage 5 (Live Session) after quick setup
+          toast.info(`Starting ${mode} session...`);
+          // In production, this would create an instant referral and start the session
+          setCurrentStage(2); // For now, still go through referral but with mode pre-selected
+        };
+
+        const handleContinueToReferral = () => {
+          if (selectedModes.length === 0) {
+            toast.error("Please select at least one consultation mode");
+            return;
+          }
+          if (!preferredMode) {
+            toast.error("Please select a preferred mode");
+            return;
+          }
+          setCurrentStage(2);
+        };
+
         return (
-          <Card className="max-w-2xl mx-auto">
-            <CardHeader className="text-center">
-              <AlertTriangle className="w-12 h-12 text-warning mx-auto mb-4" />
-              <CardTitle>Start Teleconsultation</CardTitle>
-              <CardDescription>
-                {patientName 
-                  ? `Initiate a teleconsult for ${patientName}`
-                  : "Select a patient and initiate teleconsultation"
-                }
-              </CardDescription>
-            </CardHeader>
-            <CardContent className="space-y-4">
-              <div className="p-4 bg-muted/30 rounded-lg text-sm">
-                <p className="font-medium mb-2">Preconditions:</p>
-                <ul className="list-disc list-inside space-y-1 text-muted-foreground">
-                  <li>Patient must have a valid Health ID (HID)</li>
-                  <li>Provider must have a valid Provider Registry ID</li>
-                  <li>Active encounter must exist (created automatically)</li>
-                </ul>
-              </div>
-              <Button className="w-full" onClick={() => setCurrentStage(2)}>
-                <FileText className="w-4 h-4 mr-2" />
-                Build Referral Package
-              </Button>
-            </CardContent>
-          </Card>
+          <div className="max-w-4xl mx-auto space-y-6">
+            {/* Header */}
+            <Card>
+              <CardHeader className="text-center pb-4">
+                <Video className="w-12 h-12 text-primary mx-auto mb-4" />
+                <CardTitle>Start Teleconsultation</CardTitle>
+                <CardDescription>
+                  {patientName 
+                    ? `Initiate a teleconsult for ${patientName}`
+                    : "Select consultation mode and initiate teleconsultation"
+                  }
+                </CardDescription>
+              </CardHeader>
+            </Card>
+
+            {/* Quick Start - Instant Sessions */}
+            <Card>
+              <CardHeader className="pb-3">
+                <CardTitle className="text-base flex items-center gap-2">
+                  <Phone className="w-4 h-4" />
+                  Quick Connect (Instant Session)
+                </CardTitle>
+                <CardDescription>
+                  Start an immediate session - referral package will be created automatically
+                </CardDescription>
+              </CardHeader>
+              <CardContent>
+                <div className="grid grid-cols-3 gap-4">
+                  <Button 
+                    variant="outline" 
+                    className="h-24 flex-col gap-2 hover:border-primary hover:bg-primary/5"
+                    onClick={() => handleStartInstantSession("video")}
+                  >
+                    <Video className="w-8 h-8 text-primary" />
+                    <span className="font-medium">Video Call</span>
+                    <span className="text-xs text-muted-foreground">Face-to-face</span>
+                  </Button>
+                  <Button 
+                    variant="outline" 
+                    className="h-24 flex-col gap-2 hover:border-primary hover:bg-primary/5"
+                    onClick={() => handleStartInstantSession("audio")}
+                  >
+                    <Phone className="w-8 h-8 text-green-600" />
+                    <span className="font-medium">Audio Call</span>
+                    <span className="text-xs text-muted-foreground">Voice only</span>
+                  </Button>
+                  <Button 
+                    variant="outline" 
+                    className="h-24 flex-col gap-2 hover:border-primary hover:bg-primary/5"
+                    onClick={() => handleStartInstantSession("chat")}
+                  >
+                    <MessageSquare className="w-8 h-8 text-blue-600" />
+                    <span className="font-medium">Chat / IM</span>
+                    <span className="text-xs text-muted-foreground">Text messaging</span>
+                  </Button>
+                </div>
+              </CardContent>
+            </Card>
+
+            {/* Full Referral Mode Selection */}
+            <Card>
+              <CardHeader className="pb-3">
+                <CardTitle className="text-base flex items-center gap-2">
+                  <FileText className="w-4 h-4" />
+                  Scheduled Consultation (Full Referral)
+                </CardTitle>
+                <CardDescription>
+                  Build a complete referral package with multiple consultation options
+                </CardDescription>
+              </CardHeader>
+              <CardContent className="space-y-4">
+                <TelemedicineModeSelection
+                  urgency={urgency}
+                  selectedModes={selectedModes}
+                  preferredMode={preferredMode}
+                  onModesChange={setSelectedModes}
+                  onPreferredModeChange={setPreferredMode}
+                  scheduledAt={scheduledAt}
+                  onScheduleChange={setScheduledAt}
+                />
+                
+                <Separator className="my-4" />
+                
+                <div className="flex justify-between items-center">
+                  <div className="text-sm text-muted-foreground">
+                    {selectedModes.length === 0 
+                      ? "Select at least one mode above"
+                      : `${selectedModes.length} mode(s) selected, preferred: ${preferredMode || "none"}`
+                    }
+                  </div>
+                  <Button 
+                    onClick={handleContinueToReferral}
+                    disabled={selectedModes.length === 0 || !preferredMode}
+                  >
+                    <FileText className="w-4 h-4 mr-2" />
+                    Build Referral Package
+                  </Button>
+                </div>
+              </CardContent>
+            </Card>
+          </div>
         );
 
       case 2:
