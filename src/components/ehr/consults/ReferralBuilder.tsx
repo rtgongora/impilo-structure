@@ -215,12 +215,13 @@ export function ReferralBuilder({ onSubmit, onCancel }: ReferralBuilderProps) {
 
   const obtainConsent = () => {
     // Simulate consent token generation
-    setReferralPackage(prev => ({
-      ...prev,
+    const updatedPackage = {
+      ...referralPackage,
       consentObtained: true,
       consentToken: `CONSENT-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`,
-    }));
-    toast.success("Consent obtained and verified");
+    };
+    setReferralPackage(updatedPackage);
+    toast.success("Consent obtained and verified - you can now send the referral");
   };
 
   const handleSubmit = () => {
@@ -611,16 +612,29 @@ export function ReferralBuilder({ onSubmit, onCancel }: ReferralBuilderProps) {
                 Obtain Consent
               </Button>
             ) : (
-              <div className="p-4 bg-success/10 border border-success/50 rounded-lg">
-                <div className="flex items-center gap-3">
-                  <CheckCircle className="w-6 h-6 text-success" />
-                  <div>
-                    <h4 className="font-medium text-success">Consent Obtained</h4>
-                    <p className="text-xs text-muted-foreground">
-                      Token: {referralPackage.consentToken}
-                    </p>
+              <div className="space-y-4">
+                <div className="p-4 bg-success/10 border border-success/50 rounded-lg">
+                  <div className="flex items-center gap-3">
+                    <CheckCircle className="w-6 h-6 text-success" />
+                    <div>
+                      <h4 className="font-medium text-success">Consent Obtained</h4>
+                      <p className="text-xs text-muted-foreground">
+                        Token: {referralPackage.consentToken}
+                      </p>
+                    </div>
                   </div>
                 </div>
+                
+                {/* Direct send button after consent */}
+                <Button 
+                  onClick={handleSubmit} 
+                  disabled={!canSubmit}
+                  className="w-full bg-success hover:bg-success/90"
+                  size="lg"
+                >
+                  <Send className="w-5 h-5 mr-2" />
+                  Send Referral Now
+                </Button>
               </div>
             )}
           </div>
