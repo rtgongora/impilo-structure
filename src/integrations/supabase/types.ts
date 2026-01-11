@@ -15814,6 +15814,160 @@ export type Database = {
         }
         Relationships: []
       }
+      teleconsult_access_log: {
+        Row: {
+          access_type: string
+          accessed_at: string | null
+          accessor_id: string
+          actions_performed: Json | null
+          id: string
+          ip_address: unknown
+          patient_id: string
+          referral_id: string | null
+          resource_accessed: string
+          session_id: string | null
+          token_id: string | null
+          user_agent: string | null
+        }
+        Insert: {
+          access_type: string
+          accessed_at?: string | null
+          accessor_id: string
+          actions_performed?: Json | null
+          id?: string
+          ip_address?: unknown
+          patient_id: string
+          referral_id?: string | null
+          resource_accessed: string
+          session_id?: string | null
+          token_id?: string | null
+          user_agent?: string | null
+        }
+        Update: {
+          access_type?: string
+          accessed_at?: string | null
+          accessor_id?: string
+          actions_performed?: Json | null
+          id?: string
+          ip_address?: unknown
+          patient_id?: string
+          referral_id?: string | null
+          resource_accessed?: string
+          session_id?: string | null
+          token_id?: string | null
+          user_agent?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "teleconsult_access_log_patient_id_fkey"
+            columns: ["patient_id"]
+            isOneToOne: false
+            referencedRelation: "patients"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "teleconsult_access_log_referral_id_fkey"
+            columns: ["referral_id"]
+            isOneToOne: false
+            referencedRelation: "referrals"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "teleconsult_access_log_token_id_fkey"
+            columns: ["token_id"]
+            isOneToOne: false
+            referencedRelation: "teleconsult_access_tokens"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      teleconsult_access_tokens: {
+        Row: {
+          consent_reference: string | null
+          consent_timestamp: string
+          consent_type: string
+          created_at: string | null
+          granted_by_provider_id: string
+          granted_to_provider_id: string
+          id: string
+          is_active: boolean | null
+          last_accessed_at: string | null
+          max_access_count: number | null
+          patient_id: string
+          referral_id: string | null
+          revoke_reason: string | null
+          revoked_at: string | null
+          revoked_by: string | null
+          scope: Database["public"]["Enums"]["ehr_access_scope"]
+          session_id: string
+          times_accessed: number | null
+          token_hash: string
+          valid_from: string
+          valid_until: string
+        }
+        Insert: {
+          consent_reference?: string | null
+          consent_timestamp: string
+          consent_type: string
+          created_at?: string | null
+          granted_by_provider_id: string
+          granted_to_provider_id: string
+          id?: string
+          is_active?: boolean | null
+          last_accessed_at?: string | null
+          max_access_count?: number | null
+          patient_id: string
+          referral_id?: string | null
+          revoke_reason?: string | null
+          revoked_at?: string | null
+          revoked_by?: string | null
+          scope?: Database["public"]["Enums"]["ehr_access_scope"]
+          session_id: string
+          times_accessed?: number | null
+          token_hash: string
+          valid_from?: string
+          valid_until: string
+        }
+        Update: {
+          consent_reference?: string | null
+          consent_timestamp?: string
+          consent_type?: string
+          created_at?: string | null
+          granted_by_provider_id?: string
+          granted_to_provider_id?: string
+          id?: string
+          is_active?: boolean | null
+          last_accessed_at?: string | null
+          max_access_count?: number | null
+          patient_id?: string
+          referral_id?: string | null
+          revoke_reason?: string | null
+          revoked_at?: string | null
+          revoked_by?: string | null
+          scope?: Database["public"]["Enums"]["ehr_access_scope"]
+          session_id?: string
+          times_accessed?: number | null
+          token_hash?: string
+          valid_from?: string
+          valid_until?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "teleconsult_access_tokens_patient_id_fkey"
+            columns: ["patient_id"]
+            isOneToOne: false
+            referencedRelation: "patients"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "teleconsult_access_tokens_referral_id_fkey"
+            columns: ["referral_id"]
+            isOneToOne: false
+            referencedRelation: "referrals"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       teleconsult_documents: {
         Row: {
           document_type: string
@@ -15880,59 +16034,338 @@ export type Database = {
         }
         Relationships: []
       }
+      teleconsult_responses: {
+        Row: {
+          acknowledged_at: string | null
+          acknowledged_by: string | null
+          assessment: string | null
+          attachments_used: Json | null
+          board_participants: Json | null
+          clinical_interpretation: string | null
+          consultant_facility_id: string | null
+          consultant_provider_id: string
+          created_at: string | null
+          diagnosis_codes: Json | null
+          disposition_instructions: string | null
+          disposition_type: string
+          ehr_actions: Json | null
+          follow_up_instructions: string | null
+          follow_up_responsible_facility: string | null
+          follow_up_type: string | null
+          follow_up_when: string | null
+          id: string
+          impressions: string | null
+          investigations: Json | null
+          key_findings: string | null
+          medications: Json | null
+          mode_used: string
+          monitoring_requirements: string | null
+          orders_placed: Json | null
+          patient_id: string
+          procedures: Json | null
+          referral_id: string | null
+          response_to_questions: string | null
+          session_duration_seconds: number | null
+          session_id: string
+          status: string
+          submitted_at: string | null
+          transfer_facility_id: string | null
+          treatment_plan: string | null
+          updated_at: string | null
+          working_diagnosis: string | null
+        }
+        Insert: {
+          acknowledged_at?: string | null
+          acknowledged_by?: string | null
+          assessment?: string | null
+          attachments_used?: Json | null
+          board_participants?: Json | null
+          clinical_interpretation?: string | null
+          consultant_facility_id?: string | null
+          consultant_provider_id: string
+          created_at?: string | null
+          diagnosis_codes?: Json | null
+          disposition_instructions?: string | null
+          disposition_type: string
+          ehr_actions?: Json | null
+          follow_up_instructions?: string | null
+          follow_up_responsible_facility?: string | null
+          follow_up_type?: string | null
+          follow_up_when?: string | null
+          id?: string
+          impressions?: string | null
+          investigations?: Json | null
+          key_findings?: string | null
+          medications?: Json | null
+          mode_used: string
+          monitoring_requirements?: string | null
+          orders_placed?: Json | null
+          patient_id: string
+          procedures?: Json | null
+          referral_id?: string | null
+          response_to_questions?: string | null
+          session_duration_seconds?: number | null
+          session_id: string
+          status?: string
+          submitted_at?: string | null
+          transfer_facility_id?: string | null
+          treatment_plan?: string | null
+          updated_at?: string | null
+          working_diagnosis?: string | null
+        }
+        Update: {
+          acknowledged_at?: string | null
+          acknowledged_by?: string | null
+          assessment?: string | null
+          attachments_used?: Json | null
+          board_participants?: Json | null
+          clinical_interpretation?: string | null
+          consultant_facility_id?: string | null
+          consultant_provider_id?: string
+          created_at?: string | null
+          diagnosis_codes?: Json | null
+          disposition_instructions?: string | null
+          disposition_type?: string
+          ehr_actions?: Json | null
+          follow_up_instructions?: string | null
+          follow_up_responsible_facility?: string | null
+          follow_up_type?: string | null
+          follow_up_when?: string | null
+          id?: string
+          impressions?: string | null
+          investigations?: Json | null
+          key_findings?: string | null
+          medications?: Json | null
+          mode_used?: string
+          monitoring_requirements?: string | null
+          orders_placed?: Json | null
+          patient_id?: string
+          procedures?: Json | null
+          referral_id?: string | null
+          response_to_questions?: string | null
+          session_duration_seconds?: number | null
+          session_id?: string
+          status?: string
+          submitted_at?: string | null
+          transfer_facility_id?: string | null
+          treatment_plan?: string | null
+          updated_at?: string | null
+          working_diagnosis?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "teleconsult_responses_consultant_facility_id_fkey"
+            columns: ["consultant_facility_id"]
+            isOneToOne: false
+            referencedRelation: "facilities"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "teleconsult_responses_consultant_facility_id_fkey"
+            columns: ["consultant_facility_id"]
+            isOneToOne: false
+            referencedRelation: "facility_capabilities"
+            referencedColumns: ["facility_id"]
+          },
+          {
+            foreignKeyName: "teleconsult_responses_patient_id_fkey"
+            columns: ["patient_id"]
+            isOneToOne: false
+            referencedRelation: "patients"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "teleconsult_responses_referral_id_fkey"
+            columns: ["referral_id"]
+            isOneToOne: false
+            referencedRelation: "referrals"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "teleconsult_responses_transfer_facility_id_fkey"
+            columns: ["transfer_facility_id"]
+            isOneToOne: false
+            referencedRelation: "facilities"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "teleconsult_responses_transfer_facility_id_fkey"
+            columns: ["transfer_facility_id"]
+            isOneToOne: false
+            referencedRelation: "facility_capabilities"
+            referencedColumns: ["facility_id"]
+          },
+        ]
+      }
       teleconsult_sessions: {
         Row: {
+          accepted_at: string | null
           call_quality_rating: number | null
+          clinical_questions: Json | null
           consent_obtained: boolean | null
           consent_timestamp: string | null
+          consulting_facility_id: string | null
+          consulting_provider_id: string | null
           created_at: string
           created_by: string
+          decline_reason: string | null
+          declined_at: string | null
           ended_at: string | null
           follow_up_date: string | null
           follow_up_required: boolean | null
           id: string
+          mode: string | null
           outcome: string | null
+          patient_hid: string | null
+          patient_id: string | null
+          reason_for_consult: string | null
           referral_id: string
+          referring_facility_id: string | null
+          referring_provider_id: string | null
+          response_id: string | null
+          routed_at: string | null
+          routed_to_facility_id: string | null
+          routed_to_provider_id: string | null
+          routing_reason: string | null
+          scheduled_at: string | null
+          specialty: string | null
           stage_status: string | null
+          started_at: string | null
           status: string
+          updated_at: string | null
+          urgency: string | null
           waiting_room_joined_at: string | null
           workflow_stage: number | null
         }
         Insert: {
+          accepted_at?: string | null
           call_quality_rating?: number | null
+          clinical_questions?: Json | null
           consent_obtained?: boolean | null
           consent_timestamp?: string | null
+          consulting_facility_id?: string | null
+          consulting_provider_id?: string | null
           created_at?: string
           created_by: string
+          decline_reason?: string | null
+          declined_at?: string | null
           ended_at?: string | null
           follow_up_date?: string | null
           follow_up_required?: boolean | null
           id?: string
+          mode?: string | null
           outcome?: string | null
+          patient_hid?: string | null
+          patient_id?: string | null
+          reason_for_consult?: string | null
           referral_id: string
+          referring_facility_id?: string | null
+          referring_provider_id?: string | null
+          response_id?: string | null
+          routed_at?: string | null
+          routed_to_facility_id?: string | null
+          routed_to_provider_id?: string | null
+          routing_reason?: string | null
+          scheduled_at?: string | null
+          specialty?: string | null
           stage_status?: string | null
+          started_at?: string | null
           status?: string
+          updated_at?: string | null
+          urgency?: string | null
           waiting_room_joined_at?: string | null
           workflow_stage?: number | null
         }
         Update: {
+          accepted_at?: string | null
           call_quality_rating?: number | null
+          clinical_questions?: Json | null
           consent_obtained?: boolean | null
           consent_timestamp?: string | null
+          consulting_facility_id?: string | null
+          consulting_provider_id?: string | null
           created_at?: string
           created_by?: string
+          decline_reason?: string | null
+          declined_at?: string | null
           ended_at?: string | null
           follow_up_date?: string | null
           follow_up_required?: boolean | null
           id?: string
+          mode?: string | null
           outcome?: string | null
+          patient_hid?: string | null
+          patient_id?: string | null
+          reason_for_consult?: string | null
           referral_id?: string
+          referring_facility_id?: string | null
+          referring_provider_id?: string | null
+          response_id?: string | null
+          routed_at?: string | null
+          routed_to_facility_id?: string | null
+          routed_to_provider_id?: string | null
+          routing_reason?: string | null
+          scheduled_at?: string | null
+          specialty?: string | null
           stage_status?: string | null
+          started_at?: string | null
           status?: string
+          updated_at?: string | null
+          urgency?: string | null
           waiting_room_joined_at?: string | null
           workflow_stage?: number | null
         }
-        Relationships: []
+        Relationships: [
+          {
+            foreignKeyName: "teleconsult_sessions_consulting_facility_id_fkey"
+            columns: ["consulting_facility_id"]
+            isOneToOne: false
+            referencedRelation: "facilities"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "teleconsult_sessions_consulting_facility_id_fkey"
+            columns: ["consulting_facility_id"]
+            isOneToOne: false
+            referencedRelation: "facility_capabilities"
+            referencedColumns: ["facility_id"]
+          },
+          {
+            foreignKeyName: "teleconsult_sessions_patient_id_fkey"
+            columns: ["patient_id"]
+            isOneToOne: false
+            referencedRelation: "patients"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "teleconsult_sessions_referring_facility_id_fkey"
+            columns: ["referring_facility_id"]
+            isOneToOne: false
+            referencedRelation: "facilities"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "teleconsult_sessions_referring_facility_id_fkey"
+            columns: ["referring_facility_id"]
+            isOneToOne: false
+            referencedRelation: "facility_capabilities"
+            referencedColumns: ["facility_id"]
+          },
+          {
+            foreignKeyName: "teleconsult_sessions_routed_to_facility_id_fkey"
+            columns: ["routed_to_facility_id"]
+            isOneToOne: false
+            referencedRelation: "facilities"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "teleconsult_sessions_routed_to_facility_id_fkey"
+            columns: ["routed_to_facility_id"]
+            isOneToOne: false
+            referencedRelation: "facility_capabilities"
+            referencedColumns: ["facility_id"]
+          },
+        ]
       }
       teleconsult_signals: {
         Row: {
@@ -15966,6 +16399,63 @@ export type Database = {
             isOneToOne: false
             referencedRelation: "teleconsult_sessions"
             referencedColumns: ["id"]
+          },
+        ]
+      }
+      telemedicine_user_roles: {
+        Row: {
+          assigned_at: string | null
+          assigned_by: string | null
+          created_at: string | null
+          expires_at: string | null
+          facility_id: string | null
+          id: string
+          is_active: boolean | null
+          role: Database["public"]["Enums"]["telemedicine_role"]
+          specialty: string | null
+          updated_at: string | null
+          user_id: string
+        }
+        Insert: {
+          assigned_at?: string | null
+          assigned_by?: string | null
+          created_at?: string | null
+          expires_at?: string | null
+          facility_id?: string | null
+          id?: string
+          is_active?: boolean | null
+          role: Database["public"]["Enums"]["telemedicine_role"]
+          specialty?: string | null
+          updated_at?: string | null
+          user_id: string
+        }
+        Update: {
+          assigned_at?: string | null
+          assigned_by?: string | null
+          created_at?: string | null
+          expires_at?: string | null
+          facility_id?: string | null
+          id?: string
+          is_active?: boolean | null
+          role?: Database["public"]["Enums"]["telemedicine_role"]
+          specialty?: string | null
+          updated_at?: string | null
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "telemedicine_user_roles_facility_id_fkey"
+            columns: ["facility_id"]
+            isOneToOne: false
+            referencedRelation: "facilities"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "telemedicine_user_roles_facility_id_fkey"
+            columns: ["facility_id"]
+            isOneToOne: false
+            referencedRelation: "facility_capabilities"
+            referencedColumns: ["facility_id"]
           },
         ]
       }
@@ -17562,6 +18052,7 @@ export type Database = {
       generate_sorting_session_number: { Args: never; Returns: string }
       generate_specimen_id: { Args: never; Returns: string }
       generate_summary_share_token: { Args: never; Returns: string }
+      generate_teleconsult_access_token: { Args: never; Returns: string }
       generate_temp_patient_id: { Args: never; Returns: string }
       generate_theatre_booking_number: { Args: never; Returns: string }
       generate_transaction_number: { Args: never; Returns: string }
@@ -17650,9 +18141,26 @@ export type Database = {
         }
         Returns: boolean
       }
+      has_telemedicine_role: {
+        Args: {
+          _role: Database["public"]["Enums"]["telemedicine_role"]
+          _user_id: string
+        }
+        Returns: boolean
+      }
       is_operational_supervisor: {
         Args: { _facility_id?: string; _user_id: string }
         Returns: boolean
+      }
+      validate_teleconsult_access_token: {
+        Args: { _accessor_id: string; _token_hash: string }
+        Returns: {
+          error_message: string
+          is_valid: boolean
+          patient_id: string
+          scope: Database["public"]["Enums"]["ehr_access_scope"]
+          session_id: string
+        }[]
       }
     }
     Enums: {
@@ -17696,6 +18204,12 @@ export type Database = {
         | "emergency_contact"
       clinical_role: "doctor" | "nurse" | "specialist" | "patient" | "admin"
       cover_request_status: "pending" | "approved" | "denied" | "expired"
+      ehr_access_scope:
+        | "read_summary"
+        | "read_full"
+        | "read_write"
+        | "orders_only"
+        | "notes_only"
       employment_type:
         | "permanent"
         | "contract"
@@ -17851,6 +18365,13 @@ export type Database = {
         | "completed"
         | "cancelled"
         | "escalated"
+      telemedicine_role:
+        | "telemedicine_admin"
+        | "system_admin"
+        | "technician"
+        | "clinician"
+        | "specialist"
+        | "manager"
       triage_urgency: "emergency" | "very_urgent" | "urgent" | "routine"
       workspace_role: "staff" | "supervisor" | "manager"
       workspace_transfer_reason:
@@ -18031,6 +18552,13 @@ export const Constants = {
       ],
       clinical_role: ["doctor", "nurse", "specialist", "patient", "admin"],
       cover_request_status: ["pending", "approved", "denied", "expired"],
+      ehr_access_scope: [
+        "read_summary",
+        "read_full",
+        "read_write",
+        "orders_only",
+        "notes_only",
+      ],
       employment_type: [
         "permanent",
         "contract",
@@ -18204,6 +18732,14 @@ export const Constants = {
         "completed",
         "cancelled",
         "escalated",
+      ],
+      telemedicine_role: [
+        "telemedicine_admin",
+        "system_admin",
+        "technician",
+        "clinician",
+        "specialist",
+        "manager",
       ],
       triage_urgency: ["emergency", "very_urgent", "urgent", "routine"],
       workspace_role: ["staff", "supervisor", "manager"],

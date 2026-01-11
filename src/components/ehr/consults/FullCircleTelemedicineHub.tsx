@@ -1,6 +1,7 @@
 /**
  * FullCircleTelemedicineHub - Main entry point for the complete telemedicine system
  * Manages both outgoing (Facility A) and incoming (Facility B/C) workflows
+ * Role-based access control for different user types
  */
 import { useState, useEffect, useCallback } from "react";
 import {
@@ -21,6 +22,9 @@ import {
   TrendingUp,
   CheckCircle,
   XCircle,
+  Shield,
+  Settings,
+  UserCog,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
@@ -37,6 +41,7 @@ import type {
   TelemedicineMode,
   ReferralUrgency,
 } from "@/types/telehealth";
+import { useTelemedicineRoles } from "@/hooks/useTelemedicineRoles";
 
 // Sub-components
 import { OutgoingReferralWorkflow } from "./OutgoingReferralWorkflow";
@@ -142,6 +147,9 @@ export function FullCircleTelemedicineHub({
   const [selectedIncoming, setSelectedIncoming] = useState<TelehealthWorkItem | null>(null);
   const [outgoingReferrals, setOutgoingReferrals] = useState<ReferralPackage[]>(MOCK_OUTGOING_REFERRALS);
   const [incomingWorkItems, setIncomingWorkItems] = useState<TelehealthWorkItem[]>(MOCK_INCOMING_WORKLIST);
+
+  // Role-based access control
+  const { permissions, primaryRole, getRoleLabel, loading: rolesLoading } = useTelemedicineRoles();
 
   const handleBack = useCallback(() => {
     if (currentView === "overview") {
@@ -272,10 +280,26 @@ export function FullCircleTelemedicineHub({
               </p>
             </div>
           </div>
-          <Button onClick={handleStartNewReferral}>
-            <Plus className="h-4 w-4 mr-2" />
-            New Referral
-          </Button>
+          <div className="flex items-center gap-3">
+            {/* Role Badge */}
+            <Badge variant="outline" className="flex items-center gap-1">
+              <UserCog className="h-3 w-3" />
+              {getRoleLabel(primaryRole || 'clinician')}
+            </Badge>
+            
+            {/* Admin Actions */}
+            {permissions.canManageHub && (
+              <Button variant="outline" size="sm">
+                <Settings className="h-4 w-4 mr-2" />
+                Hub Settings
+              </Button>
+            )}
+            
+            <Button onClick={handleStartNewReferral}>
+              <Plus className="h-4 w-4 mr-2" />
+              New Referral
+            </Button>
+          </div>
         </div>
       </div>
 
