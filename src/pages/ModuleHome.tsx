@@ -590,63 +590,108 @@ export default function ModuleHome() {
             </TabsList>
 
             {/* My Work Tab */}
-            <TabsContent value="work" className="mt-0 flex-1 flex flex-col gap-3 min-h-0">
-              {/* Row 1: Communication + Noticeboard */}
-              <div className="flex items-center gap-4 flex-shrink-0">
-                <div className="flex items-center gap-2">
-                  <span className="text-xs font-medium text-muted-foreground">Comm:</span>
-                  <Button variant="outline" size="sm" className="h-8 px-2.5 flex items-center gap-1.5" onClick={() => navigate("/communication?tab=messages")}>
-                    <MessageSquare className="h-3.5 w-3.5 text-primary" />
-                    <span className="text-xs">Messages</span>
+            <TabsContent value="work" className="mt-0 flex-1 flex flex-col gap-4 min-h-0">
+              {/* Communication Noticeboard */}
+              <section className="flex-shrink-0">
+                <div className="flex items-center justify-between mb-2">
+                  <h3 className="text-sm font-semibold">Communication Noticeboard</h3>
+                  <HealthDocumentScanner variant="button" className="h-11" />
+                </div>
+                <div className="flex flex-wrap gap-2">
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    className="h-11 px-3 flex items-center gap-2"
+                    onClick={() => navigate("/communication?tab=messages")}
+                  >
+                    <MessageSquare className="h-4 w-4 text-primary" />
+                    <span className="text-sm">Messages</span>
                   </Button>
-                  <Button variant="outline" size="sm" className="h-8 px-2.5 flex items-center gap-1.5" onClick={() => navigate("/communication?tab=pages")}>
-                    <Bell className="h-3.5 w-3.5 text-warning" />
-                    <span className="text-xs">Pages</span>
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    className="h-11 px-3 flex items-center gap-2"
+                    onClick={() => navigate("/communication?tab=pages")}
+                  >
+                    <Bell className="h-4 w-4 text-warning" />
+                    <span className="text-sm">Pages</span>
                   </Button>
-                  <Button variant="outline" size="sm" className="h-8 px-2.5 flex items-center gap-1.5" onClick={() => navigate("/communication?tab=calls")}>
-                    <Phone className="h-3.5 w-3.5 text-success" />
-                    <span className="text-xs">Calls</span>
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    className="h-11 px-3 flex items-center gap-2"
+                    onClick={() => navigate("/communication?tab=calls")}
+                  >
+                    <Phone className="h-4 w-4 text-success" />
+                    <span className="text-sm">Calls</span>
                   </Button>
                 </div>
-                <div className="ml-auto">
-                  <HealthDocumentScanner variant="button" className="h-8" />
-                </div>
-              </div>
+              </section>
 
-              {/* Row 2: Quick Access */}
-              <div className="flex items-center gap-3 flex-shrink-0">
-                <span className="text-xs font-medium text-muted-foreground">Quick:</span>
-                <div className="flex gap-2">
-                  <Button variant="outline" size="sm" className="h-8 px-2.5 flex items-center gap-1.5 hover:bg-primary hover:text-primary-foreground group" onClick={() => navigate("/dashboard")}>
-                    <ClipboardList className="h-3.5 w-3.5 text-primary group-hover:text-primary-foreground" />
-                    <span className="text-xs">Dashboard</span>
+              {/* Quick Access */}
+              <section className="flex-shrink-0">
+                <h3 className="text-sm font-semibold mb-2">Quick Access</h3>
+                <div className="flex flex-wrap gap-2">
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    className="h-11 px-3 flex items-center gap-2 hover:bg-primary hover:text-primary-foreground group"
+                    onClick={() => navigate("/dashboard")}
+                  >
+                    <ClipboardList className="h-4 w-4 text-primary group-hover:text-primary-foreground" />
+                    <span className="text-sm">Dashboard</span>
                   </Button>
-                  <Button variant="outline" size="sm" className="h-8 px-2.5 flex items-center gap-1.5 hover:bg-blue-500 hover:text-white group" onClick={() => navigate("/queue")}>
-                    <Users className="h-3.5 w-3.5 text-blue-500 group-hover:text-white" />
-                    <span className="text-xs">Queue</span>
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    className="h-11 px-3 flex items-center gap-2 hover:bg-blue-500 hover:text-white group"
+                    onClick={() => navigate("/queue")}
+                  >
+                    <Users className="h-4 w-4 text-blue-500 group-hover:text-white" />
+                    <span className="text-sm">Queue</span>
                   </Button>
-                  <Button variant="outline" size="sm" className="h-8 px-2.5 flex items-center gap-1.5 hover:bg-emerald-600 hover:text-white group" onClick={() => navigate("/pharmacy")}>
-                    <Pill className="h-3.5 w-3.5 text-emerald-600 group-hover:text-white" />
-                    <span className="text-xs">Prescribe</span>
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    className="h-11 px-3 flex items-center gap-2 hover:bg-emerald-600 hover:text-white group"
+                    onClick={() => navigate("/pharmacy")}
+                  >
+                    <Pill className="h-4 w-4 text-emerald-600 group-hover:text-white" />
+                    <span className="text-sm">Prescribe</span>
                   </Button>
-                  <Button variant="outline" size="sm" className="h-8 px-2.5 flex items-center gap-1.5 hover:bg-cyan-600 hover:text-white group" onClick={() => navigate("/orders")}>
-                    <ClipboardCheck className="h-3.5 w-3.5 text-cyan-600 group-hover:text-white" />
-                    <span className="text-xs">Orders</span>
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    className="h-11 px-3 flex items-center gap-2 hover:bg-cyan-600 hover:text-white group"
+                    onClick={() => navigate("/orders")}
+                  >
+                    <ClipboardCheck className="h-4 w-4 text-cyan-600 group-hover:text-white" />
+                    <span className="text-sm">Orders</span>
                   </Button>
-                  <Button variant="outline" size="sm" className="h-8 px-2.5 flex items-center gap-1.5 hover:bg-green-500 hover:text-white group" onClick={() => navigate("/registration")}>
-                    <UserPlus className="h-3.5 w-3.5 text-green-500 group-hover:text-white" />
-                    <span className="text-xs">Register</span>
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    className="h-11 px-3 flex items-center gap-2 hover:bg-green-500 hover:text-white group"
+                    onClick={() => navigate("/registration")}
+                  >
+                    <UserPlus className="h-4 w-4 text-green-500 group-hover:text-white" />
+                    <span className="text-sm">Register</span>
                   </Button>
-                  <Button variant="outline" size="sm" className="h-8 px-2.5 flex items-center gap-1.5 hover:bg-purple-500 hover:text-white group" onClick={() => navigate("/encounter")}>
-                    <Stethoscope className="h-3.5 w-3.5 text-purple-500 group-hover:text-white" />
-                    <span className="text-xs">EHR</span>
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    className="h-11 px-3 flex items-center gap-2 hover:bg-purple-500 hover:text-white group"
+                    onClick={() => navigate("/encounter")}
+                  >
+                    <Stethoscope className="h-4 w-4 text-purple-500 group-hover:text-white" />
+                    <span className="text-sm">EHR</span>
                   </Button>
                 </div>
-              </div>
+              </section>
 
-              {/* Row 3: Module Categories - Fill remaining space */}
-              <div className="flex-1 min-h-0 overflow-hidden">
-                <div className="grid grid-cols-4 sm:grid-cols-5 lg:grid-cols-6 gap-2 h-full" style={{ gridAutoRows: '1fr' }}>
+              {/* Module Categories - Fill remaining space */}
+              <section className="flex-1 min-h-0 overflow-hidden">
+                <div className="grid grid-cols-4 sm:grid-cols-5 lg:grid-cols-6 gap-3 h-full" style={{ gridAutoRows: '1fr' }}>
                   {/* My Practice as first card */}
                   <ExpandableCategoryCard
                     id="my-practice"
@@ -680,7 +725,7 @@ export default function ModuleHome() {
                     />
                   ))}
                 </div>
-              </div>
+              </section>
             </TabsContent>
 
             {/* My Personal Health Portal Tab */}

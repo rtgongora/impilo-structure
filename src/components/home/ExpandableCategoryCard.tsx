@@ -46,13 +46,18 @@ export function ExpandableCategoryCard({
         className="cursor-pointer transition-all duration-200 hover:shadow-md hover:border-primary/50 group h-full flex flex-col min-h-0"
         onClick={() => setIsOpen(true)}
       >
-        <CardContent className="p-2 flex flex-col items-center justify-center gap-1.5 flex-1 text-center min-h-0">
-          <div className={cn("w-9 h-9 shrink-0 rounded-lg flex items-center justify-center group-hover:scale-105 transition-transform", color)}>
-            <Icon className="h-4 w-4 text-white" />
+        <CardContent className="p-3 flex flex-col items-center justify-center gap-2 flex-1 text-center min-h-0">
+          <div
+            className={cn(
+              "w-10 h-10 shrink-0 rounded-xl flex items-center justify-center group-hover:scale-105 transition-transform",
+              color
+            )}
+          >
+            <Icon className="h-5 w-5 text-white" />
           </div>
           <div className="min-w-0 w-full">
-            <p className="text-xs font-semibold leading-tight truncate">{title}</p>
-            <span className="text-[10px] text-muted-foreground">{modules.length}</span>
+            <p className="text-sm font-semibold leading-tight truncate">{title}</p>
+            <span className="text-xs text-muted-foreground">{modules.length} modules</span>
           </div>
         </CardContent>
       </Card>
