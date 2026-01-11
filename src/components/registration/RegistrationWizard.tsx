@@ -60,37 +60,65 @@ const STEPS: RegistrationStep[] = [
 ];
 
 interface ClientData {
-  // Demographics
+  // Core Identity (Mandatory)
   firstName: string;
   middleName: string;
   lastName: string;
+  preferredName: string; // Alias
   dateOfBirth: string;
-  gender: string;
+  dobEstimated: boolean; // Estimated DOB flag
+  estimatedAge: string; // For when exact DOB unknown
+  sexAtBirth: string; // Male/Female/Intersex/Unknown
+  genderIdentity: string; // Optional
+  registrationFacility: string;
+  registrationMethod: string; // Self/Assisted/Outreach/Import
+  clientType: string; // New/Returning/Referred
+  
+  // Demographics
   maritalStatus: string;
   employmentStatus: string;
   occupation: string;
   countryOfBirth: string;
   nationality: string;
+  ethnicity: string; // Optional
   religion: string;
   educationLevel: string;
+  primaryLanguage: string;
+  secondaryLanguage: string;
   
   // Contact
   phone: string;
   alternatePhone: string;
   email: string;
+  preferredContactMethod: string; // Call/SMS/WhatsApp/In-app/Email
+  preferredFacility: string;
   
   // Address (Zimbabwe model)
   address: AddressData;
   
-  // Identity
+  // Identity Documents
   idType: string;
   idNumber: string;
   nationalId: string;
+  birthRegistrationNumber: string;
+  passportNumber: string;
+  idIssuingCountry: string;
+  idVerificationStatus: string; // Not provided/Provided (unverified)/Verified
   
-  // Next of Kin
+  // Next of Kin / Emergency Contact
   nokName: string;
   nokRelationship: string;
   nokPhone: string;
+  nokAddress: string;
+  nokIsGuardian: boolean;
+  
+  // Guardianship (for minors/vulnerable)
+  guardianName: string;
+  guardianRelationship: string;
+  guardianPhone: string;
+  guardianAddress: string;
+  legalGuardianshipStatus: string;
+  hasDependents: boolean;
   
   // Biometrics
   biometrics: BiometricData[];
@@ -100,28 +128,65 @@ interface ClientData {
 }
 
 const initialClientData: ClientData = {
+  // Core Identity
   firstName: "",
   middleName: "",
   lastName: "",
+  preferredName: "",
   dateOfBirth: "",
-  gender: "",
+  dobEstimated: false,
+  estimatedAge: "",
+  sexAtBirth: "",
+  genderIdentity: "",
+  registrationFacility: "",
+  registrationMethod: "assisted",
+  clientType: "new",
+  
+  // Demographics
   maritalStatus: "",
   employmentStatus: "",
   occupation: "",
   countryOfBirth: "",
   nationality: "",
+  ethnicity: "",
   religion: "",
   educationLevel: "",
+  primaryLanguage: "",
+  secondaryLanguage: "",
+  
+  // Contact
   phone: "",
   alternatePhone: "",
   email: "",
+  preferredContactMethod: "",
+  preferredFacility: "",
   address: initialAddressData,
+  
+  // Identity Documents
   idType: "",
   idNumber: "",
   nationalId: "",
+  birthRegistrationNumber: "",
+  passportNumber: "",
+  idIssuingCountry: "",
+  idVerificationStatus: "not_provided",
+  
+  // Next of Kin
   nokName: "",
   nokRelationship: "",
   nokPhone: "",
+  nokAddress: "",
+  nokIsGuardian: false,
+  
+  // Guardianship
+  guardianName: "",
+  guardianRelationship: "",
+  guardianPhone: "",
+  guardianAddress: "",
+  legalGuardianshipStatus: "",
+  hasDependents: false,
+  
+  // Biometrics & Consent
   biometrics: [],
   consents: [],
 };
@@ -192,7 +257,7 @@ export function RegistrationWizard({ onComplete, onCancel }: RegistrationWizardP
           middle_name: clientData.middleName || null,
           last_name: clientData.lastName,
           date_of_birth: clientData.dateOfBirth,
-          gender: clientData.gender,
+          gender: clientData.sexAtBirth,
           national_id: clientData.nationalId || null,
           phone_primary: clientData.phone,
           phone_secondary: clientData.alternatePhone || null,
@@ -277,8 +342,49 @@ export function RegistrationWizard({ onComplete, onCancel }: RegistrationWizardP
     switch (step.id) {
       case "demographics":
         return (
-          <div className="space-y-6">
-            <div className="grid grid-cols-3 gap-4">
+          <div className="space-y-6 max-h-[60vh] overflow-y-auto pr-2">
+            {/* Registration Metadata */}
+            <div className="grid grid-cols-3 gap-4 p-4 bg-muted/30 rounded-lg">
+              <div className="space-y-2">
+                <Label htmlFor="clientType">Client Type *</Label>
+                <Select value={clientData.clientType} onValueChange={(v) => updateField("clientType", v)}>
+                  <SelectTrigger>
+                    <SelectValue placeholder="Select type" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="new">New Client</SelectItem>
+                    <SelectItem value="returning">Returning Client</SelectItem>
+                    <SelectItem value="referred">Referred Client</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
+              <div className="space-y-2">
+                <Label htmlFor="registrationMethod">Registration Method *</Label>
+                <Select value={clientData.registrationMethod} onValueChange={(v) => updateField("registrationMethod", v)}>
+                  <SelectTrigger>
+                    <SelectValue placeholder="Select method" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="self">Self-Registration</SelectItem>
+                    <SelectItem value="assisted">Assisted (Facility)</SelectItem>
+                    <SelectItem value="outreach">Outreach / Mobile</SelectItem>
+                    <SelectItem value="import">Import / Migration</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
+              <div className="space-y-2">
+                <Label htmlFor="registrationFacility">Registration Facility</Label>
+                <Input
+                  id="registrationFacility"
+                  value={clientData.registrationFacility}
+                  onChange={(e) => updateField("registrationFacility", e.target.value)}
+                  placeholder="Current facility"
+                />
+              </div>
+            </div>
+            
+            {/* Name Fields */}
+            <div className="grid grid-cols-4 gap-4">
               <div className="space-y-2">
                 <Label htmlFor="firstName">First Name *</Label>
                 <Input
@@ -306,9 +412,19 @@ export function RegistrationWizard({ onComplete, onCancel }: RegistrationWizardP
                   placeholder="Enter last name"
                 />
               </div>
+              <div className="space-y-2">
+                <Label htmlFor="preferredName">Preferred Name / Alias</Label>
+                <Input
+                  id="preferredName"
+                  value={clientData.preferredName}
+                  onChange={(e) => updateField("preferredName", e.target.value)}
+                  placeholder="Optional"
+                />
+              </div>
             </div>
             
-            <div className="grid grid-cols-2 gap-4">
+            {/* DOB and Sex */}
+            <div className="grid grid-cols-3 gap-4">
               <div className="space-y-2">
                 <Label htmlFor="dob">Date of Birth *</Label>
                 <div className="relative">
@@ -319,15 +435,50 @@ export function RegistrationWizard({ onComplete, onCancel }: RegistrationWizardP
                     value={clientData.dateOfBirth}
                     onChange={(e) => updateField("dateOfBirth", e.target.value)}
                     className="pl-10"
+                    disabled={clientData.dobEstimated}
                   />
                 </div>
+                <div className="flex items-center gap-2 mt-2">
+                  <input
+                    type="checkbox"
+                    id="dobEstimated"
+                    checked={clientData.dobEstimated}
+                    onChange={(e) => {
+                      setClientData(prev => ({
+                        ...prev,
+                        dobEstimated: e.target.checked,
+                        dateOfBirth: e.target.checked ? "" : prev.dateOfBirth
+                      }));
+                    }}
+                    className="rounded border-muted-foreground"
+                  />
+                  <Label htmlFor="dobEstimated" className="text-sm text-muted-foreground cursor-pointer">
+                    DOB is estimated
+                  </Label>
+                </div>
               </div>
-              <div className="space-y-2">
-                <Label>Gender *</Label>
+              
+              {clientData.dobEstimated && (
+                <div className="space-y-2">
+                  <Label htmlFor="estimatedAge">Estimated Age (years) *</Label>
+                  <Input
+                    id="estimatedAge"
+                    type="number"
+                    value={clientData.estimatedAge}
+                    onChange={(e) => updateField("estimatedAge", e.target.value)}
+                    placeholder="e.g., 35"
+                    min="0"
+                    max="120"
+                  />
+                </div>
+              )}
+              
+              <div className={cn("space-y-2", clientData.dobEstimated ? "" : "col-span-2")}>
+                <Label>Sex at Birth *</Label>
                 <RadioGroup
-                  value={clientData.gender}
-                  onValueChange={(v) => updateField("gender", v)}
-                  className="flex gap-4 pt-2"
+                  value={clientData.sexAtBirth}
+                  onValueChange={(v) => updateField("sexAtBirth", v)}
+                  className="flex flex-wrap gap-3 pt-2"
                 >
                   <div className="flex items-center space-x-2">
                     <RadioGroupItem value="male" id="male" />
@@ -338,14 +489,19 @@ export function RegistrationWizard({ onComplete, onCancel }: RegistrationWizardP
                     <Label htmlFor="female" className="cursor-pointer">Female</Label>
                   </div>
                   <div className="flex items-center space-x-2">
-                    <RadioGroupItem value="other" id="other" />
-                    <Label htmlFor="other" className="cursor-pointer">Other</Label>
+                    <RadioGroupItem value="intersex" id="intersex" />
+                    <Label htmlFor="intersex" className="cursor-pointer">Intersex</Label>
+                  </div>
+                  <div className="flex items-center space-x-2">
+                    <RadioGroupItem value="unknown" id="unknown" />
+                    <Label htmlFor="unknown" className="cursor-pointer">Unknown</Label>
                   </div>
                 </RadioGroup>
               </div>
             </div>
             
-            <div className="grid grid-cols-2 gap-4">
+            {/* Marital Status, Education, Languages */}
+            <div className="grid grid-cols-4 gap-4">
               <div className="space-y-2">
                 <Label htmlFor="marital">Marital Status</Label>
                 <Select value={clientData.maritalStatus} onValueChange={(v) => updateField("maritalStatus", v)}>
@@ -357,11 +513,13 @@ export function RegistrationWizard({ onComplete, onCancel }: RegistrationWizardP
                     <SelectItem value="married">Married</SelectItem>
                     <SelectItem value="divorced">Divorced</SelectItem>
                     <SelectItem value="widowed">Widowed</SelectItem>
+                    <SelectItem value="separated">Separated</SelectItem>
+                    <SelectItem value="cohabiting">Cohabiting</SelectItem>
                   </SelectContent>
                 </Select>
               </div>
               <div className="space-y-2">
-                <Label htmlFor="educationLevel">Level of Education</Label>
+                <Label htmlFor="educationLevel">Education Level</Label>
                 <Select value={clientData.educationLevel} onValueChange={(v) => updateField("educationLevel", v)}>
                   <SelectTrigger>
                     <SelectValue placeholder="Select level" />
@@ -382,8 +540,51 @@ export function RegistrationWizard({ onComplete, onCancel }: RegistrationWizardP
                   </SelectContent>
                 </Select>
               </div>
+              <div className="space-y-2">
+                <Label htmlFor="primaryLanguage">Primary Language *</Label>
+                <Select value={clientData.primaryLanguage} onValueChange={(v) => updateField("primaryLanguage", v)}>
+                  <SelectTrigger>
+                    <SelectValue placeholder="Select language" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="shona">Shona</SelectItem>
+                    <SelectItem value="ndebele">Ndebele</SelectItem>
+                    <SelectItem value="english">English</SelectItem>
+                    <SelectItem value="tonga">Tonga</SelectItem>
+                    <SelectItem value="venda">Venda</SelectItem>
+                    <SelectItem value="kalanga">Kalanga</SelectItem>
+                    <SelectItem value="sotho">Sotho</SelectItem>
+                    <SelectItem value="shangaan">Shangaan/Tsonga</SelectItem>
+                    <SelectItem value="nambya">Nambya</SelectItem>
+                    <SelectItem value="chewa">Chewa</SelectItem>
+                    <SelectItem value="other">Other</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
+              <div className="space-y-2">
+                <Label htmlFor="secondaryLanguage">Secondary Language</Label>
+                <Select value={clientData.secondaryLanguage} onValueChange={(v) => updateField("secondaryLanguage", v)}>
+                  <SelectTrigger>
+                    <SelectValue placeholder="Optional" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="shona">Shona</SelectItem>
+                    <SelectItem value="ndebele">Ndebele</SelectItem>
+                    <SelectItem value="english">English</SelectItem>
+                    <SelectItem value="tonga">Tonga</SelectItem>
+                    <SelectItem value="venda">Venda</SelectItem>
+                    <SelectItem value="kalanga">Kalanga</SelectItem>
+                    <SelectItem value="sotho">Sotho</SelectItem>
+                    <SelectItem value="shangaan">Shangaan/Tsonga</SelectItem>
+                    <SelectItem value="nambya">Nambya</SelectItem>
+                    <SelectItem value="chewa">Chewa</SelectItem>
+                    <SelectItem value="other">Other</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
             </div>
             
+            {/* Employment */}
             <div className="grid grid-cols-2 gap-4">
               <div className="space-y-2">
                 <Label htmlFor="employmentStatus">Employment Status</Label>
@@ -481,7 +682,8 @@ export function RegistrationWizard({ onComplete, onCancel }: RegistrationWizardP
               </div>
             </div>
             
-            <div className="grid grid-cols-3 gap-4">
+            {/* Origin & Identity */}
+            <div className="grid grid-cols-4 gap-4">
               <div className="space-y-2">
                 <Label htmlFor="countryOfBirth">Country of Birth *</Label>
                 <Select value={clientData.countryOfBirth} onValueChange={(v) => updateField("countryOfBirth", v)}>
@@ -579,6 +781,26 @@ export function RegistrationWizard({ onComplete, onCancel }: RegistrationWizardP
                 </Select>
               </div>
               <div className="space-y-2">
+                <Label htmlFor="ethnicity">Ethnicity / Tribe</Label>
+                <Select value={clientData.ethnicity} onValueChange={(v) => updateField("ethnicity", v)}>
+                  <SelectTrigger>
+                    <SelectValue placeholder="Optional" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="shona">Shona</SelectItem>
+                    <SelectItem value="ndebele">Ndebele</SelectItem>
+                    <SelectItem value="tonga">Tonga</SelectItem>
+                    <SelectItem value="venda">Venda</SelectItem>
+                    <SelectItem value="kalanga">Kalanga</SelectItem>
+                    <SelectItem value="shangaan">Shangaan</SelectItem>
+                    <SelectItem value="sotho">Sotho</SelectItem>
+                    <SelectItem value="mixed">Mixed Heritage</SelectItem>
+                    <SelectItem value="other">Other</SelectItem>
+                    <SelectItem value="prefer_not_to_say">Prefer Not to Say</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
+              <div className="space-y-2">
                 <Label htmlFor="religion">Religion</Label>
                 <Select value={clientData.religion} onValueChange={(v) => updateField("religion", v)}>
                   <SelectTrigger>
@@ -608,9 +830,9 @@ export function RegistrationWizard({ onComplete, onCancel }: RegistrationWizardP
         
       case "contact":
         return (
-          <div className="space-y-6">
+          <div className="space-y-6 max-h-[60vh] overflow-y-auto pr-2">
             {/* Phone & Email */}
-            <div className="grid grid-cols-2 gap-4">
+            <div className="grid grid-cols-3 gap-4">
               <div className="space-y-2">
                 <Label htmlFor="phone">Phone Number *</Label>
                 <div className="relative">
@@ -637,19 +859,45 @@ export function RegistrationWizard({ onComplete, onCancel }: RegistrationWizardP
                   />
                 </div>
               </div>
+              <div className="space-y-2">
+                <Label htmlFor="preferredContact">Preferred Contact Method</Label>
+                <Select value={clientData.preferredContactMethod} onValueChange={(v) => updateField("preferredContactMethod", v)}>
+                  <SelectTrigger>
+                    <SelectValue placeholder="Select method" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="call">Phone Call</SelectItem>
+                    <SelectItem value="sms">SMS</SelectItem>
+                    <SelectItem value="whatsapp">WhatsApp</SelectItem>
+                    <SelectItem value="in_app">In-App Notification</SelectItem>
+                    <SelectItem value="email">Email</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
             </div>
             
-            <div className="space-y-2">
-              <Label htmlFor="email">Email Address</Label>
-              <div className="relative">
-                <Mail className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
+            <div className="grid grid-cols-2 gap-4">
+              <div className="space-y-2">
+                <Label htmlFor="email">Email Address</Label>
+                <div className="relative">
+                  <Mail className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
+                  <Input
+                    id="email"
+                    type="email"
+                    value={clientData.email}
+                    onChange={(e) => updateField("email", e.target.value)}
+                    placeholder="email@example.com"
+                    className="pl-10"
+                  />
+                </div>
+              </div>
+              <div className="space-y-2">
+                <Label htmlFor="preferredFacility">Preferred Facility</Label>
                 <Input
-                  id="email"
-                  type="email"
-                  value={clientData.email}
-                  onChange={(e) => updateField("email", e.target.value)}
-                  placeholder="email@example.com"
-                  className="pl-10"
+                  id="preferredFacility"
+                  value={clientData.preferredFacility}
+                  onChange={(e) => updateField("preferredFacility", e.target.value)}
+                  placeholder="Enter preferred healthcare facility"
                 />
               </div>
             </div>
@@ -666,13 +914,13 @@ export function RegistrationWizard({ onComplete, onCancel }: RegistrationWizardP
               />
             </div>
             
-            {/* Next of Kin */}
+            {/* Next of Kin / Emergency Contact */}
             <div className="border-t pt-6">
               <h4 className="font-medium mb-4 flex items-center gap-2">
                 <Users className="w-4 h-4" />
-                Next of Kin / Emergency Contact
+                Next of Kin / Emergency Contact (Mandatory)
               </h4>
-              <div className="grid grid-cols-3 gap-4">
+              <div className="grid grid-cols-2 gap-4 mb-4">
                 <div className="space-y-2">
                   <Label htmlFor="nokName">Full Name *</Label>
                   <Input
@@ -693,11 +941,19 @@ export function RegistrationWizard({ onComplete, onCancel }: RegistrationWizardP
                       <SelectItem value="parent">Parent</SelectItem>
                       <SelectItem value="child">Child</SelectItem>
                       <SelectItem value="sibling">Sibling</SelectItem>
+                      <SelectItem value="grandparent">Grandparent</SelectItem>
+                      <SelectItem value="uncle_aunt">Uncle / Aunt</SelectItem>
+                      <SelectItem value="nephew_niece">Nephew / Niece</SelectItem>
+                      <SelectItem value="cousin">Cousin</SelectItem>
+                      <SelectItem value="friend">Friend</SelectItem>
+                      <SelectItem value="neighbour">Neighbour</SelectItem>
                       <SelectItem value="guardian">Guardian</SelectItem>
                       <SelectItem value="other">Other</SelectItem>
                     </SelectContent>
                   </Select>
                 </div>
+              </div>
+              <div className="grid grid-cols-2 gap-4 mb-4">
                 <div className="space-y-2">
                   <Label htmlFor="nokPhone">Phone Number *</Label>
                   <div className="relative">
@@ -711,17 +967,125 @@ export function RegistrationWizard({ onComplete, onCancel }: RegistrationWizardP
                     />
                   </div>
                 </div>
+                <div className="space-y-2">
+                  <Label htmlFor="nokAddress">Address (Brief)</Label>
+                  <Input
+                    id="nokAddress"
+                    value={clientData.nokAddress}
+                    onChange={(e) => updateField("nokAddress", e.target.value)}
+                    placeholder="e.g., Avondale, Harare"
+                  />
+                </div>
+              </div>
+              <div className="flex items-center gap-2">
+                <input
+                  type="checkbox"
+                  id="nokIsGuardian"
+                  checked={clientData.nokIsGuardian}
+                  onChange={(e) => setClientData(prev => ({ ...prev, nokIsGuardian: e.target.checked }))}
+                  className="rounded border-muted-foreground"
+                />
+                <Label htmlFor="nokIsGuardian" className="text-sm cursor-pointer">
+                  This person is also the client's legal guardian
+                </Label>
               </div>
             </div>
+            
+            {/* Guardianship Section (for minors/vulnerable) */}
+            {!clientData.nokIsGuardian && (
+              <div className="border-t pt-6">
+                <h4 className="font-medium mb-4 flex items-center gap-2">
+                  <Shield className="w-4 h-4" />
+                  Guardianship (If Applicable)
+                </h4>
+                <p className="text-sm text-muted-foreground mb-4">
+                  Complete this section for minors, elderly, or vulnerable persons who have a separate legal guardian.
+                </p>
+                <div className="grid grid-cols-2 gap-4 mb-4">
+                  <div className="space-y-2">
+                    <Label htmlFor="guardianName">Guardian Name</Label>
+                    <Input
+                      id="guardianName"
+                      value={clientData.guardianName}
+                      onChange={(e) => updateField("guardianName", e.target.value)}
+                      placeholder="Enter guardian name"
+                    />
+                  </div>
+                  <div className="space-y-2">
+                    <Label htmlFor="guardianRelationship">Relationship</Label>
+                    <Select value={clientData.guardianRelationship} onValueChange={(v) => updateField("guardianRelationship", v)}>
+                      <SelectTrigger>
+                        <SelectValue placeholder="Select relationship" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="parent">Parent</SelectItem>
+                        <SelectItem value="grandparent">Grandparent</SelectItem>
+                        <SelectItem value="uncle_aunt">Uncle / Aunt</SelectItem>
+                        <SelectItem value="sibling">Sibling</SelectItem>
+                        <SelectItem value="legal_guardian">Legal Guardian</SelectItem>
+                        <SelectItem value="foster_parent">Foster Parent</SelectItem>
+                        <SelectItem value="institution">Institution/Organization</SelectItem>
+                        <SelectItem value="other">Other</SelectItem>
+                      </SelectContent>
+                    </Select>
+                  </div>
+                </div>
+                <div className="grid grid-cols-2 gap-4 mb-4">
+                  <div className="space-y-2">
+                    <Label htmlFor="guardianPhone">Guardian Phone</Label>
+                    <div className="relative">
+                      <Phone className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
+                      <Input
+                        id="guardianPhone"
+                        value={clientData.guardianPhone}
+                        onChange={(e) => updateField("guardianPhone", e.target.value)}
+                        placeholder="+263 77 123 4567"
+                        className="pl-10"
+                      />
+                    </div>
+                  </div>
+                  <div className="space-y-2">
+                    <Label htmlFor="legalGuardianshipStatus">Legal Guardianship Status</Label>
+                    <Select value={clientData.legalGuardianshipStatus} onValueChange={(v) => updateField("legalGuardianshipStatus", v)}>
+                      <SelectTrigger>
+                        <SelectValue placeholder="Select status" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="biological_parent">Biological Parent</SelectItem>
+                        <SelectItem value="court_appointed">Court Appointed</SelectItem>
+                        <SelectItem value="informal">Informal Arrangement</SelectItem>
+                        <SelectItem value="unknown">Unknown</SelectItem>
+                      </SelectContent>
+                    </Select>
+                  </div>
+                </div>
+                <div className="flex items-center gap-2">
+                  <input
+                    type="checkbox"
+                    id="hasDependents"
+                    checked={clientData.hasDependents}
+                    onChange={(e) => setClientData(prev => ({ ...prev, hasDependents: e.target.checked }))}
+                    className="rounded border-muted-foreground"
+                  />
+                  <Label htmlFor="hasDependents" className="text-sm cursor-pointer">
+                    This client has dependents linked to them
+                  </Label>
+                </div>
+              </div>
+            )}
           </div>
         );
         
       case "identity":
         return (
           <div className="space-y-6">
-            <div className="grid grid-cols-2 gap-4">
+            <p className="text-sm text-muted-foreground bg-amber-500/10 p-3 rounded-lg border border-amber-500/20">
+              <strong>Note:</strong> Lack of ID documents must never block care. Complete what is available.
+            </p>
+            
+            <div className="grid grid-cols-3 gap-4">
               <div className="space-y-2">
-                <Label htmlFor="idType">ID Document Type *</Label>
+                <Label htmlFor="idType">ID Document Type</Label>
                 <Select value={clientData.idType} onValueChange={(v) => updateField("idType", v)}>
                   <SelectTrigger>
                     <SelectValue placeholder="Select ID type" />
@@ -731,11 +1095,12 @@ export function RegistrationWizard({ onComplete, onCancel }: RegistrationWizardP
                     <SelectItem value="passport">Passport</SelectItem>
                     <SelectItem value="drivers-license">Driver's License</SelectItem>
                     <SelectItem value="birth-certificate">Birth Certificate</SelectItem>
+                    <SelectItem value="none">No ID Available</SelectItem>
                   </SelectContent>
                 </Select>
               </div>
               <div className="space-y-2">
-                <Label htmlFor="idNumber">ID Number *</Label>
+                <Label htmlFor="idNumber">ID Number</Label>
                 <div className="relative">
                   <IdCard className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
                   <Input
@@ -747,16 +1112,69 @@ export function RegistrationWizard({ onComplete, onCancel }: RegistrationWizardP
                   />
                 </div>
               </div>
+              <div className="space-y-2">
+                <Label htmlFor="idVerificationStatus">Verification Status</Label>
+                <Select value={clientData.idVerificationStatus} onValueChange={(v) => updateField("idVerificationStatus", v)}>
+                  <SelectTrigger>
+                    <SelectValue placeholder="Select status" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="not_provided">Not Provided</SelectItem>
+                    <SelectItem value="provided_unverified">Provided (Unverified)</SelectItem>
+                    <SelectItem value="verified">Verified</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
             </div>
             
-            <div className="space-y-2">
-              <Label htmlFor="nationalId">National Registration Number</Label>
-              <Input
-                id="nationalId"
-                value={clientData.nationalId}
-                onChange={(e) => updateField("nationalId", e.target.value)}
-                placeholder="XX-XXXXXXX-X-XX"
-              />
+            <div className="grid grid-cols-2 gap-4">
+              <div className="space-y-2">
+                <Label htmlFor="nationalId">National Registration Number</Label>
+                <Input
+                  id="nationalId"
+                  value={clientData.nationalId}
+                  onChange={(e) => updateField("nationalId", e.target.value)}
+                  placeholder="XX-XXXXXXX-X-XX"
+                />
+              </div>
+              <div className="space-y-2">
+                <Label htmlFor="birthRegistrationNumber">Birth Registration Number</Label>
+                <Input
+                  id="birthRegistrationNumber"
+                  value={clientData.birthRegistrationNumber}
+                  onChange={(e) => updateField("birthRegistrationNumber", e.target.value)}
+                  placeholder="Enter birth reg number"
+                />
+              </div>
+            </div>
+            
+            <div className="grid grid-cols-2 gap-4">
+              <div className="space-y-2">
+                <Label htmlFor="passportNumber">Passport Number</Label>
+                <Input
+                  id="passportNumber"
+                  value={clientData.passportNumber}
+                  onChange={(e) => updateField("passportNumber", e.target.value)}
+                  placeholder="Enter passport number"
+                />
+              </div>
+              <div className="space-y-2">
+                <Label htmlFor="idIssuingCountry">ID Issuing Country</Label>
+                <Select value={clientData.idIssuingCountry} onValueChange={(v) => updateField("idIssuingCountry", v)}>
+                  <SelectTrigger>
+                    <SelectValue placeholder="Select country" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="ZW">Zimbabwe</SelectItem>
+                    <SelectItem value="ZA">South Africa</SelectItem>
+                    <SelectItem value="BW">Botswana</SelectItem>
+                    <SelectItem value="MZ">Mozambique</SelectItem>
+                    <SelectItem value="ZM">Zambia</SelectItem>
+                    <SelectItem value="MW">Malawi</SelectItem>
+                    <SelectItem value="OTHER">Other</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
             </div>
             
             {/* ID Document Upload Area */}
@@ -836,7 +1254,7 @@ export function RegistrationWizard({ onComplete, onCancel }: RegistrationWizardP
               middleName: clientData.middleName,
               lastName: clientData.lastName,
               dateOfBirth: clientData.dateOfBirth,
-              gender: clientData.gender,
+              gender: clientData.sexAtBirth,
               phone: clientData.phone,
               email: clientData.email,
               nationalId: clientData.nationalId,
@@ -885,8 +1303,8 @@ export function RegistrationWizard({ onComplete, onCancel }: RegistrationWizardP
                   <p className="font-medium">{clientData.dateOfBirth || "Not provided"}</p>
                 </div>
                 <div>
-                  <span className="text-muted-foreground">Gender:</span>
-                  <p className="font-medium capitalize">{clientData.gender || "Not provided"}</p>
+                  <span className="text-muted-foreground">Sex at Birth:</span>
+                  <p className="font-medium capitalize">{clientData.sexAtBirth || "Not provided"}</p>
                 </div>
                 <div>
                   <span className="text-muted-foreground">ID Number:</span>
@@ -1033,7 +1451,7 @@ export function RegistrationWizard({ onComplete, onCancel }: RegistrationWizardP
                           {clientData.firstName} {clientData.middleName} {clientData.lastName}
                         </p>
                         <p className="text-sm text-muted-foreground">
-                          {clientData.gender} • DOB: {clientData.dateOfBirth}
+                          {clientData.sexAtBirth} • DOB: {clientData.dateOfBirth}
                         </p>
                       </div>
                     </div>
