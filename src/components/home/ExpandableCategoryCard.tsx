@@ -43,21 +43,21 @@ export function ExpandableCategoryCard({
     <>
       {/* Category Card - Fills available space */}
       <Card
-        className="cursor-pointer transition-all duration-200 hover:shadow-md hover:border-primary/50 group h-full flex flex-col min-h-0"
+        className="cursor-pointer transition-all duration-200 hover:shadow-md hover:border-primary/50 group"
         onClick={() => setIsOpen(true)}
       >
-        <CardContent className="p-3 flex flex-col items-center justify-center gap-2 flex-1 text-center min-h-0">
+        <CardContent className="p-3 flex items-center gap-3">
           <div
             className={cn(
-              "w-10 h-10 shrink-0 rounded-xl flex items-center justify-center group-hover:scale-105 transition-transform",
+              "w-10 h-10 shrink-0 rounded-lg flex items-center justify-center group-hover:scale-105 transition-transform",
               color
             )}
           >
             <Icon className="h-5 w-5 text-white" />
           </div>
-          <div className="min-w-0 w-full">
-            <p className="text-sm font-semibold leading-tight truncate">{title}</p>
-            <span className="text-xs text-muted-foreground">{modules.length} modules</span>
+          <div className="min-w-0 flex-1">
+            <p className="text-base font-semibold leading-tight truncate">{title}</p>
+            <span className="text-sm text-muted-foreground">{modules.length} modules</span>
           </div>
         </CardContent>
       </Card>
