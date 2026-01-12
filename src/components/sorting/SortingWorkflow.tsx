@@ -37,6 +37,7 @@ type WorkflowStep = 'identify' | 'triage' | 'route';
 
 interface SortingWorkflowProps {
   session: SortingSession;
+  facilityId?: string;
   onComplete: () => void;
   onCancel: () => void;
   searchPatients: (query: string) => Promise<PatientSearchResult[]>;
@@ -50,6 +51,7 @@ interface SortingWorkflowProps {
 
 export function SortingWorkflow({
   session,
+  facilityId,
   onComplete,
   onCancel,
   searchPatients,
@@ -91,7 +93,7 @@ export function SortingWorkflow({
 
   // Route step state
   const [selectedQueueId, setSelectedQueueId] = useState('');
-  const { queues } = useQueueManagement(session.facility_id || undefined);
+  const { queues } = useQueueManagement(session.facility_id || facilityId);
 
   const waitTime = formatDistanceToNow(new Date(session.arrival_time), { addSuffix: false });
 

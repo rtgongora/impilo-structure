@@ -80,6 +80,7 @@ export function PatientSortingDesk({ facilityId, onBack }: PatientSortingDeskPro
     return (
       <SortingWorkflow
         session={currentSession}
+        facilityId={facilityId}
         onComplete={handleSessionComplete}
         onCancel={() => setCurrentSession(null)}
         searchPatients={searchPatients}
