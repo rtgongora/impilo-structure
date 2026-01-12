@@ -32,6 +32,7 @@ import {
 import { useQueueManagement } from "@/hooks/useQueueManagement";
 import { formatDistanceToNow } from "date-fns";
 import { toast } from "sonner";
+import { SortingCompletionDialog } from "./SortingCompletionDialog";
 
 type WorkflowStep = 'identify' | 'triage' | 'route';
 
@@ -94,6 +95,15 @@ export function SortingWorkflow({
   // Route step state
   const [selectedQueueId, setSelectedQueueId] = useState('');
   const { queues } = useQueueManagement(session.facility_id || facilityId);
+
+  // Completion dialog state
+  const [showCompletionDialog, setShowCompletionDialog] = useState(false);
+  const [completionData, setCompletionData] = useState<{
+    ticketNumber?: string;
+    queueId?: string;
+    queueName?: string;
+    outcome: 'queued' | 'immediate';
+  } | null>(null);
 
   const waitTime = formatDistanceToNow(new Date(session.arrival_time), { addSuffix: false });
 
@@ -188,8 +198,11 @@ export function SortingWorkflow({
     setLoading(false);
 
     if (success) {
-      toast.success('Patient routed to immediate care');
-      onComplete();
+      // Show completion dialog with options
+      setCompletionData({
+        outcome: 'immediate',
+      });
+      setShowCompletionDialog(true);
     } else {
       toast.error('Failed to route patient');
     }
@@ -207,11 +220,27 @@ export function SortingWorkflow({
     setLoading(false);
 
     if (ticketNumber) {
-      toast.success(`Patient queued with ticket: ${ticketNumber}`);
-      onComplete();
+      // Get queue name for display
+      const selectedQueue = queues.find(q => q.id === selectedQueueId);
+      
+      // Show completion dialog with options
+      setCompletionData({
+        ticketNumber,
+        queueId: selectedQueueId,
+        queueName: selectedQueue?.name,
+        outcome: 'queued',
+      });
+      setShowCompletionDialog(true);
     } else {
       toast.error('Failed to queue patient');
     }
+  };
+
+  // Handle completion dialog close
+  const handleCompletionDialogClose = () => {
+    setShowCompletionDialog(false);
+    setCompletionData(null);
+    onComplete();
   };
 
   // Cancel session
@@ -654,6 +683,23 @@ export function SortingWorkflow({
         )}
         </div>
       </div>
+
+      {/* Sorting Completion Dialog */}
+      <SortingCompletionDialog
+        open={showCompletionDialog}
+        onClose={handleCompletionDialogClose}
+        ticketNumber={completionData?.ticketNumber}
+        patientName={
+          session.patient_id && (session as any).patient
+            ? `${(session as any).patient.first_name} ${(session as any).patient.last_name}`
+            : session.temp_identity?.given_name || session.temp_identity?.alias
+        }
+        queueId={completionData?.queueId}
+        queueName={completionData?.queueName}
+        patientId={session.patient_id || undefined}
+        encounterId={session.encounter_id || undefined}
+        outcome={completionData?.outcome || 'queued'}
+      />
     </div>
   );
 }
