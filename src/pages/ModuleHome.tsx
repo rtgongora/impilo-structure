@@ -9,6 +9,15 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuLabel,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
 import { HealthDocumentScanner } from "@/components/documents/HealthDocumentScanner";
 import { TimelineFeed } from "@/components/social/TimelineFeed";
 import { CommunitiesList } from "@/components/social/CommunitiesList";
@@ -70,10 +79,12 @@ import {
   Zap,
   TestTube2,
   Scan,
+  ChevronDown,
 } from "lucide-react";
 import { Dialog, DialogContent, DialogTrigger } from "@/components/ui/dialog";
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible";
 import { EmergencyHub } from "@/components/emergency/EmergencyHub";
+import { toast } from "sonner";
 import impiloLogo from "@/assets/impilo-logo.png";
 
 // Category icons mapping for expandable cards
@@ -540,25 +551,86 @@ export default function ModuleHome() {
 
   return (
     <div className="h-screen flex flex-col bg-gradient-to-br from-background via-background to-muted/30">
-      {/* Compact Header */}
+      {/* Compact Header with Profile Menu */}
       <header className="sticky top-0 z-50 bg-background/95 backdrop-blur-md border-b flex-shrink-0">
         <div className="max-w-7xl mx-auto px-3">
-          <div className="flex items-center justify-between h-12">
-            <img src={impiloLogo} alt="Impilo" className="h-7 w-auto" />
+          <div className="flex items-center justify-between h-14">
+            <img src={impiloLogo} alt="Impilo" className="h-8 w-auto" />
 
-            <div className="flex items-center gap-2">
-              <div className="flex items-center gap-2 px-2 py-1 bg-muted/50 rounded-full">
-                <div className="w-6 h-6 rounded-full bg-primary/10 flex items-center justify-center">
-                  <User className="h-3 w-3 text-primary" />
-                </div>
-                <div className="hidden sm:block">
-                  <p className="text-xs font-medium leading-tight">{profile?.display_name}</p>
-                  <p className="text-[10px] text-muted-foreground capitalize leading-tight">{profile?.role}</p>
-                </div>
-              </div>
-              <Button variant="ghost" size="icon" className="h-7 w-7" onClick={() => signOut()}>
-                <LogOut className="h-3.5 w-3.5" />
-              </Button>
+            <div className="flex items-center gap-3">
+              {/* User Profile Dropdown */}
+              <DropdownMenu>
+                <DropdownMenuTrigger asChild>
+                  <Button variant="ghost" className="flex items-center gap-2 px-2 py-1.5 h-auto hover:bg-muted/50 rounded-full">
+                    <Avatar className="h-8 w-8 border-2 border-primary/20">
+                      <AvatarImage src={profile?.avatar_url || undefined} alt={profile?.display_name || 'User'} />
+                      <AvatarFallback className="bg-primary text-primary-foreground text-xs font-medium">
+                        {profile?.display_name?.split(' ').map(n => n[0]).join('').slice(0, 2).toUpperCase() || <User className="h-4 w-4" />}
+                      </AvatarFallback>
+                    </Avatar>
+                    <div className="hidden sm:block text-left">
+                      <p className="text-sm font-medium leading-tight">{profile?.display_name}</p>
+                      <p className="text-xs text-muted-foreground capitalize leading-tight">{profile?.role}</p>
+                    </div>
+                    <ChevronDown className="h-4 w-4 text-muted-foreground hidden sm:block" />
+                  </Button>
+                </DropdownMenuTrigger>
+                <DropdownMenuContent align="end" className="w-64">
+                  <DropdownMenuLabel className="font-normal">
+                    <div className="flex items-center gap-3 py-2">
+                      <Avatar className="h-12 w-12 border-2 border-primary/20">
+                        <AvatarImage src={profile?.avatar_url || undefined} alt={profile?.display_name || 'User'} />
+                        <AvatarFallback className="bg-primary text-primary-foreground text-sm font-medium">
+                          {profile?.display_name?.split(' ').map(n => n[0]).join('').slice(0, 2).toUpperCase() || <User className="h-5 w-5" />}
+                        </AvatarFallback>
+                      </Avatar>
+                      <div className="flex flex-col space-y-1">
+                        <p className="text-sm font-medium">{profile?.display_name || 'User'}</p>
+                        <Badge variant="secondary" className="capitalize text-xs w-fit">
+                          {profile?.role || 'User'}
+                        </Badge>
+                        {profile?.specialty && (
+                          <p className="text-xs text-muted-foreground">{profile.specialty}</p>
+                        )}
+                      </div>
+                    </div>
+                  </DropdownMenuLabel>
+                  <DropdownMenuSeparator />
+                  <DropdownMenuItem onClick={() => navigate("/profile")} className="cursor-pointer">
+                    <User className="mr-2 h-4 w-4" />
+                    <span>View Profile</span>
+                  </DropdownMenuItem>
+                  <DropdownMenuItem onClick={() => navigate("/profile")} className="cursor-pointer">
+                    <Settings className="mr-2 h-4 w-4" />
+                    <span>Account Settings</span>
+                  </DropdownMenuItem>
+                  <DropdownMenuItem onClick={() => navigate("/profile")} className="cursor-pointer">
+                    <Shield className="mr-2 h-4 w-4" />
+                    <span>Security & Privacy</span>
+                  </DropdownMenuItem>
+                  {isAdmin && (
+                    <>
+                      <DropdownMenuSeparator />
+                      <DropdownMenuItem onClick={() => navigate("/admin")} className="cursor-pointer">
+                        <UserCog className="mr-2 h-4 w-4" />
+                        <span>Admin Dashboard</span>
+                      </DropdownMenuItem>
+                    </>
+                  )}
+                  <DropdownMenuSeparator />
+                  <DropdownMenuItem 
+                    onClick={async () => {
+                      await signOut();
+                      toast.success("Signed out successfully");
+                      navigate("/auth");
+                    }} 
+                    className="cursor-pointer text-destructive focus:text-destructive"
+                  >
+                    <LogOut className="mr-2 h-4 w-4" />
+                    <span>Sign Out</span>
+                  </DropdownMenuItem>
+                </DropdownMenuContent>
+              </DropdownMenu>
             </div>
           </div>
         </div>
