@@ -277,11 +277,12 @@ export function SortingWorkflow({
         {/* IDENTIFY STEP */}
         {step === 'identify' && (
           <div className="space-y-4">
+            {/* Primary Option: Search Existing Patients */}
             <Card>
-              <CardHeader>
+              <CardHeader className="pb-3">
                 <CardTitle className="flex items-center gap-2">
                   <Search className="h-5 w-5" />
-                  Find Patient
+                  Find Existing Patient
                 </CardTitle>
                 <CardDescription>
                   Search by name, MRN, phone, or Health ID
@@ -331,56 +332,95 @@ export function SortingWorkflow({
 
                 {searchQuery.length >= 2 && !searching && searchResults.length === 0 && (
                   <div className="text-center py-4 text-muted-foreground">
-                    No patients found
+                    No patients found matching "{searchQuery}"
                   </div>
                 )}
               </CardContent>
             </Card>
 
-            <div className="text-center text-muted-foreground text-sm">or</div>
+            {/* Secondary Option: Register New Patient */}
+            <Card className="border-primary/30">
+              <CardHeader className="pb-3">
+                <CardTitle className="flex items-center gap-2 text-primary">
+                  <UserPlus className="h-5 w-5" />
+                  New Patient Registration
+                </CardTitle>
+                <CardDescription>
+                  Patient not found? Register them in the system
+                </CardDescription>
+              </CardHeader>
+              <CardContent>
+                <Button 
+                  className="w-full" 
+                  onClick={() => {
+                    // Navigate to registration with return context
+                    window.location.href = `/registration?returnTo=/sorting&sessionId=${session.id}`;
+                  }}
+                >
+                  <UserPlus className="h-4 w-4 mr-2" />
+                  Register New Patient
+                </Button>
+              </CardContent>
+            </Card>
 
-            {!showTempForm ? (
-              <Button 
-                variant="outline" 
-                className="w-full" 
-                onClick={() => setShowTempForm(true)}
-              >
-                <UserPlus className="h-4 w-4 mr-2" />
-                Create Temporary ID (Cannot Identify)
-              </Button>
-            ) : (
-              <Card className="border-orange-200">
-                <CardHeader>
-                  <CardTitle className="flex items-center gap-2 text-orange-700">
-                    <AlertTriangle className="h-5 w-5" />
-                    Temporary Patient Identity
+            {/* Last Resort: Temporary ID */}
+            <Card className="border-dashed border-muted-foreground/30">
+              <CardHeader className="pb-2">
+                <div className="flex items-center justify-between">
+                  <CardTitle className="flex items-center gap-2 text-sm font-medium text-muted-foreground">
+                    <AlertTriangle className="h-4 w-4" />
+                    Cannot Identify Patient?
                   </CardTitle>
-                  <CardDescription>
-                    For patients who cannot be identified. Will be reconciled later.
+                  {!showTempForm && (
+                    <Button 
+                      variant="ghost" 
+                      size="sm"
+                      className="text-orange-600 hover:text-orange-700 hover:bg-orange-50"
+                      onClick={() => setShowTempForm(true)}
+                    >
+                      Create Temporary ID
+                    </Button>
+                  )}
+                </div>
+                {!showTempForm && (
+                  <CardDescription className="text-xs">
+                    Only use when patient is unconscious, confused, or has no identification
                   </CardDescription>
-                </CardHeader>
-                <CardContent className="space-y-4">
+                )}
+              </CardHeader>
+              
+              {showTempForm && (
+                <CardContent className="space-y-4 pt-0">
+                  <div className="bg-orange-50 dark:bg-orange-950/30 border border-orange-200 dark:border-orange-800 rounded-lg p-3">
+                    <p className="text-xs text-orange-700 dark:text-orange-300 flex items-center gap-2">
+                      <AlertTriangle className="h-3.5 w-3.5 flex-shrink-0" />
+                      Temporary IDs must be reconciled with a permanent Health ID before discharge
+                    </p>
+                  </div>
+                  
                   <div className="grid grid-cols-2 gap-4">
                     <div>
-                      <Label>Name (if known)</Label>
+                      <Label className="text-xs">Name (if known)</Label>
                       <Input
                         value={tempIdentity.given_name}
                         onChange={(e) => setTempIdentity({ ...tempIdentity, given_name: e.target.value })}
                         placeholder="Given name"
+                        className="h-9"
                       />
                     </div>
                     <div>
-                      <Label>Alias/Nickname</Label>
+                      <Label className="text-xs">Alias/Nickname</Label>
                       <Input
                         value={tempIdentity.alias}
                         onChange={(e) => setTempIdentity({ ...tempIdentity, alias: e.target.value })}
                         placeholder="e.g. 'John Doe'"
+                        className="h-9"
                       />
                     </div>
                   </div>
                   <div className="grid grid-cols-2 gap-4">
                     <div>
-                      <Label>Sex</Label>
+                      <Label className="text-xs">Sex</Label>
                       <RadioGroup
                         value={tempIdentity.sex}
                         onValueChange={(v) => setTempIdentity({ ...tempIdentity, sex: v })}
@@ -388,37 +428,39 @@ export function SortingWorkflow({
                       >
                         <div className="flex items-center gap-2">
                           <RadioGroupItem value="male" id="male" />
-                          <Label htmlFor="male">Male</Label>
+                          <Label htmlFor="male" className="text-sm">Male</Label>
                         </div>
                         <div className="flex items-center gap-2">
                           <RadioGroupItem value="female" id="female" />
-                          <Label htmlFor="female">Female</Label>
+                          <Label htmlFor="female" className="text-sm">Female</Label>
                         </div>
                       </RadioGroup>
                     </div>
                     <div>
-                      <Label>Estimated Age</Label>
+                      <Label className="text-xs">Estimated Age</Label>
                       <Input
                         type="number"
                         value={tempIdentity.estimated_age}
                         onChange={(e) => setTempIdentity({ ...tempIdentity, estimated_age: e.target.value })}
                         placeholder="Years"
+                        className="h-9"
                       />
                     </div>
                   </div>
                   <div>
-                    <Label>Reason for Temp ID*</Label>
+                    <Label className="text-xs">Reason for Temporary ID*</Label>
                     <Textarea
                       value={tempIdentity.reason}
                       onChange={(e) => setTempIdentity({ ...tempIdentity, reason: e.target.value })}
-                      placeholder="e.g. Unconscious, no ID, confused patient"
+                      placeholder="e.g. Unconscious, no ID, confused patient, brought in by emergency services"
+                      className="min-h-[60px]"
                     />
                   </div>
                   <div className="flex gap-2">
                     <Button 
                       onClick={handleCreateTempIdentity} 
                       disabled={loading}
-                      className="flex-1"
+                      className="flex-1 bg-orange-600 hover:bg-orange-700"
                     >
                       {loading && <Loader2 className="h-4 w-4 mr-2 animate-spin" />}
                       Create Temporary ID
@@ -428,8 +470,8 @@ export function SortingWorkflow({
                     </Button>
                   </div>
                 </CardContent>
-              </Card>
-            )}
+              )}
+            </Card>
           </div>
         )}
 
