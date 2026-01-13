@@ -21,6 +21,7 @@ import { NeonatalResusWorkspace } from "./workspaces/NeonatalResusWorkspace";
 import { AnaesthesiaPreOpWorkspace } from "./workspaces/AnaesthesiaPreOpWorkspace";
 import { TeleconsultationWorkspace } from "./workspaces/TeleconsultationWorkspace";
 import { VirtualCareWorkspace } from "./workspaces/VirtualCareWorkspace";
+import { PatientFileWorkspace } from "./workspaces/PatientFileWorkspace";
 import { getCarePathway } from "@/types/clinicalSpaces";
 
 interface WorkspaceViewProps {
@@ -46,6 +47,9 @@ export function WorkspaceView({ workspace }: WorkspaceViewProps) {
 
   const renderWorkspaceContent = () => {
     switch (workspace.type.toLowerCase()) {
+      case "patient_file":
+      case "patient file":
+        return <PatientFileWorkspace />;
       case "theatre":
         return <TheatreWorkspace />;
       case "trauma":
