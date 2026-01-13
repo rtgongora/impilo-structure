@@ -137,8 +137,8 @@ export function PersonalHub() {
 
       {/* Health Section */}
       {activeSection === 'health' && (
-        <div className="flex-1 overflow-auto">
-          <Tabs value={activeHealthTab} onValueChange={setActiveHealthTab}>
+        <div className="flex-1 flex flex-col min-h-0 overflow-auto">
+          <Tabs value={activeHealthTab} onValueChange={setActiveHealthTab} className="flex-1 flex flex-col min-h-0">
             <div className="overflow-x-auto mb-4">
               <TabsList className="inline-flex w-max min-w-full">
                 <TabsTrigger value="home">Home</TabsTrigger>
@@ -392,8 +392,8 @@ export function PersonalHub() {
 
       {/* Social Section */}
       {activeSection === 'social' && (
-        <div className="flex-1 overflow-auto">
-          <div className="flex flex-col lg:flex-row gap-4">
+        <div className="flex-1 flex flex-col min-h-0 overflow-auto">
+          <div className="flex flex-col lg:flex-row gap-4 flex-1">
             {/* Left Sidebar Navigation */}
             <div className="hidden lg:block w-64 shrink-0">
               <Card className="sticky top-4">
