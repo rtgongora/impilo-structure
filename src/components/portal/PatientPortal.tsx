@@ -40,6 +40,7 @@ import { PortalCommunities } from "./modules/PortalCommunities";
 import { PortalRemoteMonitoring } from "./modules/PortalRemoteMonitoring";
 import { PortalSecureMessaging } from "./modules/PortalSecureMessaging";
 import { PortalMarketplace } from "./modules/PortalMarketplace";
+import { PortalWellness } from "./modules/PortalWellness";
 
 const MOCK_PATIENT = {
   name: "John Doe",
