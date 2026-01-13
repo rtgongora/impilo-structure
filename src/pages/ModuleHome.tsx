@@ -490,7 +490,7 @@ export default function ModuleHome() {
               )}
               <TabsTrigger value="personal" className="flex items-center justify-center gap-2 text-sm data-[state=active]:bg-gradient-to-r data-[state=active]:from-pink-500 data-[state=active]:to-purple-500 data-[state=active]:text-white">
                 <Heart className="h-4 w-4" />
-                Personal
+                My Health
               </TabsTrigger>
             </TabsList>
 
