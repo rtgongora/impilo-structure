@@ -142,6 +142,10 @@ export function PatientPortal() {
                 <ShoppingCart className="h-4 w-4 mr-1" />
                 Marketplace
               </TabsTrigger>
+              <TabsTrigger value="wellness">
+                <Activity className="h-4 w-4 mr-1" />
+                Wellness
+              </TabsTrigger>
               <TabsTrigger value="services">Services</TabsTrigger>
               <TabsTrigger value="queue">Queue</TabsTrigger>
               <TabsTrigger value="emergency" className="text-destructive">
@@ -304,6 +308,10 @@ export function PatientPortal() {
 
           <TabsContent value="marketplace">
             <PortalMarketplace />
+          </TabsContent>
+
+          <TabsContent value="wellness">
+            <PortalWellness />
           </TabsContent>
 
           <TabsContent value="services">
