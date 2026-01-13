@@ -650,7 +650,7 @@ export default function ModuleHome() {
             </TabsContent>
 
             {/* Personal Hub Tab (Health + Social unified) */}
-            <TabsContent value="personal" className="mt-0 flex-1 overflow-auto">
+            <TabsContent value="personal" className="mt-0 flex-1 flex flex-col min-h-0">
               <PersonalHub />
             </TabsContent>
           </Tabs>
