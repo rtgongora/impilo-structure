@@ -6,19 +6,38 @@ import { PaymentMethods } from "@/components/payments/PaymentMethods";
 import { HealthWallet } from "@/components/payments/HealthWallet";
 import { RemittanceViewer } from "@/components/payments/RemittanceViewer";
 import { CBZBankIntegration } from "@/components/payments/CBZBankIntegration";
+import { CashierBillingDashboard } from "@/components/payments/CashierBillingDashboard";
+import { ClaimsManagement } from "@/components/payments/ClaimsManagement";
+import { CashReconciliation } from "@/components/payments/CashReconciliation";
+import { CostTrackingDashboard } from "@/components/payments/CostTrackingDashboard";
+import { RemittanceProcessing } from "@/components/payments/RemittanceProcessing";
+import { ScrollArea, ScrollBar } from "@/components/ui/scroll-area";
 
 const Payments = () => {
   return (
     <AppLayout title="Payments & Billing">
-      <Tabs defaultValue="gateway" className="p-4 space-y-4">
-        <TabsList>
-          <TabsTrigger value="gateway">Payment Gateway</TabsTrigger>
-          <TabsTrigger value="cbz">CBZ Bank</TabsTrigger>
-          <TabsTrigger value="wallet">Health Wallet</TabsTrigger>
-          <TabsTrigger value="methods">Payment Methods</TabsTrigger>
-          <TabsTrigger value="claims">Insurance Claims</TabsTrigger>
-          <TabsTrigger value="remittance">Remittance/ERA</TabsTrigger>
-        </TabsList>
+      <Tabs defaultValue="cashier" className="p-4 space-y-4">
+        <ScrollArea className="w-full whitespace-nowrap">
+          <TabsList className="inline-flex w-max">
+            <TabsTrigger value="cashier">Cashier Dashboard</TabsTrigger>
+            <TabsTrigger value="reconciliation">Cash Reconciliation</TabsTrigger>
+            <TabsTrigger value="gateway">Payment Gateway</TabsTrigger>
+            <TabsTrigger value="cbz">CBZ Bank</TabsTrigger>
+            <TabsTrigger value="wallet">Health Wallet</TabsTrigger>
+            <TabsTrigger value="methods">Payment Methods</TabsTrigger>
+            <TabsTrigger value="claims">Claims Management</TabsTrigger>
+            <TabsTrigger value="remittance">Remittance Processing</TabsTrigger>
+            <TabsTrigger value="costs">Cost Tracking</TabsTrigger>
+          </TabsList>
+          <ScrollBar orientation="horizontal" />
+        </ScrollArea>
+        
+        <TabsContent value="cashier">
+          <CashierBillingDashboard />
+        </TabsContent>
+        <TabsContent value="reconciliation">
+          <CashReconciliation />
+        </TabsContent>
         <TabsContent value="gateway">
           <PaymentGateway />
         </TabsContent>
@@ -34,10 +53,13 @@ const Payments = () => {
           <PaymentMethods />
         </TabsContent>
         <TabsContent value="claims">
-          <InsuranceClaims />
+          <ClaimsManagement />
         </TabsContent>
-        <TabsContent value="remittance" className="h-[calc(100vh-200px)]">
-          <RemittanceViewer />
+        <TabsContent value="remittance">
+          <RemittanceProcessing />
+        </TabsContent>
+        <TabsContent value="costs">
+          <CostTrackingDashboard />
         </TabsContent>
       </Tabs>
     </AppLayout>
