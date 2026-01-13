@@ -3,11 +3,13 @@ import { useAuth } from "@/contexts/AuthContext";
 import { useNavigate } from "react-router-dom";
 import { useUserRoles, ModuleAccessRole } from "@/hooks/useUserRoles";
 import { useModuleAvailability } from "@/hooks/useFacilityCapabilities";
+import { useActiveWorkContext } from "@/hooks/useActiveWorkContext";
 import { FacilityCapability } from "@/contexts/FacilityContext";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { ScrollArea } from "@/components/ui/scroll-area";
+import { WorkplaceSelectionHub } from "@/components/home/WorkplaceSelectionHub";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import {
@@ -79,6 +81,8 @@ import {
   Download,
   LayoutGrid,
   DoorOpen,
+  RefreshCw,
+  MapPin,
 } from "lucide-react";
 import { Dialog, DialogContent, DialogTrigger } from "@/components/ui/dialog";
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible";
@@ -310,6 +314,14 @@ export default function ModuleHome() {
   const { profile, signOut } = useAuth();
   const navigate = useNavigate();
   const { canAccessModule, isAdmin, loading: rolesLoading } = useUserRoles();
+  const { 
+    activeContext, 
+    hasActiveContext, 
+    selectFacility, 
+    selectAboveSite, 
+    selectRemote,
+    switchContext 
+  } = useActiveWorkContext();
   
   // Detect if user is a client (patient) vs provider
   const isClient = profile?.role === "client" || profile?.role === "patient";
@@ -390,6 +402,22 @@ export default function ModuleHome() {
             <img src={impiloLogo} alt="Impilo" className="h-8 w-auto" />
 
             <div className="flex items-center gap-3">
+              {/* Active Workspace Indicator */}
+              {hasActiveContext && activeContext && (
+                <Button
+                  variant="outline"
+                  size="sm"
+                  className="hidden md:flex items-center gap-2 h-9 px-3"
+                  onClick={switchContext}
+                >
+                  <MapPin className="h-4 w-4 text-primary" />
+                  <span className="text-sm font-medium truncate max-w-[200px]">
+                    {activeContext.facilityName || activeContext.contextLabel}
+                  </span>
+                  <RefreshCw className="h-3.5 w-3.5 text-muted-foreground" />
+                </Button>
+              )}
+
               {/* User Profile Dropdown */}
               <DropdownMenu>
                 <DropdownMenuTrigger asChild>
@@ -427,6 +455,20 @@ export default function ModuleHome() {
                       </div>
                     </div>
                   </DropdownMenuLabel>
+                  {/* Current Workspace in dropdown for mobile */}
+                  {hasActiveContext && activeContext && (
+                    <>
+                      <DropdownMenuSeparator />
+                      <DropdownMenuItem onClick={switchContext} className="cursor-pointer">
+                        <MapPin className="mr-2 h-4 w-4 text-primary" />
+                        <div className="flex-1">
+                          <p className="text-sm font-medium truncate">{activeContext.facilityName || activeContext.contextLabel}</p>
+                          <p className="text-xs text-muted-foreground">Switch Workplace</p>
+                        </div>
+                        <RefreshCw className="h-3.5 w-3.5 text-muted-foreground" />
+                      </DropdownMenuItem>
+                    </>
+                  )}
                   <DropdownMenuSeparator />
                   <DropdownMenuItem onClick={() => navigate("/profile")} className="cursor-pointer">
                     <User className="mr-2 h-4 w-4" />
@@ -471,13 +513,17 @@ export default function ModuleHome() {
       {/* Main Content - Fill Screen */}
       <main className="flex-1 flex flex-col overflow-hidden p-4">
         <div className="flex-1 flex flex-col max-w-7xl mx-auto w-full h-full">
-          {/* Welcome Header */}
-          <div className="flex items-center justify-between mb-4">
-            <div>
-              <h2 className="text-xl font-bold">Welcome, {getDisplayTitle()}</h2>
-              <p className="text-sm text-muted-foreground">Select a module to get started</p>
+          {/* Welcome Header - Only show when workspace is selected */}
+          {hasActiveContext && (
+            <div className="flex items-center justify-between mb-4">
+              <div>
+                <h2 className="text-xl font-bold">Welcome, {getDisplayTitle()}</h2>
+                <p className="text-sm text-muted-foreground">
+                  Working from: {activeContext?.facilityName || activeContext?.contextLabel}
+                </p>
+              </div>
             </div>
-          </div>
+          )}
 
           {/* Tabs - Fill remaining space */}
           <Tabs value={activeTab} onValueChange={setActiveTab} className="flex-1 flex flex-col min-h-0">
@@ -496,6 +542,16 @@ export default function ModuleHome() {
 
             {/* My Work Tab */}
             <TabsContent value="work" className="mt-0 flex-1 flex flex-col gap-3 min-h-0">
+              {/* Show Workplace Selection Hub if no context selected */}
+              {!hasActiveContext ? (
+                <WorkplaceSelectionHub
+                  onFacilitySelect={selectFacility}
+                  onAboveSiteSelect={selectAboveSite}
+                  onRemoteSelect={selectRemote}
+                />
+              ) : (
+                /* Show modules when workspace is selected */
+                <>
               {/* Communication and Quick Access - Stacked vertically */}
               <div className="flex flex-col gap-3 flex-shrink-0">
                 {/* Communication Noticeboard */}
@@ -647,6 +703,8 @@ export default function ModuleHome() {
                   ))}
                 </div>
               </section>
+              </>
+              )}
             </TabsContent>
 
             {/* Personal Hub Tab (Health + Social unified) */}
