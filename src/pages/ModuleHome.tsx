@@ -319,7 +319,9 @@ export default function ModuleHome() {
     hasActiveContext, 
     selectFacility, 
     selectAboveSite, 
+    selectCombinedView,
     selectRemote,
+    selectSupportMode,
     switchContext 
   } = useActiveWorkContext();
   
@@ -547,7 +549,9 @@ export default function ModuleHome() {
                 <WorkplaceSelectionHub
                   onFacilitySelect={selectFacility}
                   onAboveSiteSelect={selectAboveSite}
+                  onCombinedViewSelect={selectCombinedView}
                   onRemoteSelect={selectRemote}
+                  onSupportModeSelect={selectSupportMode}
                 />
               ) : (
                 /* Show modules when workspace is selected */
