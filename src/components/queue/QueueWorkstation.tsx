@@ -203,132 +203,146 @@ export function QueueWorkstation({ facilityId, initialQueueId }: QueueWorkstatio
         />
       )}
 
-      {/* Queue Tabs */}
-      {selectedQueueId && (
-        <Tabs value={activeTab} onValueChange={setActiveTab}>
-          <TabsList>
-            <TabsTrigger value="waiting">
-              Waiting
-              {waitingItems.length > 0 && (
-                <Badge variant="secondary" className="ml-2">{waitingItems.length}</Badge>
-              )}
-            </TabsTrigger>
-            <TabsTrigger value="called">
-              Called
-              {calledItems.length > 0 && (
-                <Badge variant="secondary" className="ml-2">{calledItems.length}</Badge>
-              )}
-            </TabsTrigger>
-            <TabsTrigger value="in_service">
-              In Service
-              {inServiceItems.length > 0 && (
-                <Badge variant="secondary" className="ml-2">{inServiceItems.length}</Badge>
-              )}
-            </TabsTrigger>
-            {pausedItems.length > 0 && (
-              <TabsTrigger value="paused">
-                Paused
-                <Badge variant="secondary" className="ml-2">{pausedItems.length}</Badge>
-              </TabsTrigger>
-            )}
-          </TabsList>
+      {/* Main Content - Queue + Appointments Side by Side */}
+      {selectedQueueId ? (
+        <ResizablePanelGroup direction="horizontal" className="min-h-[600px] rounded-lg border">
+          {/* Queue Items Panel */}
+          <ResizablePanel defaultSize={60} minSize={40}>
+            <div className="h-full p-4">
+              <Tabs value={activeTab} onValueChange={setActiveTab}>
+                <TabsList>
+                  <TabsTrigger value="waiting">
+                    Waiting
+                    {waitingItems.length > 0 && (
+                      <Badge variant="secondary" className="ml-2">{waitingItems.length}</Badge>
+                    )}
+                  </TabsTrigger>
+                  <TabsTrigger value="called">
+                    Called
+                    {calledItems.length > 0 && (
+                      <Badge variant="secondary" className="ml-2">{calledItems.length}</Badge>
+                    )}
+                  </TabsTrigger>
+                  <TabsTrigger value="in_service">
+                    In Service
+                    {inServiceItems.length > 0 && (
+                      <Badge variant="secondary" className="ml-2">{inServiceItems.length}</Badge>
+                    )}
+                  </TabsTrigger>
+                  {pausedItems.length > 0 && (
+                    <TabsTrigger value="paused">
+                      Paused
+                      <Badge variant="secondary" className="ml-2">{pausedItems.length}</Badge>
+                    </TabsTrigger>
+                  )}
+                </TabsList>
 
-          <TabsContent value="waiting" className="mt-4">
-            <ScrollArea className="h-[500px]">
-              <div className="space-y-3 pr-4">
-                {waitingItems.length === 0 ? (
-                  <Card>
-                    <CardContent className="py-12 text-center text-muted-foreground">
-                      <Users className="h-12 w-12 mx-auto mb-4 opacity-50" />
-                      <p>No patients waiting</p>
-                    </CardContent>
-                  </Card>
-                ) : (
-                  waitingItems.map(item => (
-                    <QueueItemCard
-                      key={item.id}
-                      item={item}
-                      onCall={() => callNext()}
-                      onTransfer={() => handleTransfer(item.id)}
-                      onEscalate={() => handleEscalate(item.id)}
-                      onNoShow={() => markNoShow(item.id)}
-                      onOpenPatient={() => handleOpenChart(item)}
-                    />
-                  ))
-                )}
-              </div>
-            </ScrollArea>
-          </TabsContent>
+                <TabsContent value="waiting" className="mt-4">
+                  <ScrollArea className="h-[500px]">
+                    <div className="space-y-3 pr-4">
+                      {waitingItems.length === 0 ? (
+                        <Card>
+                          <CardContent className="py-12 text-center text-muted-foreground">
+                            <Users className="h-12 w-12 mx-auto mb-4 opacity-50" />
+                            <p>No patients waiting</p>
+                          </CardContent>
+                        </Card>
+                      ) : (
+                        waitingItems.map(item => (
+                          <QueueItemCard
+                            key={item.id}
+                            item={item}
+                            onCall={() => callNext()}
+                            onTransfer={() => handleTransfer(item.id)}
+                            onEscalate={() => handleEscalate(item.id)}
+                            onNoShow={() => markNoShow(item.id)}
+                            onOpenPatient={() => handleOpenChart(item)}
+                          />
+                        ))
+                      )}
+                    </div>
+                  </ScrollArea>
+                </TabsContent>
 
-          <TabsContent value="called" className="mt-4">
-            <ScrollArea className="h-[500px]">
-              <div className="space-y-3 pr-4">
-                {calledItems.length === 0 ? (
-                  <Card>
-                    <CardContent className="py-12 text-center text-muted-foreground">
-                      <p>No patients called</p>
-                    </CardContent>
-                  </Card>
-                ) : (
-                  calledItems.map(item => (
-                    <QueueItemCard
-                      key={item.id}
-                      item={item}
-                      onStartService={() => handleStartServiceAndOpenChart(item)}
-                      onNoShow={() => markNoShow(item.id)}
-                      onTransfer={() => handleTransfer(item.id)}
-                      onOpenPatient={() => handleOpenChart(item)}
-                    />
-                  ))
-                )}
-              </div>
-            </ScrollArea>
-          </TabsContent>
+                <TabsContent value="called" className="mt-4">
+                  <ScrollArea className="h-[500px]">
+                    <div className="space-y-3 pr-4">
+                      {calledItems.length === 0 ? (
+                        <Card>
+                          <CardContent className="py-12 text-center text-muted-foreground">
+                            <p>No patients called</p>
+                          </CardContent>
+                        </Card>
+                      ) : (
+                        calledItems.map(item => (
+                          <QueueItemCard
+                            key={item.id}
+                            item={item}
+                            onStartService={() => handleStartServiceAndOpenChart(item)}
+                            onNoShow={() => markNoShow(item.id)}
+                            onTransfer={() => handleTransfer(item.id)}
+                            onOpenPatient={() => handleOpenChart(item)}
+                          />
+                        ))
+                      )}
+                    </div>
+                  </ScrollArea>
+                </TabsContent>
 
-          <TabsContent value="in_service" className="mt-4">
-            <ScrollArea className="h-[500px]">
-              <div className="space-y-3 pr-4">
-                {inServiceItems.length === 0 ? (
-                  <Card>
-                    <CardContent className="py-12 text-center text-muted-foreground">
-                      <p>No patients in service</p>
-                    </CardContent>
-                  </Card>
-                ) : (
-                  inServiceItems.map(item => (
-                    <QueueItemCard
-                      key={item.id}
-                      item={item}
-                      onPause={() => pauseService(item.id)}
-                      onComplete={() => completeService(item.id)}
-                      onTransfer={() => handleTransfer(item.id)}
-                      onOpenPatient={() => handleOpenChart(item)}
-                    />
-                  ))
-                )}
-              </div>
-            </ScrollArea>
-          </TabsContent>
+                <TabsContent value="in_service" className="mt-4">
+                  <ScrollArea className="h-[500px]">
+                    <div className="space-y-3 pr-4">
+                      {inServiceItems.length === 0 ? (
+                        <Card>
+                          <CardContent className="py-12 text-center text-muted-foreground">
+                            <p>No patients in service</p>
+                          </CardContent>
+                        </Card>
+                      ) : (
+                        inServiceItems.map(item => (
+                          <QueueItemCard
+                            key={item.id}
+                            item={item}
+                            onPause={() => pauseService(item.id)}
+                            onComplete={() => completeService(item.id)}
+                            onTransfer={() => handleTransfer(item.id)}
+                            onOpenPatient={() => handleOpenChart(item)}
+                          />
+                        ))
+                      )}
+                    </div>
+                  </ScrollArea>
+                </TabsContent>
 
-          <TabsContent value="paused" className="mt-4">
-            <ScrollArea className="h-[500px]">
-              <div className="space-y-3 pr-4">
-                {pausedItems.map(item => (
-                  <QueueItemCard
-                    key={item.id}
-                    item={item}
-                    onResume={() => resumeService(item.id)}
-                    onComplete={() => completeService(item.id)}
-                    onTransfer={() => handleTransfer(item.id)}
-                  />
-                ))}
-              </div>
-            </ScrollArea>
-          </TabsContent>
-        </Tabs>
-      )}
+                <TabsContent value="paused" className="mt-4">
+                  <ScrollArea className="h-[500px]">
+                    <div className="space-y-3 pr-4">
+                      {pausedItems.map(item => (
+                        <QueueItemCard
+                          key={item.id}
+                          item={item}
+                          onResume={() => resumeService(item.id)}
+                          onComplete={() => completeService(item.id)}
+                          onTransfer={() => handleTransfer(item.id)}
+                        />
+                      ))}
+                    </div>
+                  </ScrollArea>
+                </TabsContent>
+              </Tabs>
+            </div>
+          </ResizablePanel>
 
-      {!selectedQueueId && (
+          <ResizableHandle withHandle />
+
+          {/* Appointments Panel */}
+          <ResizablePanel defaultSize={40} minSize={30}>
+            <div className="h-full border-l">
+              <QueueAppointmentsPanel queueId={selectedQueueId} />
+            </div>
+          </ResizablePanel>
+        </ResizablePanelGroup>
+      ) : (
         <Card>
           <CardContent className="py-12 text-center">
             <Users className="h-12 w-12 mx-auto mb-4 text-muted-foreground opacity-50" />
