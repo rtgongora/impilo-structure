@@ -57,9 +57,9 @@ export function CostTrackingDashboard() {
         return <Users className="h-4 w-4" />;
       case "consumables":
         return <Package className="h-4 w-4" />;
-      case "equipment":
+      case "equipment_depreciation":
         return <Activity className="h-4 w-4" />;
-      case "overhead":
+      case "facility_overhead":
         return <Layers className="h-4 w-4" />;
       default:
         return <DollarSign className="h-4 w-4" />;
@@ -72,9 +72,9 @@ export function CostTrackingDashboard() {
         return "bg-primary/10 text-primary";
       case "consumables":
         return "bg-success/10 text-success";
-      case "equipment":
+      case "equipment_depreciation":
         return "bg-warning/10 text-warning";
-      case "overhead":
+      case "facility_overhead":
         return "bg-secondary text-secondary-foreground";
       default:
         return "bg-muted text-muted-foreground";
@@ -83,8 +83,8 @@ export function CostTrackingDashboard() {
 
   const filteredRates = rates.filter(rate => {
     const matchesSearch = 
-      rate.rate_name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      rate.rate_code.toLowerCase().includes(searchTerm.toLowerCase());
+      rate.resource_type.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      rate.category.toLowerCase().includes(searchTerm.toLowerCase());
     const matchesCategory = categoryFilter === "all" || rate.category === categoryFilter;
     return matchesSearch && matchesCategory;
   });
@@ -92,7 +92,7 @@ export function CostTrackingDashboard() {
   const filteredEvents = events.filter(event => {
     const matchesSearch = 
       event.event_type.toLowerCase().includes(searchTerm.toLowerCase());
-    const matchesCategory = categoryFilter === "all" || event.cost_category === categoryFilter;
+    const matchesCategory = categoryFilter === "all";
     return matchesSearch && matchesCategory;
   });
 
@@ -189,8 +189,8 @@ export function CostTrackingDashboard() {
               <SelectItem value="all">All Categories</SelectItem>
               <SelectItem value="staff_time">Staff Time</SelectItem>
               <SelectItem value="consumables">Consumables</SelectItem>
-              <SelectItem value="equipment">Equipment</SelectItem>
-              <SelectItem value="overhead">Overhead</SelectItem>
+              <SelectItem value="equipment_depreciation">Equipment</SelectItem>
+              <SelectItem value="facility_overhead">Overhead</SelectItem>
             </SelectContent>
           </Select>
         </div>
@@ -208,41 +208,34 @@ export function CostTrackingDashboard() {
                   <TableHeader>
                     <TableRow>
                       <TableHead>Event Type</TableHead>
-                      <TableHead>Category</TableHead>
+                      <TableHead>Source</TableHead>
                       <TableHead>Timestamp</TableHead>
-                      <TableHead className="text-right">Quantity</TableHead>
-                      <TableHead className="text-right">Unit Cost</TableHead>
+                      <TableHead className="text-right">Duration (min)</TableHead>
                       <TableHead className="text-right">Total Cost</TableHead>
                     </TableRow>
                   </TableHeader>
                   <TableBody>
                     {loading ? (
                       <TableRow>
-                        <TableCell colSpan={6} className="text-center py-8">
+                        <TableCell colSpan={5} className="text-center py-8">
                           <RefreshCw className="h-6 w-6 animate-spin mx-auto text-muted-foreground" />
                         </TableCell>
                       </TableRow>
                     ) : filteredEvents.length === 0 ? (
                       <TableRow>
-                        <TableCell colSpan={6} className="text-center py-8 text-muted-foreground">
+                        <TableCell colSpan={5} className="text-center py-8 text-muted-foreground">
                           No cost events found
                         </TableCell>
                       </TableRow>
                     ) : (
                       filteredEvents.map((event) => (
                         <TableRow key={event.id}>
-                          <TableCell className="font-medium">{event.event_type}</TableCell>
-                          <TableCell>
-                            <Badge className={getCategoryColor(event.cost_category)}>
-                              {getCategoryIcon(event.cost_category)}
-                              <span className="ml-1 capitalize">{event.cost_category.replace("_", " ")}</span>
-                            </Badge>
-                          </TableCell>
+                          <TableCell className="font-medium capitalize">{event.event_type.replace("_", " ")}</TableCell>
+                          <TableCell className="text-muted-foreground">{event.source_entity_type}</TableCell>
                           <TableCell className="text-muted-foreground">
                             {format(new Date(event.event_timestamp), "dd MMM HH:mm")}
                           </TableCell>
-                          <TableCell className="text-right">{event.quantity}</TableCell>
-                          <TableCell className="text-right">${event.unit_internal_cost.toFixed(2)}</TableCell>
+                          <TableCell className="text-right">{event.duration_minutes || "-"}</TableCell>
                           <TableCell className="text-right font-medium">${event.total_internal_cost.toFixed(2)}</TableCell>
                         </TableRow>
                       ))
@@ -282,17 +275,17 @@ export function CostTrackingDashboard() {
                             className="p-3 border rounded-lg hover:bg-muted/50 transition-colors"
                           >
                             <div className="flex items-center justify-between mb-1">
-                              <p className="font-medium">{rate.rate_name}</p>
-                              <Badge variant="outline">{rate.rate_code}</Badge>
+                              <p className="font-medium capitalize">{rate.resource_type.replace("_", " ")}</p>
+                              <Badge variant="outline">{rate.category}</Badge>
                             </div>
                             <p className="text-2xl font-bold">
-                              {rate.currency} {rate.rate_per_unit.toFixed(2)}
+                              {rate.currency} {rate.cost_per_unit.toFixed(2)}
                               <span className="text-sm font-normal text-muted-foreground">
                                 /{rate.unit_of_measure}
                               </span>
                             </p>
-                            {rate.description && (
-                              <p className="text-sm text-muted-foreground mt-1">{rate.description}</p>
+                            {rate.notes && (
+                              <p className="text-sm text-muted-foreground mt-1">{rate.notes}</p>
                             )}
                           </div>
                         ))}
@@ -318,7 +311,7 @@ export function CostTrackingDashboard() {
                   <TableHeader>
                     <TableRow>
                       <TableHead>Visit ID</TableHead>
-                      <TableHead className="text-right">Staff Time</TableHead>
+                      <TableHead className="text-right">Staff</TableHead>
                       <TableHead className="text-right">Consumables</TableHead>
                       <TableHead className="text-right">Equipment</TableHead>
                       <TableHead className="text-right">Overhead</TableHead>
@@ -343,13 +336,13 @@ export function CostTrackingDashboard() {
                       summaries.map((summary) => (
                         <TableRow key={summary.id}>
                           <TableCell className="font-medium">{summary.visit_id.slice(0, 8)}...</TableCell>
-                          <TableCell className="text-right">${summary.total_staff_time_cost.toFixed(2)}</TableCell>
-                          <TableCell className="text-right">${summary.total_consumables_cost.toFixed(2)}</TableCell>
-                          <TableCell className="text-right">${summary.total_equipment_cost.toFixed(2)}</TableCell>
-                          <TableCell className="text-right">${summary.total_overhead_cost.toFixed(2)}</TableCell>
-                          <TableCell className="text-right font-bold">${summary.total_internal_cost.toFixed(2)}</TableCell>
+                          <TableCell className="text-right">${(summary.total_staff_cost || 0).toFixed(2)}</TableCell>
+                          <TableCell className="text-right">${(summary.total_consumables_cost || 0).toFixed(2)}</TableCell>
+                          <TableCell className="text-right">${(summary.total_equipment_cost || 0).toFixed(2)}</TableCell>
+                          <TableCell className="text-right">${(summary.total_overhead_cost || 0).toFixed(2)}</TableCell>
+                          <TableCell className="text-right font-bold">${(summary.grand_total_cost || 0).toFixed(2)}</TableCell>
                           <TableCell className="text-muted-foreground">
-                            {format(new Date(summary.last_calculated_at), "dd MMM HH:mm")}
+                            {summary.last_calculated_at ? format(new Date(summary.last_calculated_at), "dd MMM HH:mm") : "-"}
                           </TableCell>
                         </TableRow>
                       ))
