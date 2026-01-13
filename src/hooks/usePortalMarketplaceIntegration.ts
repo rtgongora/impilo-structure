@@ -1,9 +1,14 @@
 import { useState } from "react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
-import { supabase } from "@/integrations/supabase/client";
+import { createClient } from "@supabase/supabase-js";
 import { useAuth } from "@/contexts/AuthContext";
 import { toast } from "sonner";
 import { useFulfillmentActions } from "./useFulfillmentActions";
+
+// Create untyped client to avoid deep type inference issues with large schema
+const supabaseUrl = import.meta.env.VITE_SUPABASE_URL;
+const supabaseKey = import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY;
+const db = createClient(supabaseUrl, supabaseKey);
 
 export interface PatientPrescription {
   id: string;
@@ -85,10 +90,14 @@ export function usePatientPrescriptions() {
     queryFn: async (): Promise<PatientPrescription[]> => {
       if (!user?.id) return [];
 
-      const { data: patient } = await supabase.from("patients").select("id").eq("user_id", user.id).maybeSingle();
+      const getPatient = async (userId: string) => {
+        const result = await db.from("patients").select("id").eq("user_id", userId).maybeSingle();
+        return result.data;
+      };
+      const patient = await getPatient(user.id);
       if (!patient) return [];
 
-      const { data: rxData, error } = await supabase
+      const { data: rxData, error } = await db
         .from("prescriptions")
         .select("id, prescription_number, prescribed_at, status, priority, refills_remaining, valid_until, is_controlled_substance, prescribed_by")
         .eq("patient_id", patient.id)
@@ -97,13 +106,13 @@ export function usePatientPrescriptions() {
 
       if (error || !rxData) return [];
 
-      const rxIds = rxData.map(p => p.id);
-      const prescriberIds = rxData.map(p => p.prescribed_by).filter(Boolean) as string[];
+      const rxIds = (rxData as any[]).map(p => p.id);
+      const prescriberIds = (rxData as any[]).map(p => p.prescribed_by).filter(Boolean) as string[];
 
       const [itemsRes, profilesRes, fulfillRes] = await Promise.all([
-        rxIds.length ? supabase.from("prescription_items").select("*").in("prescription_id", rxIds) : { data: [] },
-        prescriberIds.length ? supabase.from("profiles").select("id, display_name").in("id", prescriberIds) : { data: [] },
-        rxIds.length ? supabase.from("fulfillment_requests").select("id, status, request_number, prescription_id").in("prescription_id", rxIds) : { data: [] },
+        rxIds.length ? db.from("prescription_items").select("*").in("prescription_id", rxIds) : { data: [] },
+        prescriberIds.length ? db.from("profiles").select("id, display_name").in("id", prescriberIds) : { data: [] },
+        rxIds.length ? db.from("fulfillment_requests").select("id, status, request_number, prescription_id").in("prescription_id", rxIds) : { data: [] },
       ]);
 
       const itemsMap = new Map<string, PatientPrescriptionItem[]>();
@@ -116,7 +125,7 @@ export function usePatientPrescriptions() {
       const profileMap = new Map((profilesRes.data || []).map((p: any) => [p.id, p.display_name]));
       const fulfillMap = new Map((fulfillRes.data || []).map((f: any) => [f.prescription_id, { id: f.id, status: f.status, request_number: f.request_number }]));
 
-      return rxData.map(rx => ({
+      return (rxData as any[]).map((rx: any) => ({
         id: rx.id,
         prescription_number: rx.prescription_number,
         prescribed_at: rx.prescribed_at,
@@ -142,27 +151,28 @@ export function usePatientFulfillmentRequests() {
     queryFn: async (): Promise<FulfillmentRequest[]> => {
       if (!user?.id) return [];
 
-      const { data: patient } = await supabase.from("patients").select("id").eq("user_id", user.id).maybeSingle();
+      const patientResult = await db.from("patients").select("id").eq("user_id", user.id).maybeSingle();
+      const patient = patientResult.data;
       if (!patient) return [];
 
-      const { data: reqData, error } = await supabase
+      const { data: reqData, error } = await db
         .from("fulfillment_requests")
         .select("id, request_number, request_type, status, priority, created_at, bidding_deadline, awarded_vendor_id, total_amount, delivery_required")
-        .eq("patient_id", patient.id)
+        .eq("patient_id", (patient as any).id)
         .order("created_at", { ascending: false })
         .limit(20);
 
       if (error || !reqData) return [];
 
-      const reqIds = reqData.map(r => r.id);
+      const reqIds = (reqData as any[]).map(r => r.id);
 
       const [itemsRes, bidsRes] = await Promise.all([
-        reqIds.length ? supabase.from("fulfillment_request_items").select("*").in("request_id", reqIds) : { data: [] },
-        reqIds.length ? supabase.from("vendor_bids").select("*").in("request_id", reqIds) : { data: [] },
+        reqIds.length ? db.from("fulfillment_request_items").select("*").in("request_id", reqIds) : { data: [] },
+        reqIds.length ? db.from("vendor_bids").select("*").in("request_id", reqIds) : { data: [] },
       ]);
 
       const vendorIds = [...new Set((bidsRes.data || []).map((b: any) => b.vendor_id))];
-      const vendorsRes = vendorIds.length ? await supabase.from("vendors").select("id, name, vendor_type, is_verified, rating, city").in("id", vendorIds) : { data: [] };
+      const vendorsRes = vendorIds.length ? await db.from("vendors").select("id, name, vendor_type, is_verified, rating, city").in("id", vendorIds) : { data: [] };
       const vendorMap = new Map((vendorsRes.data || []).map((v: any) => [v.id, v]));
 
       const itemsMap = new Map<string, any[]>();
@@ -179,7 +189,7 @@ export function usePatientFulfillmentRequests() {
         bidsMap.set(bid.request_id, arr);
       });
 
-      return reqData.map(req => ({
+      return (reqData as any[]).map((req: any) => ({
         id: req.id,
         request_number: req.request_number,
         request_type: req.request_type,
@@ -192,7 +202,7 @@ export function usePatientFulfillmentRequests() {
         delivery_required: req.delivery_required,
         items: itemsMap.get(req.id) || [],
         bids: (bidsMap.get(req.id) || []).map((bid: any) => {
-          const vendor = vendorMap.get(bid.vendor_id);
+          const vendor = vendorMap.get(bid.vendor_id) as any;
           return {
             id: bid.id,
             vendor_id: bid.vendor_id,
