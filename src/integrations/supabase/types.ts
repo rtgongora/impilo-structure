@@ -915,6 +915,73 @@ export type Database = {
           },
         ]
       }
+      billing_adjustments: {
+        Row: {
+          account_id: string | null
+          adjustment_type: string
+          amount: number
+          approved_at: string | null
+          approved_by: string | null
+          charge_sheet_id: string | null
+          created_at: string | null
+          created_by: string | null
+          id: string
+          invoice_id: string | null
+          reason: string
+          requires_approval: boolean | null
+        }
+        Insert: {
+          account_id?: string | null
+          adjustment_type: string
+          amount: number
+          approved_at?: string | null
+          approved_by?: string | null
+          charge_sheet_id?: string | null
+          created_at?: string | null
+          created_by?: string | null
+          id?: string
+          invoice_id?: string | null
+          reason: string
+          requires_approval?: boolean | null
+        }
+        Update: {
+          account_id?: string | null
+          adjustment_type?: string
+          amount?: number
+          approved_at?: string | null
+          approved_by?: string | null
+          charge_sheet_id?: string | null
+          created_at?: string | null
+          created_by?: string | null
+          id?: string
+          invoice_id?: string | null
+          reason?: string
+          requires_approval?: boolean | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "billing_adjustments_account_id_fkey"
+            columns: ["account_id"]
+            isOneToOne: false
+            referencedRelation: "visit_financial_accounts"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "billing_adjustments_charge_sheet_id_fkey"
+            columns: ["charge_sheet_id"]
+            isOneToOne: false
+            referencedRelation: "charge_sheets"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "billing_adjustments_invoice_id_fkey"
+            columns: ["invoice_id"]
+            isOneToOne: false
+            referencedRelation: "invoices"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       bulk_import_jobs: {
         Row: {
           completed_at: string | null
@@ -1390,6 +1457,152 @@ export type Database = {
             columns: ["stock_item_id"]
             isOneToOne: false
             referencedRelation: "stock_items"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      charge_sheets: {
+        Row: {
+          account_id: string | null
+          authorization_date: string | null
+          authorization_number: string | null
+          authorization_status: string | null
+          billed_at: string | null
+          cost_center: string | null
+          created_at: string | null
+          created_by: string | null
+          discount_amount: number | null
+          discount_percent: number | null
+          encounter_id: string | null
+          facility_id: string | null
+          id: string
+          net_amount: number
+          ordering_provider_id: string | null
+          patient_id: string
+          performing_provider_id: string | null
+          quantity: number
+          requires_authorization: boolean | null
+          service_category: string | null
+          service_code: string
+          service_date: string
+          service_name: string
+          source_entity_id: string | null
+          source_entity_type: string | null
+          status: Database["public"]["Enums"]["charge_status"]
+          total_amount: number
+          unit_price: number
+          visit_id: string
+        }
+        Insert: {
+          account_id?: string | null
+          authorization_date?: string | null
+          authorization_number?: string | null
+          authorization_status?: string | null
+          billed_at?: string | null
+          cost_center?: string | null
+          created_at?: string | null
+          created_by?: string | null
+          discount_amount?: number | null
+          discount_percent?: number | null
+          encounter_id?: string | null
+          facility_id?: string | null
+          id?: string
+          net_amount: number
+          ordering_provider_id?: string | null
+          patient_id: string
+          performing_provider_id?: string | null
+          quantity?: number
+          requires_authorization?: boolean | null
+          service_category?: string | null
+          service_code: string
+          service_date?: string
+          service_name: string
+          source_entity_id?: string | null
+          source_entity_type?: string | null
+          status?: Database["public"]["Enums"]["charge_status"]
+          total_amount: number
+          unit_price: number
+          visit_id: string
+        }
+        Update: {
+          account_id?: string | null
+          authorization_date?: string | null
+          authorization_number?: string | null
+          authorization_status?: string | null
+          billed_at?: string | null
+          cost_center?: string | null
+          created_at?: string | null
+          created_by?: string | null
+          discount_amount?: number | null
+          discount_percent?: number | null
+          encounter_id?: string | null
+          facility_id?: string | null
+          id?: string
+          net_amount?: number
+          ordering_provider_id?: string | null
+          patient_id?: string
+          performing_provider_id?: string | null
+          quantity?: number
+          requires_authorization?: boolean | null
+          service_category?: string | null
+          service_code?: string
+          service_date?: string
+          service_name?: string
+          source_entity_id?: string | null
+          source_entity_type?: string | null
+          status?: Database["public"]["Enums"]["charge_status"]
+          total_amount?: number
+          unit_price?: number
+          visit_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "charge_sheets_account_id_fkey"
+            columns: ["account_id"]
+            isOneToOne: false
+            referencedRelation: "visit_financial_accounts"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "charge_sheets_encounter_id_fkey"
+            columns: ["encounter_id"]
+            isOneToOne: false
+            referencedRelation: "encounters"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "charge_sheets_facility_id_fkey"
+            columns: ["facility_id"]
+            isOneToOne: false
+            referencedRelation: "facilities"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "charge_sheets_facility_id_fkey"
+            columns: ["facility_id"]
+            isOneToOne: false
+            referencedRelation: "facility_capabilities"
+            referencedColumns: ["facility_id"]
+          },
+          {
+            foreignKeyName: "charge_sheets_facility_id_fkey"
+            columns: ["facility_id"]
+            isOneToOne: false
+            referencedRelation: "facility_operations_dashboard"
+            referencedColumns: ["facility_id"]
+          },
+          {
+            foreignKeyName: "charge_sheets_patient_id_fkey"
+            columns: ["patient_id"]
+            isOneToOne: false
+            referencedRelation: "patients"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "charge_sheets_visit_id_fkey"
+            columns: ["visit_id"]
+            isOneToOne: false
+            referencedRelation: "visits"
             referencedColumns: ["id"]
           },
         ]
@@ -8033,6 +8246,214 @@ export type Database = {
             columns: ["patient_id"]
             isOneToOne: false
             referencedRelation: "patients"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      invoice_line_items: {
+        Row: {
+          charge_sheet_id: string | null
+          created_at: string | null
+          description: string
+          discount_amount: number | null
+          id: string
+          invoice_id: string
+          line_number: number
+          quantity: number
+          service_code: string | null
+          service_date: string | null
+          subtotal: number
+          tax_amount: number | null
+          total_amount: number
+          unit_price: number
+        }
+        Insert: {
+          charge_sheet_id?: string | null
+          created_at?: string | null
+          description: string
+          discount_amount?: number | null
+          id?: string
+          invoice_id: string
+          line_number: number
+          quantity?: number
+          service_code?: string | null
+          service_date?: string | null
+          subtotal: number
+          tax_amount?: number | null
+          total_amount: number
+          unit_price: number
+        }
+        Update: {
+          charge_sheet_id?: string | null
+          created_at?: string | null
+          description?: string
+          discount_amount?: number | null
+          id?: string
+          invoice_id?: string
+          line_number?: number
+          quantity?: number
+          service_code?: string | null
+          service_date?: string | null
+          subtotal?: number
+          tax_amount?: number | null
+          total_amount?: number
+          unit_price?: number
+        }
+        Relationships: [
+          {
+            foreignKeyName: "invoice_line_items_charge_sheet_id_fkey"
+            columns: ["charge_sheet_id"]
+            isOneToOne: false
+            referencedRelation: "charge_sheets"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "invoice_line_items_invoice_id_fkey"
+            columns: ["invoice_id"]
+            isOneToOne: false
+            referencedRelation: "invoices"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      invoices: {
+        Row: {
+          account_id: string | null
+          amount_paid: number | null
+          balance_due: number
+          created_at: string | null
+          created_by: string | null
+          currency: string
+          discount_amount: number | null
+          due_date: string | null
+          facility_id: string | null
+          finalized_by: string | null
+          id: string
+          internal_notes: string | null
+          invoice_date: string
+          invoice_number: string
+          invoice_type: string
+          last_reminder_sent: string | null
+          notes: string | null
+          paid_at: string | null
+          patient_id: string
+          payer_id: string | null
+          payer_name: string | null
+          payer_type: Database["public"]["Enums"]["payer_type"]
+          reminder_count: number | null
+          sent_at: string | null
+          status: Database["public"]["Enums"]["invoice_status"]
+          subtotal: number
+          tax_amount: number | null
+          total_amount: number
+          updated_at: string | null
+          visit_id: string | null
+        }
+        Insert: {
+          account_id?: string | null
+          amount_paid?: number | null
+          balance_due?: number
+          created_at?: string | null
+          created_by?: string | null
+          currency?: string
+          discount_amount?: number | null
+          due_date?: string | null
+          facility_id?: string | null
+          finalized_by?: string | null
+          id?: string
+          internal_notes?: string | null
+          invoice_date?: string
+          invoice_number: string
+          invoice_type?: string
+          last_reminder_sent?: string | null
+          notes?: string | null
+          paid_at?: string | null
+          patient_id: string
+          payer_id?: string | null
+          payer_name?: string | null
+          payer_type?: Database["public"]["Enums"]["payer_type"]
+          reminder_count?: number | null
+          sent_at?: string | null
+          status?: Database["public"]["Enums"]["invoice_status"]
+          subtotal?: number
+          tax_amount?: number | null
+          total_amount?: number
+          updated_at?: string | null
+          visit_id?: string | null
+        }
+        Update: {
+          account_id?: string | null
+          amount_paid?: number | null
+          balance_due?: number
+          created_at?: string | null
+          created_by?: string | null
+          currency?: string
+          discount_amount?: number | null
+          due_date?: string | null
+          facility_id?: string | null
+          finalized_by?: string | null
+          id?: string
+          internal_notes?: string | null
+          invoice_date?: string
+          invoice_number?: string
+          invoice_type?: string
+          last_reminder_sent?: string | null
+          notes?: string | null
+          paid_at?: string | null
+          patient_id?: string
+          payer_id?: string | null
+          payer_name?: string | null
+          payer_type?: Database["public"]["Enums"]["payer_type"]
+          reminder_count?: number | null
+          sent_at?: string | null
+          status?: Database["public"]["Enums"]["invoice_status"]
+          subtotal?: number
+          tax_amount?: number | null
+          total_amount?: number
+          updated_at?: string | null
+          visit_id?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "invoices_account_id_fkey"
+            columns: ["account_id"]
+            isOneToOne: false
+            referencedRelation: "visit_financial_accounts"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "invoices_facility_id_fkey"
+            columns: ["facility_id"]
+            isOneToOne: false
+            referencedRelation: "facilities"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "invoices_facility_id_fkey"
+            columns: ["facility_id"]
+            isOneToOne: false
+            referencedRelation: "facility_capabilities"
+            referencedColumns: ["facility_id"]
+          },
+          {
+            foreignKeyName: "invoices_facility_id_fkey"
+            columns: ["facility_id"]
+            isOneToOne: false
+            referencedRelation: "facility_operations_dashboard"
+            referencedColumns: ["facility_id"]
+          },
+          {
+            foreignKeyName: "invoices_patient_id_fkey"
+            columns: ["patient_id"]
+            isOneToOne: false
+            referencedRelation: "patients"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "invoices_visit_id_fkey"
+            columns: ["visit_id"]
+            isOneToOne: false
+            referencedRelation: "visits"
             referencedColumns: ["id"]
           },
         ]
@@ -17548,6 +17969,88 @@ export type Database = {
         }
         Relationships: []
       }
+      tariffs: {
+        Row: {
+          base_price: number
+          created_at: string | null
+          currency: string
+          effective_from: string
+          effective_to: string | null
+          facility_id: string | null
+          government_price: number | null
+          id: string
+          insurance_price: number | null
+          is_active: boolean | null
+          is_elective: boolean | null
+          is_emergency_exempt: boolean | null
+          requires_authorization: boolean | null
+          service_category: string | null
+          service_code: string
+          service_name: string
+          updated_at: string | null
+        }
+        Insert: {
+          base_price: number
+          created_at?: string | null
+          currency?: string
+          effective_from?: string
+          effective_to?: string | null
+          facility_id?: string | null
+          government_price?: number | null
+          id?: string
+          insurance_price?: number | null
+          is_active?: boolean | null
+          is_elective?: boolean | null
+          is_emergency_exempt?: boolean | null
+          requires_authorization?: boolean | null
+          service_category?: string | null
+          service_code: string
+          service_name: string
+          updated_at?: string | null
+        }
+        Update: {
+          base_price?: number
+          created_at?: string | null
+          currency?: string
+          effective_from?: string
+          effective_to?: string | null
+          facility_id?: string | null
+          government_price?: number | null
+          id?: string
+          insurance_price?: number | null
+          is_active?: boolean | null
+          is_elective?: boolean | null
+          is_emergency_exempt?: boolean | null
+          requires_authorization?: boolean | null
+          service_category?: string | null
+          service_code?: string
+          service_name?: string
+          updated_at?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "tariffs_facility_id_fkey"
+            columns: ["facility_id"]
+            isOneToOne: false
+            referencedRelation: "facilities"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "tariffs_facility_id_fkey"
+            columns: ["facility_id"]
+            isOneToOne: false
+            referencedRelation: "facility_capabilities"
+            referencedColumns: ["facility_id"]
+          },
+          {
+            foreignKeyName: "tariffs_facility_id_fkey"
+            columns: ["facility_id"]
+            isOneToOne: false
+            referencedRelation: "facility_operations_dashboard"
+            referencedColumns: ["facility_id"]
+          },
+        ]
+      }
       teleconsult_access_log: {
         Row: {
           access_type: string
@@ -19433,6 +19936,129 @@ export type Database = {
           },
         ]
       }
+      visit_financial_accounts: {
+        Row: {
+          account_status: Database["public"]["Enums"]["financial_state"]
+          authorization_number: string | null
+          closed_at: string | null
+          coverage_verified: boolean | null
+          coverage_verified_at: string | null
+          created_at: string | null
+          currency: string
+          deposit_paid: number | null
+          deposit_required: number | null
+          deposit_satisfied: boolean | null
+          facility_id: string | null
+          id: string
+          opened_at: string | null
+          patient_balance: number | null
+          patient_id: string
+          patient_responsibility: number | null
+          payer_balance: number | null
+          payer_responsibility: number | null
+          primary_payer_id: string | null
+          primary_payer_type: Database["public"]["Enums"]["payer_type"] | null
+          total_adjustments: number
+          total_balance: number | null
+          total_charges: number
+          total_payments: number
+          updated_at: string | null
+          visit_id: string
+        }
+        Insert: {
+          account_status?: Database["public"]["Enums"]["financial_state"]
+          authorization_number?: string | null
+          closed_at?: string | null
+          coverage_verified?: boolean | null
+          coverage_verified_at?: string | null
+          created_at?: string | null
+          currency?: string
+          deposit_paid?: number | null
+          deposit_required?: number | null
+          deposit_satisfied?: boolean | null
+          facility_id?: string | null
+          id?: string
+          opened_at?: string | null
+          patient_balance?: number | null
+          patient_id: string
+          patient_responsibility?: number | null
+          payer_balance?: number | null
+          payer_responsibility?: number | null
+          primary_payer_id?: string | null
+          primary_payer_type?: Database["public"]["Enums"]["payer_type"] | null
+          total_adjustments?: number
+          total_balance?: number | null
+          total_charges?: number
+          total_payments?: number
+          updated_at?: string | null
+          visit_id: string
+        }
+        Update: {
+          account_status?: Database["public"]["Enums"]["financial_state"]
+          authorization_number?: string | null
+          closed_at?: string | null
+          coverage_verified?: boolean | null
+          coverage_verified_at?: string | null
+          created_at?: string | null
+          currency?: string
+          deposit_paid?: number | null
+          deposit_required?: number | null
+          deposit_satisfied?: boolean | null
+          facility_id?: string | null
+          id?: string
+          opened_at?: string | null
+          patient_balance?: number | null
+          patient_id?: string
+          patient_responsibility?: number | null
+          payer_balance?: number | null
+          payer_responsibility?: number | null
+          primary_payer_id?: string | null
+          primary_payer_type?: Database["public"]["Enums"]["payer_type"] | null
+          total_adjustments?: number
+          total_balance?: number | null
+          total_charges?: number
+          total_payments?: number
+          updated_at?: string | null
+          visit_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "visit_financial_accounts_facility_id_fkey"
+            columns: ["facility_id"]
+            isOneToOne: false
+            referencedRelation: "facilities"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "visit_financial_accounts_facility_id_fkey"
+            columns: ["facility_id"]
+            isOneToOne: false
+            referencedRelation: "facility_capabilities"
+            referencedColumns: ["facility_id"]
+          },
+          {
+            foreignKeyName: "visit_financial_accounts_facility_id_fkey"
+            columns: ["facility_id"]
+            isOneToOne: false
+            referencedRelation: "facility_operations_dashboard"
+            referencedColumns: ["facility_id"]
+          },
+          {
+            foreignKeyName: "visit_financial_accounts_patient_id_fkey"
+            columns: ["patient_id"]
+            isOneToOne: false
+            referencedRelation: "patients"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "visit_financial_accounts_visit_id_fkey"
+            columns: ["visit_id"]
+            isOneToOne: true
+            referencedRelation: "visits"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       visit_summaries: {
         Row: {
           allergies_verified: Json | null
@@ -20405,6 +21031,10 @@ export type Database = {
         Args: { _facility_id?: string; _user_id: string }
         Returns: boolean
       }
+      update_account_balances: {
+        Args: { p_account_id: string }
+        Returns: undefined
+      }
       validate_teleconsult_access_token: {
         Args: { _accessor_id: string; _token_hash: string }
         Returns: {
@@ -20438,6 +21068,13 @@ export type Database = {
       app_role: "admin" | "moderator" | "user"
       approval_status: "pending" | "approved" | "suspended" | "rejected"
       arrival_mode: "walk_in" | "appointment" | "referral" | "emergency"
+      charge_status:
+        | "pending"
+        | "approved"
+        | "billed"
+        | "disputed"
+        | "waived"
+        | "cancelled"
       client_lifecycle_state:
         | "draft"
         | "active"
@@ -20553,6 +21190,15 @@ export type Database = {
         | "virtual_pool_authorization"
         | "facility_override"
         | "emergency_response"
+      invoice_status:
+        | "draft"
+        | "finalized"
+        | "sent"
+        | "partially_paid"
+        | "paid"
+        | "overdue"
+        | "cancelled"
+        | "written_off"
       jurisdiction_level:
         | "facility_list"
         | "district"
@@ -20572,6 +21218,13 @@ export type Database = {
         | "facility_ops_manager"
         | "virtual_pool_supervisor"
         | "department_head"
+      payer_type:
+        | "patient"
+        | "insurance"
+        | "government"
+        | "employer"
+        | "donor"
+        | "other"
       product_category_type:
         | "pharmaceutical"
         | "medical_device"
@@ -20855,6 +21508,14 @@ export const Constants = {
       app_role: ["admin", "moderator", "user"],
       approval_status: ["pending", "approved", "suspended", "rejected"],
       arrival_mode: ["walk_in", "appointment", "referral", "emergency"],
+      charge_status: [
+        "pending",
+        "approved",
+        "billed",
+        "disputed",
+        "waived",
+        "cancelled",
+      ],
       client_lifecycle_state: [
         "draft",
         "active",
@@ -20983,6 +21644,16 @@ export const Constants = {
         "facility_override",
         "emergency_response",
       ],
+      invoice_status: [
+        "draft",
+        "finalized",
+        "sent",
+        "partially_paid",
+        "paid",
+        "overdue",
+        "cancelled",
+        "written_off",
+      ],
       jurisdiction_level: [
         "facility_list",
         "district",
@@ -21004,6 +21675,14 @@ export const Constants = {
         "facility_ops_manager",
         "virtual_pool_supervisor",
         "department_head",
+      ],
+      payer_type: [
+        "patient",
+        "insurance",
+        "government",
+        "employer",
+        "donor",
+        "other",
       ],
       product_category_type: [
         "pharmaceutical",
