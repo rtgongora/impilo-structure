@@ -1,20 +1,44 @@
 // Hook to manage the active work context (facility + workspace selection)
 // Controls whether user sees workplace selection or module grid
-// Supports: facility-level clinical, above-site oversight, remote/pool work, and system support modes
+// Supports: facility-level clinical, above-site oversight, remote/pool work, independent work, and system support modes
 
 import { useState, useEffect, useCallback } from 'react';
 import type { ProviderFacility } from './useProviderFacilities';
 
 // Access mode determines what the user can do and see
 export type AccessMode = 
-  | 'clinical'        // Direct patient care at a facility
-  | 'oversight'       // Aggregate/administrative view without patient access
-  | 'oversight_drill' // Drilled down to specific facility in oversight mode
-  | 'support'         // System superadmin technical support
-  | 'remote_clinical' // Remote clinical work (telemedicine pool)
-  | 'remote_admin';   // Remote administrative work
+  | 'clinical'          // Direct patient care at a facility
+  | 'oversight'         // Aggregate/administrative view without patient access
+  | 'oversight_drill'   // Drilled down to specific facility in oversight mode
+  | 'support'           // System superadmin technical support
+  | 'remote_clinical'   // Remote clinical work (telemedicine pool)
+  | 'remote_admin'      // Remote administrative work
+  | 'independent'       // Independent/private practice (license-first)
+  | 'emergency'         // Emergency response work (license-first)
+  | 'community';        // Community outreach/field work
 
-export type WorkContextType = 'facility' | 'above_site' | 'remote' | 'combined' | 'support';
+export type WorkContextType = 
+  | 'facility' 
+  | 'above_site' 
+  | 'remote' 
+  | 'combined' 
+  | 'support'
+  | 'independent'
+  | 'emergency'
+  | 'community';
+
+export interface IndependentWorkContext {
+  practiceName?: string;
+  practiceAddress?: string;
+  licenseNumber: string;
+  licenseCategory: string;
+}
+
+export interface EmergencyContext {
+  incidentType?: string;
+  location?: string;
+  dispatchId?: string;
+}
 
 export interface ActiveWorkContext {
   type: WorkContextType;
@@ -61,6 +85,18 @@ export interface ActiveWorkContext {
   poolId?: string;
   poolName?: string;
   
+  // Independent/Private practice context (license-first)
+  independentContext?: IndependentWorkContext;
+  
+  // Emergency response context
+  emergencyContext?: EmergencyContext;
+  
+  // Community outreach context
+  communityContext?: {
+    programName?: string;
+    catchmentArea?: string;
+  };
+  
   // Metadata
   selectedAt: string;
   sessionId?: string;
@@ -95,6 +131,11 @@ interface UseActiveWorkContextReturn {
   selectRemote: (isClinical?: boolean, poolId?: string, poolName?: string) => void;
   selectSupportMode: (targetFacilityId?: string, targetFacilityName?: string, reason?: string, ticketId?: string) => void;
   
+  // NEW: Independent work modes (license-first)
+  selectIndependentPractice: (licenseNumber: string, licenseCategory: string, practiceName?: string, practiceAddress?: string) => void;
+  selectEmergencyWork: (licenseNumber: string, licenseCategory: string, incidentType?: string, location?: string) => void;
+  selectCommunityOutreach: (licenseNumber: string, licenseCategory: string, programName?: string, catchmentArea?: string) => void;
+  
   // Drilling and narrowing
   drillToFacility: (facilityId: string, facilityName: string, hasClinicalRole: boolean) => void;
   returnToOversightView: () => void;
@@ -108,6 +149,7 @@ interface UseActiveWorkContextReturn {
   isInClinicalMode: boolean;
   isInOversightMode: boolean;
   isInSupportMode: boolean;
+  isInIndependentMode: boolean;
 }
 
 export function useActiveWorkContext(): UseActiveWorkContextReturn {
@@ -257,6 +299,82 @@ export function useActiveWorkContext(): UseActiveWorkContextReturn {
     setActiveContext(context);
   }, []);
 
+  // Select independent/private practice mode (license-first)
+  const selectIndependentPractice = useCallback((
+    licenseNumber: string,
+    licenseCategory: string,
+    practiceName?: string,
+    practiceAddress?: string
+  ) => {
+    const context: ActiveWorkContext = {
+      type: 'independent',
+      accessMode: 'independent',
+      contextLabel: practiceName || 'Private Practice',
+      independentContext: {
+        licenseNumber,
+        licenseCategory,
+        practiceName,
+        practiceAddress,
+      },
+      selectedAt: new Date().toISOString(),
+      canAccessPatientData: true, // Can access patients they are treating
+      canIntervene: false,
+    };
+    setActiveContext(context);
+  }, []);
+
+  // Select emergency response mode (license-first)
+  const selectEmergencyWork = useCallback((
+    licenseNumber: string,
+    licenseCategory: string,
+    incidentType?: string,
+    location?: string
+  ) => {
+    const context: ActiveWorkContext = {
+      type: 'emergency',
+      accessMode: 'emergency',
+      contextLabel: 'Emergency Response',
+      independentContext: {
+        licenseNumber,
+        licenseCategory,
+      },
+      emergencyContext: {
+        incidentType,
+        location,
+      },
+      selectedAt: new Date().toISOString(),
+      canAccessPatientData: true, // Emergency access to patient data
+      canIntervene: false,
+    };
+    setActiveContext(context);
+  }, []);
+
+  // Select community outreach mode
+  const selectCommunityOutreach = useCallback((
+    licenseNumber: string,
+    licenseCategory: string,
+    programName?: string,
+    catchmentArea?: string
+  ) => {
+    const context: ActiveWorkContext = {
+      type: 'community',
+      accessMode: 'community',
+      contextLabel: programName || 'Community Outreach',
+      independentContext: {
+        licenseNumber,
+        licenseCategory,
+      },
+      communityContext: {
+        programName,
+        catchmentArea,
+      },
+      selectedAt: new Date().toISOString(),
+      canAccessPatientData: true, // Can access community patients
+      canIntervene: false,
+    };
+    setActiveContext(context);
+  }, []);
+
   // Drill down from oversight to a specific facility
   const drillToFacility = useCallback((
     facilityId: string,
@@ -303,9 +421,11 @@ export function useActiveWorkContext(): UseActiveWorkContextReturn {
   // Derived values
   const accessMode = activeContext?.accessMode || null;
   const canAccessPatientData = activeContext?.canAccessPatientData ?? false;
-  const isInClinicalMode = accessMode === 'clinical' || accessMode === 'remote_clinical';
+  const isInClinicalMode = accessMode === 'clinical' || accessMode === 'remote_clinical' || 
+                           accessMode === 'independent' || accessMode === 'emergency' || accessMode === 'community';
   const isInOversightMode = accessMode === 'oversight' || accessMode === 'oversight_drill';
   const isInSupportMode = accessMode === 'support';
+  const isInIndependentMode = accessMode === 'independent' || accessMode === 'emergency' || accessMode === 'community';
 
   return {
     activeContext,
@@ -316,6 +436,9 @@ export function useActiveWorkContext(): UseActiveWorkContextReturn {
     selectCombinedView,
     selectRemote,
     selectSupportMode,
+    selectIndependentPractice,
+    selectEmergencyWork,
+    selectCommunityOutreach,
     drillToFacility,
     returnToOversightView,
     clearContext,
@@ -324,5 +447,6 @@ export function useActiveWorkContext(): UseActiveWorkContextReturn {
     isInClinicalMode,
     isInOversightMode,
     isInSupportMode,
+    isInIndependentMode,
   };
 }

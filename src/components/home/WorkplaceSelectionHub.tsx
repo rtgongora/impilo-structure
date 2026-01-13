@@ -1,6 +1,6 @@
 // WorkplaceSelectionHub - Post-login hub for selecting work context
 // Shows profile summary, all work locations, key alerts, and context selection
-// Supports: clinical facilities, above-site oversight, combined views, remote/pool work, and support mode
+// Supports: clinical facilities, above-site oversight, combined views, remote/pool work, independent work, and support mode
 
 import React, { useMemo } from 'react';
 import { motion } from 'framer-motion';
@@ -39,12 +39,18 @@ import {
   Briefcase,
   Lock,
   Zap,
+  AlertCircle,
+  Siren,
+  TreePine,
+  BadgeCheck,
+  Activity,
 } from 'lucide-react';
 import { useAuth } from '@/contexts/AuthContext';
 import { useProviderFacilities, type ProviderFacility } from '@/hooks/useProviderFacilities';
 import { useAboveSiteRole } from '@/hooks/useAboveSiteRole';
 import { useSystemRoles } from '@/hooks/useSystemRoles';
 import { useTelemedicinePools } from '@/hooks/useTelemedicinePools';
+import { useLicenseCheck } from '@/hooks/useLicenseCheck';
 import type { ContextOption } from '@/types/aboveSite';
 import type { AccessMode } from '@/hooks/useActiveWorkContext';
 
@@ -67,6 +73,10 @@ interface WorkplaceSelectionHubProps {
   ) => void;
   onRemoteSelect: (isClinical?: boolean, poolId?: string, poolName?: string) => void;
   onSupportModeSelect?: (targetFacilityId?: string, targetFacilityName?: string, reason?: string) => void;
+  // NEW: Independent work mode callbacks
+  onIndependentPracticeSelect?: (licenseNumber: string, licenseCategory: string, practiceName?: string) => void;
+  onEmergencyWorkSelect?: (licenseNumber: string, licenseCategory: string) => void;
+  onCommunityOutreachSelect?: (licenseNumber: string, licenseCategory: string, programName?: string) => void;
 }
 
 // Level of care display order and styling
@@ -103,6 +113,9 @@ export function WorkplaceSelectionHub({
   onCombinedViewSelect,
   onRemoteSelect,
   onSupportModeSelect,
+  onIndependentPracticeSelect,
+  onEmergencyWorkSelect,
+  onCommunityOutreachSelect,
 }: WorkplaceSelectionHubProps) {
   const { profile } = useAuth();
   const { facilities, loading: facilitiesLoading } = useProviderFacilities();
@@ -114,6 +127,14 @@ export function WorkplaceSelectionHub({
   } = useAboveSiteRole();
   const { isSuperAdmin, isSupportStaff, isManager, loading: systemRolesLoading } = useSystemRoles();
   const { pools, hasPoolAssignment, loading: poolsLoading } = useTelemedicinePools();
+  const {
+    isLicensedPractitioner,
+    canPerformIndependentWork,
+    canPerformEmergencyWork,
+    primaryLicense,
+    cadre,
+    loading: licenseLoading,
+  } = useLicenseCheck();
 
   // Group facilities by level of care
   const groupedFacilities = useMemo(() => {
@@ -148,8 +169,8 @@ export function WorkplaceSelectionHub({
     };
   }, [facilities]);
 
-  const loading = facilitiesLoading || aboveSiteLoading || systemRolesLoading || poolsLoading;
-  const hasNoWorkplaces = !loading && facilities.length === 0 && !isAboveSiteUser && !isSuperAdmin && !hasPoolAssignment;
+  const loading = facilitiesLoading || aboveSiteLoading || systemRolesLoading || poolsLoading || licenseLoading;
+  const hasNoWorkplaces = !loading && facilities.length === 0 && !isAboveSiteUser && !isSuperAdmin && !hasPoolAssignment && !canPerformIndependentWork;
   
   // Determine if user should see combined view option
   const showCombinedViewOption = facilities.length > 3 || (isManager && facilities.length > 1);
@@ -451,6 +472,111 @@ export function WorkplaceSelectionHub({
             </div>
           )}
 
+          {/* Independent Work Options (License-First) */}
+          {!loading && isLicensedPractitioner && primaryLicense && (canPerformIndependentWork || canPerformEmergencyWork) && (
+            <div className="space-y-2">
+              <Separator className="my-2" />
+              <div className="flex items-center gap-2 px-1">
+                <BadgeCheck className="h-4 w-4 text-emerald-600" />
+                <span className="text-sm font-medium">License-Based Practice</span>
+                <Badge variant="secondary" className="text-xs ml-auto">
+                  {primaryLicense.registration_number}
+                </Badge>
+              </div>
+              <p className="text-xs text-muted-foreground px-1 mb-2">
+                Work independently under your professional license
+              </p>
+              
+              {/* Independent/Private Practice */}
+              {canPerformIndependentWork && onIndependentPracticeSelect && (
+                <motion.button
+                  initial={{ opacity: 0, y: 10 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ delay: 0.25 }}
+                  onClick={() => onIndependentPracticeSelect(
+                    primaryLicense.registration_number,
+                    primaryLicense.license_category
+                  )}
+                  className="w-full p-4 rounded-lg border border-emerald-200 bg-emerald-50/30 hover:border-emerald-400 hover:bg-emerald-100/50 transition-all text-left flex items-center gap-4 group"
+                >
+                  <div className="h-12 w-12 rounded-xl bg-emerald-100 flex items-center justify-center text-emerald-600 group-hover:bg-emerald-600 group-hover:text-white transition-colors">
+                    <Briefcase className="h-6 w-6" />
+                  </div>
+                  <div className="flex-1 min-w-0">
+                    <div className="flex items-center gap-2">
+                      <p className="font-medium">Private Practice</p>
+                      <Badge className="bg-emerald-100 text-emerald-700 text-xs">Clinical</Badge>
+                    </div>
+                    <p className="text-sm text-muted-foreground">
+                      Independent consultations & patient care
+                    </p>
+                    <div className="flex items-center gap-1 mt-1">
+                      <Activity className="h-3 w-3 text-emerald-500" />
+                      <span className="text-xs text-emerald-600 capitalize">{cadre || 'Practitioner'}</span>
+                    </div>
+                  </div>
+                  <ChevronRight className="h-5 w-5 text-muted-foreground group-hover:text-emerald-600 transition-colors flex-shrink-0" />
+                </motion.button>
+              )}
+              
+              {/* Emergency Response */}
+              {canPerformEmergencyWork && onEmergencyWorkSelect && (
+                <motion.button
+                  initial={{ opacity: 0, y: 10 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ delay: 0.3 }}
+                  onClick={() => onEmergencyWorkSelect(
+                    primaryLicense.registration_number,
+                    primaryLicense.license_category
+                  )}
+                  className="w-full p-4 rounded-lg border border-red-200 bg-red-50/30 hover:border-red-400 hover:bg-red-100/50 transition-all text-left flex items-center gap-4 group"
+                >
+                  <div className="h-12 w-12 rounded-xl bg-red-100 flex items-center justify-center text-red-600 group-hover:bg-red-600 group-hover:text-white transition-colors">
+                    <Siren className="h-6 w-6" />
+                  </div>
+                  <div className="flex-1 min-w-0">
+                    <div className="flex items-center gap-2">
+                      <p className="font-medium">Emergency Response</p>
+                      <Badge className="bg-red-100 text-red-700 text-xs">Urgent</Badge>
+                    </div>
+                    <p className="text-sm text-muted-foreground">
+                      Good Samaritan or emergency medical response
+                    </p>
+                  </div>
+                  <ChevronRight className="h-5 w-5 text-muted-foreground group-hover:text-red-600 transition-colors flex-shrink-0" />
+                </motion.button>
+              )}
+              
+              {/* Community Outreach */}
+              {canPerformEmergencyWork && onCommunityOutreachSelect && (
+                <motion.button
+                  initial={{ opacity: 0, y: 10 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ delay: 0.35 }}
+                  onClick={() => onCommunityOutreachSelect(
+                    primaryLicense.registration_number,
+                    primaryLicense.license_category
+                  )}
+                  className="w-full p-4 rounded-lg border border-cyan-200 bg-cyan-50/30 hover:border-cyan-400 hover:bg-cyan-100/50 transition-all text-left flex items-center gap-4 group"
+                >
+                  <div className="h-12 w-12 rounded-xl bg-cyan-100 flex items-center justify-center text-cyan-600 group-hover:bg-cyan-600 group-hover:text-white transition-colors">
+                    <TreePine className="h-6 w-6" />
+                  </div>
+                  <div className="flex-1 min-w-0">
+                    <div className="flex items-center gap-2">
+                      <p className="font-medium">Community Outreach</p>
+                      <Badge className="bg-cyan-100 text-cyan-700 text-xs">Field</Badge>
+                    </div>
+                    <p className="text-sm text-muted-foreground">
+                      Outreach programs, home visits, or mobile clinics
+                    </p>
+                  </div>
+                  <ChevronRight className="h-5 w-5 text-muted-foreground group-hover:text-cyan-600 transition-colors flex-shrink-0" />
+                </motion.button>
+              )}
+            </div>
+          )}
+
           {/* Remote Work Option */}
           {!loading && (
             <div className="space-y-2">
@@ -462,7 +588,7 @@ export function WorkplaceSelectionHub({
               <motion.button
                 initial={{ opacity: 0, y: 10 }}
                 animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: 0.3 }}
+                transition={{ delay: 0.4 }}
                 onClick={() => onRemoteSelect(false)}
                 className="w-full p-4 rounded-lg border border-dashed border-border hover:border-primary/50 hover:bg-muted/30 transition-all text-left flex items-center gap-4 group"
               >
