@@ -322,6 +322,9 @@ export default function ModuleHome() {
     selectCombinedView,
     selectRemote,
     selectSupportMode,
+    selectIndependentPractice,
+    selectEmergencyWork,
+    selectCommunityOutreach,
     switchContext 
   } = useActiveWorkContext();
   
@@ -552,6 +555,9 @@ export default function ModuleHome() {
                   onCombinedViewSelect={selectCombinedView}
                   onRemoteSelect={selectRemote}
                   onSupportModeSelect={selectSupportMode}
+                  onIndependentPracticeSelect={selectIndependentPractice}
+                  onEmergencyWorkSelect={selectEmergencyWork}
+                  onCommunityOutreachSelect={selectCommunityOutreach}
                 />
               ) : (
                 /* Show modules when workspace is selected */
