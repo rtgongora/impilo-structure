@@ -24,7 +24,8 @@ import {
   FileText,
   Phone,
   QrCode,
-  ChevronRight
+  ChevronRight,
+  Bluetooth
 } from "lucide-react";
 import { EmergencySOS } from "./EmergencySOS";
 import { PortalQueueStatus } from "./PortalQueueStatus";
@@ -36,6 +37,9 @@ import { PortalMedications } from "./modules/PortalMedications";
 import { PortalAppointments } from "./modules/PortalAppointments";
 import { PortalWallet } from "./modules/PortalWallet";
 import { PortalCommunities } from "./modules/PortalCommunities";
+import { PortalRemoteMonitoring } from "./modules/PortalRemoteMonitoring";
+import { PortalSecureMessaging } from "./modules/PortalSecureMessaging";
+import { PortalMarketplace } from "./modules/PortalMarketplace";
 
 const MOCK_PATIENT = {
   name: "John Doe",
@@ -125,10 +129,19 @@ export function PatientPortal() {
                 <Users className="h-4 w-4 mr-1" />
                 Communities
               </TabsTrigger>
-              <TabsTrigger value="services">
-                <ShoppingCart className="h-4 w-4 mr-1" />
-                Services
+              <TabsTrigger value="monitoring">
+                <Bluetooth className="h-4 w-4 mr-1" />
+                Monitoring
               </TabsTrigger>
+              <TabsTrigger value="messages">
+                <MessageSquare className="h-4 w-4 mr-1" />
+                Messages
+              </TabsTrigger>
+              <TabsTrigger value="marketplace">
+                <ShoppingCart className="h-4 w-4 mr-1" />
+                Marketplace
+              </TabsTrigger>
+              <TabsTrigger value="services">Services</TabsTrigger>
               <TabsTrigger value="queue">Queue</TabsTrigger>
               <TabsTrigger value="emergency" className="text-destructive">
                 <AlertTriangle className="h-4 w-4 mr-1" />
@@ -278,6 +291,18 @@ export function PatientPortal() {
 
           <TabsContent value="communities">
             <PortalCommunities />
+          </TabsContent>
+
+          <TabsContent value="monitoring">
+            <PortalRemoteMonitoring />
+          </TabsContent>
+
+          <TabsContent value="messages">
+            <PortalSecureMessaging />
+          </TabsContent>
+
+          <TabsContent value="marketplace">
+            <PortalMarketplace />
           </TabsContent>
 
           <TabsContent value="services">
