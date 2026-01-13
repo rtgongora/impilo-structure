@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 import { 
   Users, Search, MapPin, CheckCircle, Clock, 
-  AlertTriangle, Eye, Phone
+  AlertTriangle, Eye
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -18,13 +18,13 @@ interface CommunitySubmissionsProps {
 interface CommunitySubmission {
   id: string;
   notification_type: 'birth' | 'death';
-  status: string;
-  reporter_name: string | null;
-  reporter_phone: string | null;
-  reporter_role: string | null;
-  province: string | null;
-  district: string | null;
-  village: string | null;
+  notifier_name: string | null;
+  notifier_role: string | null;
+  captured_lat: number | null;
+  captured_lng: number | null;
+  captured_at: string;
+  processed: boolean;
+  synced_at: string | null;
   created_at: string;
 }
 
@@ -42,12 +42,12 @@ export function CommunitySubmissions({ onViewSubmission }: CommunitySubmissionsP
     try {
       const { data, error } = await supabase
         .from('crvs_community_submissions')
-        .select('*')
+        .select('id, notification_type, notifier_name, notifier_role, captured_lat, captured_lng, captured_at, processed, synced_at, created_at')
         .order('created_at', { ascending: false })
         .limit(100);
 
       if (error) throw error;
-      setSubmissions(data || []);
+      setSubmissions((data || []) as CommunitySubmission[]);
     } catch (error) {
       console.error('Load submissions error:', error);
       toast.error("Failed to load submissions");
@@ -56,19 +56,14 @@ export function CommunitySubmissions({ onViewSubmission }: CommunitySubmissionsP
     }
   };
 
-  const getStatusBadge = (status: string) => {
-    switch (status) {
-      case 'pending':
-        return <Badge variant="outline" className="bg-yellow-50 text-yellow-700 border-yellow-200"><Clock className="w-3 h-3 mr-1" />Pending</Badge>;
-      case 'verified':
-        return <Badge variant="outline" className="bg-green-50 text-green-700 border-green-200"><CheckCircle className="w-3 h-3 mr-1" />Verified</Badge>;
-      case 'converted':
-        return <Badge variant="outline" className="bg-blue-50 text-blue-700 border-blue-200"><CheckCircle className="w-3 h-3 mr-1" />Converted</Badge>;
-      case 'rejected':
-        return <Badge variant="outline" className="bg-red-50 text-red-700 border-red-200"><AlertTriangle className="w-3 h-3 mr-1" />Rejected</Badge>;
-      default:
-        return <Badge variant="outline">{status}</Badge>;
+  const getStatusBadge = (processed: boolean, synced: boolean) => {
+    if (processed) {
+      return <Badge variant="outline" className="bg-green-50 text-green-700 border-green-200"><CheckCircle className="w-3 h-3 mr-1" />Processed</Badge>;
     }
+    if (synced) {
+      return <Badge variant="outline" className="bg-blue-50 text-blue-700 border-blue-200"><CheckCircle className="w-3 h-3 mr-1" />Synced</Badge>;
+    }
+    return <Badge variant="outline" className="bg-yellow-50 text-yellow-700 border-yellow-200"><Clock className="w-3 h-3 mr-1" />Pending</Badge>;
   };
 
   const getRoleBadge = (role: string) => {
@@ -86,15 +81,14 @@ export function CommunitySubmissions({ onViewSubmission }: CommunitySubmissionsP
 
   const filteredSubmissions = submissions.filter(sub => {
     return searchTerm === "" || 
-      (sub.reporter_name?.toLowerCase() || '').includes(searchTerm.toLowerCase()) ||
-      (sub.village?.toLowerCase() || '').includes(searchTerm.toLowerCase()) ||
-      (sub.district?.toLowerCase() || '').includes(searchTerm.toLowerCase());
+      (sub.notifier_name?.toLowerCase() || '').includes(searchTerm.toLowerCase());
   });
 
   const stats = {
     total: submissions.length,
-    pending: submissions.filter(s => s.status === 'pending').length,
-    verified: submissions.filter(s => s.status === 'verified').length,
+    pending: submissions.filter(s => !s.processed && !s.synced_at).length,
+    synced: submissions.filter(s => s.synced_at !== null).length,
+    processed: submissions.filter(s => s.processed).length,
     births: submissions.filter(s => s.notification_type === 'birth').length,
     deaths: submissions.filter(s => s.notification_type === 'death').length,
   };
@@ -127,13 +121,13 @@ export function CommunitySubmissions({ onViewSubmission }: CommunitySubmissionsP
         <Card>
           <CardContent className="p-4">
             <div className="text-2xl font-bold text-yellow-600">{stats.pending}</div>
-            <div className="text-sm text-muted-foreground">Pending Review</div>
+            <div className="text-sm text-muted-foreground">Pending</div>
           </CardContent>
         </Card>
         <Card>
           <CardContent className="p-4">
-            <div className="text-2xl font-bold text-green-600">{stats.verified}</div>
-            <div className="text-sm text-muted-foreground">Verified</div>
+            <div className="text-2xl font-bold text-green-600">{stats.processed}</div>
+            <div className="text-sm text-muted-foreground">Processed</div>
           </CardContent>
         </Card>
         <Card>
@@ -185,21 +179,17 @@ export function CommunitySubmissions({ onViewSubmission }: CommunitySubmissionsP
                       <Badge variant={submission.notification_type === 'birth' ? 'default' : 'secondary'}>
                         {submission.notification_type.toUpperCase()}
                       </Badge>
-                      {getStatusBadge(submission.status)}
-                      {getRoleBadge(submission.reporter_role || 'other')}
+                      {getStatusBadge(submission.processed, !!submission.synced_at)}
+                      {getRoleBadge(submission.notifier_role || 'other')}
                     </div>
-                    <div className="font-medium">{submission.reporter_name || 'Unknown Reporter'}</div>
+                    <div className="font-medium">{submission.notifier_name || 'Unknown Reporter'}</div>
                     <div className="flex items-center gap-4 text-sm text-muted-foreground">
-                      {submission.reporter_phone && (
+                      {(submission.captured_lat && submission.captured_lng) && (
                         <span className="flex items-center gap-1">
-                          <Phone className="w-3 h-3" />
-                          {submission.reporter_phone}
+                          <MapPin className="w-3 h-3" />
+                          GPS: {Number(submission.captured_lat).toFixed(4)}, {Number(submission.captured_lng).toFixed(4)}
                         </span>
                       )}
-                      <span className="flex items-center gap-1">
-                        <MapPin className="w-3 h-3" />
-                        {[submission.village, submission.district, submission.province].filter(Boolean).join(', ') || 'Unknown location'}
-                      </span>
                     </div>
                   </div>
                   <div className="text-right">

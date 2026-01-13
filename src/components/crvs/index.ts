@@ -1,10 +1,11 @@
 // CRVS (Civil Registration and Vital Statistics) Module
-export * from './BirthNotificationForm';
-export * from './DeathNotificationForm';
-export * from './MCCDForm';
-export * from './VerbalAutopsyForm';
-export * from './RegistrarQueue';
-export * from './CertificatesList';
-export * from './CommunitySubmissions';
-export * from './CRVSDashboard';
-export * from './QualityFlags';
+export { BirthNotificationForm } from './BirthNotificationForm';
+export { DeathNotificationForm } from './DeathNotificationForm';
+export { MCCDForm } from './MCCDForm';
+export { VerbalAutopsyForm } from './VerbalAutopsyForm';
+export { RegistrarQueue } from './RegistrarQueue';
+export { CertificatesList } from './CertificatesList';
+export { CommunitySubmissions } from './CommunitySubmissions';
+export { CRVSDashboard } from './CRVSDashboard';
+export { QualityFlags } from './QualityFlags';
+export type * from './types';

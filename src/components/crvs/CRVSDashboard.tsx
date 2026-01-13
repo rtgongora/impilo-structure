@@ -80,12 +80,10 @@ export function CRVSDashboard() {
       const certificatesCount = certQuery.count;
 
       // Get community reports
-      const communityQuery = await supabase
+      const { count: communityCount } = await supabase
         .from('crvs_community_submissions')
-        .select('id', { count: 'exact', head: true })
-        .eq('status', 'pending');
-      
-      const communityCount = communityQuery.count;
+        .select('*', { count: 'exact', head: true })
+        .eq('processed', false);
 
       setStats({
         birthsToday: birthsToday || 0,

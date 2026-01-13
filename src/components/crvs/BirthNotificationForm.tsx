@@ -272,10 +272,6 @@ export function BirthNotificationForm({
         }] as any);
 
       if (error) throw error;
-            : new Date().toISOString(),
-        });
-
-      if (error) throw error;
       toast.success("Draft saved successfully");
     } catch (error) {
       console.error('Save draft error:', error);
