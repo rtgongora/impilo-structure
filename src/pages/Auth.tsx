@@ -9,16 +9,17 @@ import { ProviderIdLookup } from "@/components/auth/ProviderIdLookup";
 import { BiometricAuth } from "@/components/auth/BiometricAuth";
 import { WorkspaceSelection, type WorkspaceSelectionData } from "@/components/auth/WorkspaceSelection";
 import { AboveSiteContextSelection } from "@/components/auth/AboveSiteContextSelection";
+import { ClientAuth } from "@/components/auth/ClientAuth";
 import { type ProviderRegistryRecord, type FacilityRegistryRecord } from "@/services/registryServices";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Fingerprint, Mail, Shield, ArrowLeft, Eye, EyeOff, Heart, Activity } from "lucide-react";
+import { Fingerprint, Mail, Shield, ArrowLeft, Eye, EyeOff, Heart, Activity, UserCircle } from "lucide-react";
 import impiloLogo from "@/assets/impilo-logo.png";
 import type { AboveSiteContextType } from "@/types/aboveSite";
 
-type AuthView = "method-select" | "lookup" | "biometric" | "workspace" | "email-login" | "above-site-context";
+type AuthView = "method-select" | "lookup" | "biometric" | "workspace" | "email-login" | "above-site-context" | "client-auth";
 
 const Auth = () => {
   const navigate = useNavigate();
@@ -299,6 +300,7 @@ const Auth = () => {
               </div>
 
               <div className="space-y-4">
+                {/* Provider/Clinical Login */}
                 <button
                   onClick={() => setView("lookup")}
                   className="w-full group relative overflow-hidden rounded-xl border border-border bg-card p-6 text-left transition-all hover:border-primary/50 hover:shadow-lg hover:shadow-primary/5"
@@ -319,6 +321,28 @@ const Auth = () => {
                   </div>
                 </button>
 
+                {/* Client/Patient Login */}
+                <button
+                  onClick={() => setView("client-auth")}
+                  className="w-full group relative overflow-hidden rounded-xl border border-border bg-card p-6 text-left transition-all hover:border-primary/50 hover:shadow-lg hover:shadow-primary/5"
+                >
+                  <div className="flex items-start gap-4">
+                    <div className="h-14 w-14 rounded-xl bg-accent/20 flex items-center justify-center shrink-0 group-hover:bg-accent/30 transition-colors">
+                      <UserCircle className="h-7 w-7 text-accent-foreground" />
+                    </div>
+                    <div>
+                      <h3 className="font-semibold text-foreground text-lg">Patient Portal</h3>
+                      <p className="text-sm text-muted-foreground mt-1">
+                        Access your health records & appointments
+                      </p>
+                    </div>
+                  </div>
+                  <div className="absolute right-4 top-1/2 -translate-y-1/2 opacity-0 group-hover:opacity-100 transition-opacity">
+                    <ArrowLeft className="h-5 w-5 text-primary rotate-180" />
+                  </div>
+                </button>
+
+                {/* Admin/Staff Email Login */}
                 <button
                   onClick={() => setView("email-login")}
                   className="w-full group relative overflow-hidden rounded-xl border border-border bg-card p-6 text-left transition-all hover:border-primary/50 hover:shadow-lg hover:shadow-primary/5"
@@ -328,7 +352,7 @@ const Auth = () => {
                       <Mail className="h-7 w-7 text-secondary-foreground" />
                     </div>
                     <div>
-                      <h3 className="font-semibold text-foreground text-lg">Email & Password</h3>
+                      <h3 className="font-semibold text-foreground text-lg">Staff Email Login</h3>
                       <p className="text-sm text-muted-foreground mt-1">
                         For admin and system users
                       </p>
@@ -464,6 +488,10 @@ const Auth = () => {
                 setView("method-select");
               }}
             />
+          )}
+
+          {view === "client-auth" && (
+            <ClientAuth onBack={handleCancel} />
           )}
         </div>
       </div>
