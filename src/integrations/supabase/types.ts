@@ -6902,8 +6902,12 @@ export type Database = {
           phone: string | null
           phone_alt: string | null
           physical_address: string | null
+          pic_appointed_by: string | null
+          pic_appointment_ref: string | null
+          pic_effective_from: string | null
           postal_address: string | null
           postal_code: string | null
+          practitioner_in_charge_id: string | null
           province: string | null
           published_at: string | null
           published_by: string | null
@@ -6968,8 +6972,12 @@ export type Database = {
           phone?: string | null
           phone_alt?: string | null
           physical_address?: string | null
+          pic_appointed_by?: string | null
+          pic_appointment_ref?: string | null
+          pic_effective_from?: string | null
           postal_address?: string | null
           postal_code?: string | null
+          practitioner_in_charge_id?: string | null
           province?: string | null
           published_at?: string | null
           published_by?: string | null
@@ -7034,8 +7042,12 @@ export type Database = {
           phone?: string | null
           phone_alt?: string | null
           physical_address?: string | null
+          pic_appointed_by?: string | null
+          pic_appointment_ref?: string | null
+          pic_effective_from?: string | null
           postal_address?: string | null
           postal_code?: string | null
+          practitioner_in_charge_id?: string | null
           province?: string | null
           published_at?: string | null
           published_by?: string | null
@@ -7075,6 +7087,13 @@ export type Database = {
             columns: ["ownership_type_id"]
             isOneToOne: false
             referencedRelation: "facility_ownership_types"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "facilities_practitioner_in_charge_id_fkey"
+            columns: ["practitioner_in_charge_id"]
+            isOneToOne: false
+            referencedRelation: "health_providers"
             referencedColumns: ["id"]
           },
         ]
@@ -15781,6 +15800,83 @@ export type Database = {
           },
         ]
       }
+      provider_facility_ownership: {
+        Row: {
+          business_registration_number: string | null
+          created_at: string
+          created_by: string | null
+          effective_from: string
+          effective_to: string | null
+          facility_id: string
+          id: string
+          is_operator: boolean | null
+          ownership_percentage: number | null
+          ownership_type: Database["public"]["Enums"]["ownership_type"]
+          partnership_agreement_ref: string | null
+          provider_id: string
+          updated_at: string
+        }
+        Insert: {
+          business_registration_number?: string | null
+          created_at?: string
+          created_by?: string | null
+          effective_from?: string
+          effective_to?: string | null
+          facility_id: string
+          id?: string
+          is_operator?: boolean | null
+          ownership_percentage?: number | null
+          ownership_type: Database["public"]["Enums"]["ownership_type"]
+          partnership_agreement_ref?: string | null
+          provider_id: string
+          updated_at?: string
+        }
+        Update: {
+          business_registration_number?: string | null
+          created_at?: string
+          created_by?: string | null
+          effective_from?: string
+          effective_to?: string | null
+          facility_id?: string
+          id?: string
+          is_operator?: boolean | null
+          ownership_percentage?: number | null
+          ownership_type?: Database["public"]["Enums"]["ownership_type"]
+          partnership_agreement_ref?: string | null
+          provider_id?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "provider_facility_ownership_facility_id_fkey"
+            columns: ["facility_id"]
+            isOneToOne: false
+            referencedRelation: "facilities"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "provider_facility_ownership_facility_id_fkey"
+            columns: ["facility_id"]
+            isOneToOne: false
+            referencedRelation: "facility_capabilities"
+            referencedColumns: ["facility_id"]
+          },
+          {
+            foreignKeyName: "provider_facility_ownership_facility_id_fkey"
+            columns: ["facility_id"]
+            isOneToOne: false
+            referencedRelation: "facility_operations_dashboard"
+            referencedColumns: ["facility_id"]
+          },
+          {
+            foreignKeyName: "provider_facility_ownership_provider_id_fkey"
+            columns: ["provider_id"]
+            isOneToOne: false
+            referencedRelation: "health_providers"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       provider_identifiers: {
         Row: {
           created_at: string
@@ -16222,6 +16318,98 @@ export type Database = {
           },
           {
             foreignKeyName: "provider_position_changes_provider_id_fkey"
+            columns: ["provider_id"]
+            isOneToOne: false
+            referencedRelation: "health_providers"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      provider_privileges: {
+        Row: {
+          conditions: string | null
+          created_at: string
+          department_scope: string[] | null
+          effective_from: string
+          expires_at: string | null
+          facility_id: string
+          granted_at: string
+          granted_by: string | null
+          granted_by_name: string | null
+          granted_by_role: string | null
+          id: string
+          privilege_type: Database["public"]["Enums"]["privilege_type"]
+          provider_id: string
+          revocation_reason: string | null
+          revoked_at: string | null
+          revoked_by: string | null
+          status: Database["public"]["Enums"]["privilege_status"]
+          updated_at: string
+        }
+        Insert: {
+          conditions?: string | null
+          created_at?: string
+          department_scope?: string[] | null
+          effective_from?: string
+          expires_at?: string | null
+          facility_id: string
+          granted_at?: string
+          granted_by?: string | null
+          granted_by_name?: string | null
+          granted_by_role?: string | null
+          id?: string
+          privilege_type: Database["public"]["Enums"]["privilege_type"]
+          provider_id: string
+          revocation_reason?: string | null
+          revoked_at?: string | null
+          revoked_by?: string | null
+          status?: Database["public"]["Enums"]["privilege_status"]
+          updated_at?: string
+        }
+        Update: {
+          conditions?: string | null
+          created_at?: string
+          department_scope?: string[] | null
+          effective_from?: string
+          expires_at?: string | null
+          facility_id?: string
+          granted_at?: string
+          granted_by?: string | null
+          granted_by_name?: string | null
+          granted_by_role?: string | null
+          id?: string
+          privilege_type?: Database["public"]["Enums"]["privilege_type"]
+          provider_id?: string
+          revocation_reason?: string | null
+          revoked_at?: string | null
+          revoked_by?: string | null
+          status?: Database["public"]["Enums"]["privilege_status"]
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "provider_privileges_facility_id_fkey"
+            columns: ["facility_id"]
+            isOneToOne: false
+            referencedRelation: "facilities"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "provider_privileges_facility_id_fkey"
+            columns: ["facility_id"]
+            isOneToOne: false
+            referencedRelation: "facility_capabilities"
+            referencedColumns: ["facility_id"]
+          },
+          {
+            foreignKeyName: "provider_privileges_facility_id_fkey"
+            columns: ["facility_id"]
+            isOneToOne: false
+            referencedRelation: "facility_operations_dashboard"
+            referencedColumns: ["facility_id"]
+          },
+          {
+            foreignKeyName: "provider_privileges_provider_id_fkey"
             columns: ["provider_id"]
             isOneToOne: false
             referencedRelation: "health_providers"
