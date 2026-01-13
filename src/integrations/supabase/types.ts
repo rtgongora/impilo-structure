@@ -642,6 +642,70 @@ export type Database = {
           },
         ]
       }
+      approval_matrix_config: {
+        Row: {
+          approval_stage: string
+          conditions: Json | null
+          created_at: string | null
+          facility_id: string | null
+          id: string
+          is_active: boolean | null
+          is_mandatory: boolean | null
+          required_roles: string[]
+          sequence_order: number
+          updated_at: string | null
+          workflow_type: string
+        }
+        Insert: {
+          approval_stage: string
+          conditions?: Json | null
+          created_at?: string | null
+          facility_id?: string | null
+          id?: string
+          is_active?: boolean | null
+          is_mandatory?: boolean | null
+          required_roles: string[]
+          sequence_order: number
+          updated_at?: string | null
+          workflow_type: string
+        }
+        Update: {
+          approval_stage?: string
+          conditions?: Json | null
+          created_at?: string | null
+          facility_id?: string | null
+          id?: string
+          is_active?: boolean | null
+          is_mandatory?: boolean | null
+          required_roles?: string[]
+          sequence_order?: number
+          updated_at?: string | null
+          workflow_type?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "approval_matrix_config_facility_id_fkey"
+            columns: ["facility_id"]
+            isOneToOne: false
+            referencedRelation: "facilities"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "approval_matrix_config_facility_id_fkey"
+            columns: ["facility_id"]
+            isOneToOne: false
+            referencedRelation: "facility_capabilities"
+            referencedColumns: ["facility_id"]
+          },
+          {
+            foreignKeyName: "approval_matrix_config_facility_id_fkey"
+            columns: ["facility_id"]
+            isOneToOne: false
+            referencedRelation: "facility_operations_dashboard"
+            referencedColumns: ["facility_id"]
+          },
+        ]
+      }
       audit_logs: {
         Row: {
           action: string
@@ -2257,6 +2321,61 @@ export type Database = {
             isOneToOne: false
             referencedRelation: "visits"
             referencedColumns: ["id"]
+          },
+        ]
+      }
+      clearance_checklist_templates: {
+        Row: {
+          checklist_items: Json
+          clearance_type: Database["public"]["Enums"]["clearance_type"]
+          created_at: string | null
+          facility_id: string | null
+          id: string
+          is_active: boolean | null
+          updated_at: string | null
+          workflow_type: string
+        }
+        Insert: {
+          checklist_items?: Json
+          clearance_type: Database["public"]["Enums"]["clearance_type"]
+          created_at?: string | null
+          facility_id?: string | null
+          id?: string
+          is_active?: boolean | null
+          updated_at?: string | null
+          workflow_type: string
+        }
+        Update: {
+          checklist_items?: Json
+          clearance_type?: Database["public"]["Enums"]["clearance_type"]
+          created_at?: string | null
+          facility_id?: string | null
+          id?: string
+          is_active?: boolean | null
+          updated_at?: string | null
+          workflow_type?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "clearance_checklist_templates_facility_id_fkey"
+            columns: ["facility_id"]
+            isOneToOne: false
+            referencedRelation: "facilities"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "clearance_checklist_templates_facility_id_fkey"
+            columns: ["facility_id"]
+            isOneToOne: false
+            referencedRelation: "facility_capabilities"
+            referencedColumns: ["facility_id"]
+          },
+          {
+            foreignKeyName: "clearance_checklist_templates_facility_id_fkey"
+            columns: ["facility_id"]
+            isOneToOne: false
+            referencedRelation: "facility_operations_dashboard"
+            referencedColumns: ["facility_id"]
           },
         ]
       }
@@ -5085,6 +5204,102 @@ export type Database = {
         }
         Relationships: []
       }
+      death_certifications: {
+        Row: {
+          certification_datetime: string
+          certification_type: string
+          certifying_practitioner_id: string | null
+          community_verifier_id: string | null
+          community_verifier_name: string | null
+          community_verifier_role: string | null
+          contributing_causes: string[] | null
+          created_at: string | null
+          digital_signature: string | null
+          discharge_case_id: string
+          id: string
+          immediate_cause: string | null
+          is_verified: boolean | null
+          manner_of_death: string | null
+          mccd_record_id: string | null
+          place_of_certification: string | null
+          practitioner_name: string
+          practitioner_qualification: string
+          practitioner_registration_number: string | null
+          signature_datetime: string | null
+          underlying_cause: string | null
+          updated_at: string | null
+          verified_at: string | null
+          verified_by: string | null
+        }
+        Insert: {
+          certification_datetime?: string
+          certification_type: string
+          certifying_practitioner_id?: string | null
+          community_verifier_id?: string | null
+          community_verifier_name?: string | null
+          community_verifier_role?: string | null
+          contributing_causes?: string[] | null
+          created_at?: string | null
+          digital_signature?: string | null
+          discharge_case_id: string
+          id?: string
+          immediate_cause?: string | null
+          is_verified?: boolean | null
+          manner_of_death?: string | null
+          mccd_record_id?: string | null
+          place_of_certification?: string | null
+          practitioner_name: string
+          practitioner_qualification: string
+          practitioner_registration_number?: string | null
+          signature_datetime?: string | null
+          underlying_cause?: string | null
+          updated_at?: string | null
+          verified_at?: string | null
+          verified_by?: string | null
+        }
+        Update: {
+          certification_datetime?: string
+          certification_type?: string
+          certifying_practitioner_id?: string | null
+          community_verifier_id?: string | null
+          community_verifier_name?: string | null
+          community_verifier_role?: string | null
+          contributing_causes?: string[] | null
+          created_at?: string | null
+          digital_signature?: string | null
+          discharge_case_id?: string
+          id?: string
+          immediate_cause?: string | null
+          is_verified?: boolean | null
+          manner_of_death?: string | null
+          mccd_record_id?: string | null
+          place_of_certification?: string | null
+          practitioner_name?: string
+          practitioner_qualification?: string
+          practitioner_registration_number?: string | null
+          signature_datetime?: string | null
+          underlying_cause?: string | null
+          updated_at?: string | null
+          verified_at?: string | null
+          verified_by?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "death_certifications_discharge_case_id_fkey"
+            columns: ["discharge_case_id"]
+            isOneToOne: false
+            referencedRelation: "discharge_cases"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "death_certifications_mccd_record_id_fkey"
+            columns: ["mccd_record_id"]
+            isOneToOne: false
+            referencedRelation: "mccd_records"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       death_notifications: {
         Row: {
           billing_notified: boolean | null
@@ -5464,6 +5679,534 @@ export type Database = {
             columns: ["visit_id"]
             isOneToOne: false
             referencedRelation: "visits"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      discharge_approvals: {
+        Row: {
+          approval_stage: string
+          approved_at: string | null
+          approved_by: string | null
+          created_at: string | null
+          deferred_reason: string | null
+          deferred_until: string | null
+          discharge_case_id: string
+          id: string
+          is_mandatory: boolean | null
+          rejected_reason: string | null
+          required_role: string
+          sequence_order: number
+          signature_hash: string | null
+          status: string
+          updated_at: string | null
+        }
+        Insert: {
+          approval_stage: string
+          approved_at?: string | null
+          approved_by?: string | null
+          created_at?: string | null
+          deferred_reason?: string | null
+          deferred_until?: string | null
+          discharge_case_id: string
+          id?: string
+          is_mandatory?: boolean | null
+          rejected_reason?: string | null
+          required_role: string
+          sequence_order: number
+          signature_hash?: string | null
+          status?: string
+          updated_at?: string | null
+        }
+        Update: {
+          approval_stage?: string
+          approved_at?: string | null
+          approved_by?: string | null
+          created_at?: string | null
+          deferred_reason?: string | null
+          deferred_until?: string | null
+          discharge_case_id?: string
+          id?: string
+          is_mandatory?: boolean | null
+          rejected_reason?: string | null
+          required_role?: string
+          sequence_order?: number
+          signature_hash?: string | null
+          status?: string
+          updated_at?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "discharge_approvals_discharge_case_id_fkey"
+            columns: ["discharge_case_id"]
+            isOneToOne: false
+            referencedRelation: "discharge_cases"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      discharge_cases: {
+        Row: {
+          case_number: string
+          closed_at: string | null
+          cost_snapshot_id: string | null
+          created_at: string | null
+          created_by: string | null
+          death_datetime: string | null
+          death_notification_id: string | null
+          death_place: string | null
+          death_summary_id: string | null
+          decision_by: string | null
+          decision_datetime: string | null
+          decision_reason: string | null
+          decision_type:
+            | Database["public"]["Enums"]["discharge_decision_type"]
+            | null
+          discharge_datetime: string | null
+          discharge_diagnosis: string | null
+          discharge_instructions: string | null
+          discharge_summary_id: string | null
+          encounter_id: string | null
+          facility_id: string | null
+          final_approved_at: string | null
+          final_approved_by: string | null
+          financial_status: string | null
+          follow_up_plan: string | null
+          id: string
+          is_community_death: boolean | null
+          is_legal_hold: boolean | null
+          legal_hold_reason: string | null
+          mccd_id: string | null
+          mortuary_location: string | null
+          mortuary_transfer_datetime: string | null
+          notes: string | null
+          outstanding_balance: number | null
+          patient_acknowledged: boolean | null
+          patient_acknowledged_at: string | null
+          patient_acknowledged_by: string | null
+          patient_id: string
+          patient_signature_path: string | null
+          preliminary_cause_category: string | null
+          requires_supervisor_override: boolean | null
+          supervisor_override_at: string | null
+          supervisor_override_by: string | null
+          supervisor_override_reason: string | null
+          total_charges: number | null
+          total_paid: number | null
+          total_waived: number | null
+          treatment_summary: string | null
+          updated_at: string | null
+          verbal_autopsy_id: string | null
+          visit_id: string
+          workflow_state: Database["public"]["Enums"]["discharge_workflow_state"]
+          workflow_type: string
+        }
+        Insert: {
+          case_number?: string
+          closed_at?: string | null
+          cost_snapshot_id?: string | null
+          created_at?: string | null
+          created_by?: string | null
+          death_datetime?: string | null
+          death_notification_id?: string | null
+          death_place?: string | null
+          death_summary_id?: string | null
+          decision_by?: string | null
+          decision_datetime?: string | null
+          decision_reason?: string | null
+          decision_type?:
+            | Database["public"]["Enums"]["discharge_decision_type"]
+            | null
+          discharge_datetime?: string | null
+          discharge_diagnosis?: string | null
+          discharge_instructions?: string | null
+          discharge_summary_id?: string | null
+          encounter_id?: string | null
+          facility_id?: string | null
+          final_approved_at?: string | null
+          final_approved_by?: string | null
+          financial_status?: string | null
+          follow_up_plan?: string | null
+          id?: string
+          is_community_death?: boolean | null
+          is_legal_hold?: boolean | null
+          legal_hold_reason?: string | null
+          mccd_id?: string | null
+          mortuary_location?: string | null
+          mortuary_transfer_datetime?: string | null
+          notes?: string | null
+          outstanding_balance?: number | null
+          patient_acknowledged?: boolean | null
+          patient_acknowledged_at?: string | null
+          patient_acknowledged_by?: string | null
+          patient_id: string
+          patient_signature_path?: string | null
+          preliminary_cause_category?: string | null
+          requires_supervisor_override?: boolean | null
+          supervisor_override_at?: string | null
+          supervisor_override_by?: string | null
+          supervisor_override_reason?: string | null
+          total_charges?: number | null
+          total_paid?: number | null
+          total_waived?: number | null
+          treatment_summary?: string | null
+          updated_at?: string | null
+          verbal_autopsy_id?: string | null
+          visit_id: string
+          workflow_state?: Database["public"]["Enums"]["discharge_workflow_state"]
+          workflow_type: string
+        }
+        Update: {
+          case_number?: string
+          closed_at?: string | null
+          cost_snapshot_id?: string | null
+          created_at?: string | null
+          created_by?: string | null
+          death_datetime?: string | null
+          death_notification_id?: string | null
+          death_place?: string | null
+          death_summary_id?: string | null
+          decision_by?: string | null
+          decision_datetime?: string | null
+          decision_reason?: string | null
+          decision_type?:
+            | Database["public"]["Enums"]["discharge_decision_type"]
+            | null
+          discharge_datetime?: string | null
+          discharge_diagnosis?: string | null
+          discharge_instructions?: string | null
+          discharge_summary_id?: string | null
+          encounter_id?: string | null
+          facility_id?: string | null
+          final_approved_at?: string | null
+          final_approved_by?: string | null
+          financial_status?: string | null
+          follow_up_plan?: string | null
+          id?: string
+          is_community_death?: boolean | null
+          is_legal_hold?: boolean | null
+          legal_hold_reason?: string | null
+          mccd_id?: string | null
+          mortuary_location?: string | null
+          mortuary_transfer_datetime?: string | null
+          notes?: string | null
+          outstanding_balance?: number | null
+          patient_acknowledged?: boolean | null
+          patient_acknowledged_at?: string | null
+          patient_acknowledged_by?: string | null
+          patient_id?: string
+          patient_signature_path?: string | null
+          preliminary_cause_category?: string | null
+          requires_supervisor_override?: boolean | null
+          supervisor_override_at?: string | null
+          supervisor_override_by?: string | null
+          supervisor_override_reason?: string | null
+          total_charges?: number | null
+          total_paid?: number | null
+          total_waived?: number | null
+          treatment_summary?: string | null
+          updated_at?: string | null
+          verbal_autopsy_id?: string | null
+          visit_id?: string
+          workflow_state?: Database["public"]["Enums"]["discharge_workflow_state"]
+          workflow_type?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "discharge_cases_death_notification_id_fkey"
+            columns: ["death_notification_id"]
+            isOneToOne: false
+            referencedRelation: "death_notifications"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "discharge_cases_encounter_id_fkey"
+            columns: ["encounter_id"]
+            isOneToOne: false
+            referencedRelation: "encounters"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "discharge_cases_facility_id_fkey"
+            columns: ["facility_id"]
+            isOneToOne: false
+            referencedRelation: "facilities"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "discharge_cases_facility_id_fkey"
+            columns: ["facility_id"]
+            isOneToOne: false
+            referencedRelation: "facility_capabilities"
+            referencedColumns: ["facility_id"]
+          },
+          {
+            foreignKeyName: "discharge_cases_facility_id_fkey"
+            columns: ["facility_id"]
+            isOneToOne: false
+            referencedRelation: "facility_operations_dashboard"
+            referencedColumns: ["facility_id"]
+          },
+          {
+            foreignKeyName: "discharge_cases_mccd_id_fkey"
+            columns: ["mccd_id"]
+            isOneToOne: false
+            referencedRelation: "mccd_records"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "discharge_cases_patient_id_fkey"
+            columns: ["patient_id"]
+            isOneToOne: false
+            referencedRelation: "patients"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "discharge_cases_verbal_autopsy_id_fkey"
+            columns: ["verbal_autopsy_id"]
+            isOneToOne: false
+            referencedRelation: "verbal_autopsy_records"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "discharge_cases_visit_id_fkey"
+            columns: ["visit_id"]
+            isOneToOne: false
+            referencedRelation: "visits"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      discharge_clearances: {
+        Row: {
+          assigned_role: string | null
+          assigned_to: string | null
+          blocked_reason: string | null
+          checklist_items: Json | null
+          clearance_type: Database["public"]["Enums"]["clearance_type"]
+          cleared_at: string | null
+          cleared_by: string | null
+          completed_items: Json | null
+          created_at: string | null
+          discharge_case_id: string
+          id: string
+          notes: string | null
+          sequence_order: number
+          status: Database["public"]["Enums"]["clearance_status"]
+          updated_at: string | null
+          waived_by: string | null
+          waived_reason: string | null
+        }
+        Insert: {
+          assigned_role?: string | null
+          assigned_to?: string | null
+          blocked_reason?: string | null
+          checklist_items?: Json | null
+          clearance_type: Database["public"]["Enums"]["clearance_type"]
+          cleared_at?: string | null
+          cleared_by?: string | null
+          completed_items?: Json | null
+          created_at?: string | null
+          discharge_case_id: string
+          id?: string
+          notes?: string | null
+          sequence_order: number
+          status?: Database["public"]["Enums"]["clearance_status"]
+          updated_at?: string | null
+          waived_by?: string | null
+          waived_reason?: string | null
+        }
+        Update: {
+          assigned_role?: string | null
+          assigned_to?: string | null
+          blocked_reason?: string | null
+          checklist_items?: Json | null
+          clearance_type?: Database["public"]["Enums"]["clearance_type"]
+          cleared_at?: string | null
+          cleared_by?: string | null
+          completed_items?: Json | null
+          created_at?: string | null
+          discharge_case_id?: string
+          id?: string
+          notes?: string | null
+          sequence_order?: number
+          status?: Database["public"]["Enums"]["clearance_status"]
+          updated_at?: string | null
+          waived_by?: string | null
+          waived_reason?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "discharge_clearances_discharge_case_id_fkey"
+            columns: ["discharge_case_id"]
+            isOneToOne: false
+            referencedRelation: "discharge_cases"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      discharge_financial_clearances: {
+        Row: {
+          amount_paid: number | null
+          balance_due: number | null
+          bed_day_charges: number | null
+          catering_charges: number | null
+          consumable_charges: number | null
+          created_at: string | null
+          deferred_approved_by: string | null
+          deferred_until: string | null
+          discharge_case_id: string
+          discounts_applied: number | null
+          exemptions_applied: number | null
+          gross_total: number | null
+          id: string
+          imaging_charges: number | null
+          insurance_covered: number | null
+          lab_charges: number | null
+          medication_charges: number | null
+          mortuary_charges: number | null
+          net_payable: number | null
+          other_charges: number | null
+          payment_plan_id: string | null
+          procedure_charges: number | null
+          resolution_notes: string | null
+          resolution_type: string | null
+          resolved_at: string | null
+          resolved_by: string | null
+          special_service_charges: number | null
+          sponsor_covered: number | null
+          updated_at: string | null
+          utility_charges: number | null
+          write_off_approved_by: string | null
+          write_off_reason: string | null
+        }
+        Insert: {
+          amount_paid?: number | null
+          balance_due?: number | null
+          bed_day_charges?: number | null
+          catering_charges?: number | null
+          consumable_charges?: number | null
+          created_at?: string | null
+          deferred_approved_by?: string | null
+          deferred_until?: string | null
+          discharge_case_id: string
+          discounts_applied?: number | null
+          exemptions_applied?: number | null
+          gross_total?: number | null
+          id?: string
+          imaging_charges?: number | null
+          insurance_covered?: number | null
+          lab_charges?: number | null
+          medication_charges?: number | null
+          mortuary_charges?: number | null
+          net_payable?: number | null
+          other_charges?: number | null
+          payment_plan_id?: string | null
+          procedure_charges?: number | null
+          resolution_notes?: string | null
+          resolution_type?: string | null
+          resolved_at?: string | null
+          resolved_by?: string | null
+          special_service_charges?: number | null
+          sponsor_covered?: number | null
+          updated_at?: string | null
+          utility_charges?: number | null
+          write_off_approved_by?: string | null
+          write_off_reason?: string | null
+        }
+        Update: {
+          amount_paid?: number | null
+          balance_due?: number | null
+          bed_day_charges?: number | null
+          catering_charges?: number | null
+          consumable_charges?: number | null
+          created_at?: string | null
+          deferred_approved_by?: string | null
+          deferred_until?: string | null
+          discharge_case_id?: string
+          discounts_applied?: number | null
+          exemptions_applied?: number | null
+          gross_total?: number | null
+          id?: string
+          imaging_charges?: number | null
+          insurance_covered?: number | null
+          lab_charges?: number | null
+          medication_charges?: number | null
+          mortuary_charges?: number | null
+          net_payable?: number | null
+          other_charges?: number | null
+          payment_plan_id?: string | null
+          procedure_charges?: number | null
+          resolution_notes?: string | null
+          resolution_type?: string | null
+          resolved_at?: string | null
+          resolved_by?: string | null
+          special_service_charges?: number | null
+          sponsor_covered?: number | null
+          updated_at?: string | null
+          utility_charges?: number | null
+          write_off_approved_by?: string | null
+          write_off_reason?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "discharge_financial_clearances_discharge_case_id_fkey"
+            columns: ["discharge_case_id"]
+            isOneToOne: true
+            referencedRelation: "discharge_cases"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      discharge_state_transitions: {
+        Row: {
+          clearance_snapshot: Json | null
+          discharge_case_id: string
+          from_state:
+            | Database["public"]["Enums"]["discharge_workflow_state"]
+            | null
+          id: string
+          ip_address: unknown
+          to_state: Database["public"]["Enums"]["discharge_workflow_state"]
+          transition_reason: string | null
+          transitioned_at: string
+          transitioned_by: string
+          user_agent: string | null
+        }
+        Insert: {
+          clearance_snapshot?: Json | null
+          discharge_case_id: string
+          from_state?:
+            | Database["public"]["Enums"]["discharge_workflow_state"]
+            | null
+          id?: string
+          ip_address?: unknown
+          to_state: Database["public"]["Enums"]["discharge_workflow_state"]
+          transition_reason?: string | null
+          transitioned_at?: string
+          transitioned_by: string
+          user_agent?: string | null
+        }
+        Update: {
+          clearance_snapshot?: Json | null
+          discharge_case_id?: string
+          from_state?:
+            | Database["public"]["Enums"]["discharge_workflow_state"]
+            | null
+          id?: string
+          ip_address?: unknown
+          to_state?: Database["public"]["Enums"]["discharge_workflow_state"]
+          transition_reason?: string | null
+          transitioned_at?: string
+          transitioned_by?: string
+          user_agent?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "discharge_state_transitions_discharge_case_id_fkey"
+            columns: ["discharge_case_id"]
+            isOneToOne: false
+            referencedRelation: "discharge_cases"
             referencedColumns: ["id"]
           },
         ]
@@ -24535,6 +25278,23 @@ export type Database = {
         | "employer"
         | "donor"
         | "workers_comp"
+      clearance_status:
+        | "pending"
+        | "in_progress"
+        | "cleared"
+        | "blocked"
+        | "waived"
+        | "not_applicable"
+      clearance_type:
+        | "clinical"
+        | "nursing"
+        | "pharmacy"
+        | "laboratory"
+        | "imaging"
+        | "financial"
+        | "administrative"
+        | "records"
+        | "crvs"
       client_lifecycle_state:
         | "draft"
         | "active"
@@ -24633,6 +25393,25 @@ export type Database = {
         | "in_progress"
         | "completed"
         | "needs_review"
+        | "cancelled"
+      discharge_decision_type:
+        | "routine"
+        | "dama"
+        | "referral"
+        | "transfer"
+        | "absconded"
+        | "death"
+      discharge_workflow_state:
+        | "active"
+        | "discharge_initiated"
+        | "clinical_clearance"
+        | "financial_clearance"
+        | "admin_approval"
+        | "closed_discharged"
+        | "death_declared"
+        | "certification"
+        | "financial_reconciliation"
+        | "closed_deceased"
         | "cancelled"
       document_status:
         | "draft"
@@ -25075,6 +25854,25 @@ export const Constants = {
         "donor",
         "workers_comp",
       ],
+      clearance_status: [
+        "pending",
+        "in_progress",
+        "cleared",
+        "blocked",
+        "waived",
+        "not_applicable",
+      ],
+      clearance_type: [
+        "clinical",
+        "nursing",
+        "pharmacy",
+        "laboratory",
+        "imaging",
+        "financial",
+        "administrative",
+        "records",
+        "crvs",
+      ],
       client_lifecycle_state: [
         "draft",
         "active",
@@ -25182,6 +25980,27 @@ export const Constants = {
         "in_progress",
         "completed",
         "needs_review",
+        "cancelled",
+      ],
+      discharge_decision_type: [
+        "routine",
+        "dama",
+        "referral",
+        "transfer",
+        "absconded",
+        "death",
+      ],
+      discharge_workflow_state: [
+        "active",
+        "discharge_initiated",
+        "clinical_clearance",
+        "financial_clearance",
+        "admin_approval",
+        "closed_discharged",
+        "death_declared",
+        "certification",
+        "financial_reconciliation",
+        "closed_deceased",
         "cancelled",
       ],
       document_status: [
