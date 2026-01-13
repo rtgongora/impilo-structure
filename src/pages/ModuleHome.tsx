@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useAuth } from "@/contexts/AuthContext";
 import { useNavigate } from "react-router-dom";
 import { useUserRoles, ModuleAccessRole } from "@/hooks/useUserRoles";
@@ -506,7 +506,19 @@ export default function ModuleHome() {
   const { profile, signOut } = useAuth();
   const navigate = useNavigate();
   const { canAccessModule, isAdmin, loading: rolesLoading } = useUserRoles();
-  const [activeTab, setActiveTab] = useState("work");
+  
+  // Detect if user is a client (patient) vs provider
+  const isClient = profile?.role === "client" || profile?.role === "patient";
+  
+  // Default to portal tab for clients, work tab for providers
+  const [activeTab, setActiveTab] = useState(isClient ? "portal" : "work");
+  
+  // Update tab when profile loads (for cases where profile loads after initial render)
+  useEffect(() => {
+    if (profile?.role === "client" || profile?.role === "patient") {
+      setActiveTab("portal");
+    }
+  }, [profile?.role]);
 
   const getDisplayTitle = () => {
     const role = profile?.role;
@@ -665,11 +677,13 @@ export default function ModuleHome() {
 
           {/* Tabs - Fill remaining space */}
           <Tabs value={activeTab} onValueChange={setActiveTab} className="flex-1 flex flex-col min-h-0">
-            <TabsList className="grid w-full grid-cols-3 h-10 p-1 mb-4">
-              <TabsTrigger value="work" className="flex items-center justify-center gap-2 text-sm data-[state=active]:bg-primary data-[state=active]:text-primary-foreground">
-                <Briefcase className="h-4 w-4" />
-                Work
-              </TabsTrigger>
+            <TabsList className={`grid w-full h-10 p-1 mb-4 ${isClient ? 'grid-cols-2' : 'grid-cols-3'}`}>
+              {!isClient && (
+                <TabsTrigger value="work" className="flex items-center justify-center gap-2 text-sm data-[state=active]:bg-primary data-[state=active]:text-primary-foreground">
+                  <Briefcase className="h-4 w-4" />
+                  Work
+                </TabsTrigger>
+              )}
               <TabsTrigger value="portal" className="flex items-center justify-center gap-2 text-sm data-[state=active]:bg-pink-500 data-[state=active]:text-white">
                 <Heart className="h-4 w-4" />
                 Health
