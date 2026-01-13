@@ -982,6 +982,300 @@ export type Database = {
           },
         ]
       }
+      birth_notifications: {
+        Row: {
+          birth_attendant_name: string | null
+          birth_attendant_qualification: string | null
+          birth_attendant_role: string | null
+          birth_geo_lat: number | null
+          birth_geo_lng: number | null
+          birth_occurred_at: string
+          birth_order: number | null
+          birth_weight_grams: number | null
+          child_client_id: string | null
+          child_family_name: string | null
+          child_given_names: string | null
+          child_sex: string
+          community_district: string | null
+          community_province: string | null
+          community_village: string | null
+          community_ward: string | null
+          created_at: string | null
+          created_by: string | null
+          date_of_birth: string
+          documents: Json | null
+          encounter_id: string | null
+          facility_id: string | null
+          facility_room: string | null
+          facility_ward: string | null
+          father_acknowledged: boolean | null
+          father_client_id: string | null
+          father_date_of_birth: string | null
+          father_education_level: string | null
+          father_family_name: string | null
+          father_given_names: string | null
+          father_marital_status: string | null
+          father_national_id: string | null
+          father_occupation: string | null
+          father_passport: string | null
+          father_residence_district: string | null
+          father_residence_province: string | null
+          id: string
+          is_date_estimated: boolean | null
+          is_late_registration: boolean | null
+          late_registration_reason: string | null
+          mother_age_at_birth: number | null
+          mother_client_id: string | null
+          mother_date_of_birth: string | null
+          mother_education_level: string | null
+          mother_family_name: string
+          mother_given_names: string
+          mother_maiden_name: string | null
+          mother_marital_status: string | null
+          mother_marriage_date: string | null
+          mother_national_id: string | null
+          mother_occupation: string | null
+          mother_passport: string | null
+          mother_residence_district: string | null
+          mother_residence_province: string | null
+          mother_residence_village: string | null
+          mother_residence_ward: string | null
+          notification_number: string
+          notifier_contact: string | null
+          notifier_name: string
+          notifier_relationship: string | null
+          notifier_role: Database["public"]["Enums"]["crvs_notifier_role"]
+          notifier_user_id: string | null
+          plurality: Database["public"]["Enums"]["crvs_birth_plurality"] | null
+          registered_at: string | null
+          registered_by: string | null
+          registration_number: string | null
+          rejection_reason: string | null
+          source: Database["public"]["Enums"]["crvs_notification_source"]
+          status: Database["public"]["Enums"]["crvs_notification_status"]
+          submitted_at: string | null
+          time_of_birth: string | null
+          updated_at: string | null
+          verification_notes: string | null
+          verified_at: string | null
+          verified_by: string | null
+          visit_id: string | null
+        }
+        Insert: {
+          birth_attendant_name?: string | null
+          birth_attendant_qualification?: string | null
+          birth_attendant_role?: string | null
+          birth_geo_lat?: number | null
+          birth_geo_lng?: number | null
+          birth_occurred_at: string
+          birth_order?: number | null
+          birth_weight_grams?: number | null
+          child_client_id?: string | null
+          child_family_name?: string | null
+          child_given_names?: string | null
+          child_sex: string
+          community_district?: string | null
+          community_province?: string | null
+          community_village?: string | null
+          community_ward?: string | null
+          created_at?: string | null
+          created_by?: string | null
+          date_of_birth: string
+          documents?: Json | null
+          encounter_id?: string | null
+          facility_id?: string | null
+          facility_room?: string | null
+          facility_ward?: string | null
+          father_acknowledged?: boolean | null
+          father_client_id?: string | null
+          father_date_of_birth?: string | null
+          father_education_level?: string | null
+          father_family_name?: string | null
+          father_given_names?: string | null
+          father_marital_status?: string | null
+          father_national_id?: string | null
+          father_occupation?: string | null
+          father_passport?: string | null
+          father_residence_district?: string | null
+          father_residence_province?: string | null
+          id?: string
+          is_date_estimated?: boolean | null
+          is_late_registration?: boolean | null
+          late_registration_reason?: string | null
+          mother_age_at_birth?: number | null
+          mother_client_id?: string | null
+          mother_date_of_birth?: string | null
+          mother_education_level?: string | null
+          mother_family_name: string
+          mother_given_names: string
+          mother_maiden_name?: string | null
+          mother_marital_status?: string | null
+          mother_marriage_date?: string | null
+          mother_national_id?: string | null
+          mother_occupation?: string | null
+          mother_passport?: string | null
+          mother_residence_district?: string | null
+          mother_residence_province?: string | null
+          mother_residence_village?: string | null
+          mother_residence_ward?: string | null
+          notification_number: string
+          notifier_contact?: string | null
+          notifier_name: string
+          notifier_relationship?: string | null
+          notifier_role: Database["public"]["Enums"]["crvs_notifier_role"]
+          notifier_user_id?: string | null
+          plurality?: Database["public"]["Enums"]["crvs_birth_plurality"] | null
+          registered_at?: string | null
+          registered_by?: string | null
+          registration_number?: string | null
+          rejection_reason?: string | null
+          source?: Database["public"]["Enums"]["crvs_notification_source"]
+          status?: Database["public"]["Enums"]["crvs_notification_status"]
+          submitted_at?: string | null
+          time_of_birth?: string | null
+          updated_at?: string | null
+          verification_notes?: string | null
+          verified_at?: string | null
+          verified_by?: string | null
+          visit_id?: string | null
+        }
+        Update: {
+          birth_attendant_name?: string | null
+          birth_attendant_qualification?: string | null
+          birth_attendant_role?: string | null
+          birth_geo_lat?: number | null
+          birth_geo_lng?: number | null
+          birth_occurred_at?: string
+          birth_order?: number | null
+          birth_weight_grams?: number | null
+          child_client_id?: string | null
+          child_family_name?: string | null
+          child_given_names?: string | null
+          child_sex?: string
+          community_district?: string | null
+          community_province?: string | null
+          community_village?: string | null
+          community_ward?: string | null
+          created_at?: string | null
+          created_by?: string | null
+          date_of_birth?: string
+          documents?: Json | null
+          encounter_id?: string | null
+          facility_id?: string | null
+          facility_room?: string | null
+          facility_ward?: string | null
+          father_acknowledged?: boolean | null
+          father_client_id?: string | null
+          father_date_of_birth?: string | null
+          father_education_level?: string | null
+          father_family_name?: string | null
+          father_given_names?: string | null
+          father_marital_status?: string | null
+          father_national_id?: string | null
+          father_occupation?: string | null
+          father_passport?: string | null
+          father_residence_district?: string | null
+          father_residence_province?: string | null
+          id?: string
+          is_date_estimated?: boolean | null
+          is_late_registration?: boolean | null
+          late_registration_reason?: string | null
+          mother_age_at_birth?: number | null
+          mother_client_id?: string | null
+          mother_date_of_birth?: string | null
+          mother_education_level?: string | null
+          mother_family_name?: string
+          mother_given_names?: string
+          mother_maiden_name?: string | null
+          mother_marital_status?: string | null
+          mother_marriage_date?: string | null
+          mother_national_id?: string | null
+          mother_occupation?: string | null
+          mother_passport?: string | null
+          mother_residence_district?: string | null
+          mother_residence_province?: string | null
+          mother_residence_village?: string | null
+          mother_residence_ward?: string | null
+          notification_number?: string
+          notifier_contact?: string | null
+          notifier_name?: string
+          notifier_relationship?: string | null
+          notifier_role?: Database["public"]["Enums"]["crvs_notifier_role"]
+          notifier_user_id?: string | null
+          plurality?: Database["public"]["Enums"]["crvs_birth_plurality"] | null
+          registered_at?: string | null
+          registered_by?: string | null
+          registration_number?: string | null
+          rejection_reason?: string | null
+          source?: Database["public"]["Enums"]["crvs_notification_source"]
+          status?: Database["public"]["Enums"]["crvs_notification_status"]
+          submitted_at?: string | null
+          time_of_birth?: string | null
+          updated_at?: string | null
+          verification_notes?: string | null
+          verified_at?: string | null
+          verified_by?: string | null
+          visit_id?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "birth_notifications_child_client_id_fkey"
+            columns: ["child_client_id"]
+            isOneToOne: false
+            referencedRelation: "client_registry"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "birth_notifications_encounter_id_fkey"
+            columns: ["encounter_id"]
+            isOneToOne: false
+            referencedRelation: "encounters"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "birth_notifications_facility_id_fkey"
+            columns: ["facility_id"]
+            isOneToOne: false
+            referencedRelation: "facilities"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "birth_notifications_facility_id_fkey"
+            columns: ["facility_id"]
+            isOneToOne: false
+            referencedRelation: "facility_capabilities"
+            referencedColumns: ["facility_id"]
+          },
+          {
+            foreignKeyName: "birth_notifications_facility_id_fkey"
+            columns: ["facility_id"]
+            isOneToOne: false
+            referencedRelation: "facility_operations_dashboard"
+            referencedColumns: ["facility_id"]
+          },
+          {
+            foreignKeyName: "birth_notifications_father_client_id_fkey"
+            columns: ["father_client_id"]
+            isOneToOne: false
+            referencedRelation: "client_registry"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "birth_notifications_mother_client_id_fkey"
+            columns: ["mother_client_id"]
+            isOneToOne: false
+            referencedRelation: "client_registry"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "birth_notifications_visit_id_fkey"
+            columns: ["visit_id"]
+            isOneToOne: false
+            referencedRelation: "visits"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       bulk_import_jobs: {
         Row: {
           completed_at: string | null
@@ -4484,6 +4778,592 @@ export type Database = {
           updates?: Json | null
         }
         Relationships: []
+      }
+      crvs_audit_log: {
+        Row: {
+          action: string
+          action_data: Json | null
+          id: string
+          ip_address: unknown
+          notification_id: string
+          notification_type: Database["public"]["Enums"]["crvs_notification_type"]
+          performed_at: string | null
+          performed_by: string | null
+          user_agent: string | null
+        }
+        Insert: {
+          action: string
+          action_data?: Json | null
+          id?: string
+          ip_address?: unknown
+          notification_id: string
+          notification_type: Database["public"]["Enums"]["crvs_notification_type"]
+          performed_at?: string | null
+          performed_by?: string | null
+          user_agent?: string | null
+        }
+        Update: {
+          action?: string
+          action_data?: Json | null
+          id?: string
+          ip_address?: unknown
+          notification_id?: string
+          notification_type?: Database["public"]["Enums"]["crvs_notification_type"]
+          performed_at?: string | null
+          performed_by?: string | null
+          user_agent?: string | null
+        }
+        Relationships: []
+      }
+      crvs_certificates: {
+        Row: {
+          amendment_date: string | null
+          amendment_reason: string | null
+          approved_at: string | null
+          approved_by: string | null
+          certificate_number: string | null
+          certificate_type: Database["public"]["Enums"]["crvs_notification_type"]
+          collected_at: string | null
+          collected_by: string | null
+          collection_id_presented: string | null
+          created_at: string | null
+          id: string
+          is_amended: boolean | null
+          issued_at: string | null
+          issued_by: string | null
+          issued_to: string | null
+          notification_id: string
+          previous_certificate_id: string | null
+          print_queue_position: number | null
+          printed_at: string | null
+          printed_by: string | null
+          registration_number: string
+          requested_at: string | null
+          requested_by: string | null
+          requestor_contact: string | null
+          requestor_name: string | null
+          requestor_relationship: string | null
+          status: Database["public"]["Enums"]["crvs_certificate_status"]
+          updated_at: string | null
+        }
+        Insert: {
+          amendment_date?: string | null
+          amendment_reason?: string | null
+          approved_at?: string | null
+          approved_by?: string | null
+          certificate_number?: string | null
+          certificate_type: Database["public"]["Enums"]["crvs_notification_type"]
+          collected_at?: string | null
+          collected_by?: string | null
+          collection_id_presented?: string | null
+          created_at?: string | null
+          id?: string
+          is_amended?: boolean | null
+          issued_at?: string | null
+          issued_by?: string | null
+          issued_to?: string | null
+          notification_id: string
+          previous_certificate_id?: string | null
+          print_queue_position?: number | null
+          printed_at?: string | null
+          printed_by?: string | null
+          registration_number: string
+          requested_at?: string | null
+          requested_by?: string | null
+          requestor_contact?: string | null
+          requestor_name?: string | null
+          requestor_relationship?: string | null
+          status?: Database["public"]["Enums"]["crvs_certificate_status"]
+          updated_at?: string | null
+        }
+        Update: {
+          amendment_date?: string | null
+          amendment_reason?: string | null
+          approved_at?: string | null
+          approved_by?: string | null
+          certificate_number?: string | null
+          certificate_type?: Database["public"]["Enums"]["crvs_notification_type"]
+          collected_at?: string | null
+          collected_by?: string | null
+          collection_id_presented?: string | null
+          created_at?: string | null
+          id?: string
+          is_amended?: boolean | null
+          issued_at?: string | null
+          issued_by?: string | null
+          issued_to?: string | null
+          notification_id?: string
+          previous_certificate_id?: string | null
+          print_queue_position?: number | null
+          printed_at?: string | null
+          printed_by?: string | null
+          registration_number?: string
+          requested_at?: string | null
+          requested_by?: string | null
+          requestor_contact?: string | null
+          requestor_name?: string | null
+          requestor_relationship?: string | null
+          status?: Database["public"]["Enums"]["crvs_certificate_status"]
+          updated_at?: string | null
+        }
+        Relationships: []
+      }
+      crvs_community_submissions: {
+        Row: {
+          captured_at: string
+          captured_lat: number | null
+          captured_lng: number | null
+          created_at: string | null
+          device_id: string | null
+          id: string
+          local_reference_id: string
+          notification_data: Json
+          notification_type: Database["public"]["Enums"]["crvs_notification_type"]
+          notifier_id: string | null
+          notifier_name: string
+          notifier_role: Database["public"]["Enums"]["crvs_notifier_role"]
+          processed: boolean | null
+          processed_at: string | null
+          processed_by: string | null
+          processing_notes: string | null
+          result_notification_id: string | null
+          supervisor_approved: boolean | null
+          supervisor_approved_at: string | null
+          supervisor_id: string | null
+          synced_at: string | null
+        }
+        Insert: {
+          captured_at: string
+          captured_lat?: number | null
+          captured_lng?: number | null
+          created_at?: string | null
+          device_id?: string | null
+          id?: string
+          local_reference_id: string
+          notification_data: Json
+          notification_type: Database["public"]["Enums"]["crvs_notification_type"]
+          notifier_id?: string | null
+          notifier_name: string
+          notifier_role: Database["public"]["Enums"]["crvs_notifier_role"]
+          processed?: boolean | null
+          processed_at?: string | null
+          processed_by?: string | null
+          processing_notes?: string | null
+          result_notification_id?: string | null
+          supervisor_approved?: boolean | null
+          supervisor_approved_at?: string | null
+          supervisor_id?: string | null
+          synced_at?: string | null
+        }
+        Update: {
+          captured_at?: string
+          captured_lat?: number | null
+          captured_lng?: number | null
+          created_at?: string | null
+          device_id?: string | null
+          id?: string
+          local_reference_id?: string
+          notification_data?: Json
+          notification_type?: Database["public"]["Enums"]["crvs_notification_type"]
+          notifier_id?: string | null
+          notifier_name?: string
+          notifier_role?: Database["public"]["Enums"]["crvs_notifier_role"]
+          processed?: boolean | null
+          processed_at?: string | null
+          processed_by?: string | null
+          processing_notes?: string | null
+          result_notification_id?: string | null
+          supervisor_approved?: boolean | null
+          supervisor_approved_at?: string | null
+          supervisor_id?: string | null
+          synced_at?: string | null
+        }
+        Relationships: []
+      }
+      crvs_quality_flags: {
+        Row: {
+          auto_detected: boolean | null
+          created_at: string | null
+          flag_description: string
+          flag_type: string
+          id: string
+          notification_id: string
+          notification_type: Database["public"]["Enums"]["crvs_notification_type"]
+          resolution_notes: string | null
+          resolved: boolean | null
+          resolved_at: string | null
+          resolved_by: string | null
+          severity: string | null
+        }
+        Insert: {
+          auto_detected?: boolean | null
+          created_at?: string | null
+          flag_description: string
+          flag_type: string
+          id?: string
+          notification_id: string
+          notification_type: Database["public"]["Enums"]["crvs_notification_type"]
+          resolution_notes?: string | null
+          resolved?: boolean | null
+          resolved_at?: string | null
+          resolved_by?: string | null
+          severity?: string | null
+        }
+        Update: {
+          auto_detected?: boolean | null
+          created_at?: string | null
+          flag_description?: string
+          flag_type?: string
+          id?: string
+          notification_id?: string
+          notification_type?: Database["public"]["Enums"]["crvs_notification_type"]
+          resolution_notes?: string | null
+          resolved?: boolean | null
+          resolved_at?: string | null
+          resolved_by?: string | null
+          severity?: string | null
+        }
+        Relationships: []
+      }
+      crvs_registrar_queue: {
+        Row: {
+          assigned_at: string | null
+          assigned_to: string | null
+          created_at: string | null
+          id: string
+          info_received_at: string | null
+          info_requested: string | null
+          info_requested_at: string | null
+          notification_id: string
+          notification_type: Database["public"]["Enums"]["crvs_notification_type"]
+          priority: string | null
+          queue_status: string
+          registration_date: string | null
+          registration_number: string | null
+          review_notes: string | null
+          reviewed_at: string | null
+          reviewed_by: string | null
+          updated_at: string | null
+        }
+        Insert: {
+          assigned_at?: string | null
+          assigned_to?: string | null
+          created_at?: string | null
+          id?: string
+          info_received_at?: string | null
+          info_requested?: string | null
+          info_requested_at?: string | null
+          notification_id: string
+          notification_type: Database["public"]["Enums"]["crvs_notification_type"]
+          priority?: string | null
+          queue_status?: string
+          registration_date?: string | null
+          registration_number?: string | null
+          review_notes?: string | null
+          reviewed_at?: string | null
+          reviewed_by?: string | null
+          updated_at?: string | null
+        }
+        Update: {
+          assigned_at?: string | null
+          assigned_to?: string | null
+          created_at?: string | null
+          id?: string
+          info_received_at?: string | null
+          info_requested?: string | null
+          info_requested_at?: string | null
+          notification_id?: string
+          notification_type?: Database["public"]["Enums"]["crvs_notification_type"]
+          priority?: string | null
+          queue_status?: string
+          registration_date?: string | null
+          registration_number?: string | null
+          review_notes?: string | null
+          reviewed_at?: string | null
+          reviewed_by?: string | null
+          updated_at?: string | null
+        }
+        Relationships: []
+      }
+      death_notifications: {
+        Row: {
+          billing_notified: boolean | null
+          circumstances_description: string | null
+          client_registry_updated: boolean | null
+          clinical_record_locked: boolean | null
+          cod_method: Database["public"]["Enums"]["crvs_cod_method"] | null
+          community_district: string | null
+          community_province: string | null
+          community_village: string | null
+          community_ward: string | null
+          created_at: string | null
+          created_by: string | null
+          date_of_death: string
+          death_geo_lat: number | null
+          death_geo_lng: number | null
+          death_occurred_at: string
+          deceased_age_days: number | null
+          deceased_age_months: number | null
+          deceased_age_years: number | null
+          deceased_client_id: string | null
+          deceased_date_of_birth: string | null
+          deceased_education_level: string | null
+          deceased_family_name: string
+          deceased_given_names: string
+          deceased_health_id: string | null
+          deceased_marital_status: string | null
+          deceased_national_id: string | null
+          deceased_nationality: string | null
+          deceased_occupation: string | null
+          deceased_passport: string | null
+          deceased_sex: string
+          documents: Json | null
+          encounter_id: string | null
+          facility_id: string | null
+          facility_ward: string | null
+          id: string
+          informant_address: string | null
+          informant_contact: string | null
+          informant_name: string
+          informant_national_id: string | null
+          informant_relationship: string
+          is_date_estimated: boolean | null
+          is_late_registration: boolean | null
+          late_registration_reason: string | null
+          manner_of_death:
+            | Database["public"]["Enums"]["crvs_death_manner"]
+            | null
+          mccd_id: string | null
+          notification_number: string
+          notifier_contact: string | null
+          notifier_name: string
+          notifier_role: Database["public"]["Enums"]["crvs_notifier_role"]
+          notifier_user_id: string | null
+          registered_at: string | null
+          registered_by: string | null
+          registration_number: string | null
+          rejection_reason: string | null
+          requires_verification: boolean | null
+          residence_address: string | null
+          residence_district: string | null
+          residence_province: string | null
+          residence_village: string | null
+          residence_ward: string | null
+          source: Database["public"]["Enums"]["crvs_notification_source"]
+          status: Database["public"]["Enums"]["crvs_notification_status"]
+          submitted_at: string | null
+          time_of_death: string | null
+          traditional_leader_letter: boolean | null
+          traditional_leader_name: string | null
+          traditional_leader_village: string | null
+          updated_at: string | null
+          verbal_autopsy_id: string | null
+          verification_method: string | null
+          verification_notes: string | null
+          verified_at: string | null
+          verified_by: string | null
+          visit_id: string | null
+        }
+        Insert: {
+          billing_notified?: boolean | null
+          circumstances_description?: string | null
+          client_registry_updated?: boolean | null
+          clinical_record_locked?: boolean | null
+          cod_method?: Database["public"]["Enums"]["crvs_cod_method"] | null
+          community_district?: string | null
+          community_province?: string | null
+          community_village?: string | null
+          community_ward?: string | null
+          created_at?: string | null
+          created_by?: string | null
+          date_of_death: string
+          death_geo_lat?: number | null
+          death_geo_lng?: number | null
+          death_occurred_at: string
+          deceased_age_days?: number | null
+          deceased_age_months?: number | null
+          deceased_age_years?: number | null
+          deceased_client_id?: string | null
+          deceased_date_of_birth?: string | null
+          deceased_education_level?: string | null
+          deceased_family_name: string
+          deceased_given_names: string
+          deceased_health_id?: string | null
+          deceased_marital_status?: string | null
+          deceased_national_id?: string | null
+          deceased_nationality?: string | null
+          deceased_occupation?: string | null
+          deceased_passport?: string | null
+          deceased_sex: string
+          documents?: Json | null
+          encounter_id?: string | null
+          facility_id?: string | null
+          facility_ward?: string | null
+          id?: string
+          informant_address?: string | null
+          informant_contact?: string | null
+          informant_name: string
+          informant_national_id?: string | null
+          informant_relationship: string
+          is_date_estimated?: boolean | null
+          is_late_registration?: boolean | null
+          late_registration_reason?: string | null
+          manner_of_death?:
+            | Database["public"]["Enums"]["crvs_death_manner"]
+            | null
+          mccd_id?: string | null
+          notification_number: string
+          notifier_contact?: string | null
+          notifier_name: string
+          notifier_role: Database["public"]["Enums"]["crvs_notifier_role"]
+          notifier_user_id?: string | null
+          registered_at?: string | null
+          registered_by?: string | null
+          registration_number?: string | null
+          rejection_reason?: string | null
+          requires_verification?: boolean | null
+          residence_address?: string | null
+          residence_district?: string | null
+          residence_province?: string | null
+          residence_village?: string | null
+          residence_ward?: string | null
+          source?: Database["public"]["Enums"]["crvs_notification_source"]
+          status?: Database["public"]["Enums"]["crvs_notification_status"]
+          submitted_at?: string | null
+          time_of_death?: string | null
+          traditional_leader_letter?: boolean | null
+          traditional_leader_name?: string | null
+          traditional_leader_village?: string | null
+          updated_at?: string | null
+          verbal_autopsy_id?: string | null
+          verification_method?: string | null
+          verification_notes?: string | null
+          verified_at?: string | null
+          verified_by?: string | null
+          visit_id?: string | null
+        }
+        Update: {
+          billing_notified?: boolean | null
+          circumstances_description?: string | null
+          client_registry_updated?: boolean | null
+          clinical_record_locked?: boolean | null
+          cod_method?: Database["public"]["Enums"]["crvs_cod_method"] | null
+          community_district?: string | null
+          community_province?: string | null
+          community_village?: string | null
+          community_ward?: string | null
+          created_at?: string | null
+          created_by?: string | null
+          date_of_death?: string
+          death_geo_lat?: number | null
+          death_geo_lng?: number | null
+          death_occurred_at?: string
+          deceased_age_days?: number | null
+          deceased_age_months?: number | null
+          deceased_age_years?: number | null
+          deceased_client_id?: string | null
+          deceased_date_of_birth?: string | null
+          deceased_education_level?: string | null
+          deceased_family_name?: string
+          deceased_given_names?: string
+          deceased_health_id?: string | null
+          deceased_marital_status?: string | null
+          deceased_national_id?: string | null
+          deceased_nationality?: string | null
+          deceased_occupation?: string | null
+          deceased_passport?: string | null
+          deceased_sex?: string
+          documents?: Json | null
+          encounter_id?: string | null
+          facility_id?: string | null
+          facility_ward?: string | null
+          id?: string
+          informant_address?: string | null
+          informant_contact?: string | null
+          informant_name?: string
+          informant_national_id?: string | null
+          informant_relationship?: string
+          is_date_estimated?: boolean | null
+          is_late_registration?: boolean | null
+          late_registration_reason?: string | null
+          manner_of_death?:
+            | Database["public"]["Enums"]["crvs_death_manner"]
+            | null
+          mccd_id?: string | null
+          notification_number?: string
+          notifier_contact?: string | null
+          notifier_name?: string
+          notifier_role?: Database["public"]["Enums"]["crvs_notifier_role"]
+          notifier_user_id?: string | null
+          registered_at?: string | null
+          registered_by?: string | null
+          registration_number?: string | null
+          rejection_reason?: string | null
+          requires_verification?: boolean | null
+          residence_address?: string | null
+          residence_district?: string | null
+          residence_province?: string | null
+          residence_village?: string | null
+          residence_ward?: string | null
+          source?: Database["public"]["Enums"]["crvs_notification_source"]
+          status?: Database["public"]["Enums"]["crvs_notification_status"]
+          submitted_at?: string | null
+          time_of_death?: string | null
+          traditional_leader_letter?: boolean | null
+          traditional_leader_name?: string | null
+          traditional_leader_village?: string | null
+          updated_at?: string | null
+          verbal_autopsy_id?: string | null
+          verification_method?: string | null
+          verification_notes?: string | null
+          verified_at?: string | null
+          verified_by?: string | null
+          visit_id?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "death_notifications_deceased_client_id_fkey"
+            columns: ["deceased_client_id"]
+            isOneToOne: false
+            referencedRelation: "client_registry"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "death_notifications_encounter_id_fkey"
+            columns: ["encounter_id"]
+            isOneToOne: false
+            referencedRelation: "encounters"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "death_notifications_facility_id_fkey"
+            columns: ["facility_id"]
+            isOneToOne: false
+            referencedRelation: "facilities"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "death_notifications_facility_id_fkey"
+            columns: ["facility_id"]
+            isOneToOne: false
+            referencedRelation: "facility_capabilities"
+            referencedColumns: ["facility_id"]
+          },
+          {
+            foreignKeyName: "death_notifications_facility_id_fkey"
+            columns: ["facility_id"]
+            isOneToOne: false
+            referencedRelation: "facility_operations_dashboard"
+            referencedColumns: ["facility_id"]
+          },
+          {
+            foreignKeyName: "death_notifications_visit_id_fkey"
+            columns: ["visit_id"]
+            isOneToOne: false
+            referencedRelation: "visits"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       death_outcome_summaries: {
         Row: {
@@ -10163,6 +11043,161 @@ export type Database = {
           website?: string | null
         }
         Relationships: []
+      }
+      mccd_records: {
+        Row: {
+          antecedent_cause_a: string | null
+          antecedent_cause_a_duration: string | null
+          antecedent_cause_a_icd: string | null
+          antecedent_cause_b: string | null
+          antecedent_cause_b_duration: string | null
+          antecedent_cause_b_icd: string | null
+          antecedent_cause_c: string | null
+          antecedent_cause_c_duration: string | null
+          antecedent_cause_c_icd: string | null
+          autopsy_findings: string | null
+          autopsy_findings_available: boolean | null
+          autopsy_performed: boolean | null
+          certificate_number: string | null
+          certification_date: string
+          certifier_facility_id: string | null
+          certifier_id: string | null
+          certifier_name: string
+          certifier_qualification: string
+          certifier_registration_number: string | null
+          contributing_conditions: string | null
+          contributing_conditions_icd: string[] | null
+          created_at: string | null
+          created_by: string | null
+          death_notification_id: string
+          id: string
+          immediate_cause: string
+          immediate_cause_duration: string | null
+          immediate_cause_icd: string | null
+          is_validated: boolean | null
+          manner_of_death: Database["public"]["Enums"]["crvs_death_manner"]
+          pregnancy_contributed: boolean | null
+          pregnancy_status: string | null
+          tobacco_use: string | null
+          underlying_cause: string
+          underlying_cause_icd: string
+          updated_at: string | null
+          validated_at: string | null
+          validated_by: string | null
+          validation_notes: string | null
+        }
+        Insert: {
+          antecedent_cause_a?: string | null
+          antecedent_cause_a_duration?: string | null
+          antecedent_cause_a_icd?: string | null
+          antecedent_cause_b?: string | null
+          antecedent_cause_b_duration?: string | null
+          antecedent_cause_b_icd?: string | null
+          antecedent_cause_c?: string | null
+          antecedent_cause_c_duration?: string | null
+          antecedent_cause_c_icd?: string | null
+          autopsy_findings?: string | null
+          autopsy_findings_available?: boolean | null
+          autopsy_performed?: boolean | null
+          certificate_number?: string | null
+          certification_date?: string
+          certifier_facility_id?: string | null
+          certifier_id?: string | null
+          certifier_name: string
+          certifier_qualification: string
+          certifier_registration_number?: string | null
+          contributing_conditions?: string | null
+          contributing_conditions_icd?: string[] | null
+          created_at?: string | null
+          created_by?: string | null
+          death_notification_id: string
+          id?: string
+          immediate_cause: string
+          immediate_cause_duration?: string | null
+          immediate_cause_icd?: string | null
+          is_validated?: boolean | null
+          manner_of_death: Database["public"]["Enums"]["crvs_death_manner"]
+          pregnancy_contributed?: boolean | null
+          pregnancy_status?: string | null
+          tobacco_use?: string | null
+          underlying_cause: string
+          underlying_cause_icd: string
+          updated_at?: string | null
+          validated_at?: string | null
+          validated_by?: string | null
+          validation_notes?: string | null
+        }
+        Update: {
+          antecedent_cause_a?: string | null
+          antecedent_cause_a_duration?: string | null
+          antecedent_cause_a_icd?: string | null
+          antecedent_cause_b?: string | null
+          antecedent_cause_b_duration?: string | null
+          antecedent_cause_b_icd?: string | null
+          antecedent_cause_c?: string | null
+          antecedent_cause_c_duration?: string | null
+          antecedent_cause_c_icd?: string | null
+          autopsy_findings?: string | null
+          autopsy_findings_available?: boolean | null
+          autopsy_performed?: boolean | null
+          certificate_number?: string | null
+          certification_date?: string
+          certifier_facility_id?: string | null
+          certifier_id?: string | null
+          certifier_name?: string
+          certifier_qualification?: string
+          certifier_registration_number?: string | null
+          contributing_conditions?: string | null
+          contributing_conditions_icd?: string[] | null
+          created_at?: string | null
+          created_by?: string | null
+          death_notification_id?: string
+          id?: string
+          immediate_cause?: string
+          immediate_cause_duration?: string | null
+          immediate_cause_icd?: string | null
+          is_validated?: boolean | null
+          manner_of_death?: Database["public"]["Enums"]["crvs_death_manner"]
+          pregnancy_contributed?: boolean | null
+          pregnancy_status?: string | null
+          tobacco_use?: string | null
+          underlying_cause?: string
+          underlying_cause_icd?: string
+          updated_at?: string | null
+          validated_at?: string | null
+          validated_by?: string | null
+          validation_notes?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "mccd_records_certifier_facility_id_fkey"
+            columns: ["certifier_facility_id"]
+            isOneToOne: false
+            referencedRelation: "facilities"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "mccd_records_certifier_facility_id_fkey"
+            columns: ["certifier_facility_id"]
+            isOneToOne: false
+            referencedRelation: "facility_capabilities"
+            referencedColumns: ["facility_id"]
+          },
+          {
+            foreignKeyName: "mccd_records_certifier_facility_id_fkey"
+            columns: ["certifier_facility_id"]
+            isOneToOne: false
+            referencedRelation: "facility_operations_dashboard"
+            referencedColumns: ["facility_id"]
+          },
+          {
+            foreignKeyName: "mccd_records_death_notification_id_fkey"
+            columns: ["death_notification_id"]
+            isOneToOne: false
+            referencedRelation: "death_notifications"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       medication_administrations: {
         Row: {
@@ -21006,6 +22041,173 @@ export type Database = {
         }
         Relationships: []
       }
+      verbal_autopsy_records: {
+        Row: {
+          algorithm_run_at: string | null
+          algorithm_used: string | null
+          algorithm_version: string | null
+          created_at: string | null
+          created_by: string | null
+          death_notification_id: string
+          final_cause_icd: string | null
+          final_cause_of_death: string | null
+          final_determination_date: string | null
+          final_illness_duration_days: number | null
+          had_cough: boolean | null
+          had_diarrhea: boolean | null
+          had_difficulty_breathing: boolean | null
+          had_fever: boolean | null
+          had_injury: boolean | null
+          had_pregnancy_related: boolean | null
+          had_skin_rash: boolean | null
+          id: string
+          illness_duration_days: number | null
+          interview_date: string
+          interview_location: string | null
+          interviewer_id: string | null
+          interviewer_name: string
+          interviewer_role: string
+          interviewer_training_date: string | null
+          needs_physician_review: boolean | null
+          physician_final_cause: string | null
+          physician_final_cause_icd: string | null
+          physician_notes: string | null
+          physician_review_date: string | null
+          physician_reviewer_id: string | null
+          probable_cause_1: string | null
+          probable_cause_1_icd: string | null
+          probable_cause_1_likelihood: number | null
+          probable_cause_2: string | null
+          probable_cause_2_icd: string | null
+          probable_cause_2_likelihood: number | null
+          probable_cause_3: string | null
+          probable_cause_3_icd: string | null
+          probable_cause_3_likelihood: number | null
+          questionnaire_responses: Json
+          questionnaire_version: string | null
+          respondent_address: string | null
+          respondent_contact: string | null
+          respondent_name: string
+          respondent_relationship: string
+          status: Database["public"]["Enums"]["crvs_va_status"]
+          undetermined_flag: boolean | null
+          updated_at: string | null
+          va_number: string | null
+        }
+        Insert: {
+          algorithm_run_at?: string | null
+          algorithm_used?: string | null
+          algorithm_version?: string | null
+          created_at?: string | null
+          created_by?: string | null
+          death_notification_id: string
+          final_cause_icd?: string | null
+          final_cause_of_death?: string | null
+          final_determination_date?: string | null
+          final_illness_duration_days?: number | null
+          had_cough?: boolean | null
+          had_diarrhea?: boolean | null
+          had_difficulty_breathing?: boolean | null
+          had_fever?: boolean | null
+          had_injury?: boolean | null
+          had_pregnancy_related?: boolean | null
+          had_skin_rash?: boolean | null
+          id?: string
+          illness_duration_days?: number | null
+          interview_date: string
+          interview_location?: string | null
+          interviewer_id?: string | null
+          interviewer_name: string
+          interviewer_role: string
+          interviewer_training_date?: string | null
+          needs_physician_review?: boolean | null
+          physician_final_cause?: string | null
+          physician_final_cause_icd?: string | null
+          physician_notes?: string | null
+          physician_review_date?: string | null
+          physician_reviewer_id?: string | null
+          probable_cause_1?: string | null
+          probable_cause_1_icd?: string | null
+          probable_cause_1_likelihood?: number | null
+          probable_cause_2?: string | null
+          probable_cause_2_icd?: string | null
+          probable_cause_2_likelihood?: number | null
+          probable_cause_3?: string | null
+          probable_cause_3_icd?: string | null
+          probable_cause_3_likelihood?: number | null
+          questionnaire_responses?: Json
+          questionnaire_version?: string | null
+          respondent_address?: string | null
+          respondent_contact?: string | null
+          respondent_name: string
+          respondent_relationship: string
+          status?: Database["public"]["Enums"]["crvs_va_status"]
+          undetermined_flag?: boolean | null
+          updated_at?: string | null
+          va_number?: string | null
+        }
+        Update: {
+          algorithm_run_at?: string | null
+          algorithm_used?: string | null
+          algorithm_version?: string | null
+          created_at?: string | null
+          created_by?: string | null
+          death_notification_id?: string
+          final_cause_icd?: string | null
+          final_cause_of_death?: string | null
+          final_determination_date?: string | null
+          final_illness_duration_days?: number | null
+          had_cough?: boolean | null
+          had_diarrhea?: boolean | null
+          had_difficulty_breathing?: boolean | null
+          had_fever?: boolean | null
+          had_injury?: boolean | null
+          had_pregnancy_related?: boolean | null
+          had_skin_rash?: boolean | null
+          id?: string
+          illness_duration_days?: number | null
+          interview_date?: string
+          interview_location?: string | null
+          interviewer_id?: string | null
+          interviewer_name?: string
+          interviewer_role?: string
+          interviewer_training_date?: string | null
+          needs_physician_review?: boolean | null
+          physician_final_cause?: string | null
+          physician_final_cause_icd?: string | null
+          physician_notes?: string | null
+          physician_review_date?: string | null
+          physician_reviewer_id?: string | null
+          probable_cause_1?: string | null
+          probable_cause_1_icd?: string | null
+          probable_cause_1_likelihood?: number | null
+          probable_cause_2?: string | null
+          probable_cause_2_icd?: string | null
+          probable_cause_2_likelihood?: number | null
+          probable_cause_3?: string | null
+          probable_cause_3_icd?: string | null
+          probable_cause_3_likelihood?: number | null
+          questionnaire_responses?: Json
+          questionnaire_version?: string | null
+          respondent_address?: string | null
+          respondent_contact?: string | null
+          respondent_name?: string
+          respondent_relationship?: string
+          status?: Database["public"]["Enums"]["crvs_va_status"]
+          undetermined_flag?: boolean | null
+          updated_at?: string | null
+          va_number?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "verbal_autopsy_records_death_notification_id_fkey"
+            columns: ["death_notification_id"]
+            isOneToOne: false
+            referencedRelation: "death_notifications"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       virtual_pools: {
         Row: {
           anchor_facility_id: string | null
@@ -23133,8 +24335,10 @@ export type Database = {
         Args: { hours_threshold?: number }
         Returns: number
       }
+      generate_birth_notification_number: { Args: never; Returns: string }
       generate_claim_number: { Args: never; Returns: string }
       generate_client_registry_id: { Args: never; Returns: string }
+      generate_death_notification_number: { Args: never; Returns: string }
       generate_document_number: { Args: never; Returns: string }
       generate_encounter_number: { Args: never; Returns: string }
       generate_facility_registry_id: {
@@ -23386,6 +24590,50 @@ export type Database = {
         | "transport_provided"
         | "outreach_session"
       cover_request_status: "pending" | "approved" | "denied" | "expired"
+      crvs_birth_plurality: "single" | "twin" | "triplet" | "higher_order"
+      crvs_certificate_status:
+        | "not_requested"
+        | "requested"
+        | "approved"
+        | "printed"
+        | "issued"
+        | "collected"
+        | "reprint_requested"
+        | "amended"
+      crvs_cod_method: "mccd" | "verbal_autopsy" | "pending"
+      crvs_death_manner:
+        | "natural"
+        | "accident"
+        | "suicide"
+        | "homicide"
+        | "pending_investigation"
+        | "undetermined"
+      crvs_notification_source: "facility" | "community" | "client_portal"
+      crvs_notification_status:
+        | "draft"
+        | "pending_verification"
+        | "verified"
+        | "submitted_to_registrar"
+        | "registered"
+        | "rejected"
+        | "requires_correction"
+      crvs_notification_type: "birth" | "death"
+      crvs_notifier_role:
+        | "facility_nurse"
+        | "facility_doctor"
+        | "records_clerk"
+        | "vhw"
+        | "eht"
+        | "village_head"
+        | "councillor"
+        | "relative"
+        | "other"
+      crvs_va_status:
+        | "pending"
+        | "in_progress"
+        | "completed"
+        | "needs_review"
+        | "cancelled"
       document_status:
         | "draft"
         | "pending_signature"
@@ -23887,6 +25135,55 @@ export const Constants = {
         "outreach_session",
       ],
       cover_request_status: ["pending", "approved", "denied", "expired"],
+      crvs_birth_plurality: ["single", "twin", "triplet", "higher_order"],
+      crvs_certificate_status: [
+        "not_requested",
+        "requested",
+        "approved",
+        "printed",
+        "issued",
+        "collected",
+        "reprint_requested",
+        "amended",
+      ],
+      crvs_cod_method: ["mccd", "verbal_autopsy", "pending"],
+      crvs_death_manner: [
+        "natural",
+        "accident",
+        "suicide",
+        "homicide",
+        "pending_investigation",
+        "undetermined",
+      ],
+      crvs_notification_source: ["facility", "community", "client_portal"],
+      crvs_notification_status: [
+        "draft",
+        "pending_verification",
+        "verified",
+        "submitted_to_registrar",
+        "registered",
+        "rejected",
+        "requires_correction",
+      ],
+      crvs_notification_type: ["birth", "death"],
+      crvs_notifier_role: [
+        "facility_nurse",
+        "facility_doctor",
+        "records_clerk",
+        "vhw",
+        "eht",
+        "village_head",
+        "councillor",
+        "relative",
+        "other",
+      ],
+      crvs_va_status: [
+        "pending",
+        "in_progress",
+        "completed",
+        "needs_review",
+        "cancelled",
+      ],
       document_status: [
         "draft",
         "pending_signature",
