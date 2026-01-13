@@ -1,8 +1,6 @@
 import { useState } from "react";
-import { motion } from "framer-motion";
 import { 
-  FileText, User, Calendar, ChevronRight, ChevronLeft, Check, 
-  Save, Send, AlertTriangle, Stethoscope, Heart
+  FileText, Stethoscope, Save, Send
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -12,8 +10,6 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Textarea } from "@/components/ui/textarea";
 import { Badge } from "@/components/ui/badge";
 import { Checkbox } from "@/components/ui/checkbox";
-import { Separator } from "@/components/ui/separator";
-import { cn } from "@/lib/utils";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
 
@@ -33,46 +29,35 @@ interface FormData {
   certificationDate: string;
   
   // Part I - Cause of Death Chain
-  immediateCauseCode: string;
-  immediateCauseDescription: string;
+  immediateCause: string;
+  immediateCauseIcd: string;
   immediateCauseDuration: string;
   
-  antecedent1Code: string;
-  antecedent1Description: string;
-  antecedent1Duration: string;
+  antecedentCauseA: string;
+  antecedentCauseAIcd: string;
+  antecedentCauseADuration: string;
   
-  antecedent2Code: string;
-  antecedent2Description: string;
-  antecedent2Duration: string;
+  antecedentCauseB: string;
+  antecedentCauseBIcd: string;
+  antecedentCauseBDuration: string;
   
-  underlyingCauseCode: string;
-  underlyingCauseDescription: string;
+  underlyingCause: string;
+  underlyingCauseIcd: string;
   underlyingCauseDuration: string;
   
   // Part II - Contributing conditions
   contributingConditions: string;
   
   // Additional info
-  wasSurgeryPerformed: boolean;
-  surgeryDate: string;
-  surgeryProcedure: string;
-  
-  wasAutopsyPerformed: boolean;
+  autopsyPerformed: boolean;
   autopsyFindingsAvailable: boolean;
   
   // For maternal deaths
   wasPregnant: boolean;
   pregnancyContribution: string;
-  weeksPregnant: string;
   
-  // For infant deaths
-  wasMultiplePregnancy: boolean;
-  stillborn: boolean;
-  birthWeightGrams: string;
-  gestationalAge: string;
-  
-  // Additional notes
-  additionalNotes: string;
+  // Manner of death
+  mannerOfDeath: 'natural' | 'accident' | 'suicide' | 'homicide' | 'pending' | 'undetermined';
 }
 
 const initialFormData: FormData = {
@@ -81,41 +66,31 @@ const initialFormData: FormData = {
   certifyingPhysicianRegistration: "",
   certificationDate: new Date().toISOString().split('T')[0],
   
-  immediateCauseCode: "",
-  immediateCauseDescription: "",
+  immediateCause: "",
+  immediateCauseIcd: "",
   immediateCauseDuration: "",
   
-  antecedent1Code: "",
-  antecedent1Description: "",
-  antecedent1Duration: "",
+  antecedentCauseA: "",
+  antecedentCauseAIcd: "",
+  antecedentCauseADuration: "",
   
-  antecedent2Code: "",
-  antecedent2Description: "",
-  antecedent2Duration: "",
+  antecedentCauseB: "",
+  antecedentCauseBIcd: "",
+  antecedentCauseBDuration: "",
   
-  underlyingCauseCode: "",
-  underlyingCauseDescription: "",
+  underlyingCause: "",
+  underlyingCauseIcd: "",
   underlyingCauseDuration: "",
   
   contributingConditions: "",
   
-  wasSurgeryPerformed: false,
-  surgeryDate: "",
-  surgeryProcedure: "",
-  
-  wasAutopsyPerformed: false,
+  autopsyPerformed: false,
   autopsyFindingsAvailable: false,
   
   wasPregnant: false,
   pregnancyContribution: "",
-  weeksPregnant: "",
   
-  wasMultiplePregnancy: false,
-  stillborn: false,
-  birthWeightGrams: "",
-  gestationalAge: "",
-  
-  additionalNotes: "",
+  mannerOfDeath: 'natural',
 };
 
 export function MCCDForm({ 
@@ -134,50 +109,47 @@ export function MCCDForm({
   };
 
   const handleSubmit = async () => {
+    if (!formData.certifyingPhysicianName || !formData.certifyingPhysicianQualification || 
+        !formData.immediateCause || !formData.underlyingCause || !formData.underlyingCauseIcd) {
+      toast.error("Please fill in all required fields");
+      return;
+    }
+
     setIsSubmitting(true);
     try {
       const { error } = await supabase
         .from('mccd_records')
-        .insert({
+        .insert([{
           death_notification_id: deathNotificationId,
-          certifying_physician_name: formData.certifyingPhysicianName,
-          certifying_physician_qualification: formData.certifyingPhysicianQualification || null,
-          certifying_physician_registration: formData.certifyingPhysicianRegistration || null,
+          certifier_name: formData.certifyingPhysicianName,
+          certifier_qualification: formData.certifyingPhysicianQualification,
+          certifier_registration_number: formData.certifyingPhysicianRegistration || null,
           certification_date: formData.certificationDate,
-          immediate_cause_code: formData.immediateCauseCode || null,
-          immediate_cause_description: formData.immediateCauseDescription || null,
+          immediate_cause: formData.immediateCause,
+          immediate_cause_icd: formData.immediateCauseIcd || null,
           immediate_cause_duration: formData.immediateCauseDuration || null,
-          antecedent_cause_1_code: formData.antecedent1Code || null,
-          antecedent_cause_1_description: formData.antecedent1Description || null,
-          antecedent_cause_1_duration: formData.antecedent1Duration || null,
-          antecedent_cause_2_code: formData.antecedent2Code || null,
-          antecedent_cause_2_description: formData.antecedent2Description || null,
-          antecedent_cause_2_duration: formData.antecedent2Duration || null,
-          underlying_cause_code: formData.underlyingCauseCode || null,
-          underlying_cause_description: formData.underlyingCauseDescription || null,
-          underlying_cause_duration: formData.underlyingCauseDuration || null,
+          antecedent_cause_a: formData.antecedentCauseA || null,
+          antecedent_cause_a_icd: formData.antecedentCauseAIcd || null,
+          antecedent_cause_a_duration: formData.antecedentCauseADuration || null,
+          antecedent_cause_b: formData.antecedentCauseB || null,
+          antecedent_cause_b_icd: formData.antecedentCauseBIcd || null,
+          antecedent_cause_b_duration: formData.antecedentCauseBDuration || null,
+          underlying_cause: formData.underlyingCause,
+          underlying_cause_icd: formData.underlyingCauseIcd,
           contributing_conditions: formData.contributingConditions || null,
-          was_surgery_performed: formData.wasSurgeryPerformed,
-          surgery_date: formData.surgeryDate || null,
-          surgery_procedure: formData.surgeryProcedure || null,
-          was_autopsy_performed: formData.wasAutopsyPerformed,
+          autopsy_performed: formData.autopsyPerformed,
           autopsy_findings_available: formData.autopsyFindingsAvailable,
-          was_pregnant: formData.wasPregnant,
-          pregnancy_contribution: formData.pregnancyContribution || null,
-          weeks_pregnant: formData.weeksPregnant ? parseInt(formData.weeksPregnant) : null,
-          was_multiple_pregnancy: formData.wasMultiplePregnancy,
-          stillborn: formData.stillborn,
-          birth_weight_grams: formData.birthWeightGrams ? parseInt(formData.birthWeightGrams) : null,
-          gestational_age_weeks: formData.gestationalAge ? parseInt(formData.gestationalAge) : null,
-          status: 'signed',
-        });
+          pregnancy_contributed: formData.wasPregnant,
+          pregnancy_status: formData.pregnancyContribution || null,
+          manner_of_death: formData.mannerOfDeath,
+        }] as any);
 
       if (error) throw error;
       
       // Update death notification to link MCCD
       await supabase
         .from('death_notifications')
-        .update({ cause_of_death_type: 'mccd' })
+        .update({ cod_method: 'mccd' })
         .eq('id', deathNotificationId);
       
       toast.success("MCCD completed and signed");
@@ -195,12 +167,16 @@ export function MCCDForm({
     try {
       const { error } = await supabase
         .from('mccd_records')
-        .insert({
+        .insert([{
           death_notification_id: deathNotificationId,
-          certifying_physician_name: formData.certifyingPhysicianName || 'Draft',
+          certifier_name: formData.certifyingPhysicianName || 'Draft',
+          certifier_qualification: formData.certifyingPhysicianQualification || 'Draft',
           certification_date: formData.certificationDate,
-          status: 'draft',
-        });
+          immediate_cause: formData.immediateCause || 'Pending',
+          underlying_cause: formData.underlyingCause || 'Pending',
+          underlying_cause_icd: formData.underlyingCauseIcd || 'PENDING',
+          manner_of_death: formData.mannerOfDeath,
+        }] as any);
 
       if (error) throw error;
       toast.success("Draft saved");
@@ -251,7 +227,7 @@ export function MCCDForm({
               />
             </div>
             <div className="space-y-2">
-              <Label htmlFor="certifyingPhysicianQualification">Qualification</Label>
+              <Label htmlFor="certifyingPhysicianQualification">Qualification *</Label>
               <Input
                 id="certifyingPhysicianQualification"
                 value={formData.certifyingPhysicianQualification}
@@ -294,32 +270,29 @@ export function MCCDForm({
           <div className="p-4 border rounded-lg">
             <div className="flex items-center gap-2 mb-3">
               <Badge>a</Badge>
-              <span className="font-medium">Immediate Cause</span>
+              <span className="font-medium">Immediate Cause *</span>
               <span className="text-sm text-muted-foreground">(Disease or condition directly leading to death)</span>
             </div>
             <div className="grid grid-cols-12 gap-3">
               <div className="col-span-2 space-y-2">
-                <Label htmlFor="immediateCauseCode">ICD Code</Label>
+                <Label>ICD Code</Label>
                 <Input
-                  id="immediateCauseCode"
-                  value={formData.immediateCauseCode}
-                  onChange={(e) => updateField("immediateCauseCode", e.target.value)}
+                  value={formData.immediateCauseIcd}
+                  onChange={(e) => updateField("immediateCauseIcd", e.target.value)}
                   placeholder="ICD-11"
                 />
               </div>
               <div className="col-span-8 space-y-2">
-                <Label htmlFor="immediateCauseDescription">Description *</Label>
+                <Label>Description *</Label>
                 <Input
-                  id="immediateCauseDescription"
-                  value={formData.immediateCauseDescription}
-                  onChange={(e) => updateField("immediateCauseDescription", e.target.value)}
+                  value={formData.immediateCause}
+                  onChange={(e) => updateField("immediateCause", e.target.value)}
                   placeholder="e.g., Acute respiratory failure"
                 />
               </div>
               <div className="col-span-2 space-y-2">
-                <Label htmlFor="immediateCauseDuration">Duration</Label>
+                <Label>Duration</Label>
                 <Input
-                  id="immediateCauseDuration"
                   value={formData.immediateCauseDuration}
                   onChange={(e) => updateField("immediateCauseDuration", e.target.value)}
                   placeholder="e.g., 2 days"
@@ -328,7 +301,7 @@ export function MCCDForm({
             </div>
           </div>
 
-          {/* Antecedent Cause 1 */}
+          {/* Antecedent Cause A */}
           <div className="p-4 border rounded-lg">
             <div className="flex items-center gap-2 mb-3">
               <Badge variant="secondary">b</Badge>
@@ -338,29 +311,29 @@ export function MCCDForm({
             <div className="grid grid-cols-12 gap-3">
               <div className="col-span-2 space-y-2">
                 <Input
-                  value={formData.antecedent1Code}
-                  onChange={(e) => updateField("antecedent1Code", e.target.value)}
+                  value={formData.antecedentCauseAIcd}
+                  onChange={(e) => updateField("antecedentCauseAIcd", e.target.value)}
                   placeholder="ICD-11"
                 />
               </div>
               <div className="col-span-8 space-y-2">
                 <Input
-                  value={formData.antecedent1Description}
-                  onChange={(e) => updateField("antecedent1Description", e.target.value)}
+                  value={formData.antecedentCauseA}
+                  onChange={(e) => updateField("antecedentCauseA", e.target.value)}
                   placeholder="e.g., Pneumonia"
                 />
               </div>
               <div className="col-span-2 space-y-2">
                 <Input
-                  value={formData.antecedent1Duration}
-                  onChange={(e) => updateField("antecedent1Duration", e.target.value)}
+                  value={formData.antecedentCauseADuration}
+                  onChange={(e) => updateField("antecedentCauseADuration", e.target.value)}
                   placeholder="e.g., 5 days"
                 />
               </div>
             </div>
           </div>
 
-          {/* Antecedent Cause 2 */}
+          {/* Antecedent Cause B */}
           <div className="p-4 border rounded-lg">
             <div className="flex items-center gap-2 mb-3">
               <Badge variant="secondary">c</Badge>
@@ -370,22 +343,22 @@ export function MCCDForm({
             <div className="grid grid-cols-12 gap-3">
               <div className="col-span-2 space-y-2">
                 <Input
-                  value={formData.antecedent2Code}
-                  onChange={(e) => updateField("antecedent2Code", e.target.value)}
+                  value={formData.antecedentCauseBIcd}
+                  onChange={(e) => updateField("antecedentCauseBIcd", e.target.value)}
                   placeholder="ICD-11"
                 />
               </div>
               <div className="col-span-8 space-y-2">
                 <Input
-                  value={formData.antecedent2Description}
-                  onChange={(e) => updateField("antecedent2Description", e.target.value)}
+                  value={formData.antecedentCauseB}
+                  onChange={(e) => updateField("antecedentCauseB", e.target.value)}
                   placeholder="e.g., HIV/AIDS"
                 />
               </div>
               <div className="col-span-2 space-y-2">
                 <Input
-                  value={formData.antecedent2Duration}
-                  onChange={(e) => updateField("antecedent2Duration", e.target.value)}
+                  value={formData.antecedentCauseBDuration}
+                  onChange={(e) => updateField("antecedentCauseBDuration", e.target.value)}
                   placeholder="e.g., 3 years"
                 />
               </div>
@@ -396,21 +369,21 @@ export function MCCDForm({
           <div className="p-4 border-2 border-primary/30 rounded-lg bg-primary/5">
             <div className="flex items-center gap-2 mb-3">
               <Badge variant="default">d</Badge>
-              <span className="font-medium">Underlying Cause</span>
+              <span className="font-medium">Underlying Cause *</span>
               <span className="text-sm text-muted-foreground">(The disease that initiated the train of events)</span>
             </div>
             <div className="grid grid-cols-12 gap-3">
               <div className="col-span-2 space-y-2">
                 <Input
-                  value={formData.underlyingCauseCode}
-                  onChange={(e) => updateField("underlyingCauseCode", e.target.value)}
-                  placeholder="ICD-11"
+                  value={formData.underlyingCauseIcd}
+                  onChange={(e) => updateField("underlyingCauseIcd", e.target.value)}
+                  placeholder="ICD-11 *"
                 />
               </div>
               <div className="col-span-8 space-y-2">
                 <Input
-                  value={formData.underlyingCauseDescription}
-                  onChange={(e) => updateField("underlyingCauseDescription", e.target.value)}
+                  value={formData.underlyingCause}
+                  onChange={(e) => updateField("underlyingCause", e.target.value)}
                   placeholder="e.g., HIV disease resulting in opportunistic infections"
                 />
               </div>
@@ -450,69 +423,50 @@ export function MCCDForm({
           <CardTitle className="text-sm">Additional Information</CardTitle>
         </CardHeader>
         <CardContent className="space-y-6">
-          {/* Surgery */}
-          <div className="space-y-3">
-            <div className="flex items-center gap-2">
-              <Checkbox
-                id="wasSurgeryPerformed"
-                checked={formData.wasSurgeryPerformed}
-                onCheckedChange={(checked) => updateField("wasSurgeryPerformed", !!checked)}
-              />
-              <Label htmlFor="wasSurgeryPerformed">Was surgery performed within 4 weeks of death?</Label>
-            </div>
-            {formData.wasSurgeryPerformed && (
-              <div className="grid grid-cols-2 gap-4 ml-6">
-                <div className="space-y-2">
-                  <Label htmlFor="surgeryDate">Surgery Date</Label>
-                  <Input
-                    id="surgeryDate"
-                    type="date"
-                    value={formData.surgeryDate}
-                    onChange={(e) => updateField("surgeryDate", e.target.value)}
-                  />
-                </div>
-                <div className="space-y-2">
-                  <Label htmlFor="surgeryProcedure">Procedure</Label>
-                  <Input
-                    id="surgeryProcedure"
-                    value={formData.surgeryProcedure}
-                    onChange={(e) => updateField("surgeryProcedure", e.target.value)}
-                    placeholder="Type of surgery"
-                  />
-                </div>
-              </div>
-            )}
+          {/* Manner of Death */}
+          <div className="space-y-2">
+            <Label>Manner of Death *</Label>
+            <Select
+              value={formData.mannerOfDeath}
+              onValueChange={(v) => updateField("mannerOfDeath", v as typeof formData.mannerOfDeath)}
+            >
+              <SelectTrigger className="w-64">
+                <SelectValue />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="natural">Natural</SelectItem>
+                <SelectItem value="accident">Accident</SelectItem>
+                <SelectItem value="suicide">Suicide</SelectItem>
+                <SelectItem value="homicide">Homicide</SelectItem>
+                <SelectItem value="pending">Pending Investigation</SelectItem>
+                <SelectItem value="undetermined">Undetermined</SelectItem>
+              </SelectContent>
+            </Select>
           </div>
-
-          <Separator />
 
           {/* Autopsy */}
           <div className="space-y-3">
             <div className="flex items-center gap-2">
               <Checkbox
-                id="wasAutopsyPerformed"
-                checked={formData.wasAutopsyPerformed}
-                onCheckedChange={(checked) => updateField("wasAutopsyPerformed", !!checked)}
+                id="autopsyPerformed"
+                checked={formData.autopsyPerformed}
+                onCheckedChange={(checked) => updateField("autopsyPerformed", !!checked)}
               />
-              <Label htmlFor="wasAutopsyPerformed">Was an autopsy performed?</Label>
+              <Label htmlFor="autopsyPerformed">Was autopsy performed?</Label>
             </div>
-            {formData.wasAutopsyPerformed && (
-              <div className="ml-6">
-                <div className="flex items-center gap-2">
-                  <Checkbox
-                    id="autopsyFindingsAvailable"
-                    checked={formData.autopsyFindingsAvailable}
-                    onCheckedChange={(checked) => updateField("autopsyFindingsAvailable", !!checked)}
-                  />
-                  <Label htmlFor="autopsyFindingsAvailable">Were findings used to determine cause of death?</Label>
-                </div>
+            {formData.autopsyPerformed && (
+              <div className="ml-6 flex items-center gap-2">
+                <Checkbox
+                  id="autopsyFindingsAvailable"
+                  checked={formData.autopsyFindingsAvailable}
+                  onCheckedChange={(checked) => updateField("autopsyFindingsAvailable", !!checked)}
+                />
+                <Label htmlFor="autopsyFindingsAvailable">Were findings used in determining cause?</Label>
               </div>
             )}
           </div>
 
-          <Separator />
-
-          {/* Maternal Death */}
+          {/* Pregnancy */}
           <div className="space-y-3">
             <div className="flex items-center gap-2">
               <Checkbox
@@ -520,86 +474,27 @@ export function MCCDForm({
                 checked={formData.wasPregnant}
                 onCheckedChange={(checked) => updateField("wasPregnant", !!checked)}
               />
-              <Label htmlFor="wasPregnant">For females: Was the deceased pregnant or recently pregnant?</Label>
+              <Label htmlFor="wasPregnant">Was the deceased pregnant or recently pregnant?</Label>
             </div>
             {formData.wasPregnant && (
-              <div className="grid grid-cols-2 gap-4 ml-6">
-                <div className="space-y-2">
-                  <Label htmlFor="weeksPregnant">Weeks Pregnant</Label>
-                  <Input
-                    id="weeksPregnant"
-                    type="number"
-                    value={formData.weeksPregnant}
-                    onChange={(e) => updateField("weeksPregnant", e.target.value)}
-                    placeholder="Weeks"
-                  />
-                </div>
-                <div className="space-y-2">
-                  <Label htmlFor="pregnancyContribution">Pregnancy Contribution</Label>
-                  <Select 
-                    value={formData.pregnancyContribution} 
-                    onValueChange={(v) => updateField("pregnancyContribution", v)}
-                  >
-                    <SelectTrigger>
-                      <SelectValue placeholder="Select" />
-                    </SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="during_pregnancy">Death during pregnancy</SelectItem>
-                      <SelectItem value="during_delivery">Death during delivery</SelectItem>
-                      <SelectItem value="within_42_days">Within 42 days of termination</SelectItem>
-                      <SelectItem value="within_1_year">43 days to 1 year after termination</SelectItem>
-                      <SelectItem value="not_related">Pregnancy not related to death</SelectItem>
-                    </SelectContent>
-                  </Select>
-                </div>
-              </div>
-            )}
-          </div>
-
-          <Separator />
-
-          {/* Infant Death */}
-          <div className="space-y-3">
-            <div className="flex items-center gap-4">
-              <div className="flex items-center gap-2">
-                <Checkbox
-                  id="stillborn"
-                  checked={formData.stillborn}
-                  onCheckedChange={(checked) => updateField("stillborn", !!checked)}
-                />
-                <Label htmlFor="stillborn">Stillborn</Label>
-              </div>
-              <div className="flex items-center gap-2">
-                <Checkbox
-                  id="wasMultiplePregnancy"
-                  checked={formData.wasMultiplePregnancy}
-                  onCheckedChange={(checked) => updateField("wasMultiplePregnancy", !!checked)}
-                />
-                <Label htmlFor="wasMultiplePregnancy">Multiple pregnancy</Label>
-              </div>
-            </div>
-            {(formData.stillborn || formData.wasMultiplePregnancy) && (
-              <div className="grid grid-cols-2 gap-4 ml-6">
-                <div className="space-y-2">
-                  <Label htmlFor="birthWeightGrams">Birth Weight (grams)</Label>
-                  <Input
-                    id="birthWeightGrams"
-                    type="number"
-                    value={formData.birthWeightGrams}
-                    onChange={(e) => updateField("birthWeightGrams", e.target.value)}
-                    placeholder="Grams"
-                  />
-                </div>
-                <div className="space-y-2">
-                  <Label htmlFor="gestationalAge">Gestational Age (weeks)</Label>
-                  <Input
-                    id="gestationalAge"
-                    type="number"
-                    value={formData.gestationalAge}
-                    onChange={(e) => updateField("gestationalAge", e.target.value)}
-                    placeholder="Weeks"
-                  />
-                </div>
+              <div className="ml-6">
+                <Label>Did pregnancy contribute to death?</Label>
+                <Select
+                  value={formData.pregnancyContribution}
+                  onValueChange={(v) => updateField("pregnancyContribution", v)}
+                >
+                  <SelectTrigger className="w-64 mt-1">
+                    <SelectValue placeholder="Select..." />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="not_pregnant">Not pregnant in past year</SelectItem>
+                    <SelectItem value="pregnant_not_contributing">Pregnant at death, did not contribute</SelectItem>
+                    <SelectItem value="pregnant_contributing">Pregnant at death, contributed to death</SelectItem>
+                    <SelectItem value="postpartum_not_contributing">Within 42 days postpartum, did not contribute</SelectItem>
+                    <SelectItem value="postpartum_contributing">Within 42 days postpartum, contributed to death</SelectItem>
+                    <SelectItem value="late_maternal">Within 1 year postpartum</SelectItem>
+                  </SelectContent>
+                </Select>
               </div>
             )}
           </div>
@@ -607,55 +502,20 @@ export function MCCDForm({
       </Card>
 
       {/* Actions */}
-      <div className="flex items-center justify-between">
+      <div className="flex justify-between">
+        <Button variant="outline" onClick={onCancel}>
+          Cancel
+        </Button>
         <div className="flex gap-2">
-          {onCancel && (
-            <Button variant="ghost" onClick={onCancel}>
-              Cancel
-            </Button>
-          )}
-          <Button
-            variant="outline"
-            onClick={saveDraft}
-            disabled={isSavingDraft}
-          >
-            {isSavingDraft ? (
-              <>
-                <motion.div
-                  animate={{ rotate: 360 }}
-                  transition={{ duration: 1, repeat: Infinity, ease: "linear" }}
-                >
-                  <Save className="w-4 h-4 mr-2" />
-                </motion.div>
-                Saving...
-              </>
-            ) : (
-              <>
-                <Save className="w-4 h-4 mr-2" />
-                Save Draft
-              </>
-            )}
+          <Button variant="outline" onClick={saveDraft} disabled={isSavingDraft}>
+            <Save className="w-4 h-4 mr-2" />
+            {isSavingDraft ? "Saving..." : "Save Draft"}
+          </Button>
+          <Button onClick={handleSubmit} disabled={isSubmitting}>
+            <Send className="w-4 h-4 mr-2" />
+            {isSubmitting ? "Signing..." : "Sign & Submit"}
           </Button>
         </div>
-        
-        <Button onClick={handleSubmit} disabled={isSubmitting}>
-          {isSubmitting ? (
-            <>
-              <motion.div
-                animate={{ rotate: 360 }}
-                transition={{ duration: 1, repeat: Infinity, ease: "linear" }}
-              >
-                <Send className="w-4 h-4 mr-2" />
-              </motion.div>
-              Signing...
-            </>
-          ) : (
-            <>
-              <Check className="w-4 h-4 mr-2" />
-              Sign & Submit MCCD
-            </>
-          )}
-        </Button>
       </div>
     </div>
   );
