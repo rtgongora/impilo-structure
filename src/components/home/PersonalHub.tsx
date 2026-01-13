@@ -110,7 +110,7 @@ export function PersonalHub() {
   };
 
   return (
-    <div className="flex-1 flex flex-col min-h-0">
+    <div className="space-y-4">
       {/* Section Toggle - Health vs Social */}
       <div className="flex items-center gap-2 mb-4">
         <Button
@@ -137,8 +137,8 @@ export function PersonalHub() {
 
       {/* Health Section */}
       {activeSection === 'health' && (
-        <div className="flex-1 flex flex-col min-h-0 overflow-auto">
-          <Tabs value={activeHealthTab} onValueChange={setActiveHealthTab} className="flex-1 flex flex-col min-h-0">
+        <div>
+          <Tabs value={activeHealthTab} onValueChange={setActiveHealthTab}>
             <div className="overflow-x-auto mb-4">
               <TabsList className="inline-flex w-max min-w-full">
                 <TabsTrigger value="home">Home</TabsTrigger>
@@ -392,8 +392,8 @@ export function PersonalHub() {
 
       {/* Social Section */}
       {activeSection === 'social' && (
-        <div className="flex-1 flex flex-col min-h-0 overflow-auto">
-          <div className="flex flex-col lg:flex-row gap-4 flex-1">
+        <div>
+          <div className="flex flex-col lg:flex-row gap-4">
             {/* Left Sidebar Navigation */}
             <div className="hidden lg:block w-64 shrink-0">
               <Card className="sticky top-4">
