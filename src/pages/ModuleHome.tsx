@@ -80,6 +80,10 @@ import {
   TestTube2,
   Scan,
   ChevronDown,
+  Gauge,
+  Monitor,
+  Download,
+  LayoutGrid,
 } from "lucide-react";
 import { Dialog, DialogContent, DialogTrigger } from "@/components/ui/dialog";
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible";
@@ -159,6 +163,7 @@ const workModuleCategories: ModuleCategory[] = [
       { id: "ehr", label: "Patient Encounters", description: "Clinical documentation & care", icon: Stethoscope, path: "/encounter", color: "bg-blue-500", roles: ["doctor", "nurse", "specialist", "admin"] },
       { id: "queue", label: "Patient Queue", description: "Waiting patients & triage", icon: Users, path: "/queue", color: "bg-orange-500" },
       { id: "beds", label: "Bed Management", description: "Ward status & admissions", icon: Bed, path: "/beds", color: "bg-purple-500", roles: ["doctor", "nurse", "admin"], capabilities: ["inpatient"] },
+      { id: "control-tower", label: "Control Tower", description: "Real-time facility operations", icon: Gauge, path: "/operations?tab=control-tower", color: "bg-rose-600", roles: ["admin", "nurse", "doctor"] },
       { id: "operations", label: "Operations & Roster", description: "Shifts, roster & workforce", icon: Clock, path: "/operations", color: "bg-cyan-600" },
       { id: "handoff", label: "Shift Handoff", description: "Care continuity reports", icon: ArrowRightLeft, path: "/handoff", color: "bg-teal-500", roles: ["doctor", "nurse", "admin"], capabilities: ["inpatient", "emergency_24hr"] },
     ],
@@ -194,9 +199,13 @@ const workModuleCategories: ModuleCategory[] = [
     modules: [
       { id: "sorting", label: "Patient Sorting", description: "Arrival, triage & queue assignment", icon: ClipboardCheck, path: "/sorting", color: "bg-orange-500" },
       { id: "appointments", label: "Appointments", description: "Clinic & provider scheduling", icon: Calendar, path: "/appointments", color: "bg-cyan-500" },
+      { id: "scheduling", label: "Appointment Scheduling", description: "Advanced scheduling tools", icon: Calendar, path: "/scheduling", color: "bg-blue-500", roles: ["admin", "receptionist", "doctor", "nurse"] },
+      { id: "noticeboard", label: "Provider Noticeboard", description: "Announcements & scheduling updates", icon: Megaphone, path: "/scheduling/noticeboard", color: "bg-amber-500" },
+      { id: "resources", label: "Resource Calendar", description: "Rooms, equipment & assets", icon: LayoutGrid, path: "/scheduling/resources", color: "bg-indigo-500", roles: ["admin", "receptionist"] },
       { id: "registration", label: "Patient Registration", description: "New patient intake & ID", icon: UserPlus, path: "/registration", color: "bg-emerald-500" },
       { id: "patients", label: "Patient Registry", description: "Search & manage patients", icon: Users, path: "/patients", color: "bg-slate-500" },
       { id: "theatre", label: "Theatre Booking", description: "Surgical scheduling", icon: Building2, path: "/theatre", color: "bg-rose-500", roles: ["doctor", "specialist", "nurse", "admin"], capabilities: ["theatre"] },
+      { id: "theatre-scheduling", label: "Theatre Scheduling", description: "Surgical suite calendar", icon: Calendar, path: "/scheduling/theatre", color: "bg-pink-500", roles: ["doctor", "specialist", "admin"], capabilities: ["theatre"] },
     ],
   },
   {
@@ -266,10 +275,12 @@ const workModuleCategories: ModuleCategory[] = [
     id: "admin",
     title: "Administration & Reports",
     description: "System settings, analytics, and integrations",
-    roles: ['admin', 'doctor', 'specialist'],
+    roles: ['admin', 'doctor', 'specialist', 'hie_admin'],
     modules: [
+      { id: "above-site", label: "Above-Site Dashboard", description: "District, provincial & national oversight", icon: TrendingUp, path: "/above-site", color: "bg-rose-600", roles: ["admin", "hie_admin"] },
       { id: "reports", label: "Reports & Analytics", description: "Dashboards & insights", icon: BarChart3, path: "/reports", color: "bg-violet-500" },
       { id: "report-builder", label: "Custom Reports", description: "Build custom reports & queries", icon: FileCheck, path: "/reports", color: "bg-indigo-500", roles: ["admin"] },
+      { id: "registry-management", label: "Registry Management", description: "Manage HIE registries", icon: Database, path: "/registry-management", color: "bg-purple-600", roles: ["admin", "hie_admin"] },
       { id: "odoo", label: "Odoo ERP", description: "ERP integration", icon: Building2, path: "/odoo", color: "bg-gray-600", roles: ["admin"] },
       { id: "admin", label: "System Admin", description: "Users, security & settings", icon: Settings, path: "/admin", color: "bg-gray-700", roles: ["admin"] },
     ],
@@ -287,10 +298,13 @@ const workModuleCategories: ModuleCategory[] = [
   {
     id: "support",
     title: "Help & Support",
-    description: "FAQs, user guides, and system documentation",
+    description: "FAQs, user guides, system utilities and documentation",
     // No restriction - always visible
     modules: [
       { id: "help", label: "Help Desk", description: "FAQs, guides & documentation", icon: HelpCircle, path: "/help", color: "bg-teal-500" },
+      { id: "profile", label: "Profile Settings", description: "Your account & preferences", icon: User, path: "/profile", color: "bg-slate-500" },
+      { id: "kiosk", label: "Patient Kiosk", description: "Self-service check-in terminal", icon: Monitor, path: "/kiosk", color: "bg-blue-600" },
+      { id: "install", label: "Install App", description: "Download PWA for offline use", icon: Download, path: "/install", color: "bg-green-600" },
     ],
   },
 ];
