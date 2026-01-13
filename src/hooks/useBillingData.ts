@@ -92,19 +92,25 @@ export function useInvoices(patientId?: string) {
   }, [fetchInvoices]);
 
   const createInvoice = async (data: {
+    account_id?: string;
     patient_id: string;
     visit_id?: string;
     total_amount: number;
     notes?: string;
   }) => {
+    // Generate invoice number
+    const invoiceNumber = `INV-${new Date().toISOString().slice(0, 10).replace(/-/g, '')}-${Math.random().toString(36).substring(2, 8).toUpperCase()}`;
+    
     const { data: result, error } = await supabase
       .from("invoices")
-      .insert({
+      .insert([{
+        invoice_number: invoiceNumber,
+        account_id: data.account_id,
         patient_id: data.patient_id,
         visit_id: data.visit_id,
         total_amount: data.total_amount,
         notes: data.notes,
-      })
+      }])
       .select()
       .single();
 
