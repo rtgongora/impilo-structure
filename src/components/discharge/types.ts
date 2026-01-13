@@ -21,6 +21,36 @@ export type DischargeDecisionType =
   | 'absconded'
   | 'death';
 
+// Maps to visit_outcome enum in database
+export type DischargeDestination = 
+  | 'discharged_home'
+  | 'discharged_care'
+  | 'transferred'
+  | 'lama'
+  | 'absconded'
+  | 'death'
+  | 'administrative_closure';
+
+// Mapping from decision type to visit outcome
+export const DECISION_TO_OUTCOME: Record<DischargeDecisionType, DischargeDestination | null> = {
+  routine: null, // Requires destination selection
+  dama: 'lama',
+  referral: 'transferred',
+  transfer: 'transferred',
+  absconded: 'absconded',
+  death: 'death',
+};
+
+export const DISCHARGE_DESTINATION_LABELS: Record<DischargeDestination, string> = {
+  discharged_home: 'Discharged Home',
+  discharged_care: 'Discharged to Care Facility',
+  transferred: 'Transferred to Another Facility',
+  lama: 'Left Against Medical Advice',
+  absconded: 'Absconded',
+  death: 'Death',
+  administrative_closure: 'Administrative Closure',
+};
+
 export type ClearanceType = 
   | 'clinical'
   | 'nursing'
@@ -60,6 +90,9 @@ export interface DischargeCase {
   decision_reason?: string;
   decision_datetime?: string;
   decision_by?: string;
+  
+  // Discharge destination (for routine discharges)
+  discharge_destination?: DischargeDestination;
   
   // Death fields
   death_datetime?: string;
