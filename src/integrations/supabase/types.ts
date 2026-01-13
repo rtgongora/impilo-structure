@@ -178,6 +178,13 @@ export type Database = {
             referencedColumns: ["facility_id"]
           },
           {
+            foreignKeyName: "above_site_interventions_target_facility_id_fkey"
+            columns: ["target_facility_id"]
+            isOneToOne: false
+            referencedRelation: "facility_operations_dashboard"
+            referencedColumns: ["facility_id"]
+          },
+          {
             foreignKeyName: "above_site_interventions_target_pool_id_fkey"
             columns: ["target_pool_id"]
             isOneToOne: false
@@ -332,6 +339,13 @@ export type Database = {
             columns: ["selected_facility_id"]
             isOneToOne: false
             referencedRelation: "facility_capabilities"
+            referencedColumns: ["facility_id"]
+          },
+          {
+            foreignKeyName: "above_site_sessions_selected_facility_id_fkey"
+            columns: ["selected_facility_id"]
+            isOneToOne: false
+            referencedRelation: "facility_operations_dashboard"
             referencedColumns: ["facility_id"]
           },
         ]
@@ -1788,6 +1802,13 @@ export type Database = {
             referencedColumns: ["facility_id"]
           },
           {
+            foreignKeyName: "client_queue_requests_facility_id_fkey"
+            columns: ["facility_id"]
+            isOneToOne: false
+            referencedRelation: "facility_operations_dashboard"
+            referencedColumns: ["facility_id"]
+          },
+          {
             foreignKeyName: "client_queue_requests_patient_id_fkey"
             columns: ["patient_id"]
             isOneToOne: false
@@ -2322,6 +2343,176 @@ export type Database = {
             columns: ["patient_id"]
             isOneToOne: false
             referencedRelation: "patients"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      clinical_documents: {
+        Row: {
+          access_restrictions: string[] | null
+          amended_sections: string[] | null
+          amendment_reason: string | null
+          author_id: string | null
+          author_name: string | null
+          author_role: string | null
+          authoring_facility_id: string | null
+          authoring_facility_name: string | null
+          co_signers: Json | null
+          content_fhir: Json | null
+          content_json: Json | null
+          created_at: string
+          document_number: string
+          document_subtype: string | null
+          document_type: Database["public"]["Enums"]["clinical_document_type"]
+          encounter_id: string | null
+          finalized_at: string | null
+          html_content: string | null
+          id: string
+          loinc_code: string | null
+          loinc_display: string | null
+          patient_friendly_html: string | null
+          patient_friendly_pdf_path: string | null
+          patient_id: string
+          pdf_path: string | null
+          previous_version_id: string | null
+          share_token: string | null
+          share_token_expires_at: string | null
+          signature_hash: string | null
+          signed_at: string | null
+          signed_by: string | null
+          signed_by_name: string | null
+          status: Database["public"]["Enums"]["document_status"]
+          title: string
+          updated_at: string
+          version: number
+          visit_id: string | null
+        }
+        Insert: {
+          access_restrictions?: string[] | null
+          amended_sections?: string[] | null
+          amendment_reason?: string | null
+          author_id?: string | null
+          author_name?: string | null
+          author_role?: string | null
+          authoring_facility_id?: string | null
+          authoring_facility_name?: string | null
+          co_signers?: Json | null
+          content_fhir?: Json | null
+          content_json?: Json | null
+          created_at?: string
+          document_number: string
+          document_subtype?: string | null
+          document_type: Database["public"]["Enums"]["clinical_document_type"]
+          encounter_id?: string | null
+          finalized_at?: string | null
+          html_content?: string | null
+          id?: string
+          loinc_code?: string | null
+          loinc_display?: string | null
+          patient_friendly_html?: string | null
+          patient_friendly_pdf_path?: string | null
+          patient_id: string
+          pdf_path?: string | null
+          previous_version_id?: string | null
+          share_token?: string | null
+          share_token_expires_at?: string | null
+          signature_hash?: string | null
+          signed_at?: string | null
+          signed_by?: string | null
+          signed_by_name?: string | null
+          status?: Database["public"]["Enums"]["document_status"]
+          title: string
+          updated_at?: string
+          version?: number
+          visit_id?: string | null
+        }
+        Update: {
+          access_restrictions?: string[] | null
+          amended_sections?: string[] | null
+          amendment_reason?: string | null
+          author_id?: string | null
+          author_name?: string | null
+          author_role?: string | null
+          authoring_facility_id?: string | null
+          authoring_facility_name?: string | null
+          co_signers?: Json | null
+          content_fhir?: Json | null
+          content_json?: Json | null
+          created_at?: string
+          document_number?: string
+          document_subtype?: string | null
+          document_type?: Database["public"]["Enums"]["clinical_document_type"]
+          encounter_id?: string | null
+          finalized_at?: string | null
+          html_content?: string | null
+          id?: string
+          loinc_code?: string | null
+          loinc_display?: string | null
+          patient_friendly_html?: string | null
+          patient_friendly_pdf_path?: string | null
+          patient_id?: string
+          pdf_path?: string | null
+          previous_version_id?: string | null
+          share_token?: string | null
+          share_token_expires_at?: string | null
+          signature_hash?: string | null
+          signed_at?: string | null
+          signed_by?: string | null
+          signed_by_name?: string | null
+          status?: Database["public"]["Enums"]["document_status"]
+          title?: string
+          updated_at?: string
+          version?: number
+          visit_id?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "clinical_documents_authoring_facility_id_fkey"
+            columns: ["authoring_facility_id"]
+            isOneToOne: false
+            referencedRelation: "facilities"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "clinical_documents_authoring_facility_id_fkey"
+            columns: ["authoring_facility_id"]
+            isOneToOne: false
+            referencedRelation: "facility_capabilities"
+            referencedColumns: ["facility_id"]
+          },
+          {
+            foreignKeyName: "clinical_documents_authoring_facility_id_fkey"
+            columns: ["authoring_facility_id"]
+            isOneToOne: false
+            referencedRelation: "facility_operations_dashboard"
+            referencedColumns: ["facility_id"]
+          },
+          {
+            foreignKeyName: "clinical_documents_encounter_id_fkey"
+            columns: ["encounter_id"]
+            isOneToOne: false
+            referencedRelation: "encounters"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "clinical_documents_patient_id_fkey"
+            columns: ["patient_id"]
+            isOneToOne: false
+            referencedRelation: "patients"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "clinical_documents_previous_version_id_fkey"
+            columns: ["previous_version_id"]
+            isOneToOne: false
+            referencedRelation: "clinical_documents"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "clinical_documents_visit_id_fkey"
+            columns: ["visit_id"]
+            isOneToOne: false
+            referencedRelation: "visits"
             referencedColumns: ["id"]
           },
         ]
@@ -3143,6 +3334,13 @@ export type Database = {
             referencedColumns: ["facility_id"]
           },
           {
+            foreignKeyName: "cover_requests_facility_id_fkey"
+            columns: ["facility_id"]
+            isOneToOne: false
+            referencedRelation: "facility_operations_dashboard"
+            referencedColumns: ["facility_id"]
+          },
+          {
             foreignKeyName: "cover_requests_pool_id_fkey"
             columns: ["pool_id"]
             isOneToOne: false
@@ -3239,6 +3437,13 @@ export type Database = {
             columns: ["facility_id"]
             isOneToOne: false
             referencedRelation: "facility_capabilities"
+            referencedColumns: ["facility_id"]
+          },
+          {
+            foreignKeyName: "coverage_rules_facility_id_fkey"
+            columns: ["facility_id"]
+            isOneToOne: false
+            referencedRelation: "facility_operations_dashboard"
             referencedColumns: ["facility_id"]
           },
           {
@@ -3395,6 +3600,497 @@ export type Database = {
         }
         Relationships: []
       }
+      death_outcome_summaries: {
+        Row: {
+          access_restricted: boolean | null
+          authorized_viewers: string[] | null
+          autopsy_notes: string | null
+          autopsy_requested: boolean | null
+          cause_category_code: string | null
+          cause_category_display: string | null
+          certification_datetime: string | null
+          certifying_clinician_id: string | null
+          certifying_clinician_name: string | null
+          created_at: string
+          death_certificate_task_id: string | null
+          death_datetime: string
+          death_location: string | null
+          document_id: string
+          family_notified: boolean | null
+          family_notified_at: string | null
+          family_notified_by: string | null
+          id: string
+          immediate_cause: string | null
+          notification_tasks: Json | null
+          patient_id: string
+          underlying_cause: string | null
+          updated_at: string
+          visit_id: string
+        }
+        Insert: {
+          access_restricted?: boolean | null
+          authorized_viewers?: string[] | null
+          autopsy_notes?: string | null
+          autopsy_requested?: boolean | null
+          cause_category_code?: string | null
+          cause_category_display?: string | null
+          certification_datetime?: string | null
+          certifying_clinician_id?: string | null
+          certifying_clinician_name?: string | null
+          created_at?: string
+          death_certificate_task_id?: string | null
+          death_datetime: string
+          death_location?: string | null
+          document_id: string
+          family_notified?: boolean | null
+          family_notified_at?: string | null
+          family_notified_by?: string | null
+          id?: string
+          immediate_cause?: string | null
+          notification_tasks?: Json | null
+          patient_id: string
+          underlying_cause?: string | null
+          updated_at?: string
+          visit_id: string
+        }
+        Update: {
+          access_restricted?: boolean | null
+          authorized_viewers?: string[] | null
+          autopsy_notes?: string | null
+          autopsy_requested?: boolean | null
+          cause_category_code?: string | null
+          cause_category_display?: string | null
+          certification_datetime?: string | null
+          certifying_clinician_id?: string | null
+          certifying_clinician_name?: string | null
+          created_at?: string
+          death_certificate_task_id?: string | null
+          death_datetime?: string
+          death_location?: string | null
+          document_id?: string
+          family_notified?: boolean | null
+          family_notified_at?: string | null
+          family_notified_by?: string | null
+          id?: string
+          immediate_cause?: string | null
+          notification_tasks?: Json | null
+          patient_id?: string
+          underlying_cause?: string | null
+          updated_at?: string
+          visit_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "death_outcome_summaries_document_id_fkey"
+            columns: ["document_id"]
+            isOneToOne: false
+            referencedRelation: "clinical_documents"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "death_outcome_summaries_patient_id_fkey"
+            columns: ["patient_id"]
+            isOneToOne: false
+            referencedRelation: "patients"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "death_outcome_summaries_visit_id_fkey"
+            columns: ["visit_id"]
+            isOneToOne: false
+            referencedRelation: "visits"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      discharge_summaries: {
+        Row: {
+          admission_date: string
+          allergies: Json | null
+          condition_at_discharge: string | null
+          created_at: string
+          discharge_date: string
+          discharge_medications: Json | null
+          document_id: string
+          facility_name: string | null
+          follow_up_appointments: Json | null
+          functional_status: string | null
+          hospital_course_narrative: string | null
+          id: string
+          key_imaging_results: Json | null
+          key_lab_results: Json | null
+          medication_reconciliation_at: string | null
+          medication_reconciliation_by: string | null
+          medications_changed: Json | null
+          medications_stopped: Json | null
+          patient_id: string
+          patient_instructions: string | null
+          pending_results: Json | null
+          pending_results_followup_plan: string | null
+          pending_results_reviewer: string | null
+          primary_diagnosis: string | null
+          primary_diagnosis_code: string | null
+          referrals: Json | null
+          secondary_diagnoses: Json | null
+          significant_procedures: Json | null
+          updated_at: string
+          visit_id: string
+          ward_name: string | null
+          warning_signs: string | null
+        }
+        Insert: {
+          admission_date: string
+          allergies?: Json | null
+          condition_at_discharge?: string | null
+          created_at?: string
+          discharge_date: string
+          discharge_medications?: Json | null
+          document_id: string
+          facility_name?: string | null
+          follow_up_appointments?: Json | null
+          functional_status?: string | null
+          hospital_course_narrative?: string | null
+          id?: string
+          key_imaging_results?: Json | null
+          key_lab_results?: Json | null
+          medication_reconciliation_at?: string | null
+          medication_reconciliation_by?: string | null
+          medications_changed?: Json | null
+          medications_stopped?: Json | null
+          patient_id: string
+          patient_instructions?: string | null
+          pending_results?: Json | null
+          pending_results_followup_plan?: string | null
+          pending_results_reviewer?: string | null
+          primary_diagnosis?: string | null
+          primary_diagnosis_code?: string | null
+          referrals?: Json | null
+          secondary_diagnoses?: Json | null
+          significant_procedures?: Json | null
+          updated_at?: string
+          visit_id: string
+          ward_name?: string | null
+          warning_signs?: string | null
+        }
+        Update: {
+          admission_date?: string
+          allergies?: Json | null
+          condition_at_discharge?: string | null
+          created_at?: string
+          discharge_date?: string
+          discharge_medications?: Json | null
+          document_id?: string
+          facility_name?: string | null
+          follow_up_appointments?: Json | null
+          functional_status?: string | null
+          hospital_course_narrative?: string | null
+          id?: string
+          key_imaging_results?: Json | null
+          key_lab_results?: Json | null
+          medication_reconciliation_at?: string | null
+          medication_reconciliation_by?: string | null
+          medications_changed?: Json | null
+          medications_stopped?: Json | null
+          patient_id?: string
+          patient_instructions?: string | null
+          pending_results?: Json | null
+          pending_results_followup_plan?: string | null
+          pending_results_reviewer?: string | null
+          primary_diagnosis?: string | null
+          primary_diagnosis_code?: string | null
+          referrals?: Json | null
+          secondary_diagnoses?: Json | null
+          significant_procedures?: Json | null
+          updated_at?: string
+          visit_id?: string
+          ward_name?: string | null
+          warning_signs?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "discharge_summaries_document_id_fkey"
+            columns: ["document_id"]
+            isOneToOne: false
+            referencedRelation: "clinical_documents"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "discharge_summaries_patient_id_fkey"
+            columns: ["patient_id"]
+            isOneToOne: false
+            referencedRelation: "patients"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "discharge_summaries_visit_id_fkey"
+            columns: ["visit_id"]
+            isOneToOne: false
+            referencedRelation: "visits"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      document_access_log: {
+        Row: {
+          access_granted: boolean
+          access_type: string
+          access_via: string
+          accessed_by: string | null
+          accessed_by_name: string | null
+          created_at: string
+          denial_reason: string | null
+          document_id: string
+          id: string
+          ip_address: unknown
+          patient_id: string
+          share_token_used: string | null
+          user_agent: string | null
+        }
+        Insert: {
+          access_granted: boolean
+          access_type: string
+          access_via: string
+          accessed_by?: string | null
+          accessed_by_name?: string | null
+          created_at?: string
+          denial_reason?: string | null
+          document_id: string
+          id?: string
+          ip_address?: unknown
+          patient_id: string
+          share_token_used?: string | null
+          user_agent?: string | null
+        }
+        Update: {
+          access_granted?: boolean
+          access_type?: string
+          access_via?: string
+          accessed_by?: string | null
+          accessed_by_name?: string | null
+          created_at?: string
+          denial_reason?: string | null
+          document_id?: string
+          id?: string
+          ip_address?: unknown
+          patient_id?: string
+          share_token_used?: string | null
+          user_agent?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "document_access_log_document_id_fkey"
+            columns: ["document_id"]
+            isOneToOne: false
+            referencedRelation: "clinical_documents"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "document_access_log_patient_id_fkey"
+            columns: ["patient_id"]
+            isOneToOne: false
+            referencedRelation: "patients"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      document_references: {
+        Row: {
+          author_name: string | null
+          created_at: string
+          document_date: string
+          document_id: string
+          document_type: Database["public"]["Enums"]["clinical_document_type"]
+          encounter_id: string | null
+          facility_id: string | null
+          facility_name: string | null
+          id: string
+          patient_id: string
+          searchable_text: string | null
+          status: Database["public"]["Enums"]["document_status"]
+          tags: string[] | null
+          title: string
+          visit_id: string | null
+        }
+        Insert: {
+          author_name?: string | null
+          created_at?: string
+          document_date: string
+          document_id: string
+          document_type: Database["public"]["Enums"]["clinical_document_type"]
+          encounter_id?: string | null
+          facility_id?: string | null
+          facility_name?: string | null
+          id?: string
+          patient_id: string
+          searchable_text?: string | null
+          status: Database["public"]["Enums"]["document_status"]
+          tags?: string[] | null
+          title: string
+          visit_id?: string | null
+        }
+        Update: {
+          author_name?: string | null
+          created_at?: string
+          document_date?: string
+          document_id?: string
+          document_type?: Database["public"]["Enums"]["clinical_document_type"]
+          encounter_id?: string | null
+          facility_id?: string | null
+          facility_name?: string | null
+          id?: string
+          patient_id?: string
+          searchable_text?: string | null
+          status?: Database["public"]["Enums"]["document_status"]
+          tags?: string[] | null
+          title?: string
+          visit_id?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "document_references_document_id_fkey"
+            columns: ["document_id"]
+            isOneToOne: false
+            referencedRelation: "clinical_documents"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "document_references_encounter_id_fkey"
+            columns: ["encounter_id"]
+            isOneToOne: false
+            referencedRelation: "encounters"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "document_references_facility_id_fkey"
+            columns: ["facility_id"]
+            isOneToOne: false
+            referencedRelation: "facilities"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "document_references_facility_id_fkey"
+            columns: ["facility_id"]
+            isOneToOne: false
+            referencedRelation: "facility_capabilities"
+            referencedColumns: ["facility_id"]
+          },
+          {
+            foreignKeyName: "document_references_facility_id_fkey"
+            columns: ["facility_id"]
+            isOneToOne: false
+            referencedRelation: "facility_operations_dashboard"
+            referencedColumns: ["facility_id"]
+          },
+          {
+            foreignKeyName: "document_references_patient_id_fkey"
+            columns: ["patient_id"]
+            isOneToOne: false
+            referencedRelation: "patients"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "document_references_visit_id_fkey"
+            columns: ["visit_id"]
+            isOneToOne: false
+            referencedRelation: "visits"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      ed_summaries: {
+        Row: {
+          admitting_service: string | null
+          admitting_ward: string | null
+          created_at: string
+          discharge_instructions: string | null
+          disposition: string
+          disposition_notes: string | null
+          disposition_time: string | null
+          document_id: string
+          encounter_id: string
+          follow_up_plan: string | null
+          handover_notes: string | null
+          handover_to: string | null
+          id: string
+          imaging_performed: Json | null
+          interventions: Json | null
+          key_results: Json | null
+          patient_id: string
+          presenting_complaint: string | null
+          triage_category: string | null
+          triage_time: string | null
+          updated_at: string
+        }
+        Insert: {
+          admitting_service?: string | null
+          admitting_ward?: string | null
+          created_at?: string
+          discharge_instructions?: string | null
+          disposition: string
+          disposition_notes?: string | null
+          disposition_time?: string | null
+          document_id: string
+          encounter_id: string
+          follow_up_plan?: string | null
+          handover_notes?: string | null
+          handover_to?: string | null
+          id?: string
+          imaging_performed?: Json | null
+          interventions?: Json | null
+          key_results?: Json | null
+          patient_id: string
+          presenting_complaint?: string | null
+          triage_category?: string | null
+          triage_time?: string | null
+          updated_at?: string
+        }
+        Update: {
+          admitting_service?: string | null
+          admitting_ward?: string | null
+          created_at?: string
+          discharge_instructions?: string | null
+          disposition?: string
+          disposition_notes?: string | null
+          disposition_time?: string | null
+          document_id?: string
+          encounter_id?: string
+          follow_up_plan?: string | null
+          handover_notes?: string | null
+          handover_to?: string | null
+          id?: string
+          imaging_performed?: Json | null
+          interventions?: Json | null
+          key_results?: Json | null
+          patient_id?: string
+          presenting_complaint?: string | null
+          triage_category?: string | null
+          triage_time?: string | null
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "ed_summaries_document_id_fkey"
+            columns: ["document_id"]
+            isOneToOne: false
+            referencedRelation: "clinical_documents"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "ed_summaries_encounter_id_fkey"
+            columns: ["encounter_id"]
+            isOneToOne: false
+            referencedRelation: "encounters"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "ed_summaries_patient_id_fkey"
+            columns: ["patient_id"]
+            isOneToOne: false
+            referencedRelation: "patients"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       eligibility_decisions: {
         Row: {
           eligible: boolean
@@ -3539,6 +4235,7 @@ export type Database = {
           created_by: string | null
           discharge_date: string | null
           encounter_number: string
+          encounter_sequence: number | null
           encounter_type: string
           id: string
           notes: string | null
@@ -3547,6 +4244,7 @@ export type Database = {
           status: string
           triage_category: string | null
           updated_at: string
+          visit_id: string | null
           ward: string | null
         }
         Insert: {
@@ -3558,6 +4256,7 @@ export type Database = {
           created_by?: string | null
           discharge_date?: string | null
           encounter_number: string
+          encounter_sequence?: number | null
           encounter_type: string
           id?: string
           notes?: string | null
@@ -3566,6 +4265,7 @@ export type Database = {
           status?: string
           triage_category?: string | null
           updated_at?: string
+          visit_id?: string | null
           ward?: string | null
         }
         Update: {
@@ -3577,6 +4277,7 @@ export type Database = {
           created_by?: string | null
           discharge_date?: string | null
           encounter_number?: string
+          encounter_sequence?: number | null
           encounter_type?: string
           id?: string
           notes?: string | null
@@ -3585,6 +4286,7 @@ export type Database = {
           status?: string
           triage_category?: string | null
           updated_at?: string
+          visit_id?: string | null
           ward?: string | null
         }
         Relationships: [
@@ -3593,6 +4295,13 @@ export type Database = {
             columns: ["patient_id"]
             isOneToOne: false
             referencedRelation: "patients"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "encounters_visit_id_fkey"
+            columns: ["visit_id"]
+            isOneToOne: false
+            referencedRelation: "visits"
             referencedColumns: ["id"]
           },
         ]
@@ -4110,6 +4819,13 @@ export type Database = {
             referencedRelation: "facility_capabilities"
             referencedColumns: ["facility_id"]
           },
+          {
+            foreignKeyName: "facility_change_requests_facility_id_fkey"
+            columns: ["facility_id"]
+            isOneToOne: false
+            referencedRelation: "facility_operations_dashboard"
+            referencedColumns: ["facility_id"]
+          },
         ]
       }
       facility_history: {
@@ -4156,6 +4872,13 @@ export type Database = {
             columns: ["facility_id"]
             isOneToOne: false
             referencedRelation: "facility_capabilities"
+            referencedColumns: ["facility_id"]
+          },
+          {
+            foreignKeyName: "facility_history_facility_id_fkey"
+            columns: ["facility_id"]
+            isOneToOne: false
+            referencedRelation: "facility_operations_dashboard"
             referencedColumns: ["facility_id"]
           },
         ]
@@ -4207,6 +4930,13 @@ export type Database = {
             columns: ["facility_id"]
             isOneToOne: false
             referencedRelation: "facility_capabilities"
+            referencedColumns: ["facility_id"]
+          },
+          {
+            foreignKeyName: "facility_identifiers_facility_id_fkey"
+            columns: ["facility_id"]
+            isOneToOne: false
+            referencedRelation: "facility_operations_dashboard"
             referencedColumns: ["facility_id"]
           },
         ]
@@ -4293,6 +5023,13 @@ export type Database = {
             columns: ["facility_id"]
             isOneToOne: true
             referencedRelation: "facility_capabilities"
+            referencedColumns: ["facility_id"]
+          },
+          {
+            foreignKeyName: "facility_operations_config_facility_id_fkey"
+            columns: ["facility_id"]
+            isOneToOne: true
+            referencedRelation: "facility_operations_dashboard"
             referencedColumns: ["facility_id"]
           },
         ]
@@ -4442,6 +5179,13 @@ export type Database = {
             columns: ["candidate_facility_id"]
             isOneToOne: false
             referencedRelation: "facility_capabilities"
+            referencedColumns: ["facility_id"]
+          },
+          {
+            foreignKeyName: "facility_reconciliation_matches_candidate_facility_id_fkey"
+            columns: ["candidate_facility_id"]
+            isOneToOne: false
+            referencedRelation: "facility_operations_dashboard"
             referencedColumns: ["facility_id"]
           },
           {
@@ -4616,6 +5360,13 @@ export type Database = {
             referencedRelation: "facility_capabilities"
             referencedColumns: ["facility_id"]
           },
+          {
+            foreignKeyName: "facility_registry_records_facility_id_fkey"
+            columns: ["facility_id"]
+            isOneToOne: false
+            referencedRelation: "facility_operations_dashboard"
+            referencedColumns: ["facility_id"]
+          },
         ]
       }
       facility_registry_roles: {
@@ -4772,6 +5523,13 @@ export type Database = {
             columns: ["facility_id"]
             isOneToOne: false
             referencedRelation: "facility_capabilities"
+            referencedColumns: ["facility_id"]
+          },
+          {
+            foreignKeyName: "facility_services_facility_id_fkey"
+            columns: ["facility_id"]
+            isOneToOne: false
+            referencedRelation: "facility_operations_dashboard"
             referencedColumns: ["facility_id"]
           },
           {
@@ -5752,6 +6510,13 @@ export type Database = {
             referencedColumns: ["facility_id"]
           },
           {
+            foreignKeyName: "imaging_audit_log_actor_facility_id_fkey"
+            columns: ["actor_facility_id"]
+            isOneToOne: false
+            referencedRelation: "facility_operations_dashboard"
+            referencedColumns: ["facility_id"]
+          },
+          {
             foreignKeyName: "imaging_audit_log_instance_id_fkey"
             columns: ["instance_id"]
             isOneToOne: false
@@ -5861,6 +6626,13 @@ export type Database = {
             referencedColumns: ["facility_id"]
           },
           {
+            foreignKeyName: "imaging_consults_consulting_facility_id_fkey"
+            columns: ["consulting_facility_id"]
+            isOneToOne: false
+            referencedRelation: "facility_operations_dashboard"
+            referencedColumns: ["facility_id"]
+          },
+          {
             foreignKeyName: "imaging_consults_requesting_facility_id_fkey"
             columns: ["requesting_facility_id"]
             isOneToOne: false
@@ -5872,6 +6644,13 @@ export type Database = {
             columns: ["requesting_facility_id"]
             isOneToOne: false
             referencedRelation: "facility_capabilities"
+            referencedColumns: ["facility_id"]
+          },
+          {
+            foreignKeyName: "imaging_consults_requesting_facility_id_fkey"
+            columns: ["requesting_facility_id"]
+            isOneToOne: false
+            referencedRelation: "facility_operations_dashboard"
             referencedColumns: ["facility_id"]
           },
           {
@@ -6210,6 +6989,13 @@ export type Database = {
             referencedRelation: "facility_capabilities"
             referencedColumns: ["facility_id"]
           },
+          {
+            foreignKeyName: "imaging_lifecycle_policies_facility_id_fkey"
+            columns: ["facility_id"]
+            isOneToOne: false
+            referencedRelation: "facility_operations_dashboard"
+            referencedColumns: ["facility_id"]
+          },
         ]
       }
       imaging_prefetch_rules: {
@@ -6457,6 +7243,13 @@ export type Database = {
             referencedColumns: ["facility_id"]
           },
           {
+            foreignKeyName: "imaging_routing_rules_source_facility_id_fkey"
+            columns: ["source_facility_id"]
+            isOneToOne: false
+            referencedRelation: "facility_operations_dashboard"
+            referencedColumns: ["facility_id"]
+          },
+          {
             foreignKeyName: "imaging_routing_rules_target_facility_id_fkey"
             columns: ["target_facility_id"]
             isOneToOne: false
@@ -6468,6 +7261,13 @@ export type Database = {
             columns: ["target_facility_id"]
             isOneToOne: false
             referencedRelation: "facility_capabilities"
+            referencedColumns: ["facility_id"]
+          },
+          {
+            foreignKeyName: "imaging_routing_rules_target_facility_id_fkey"
+            columns: ["target_facility_id"]
+            isOneToOne: false
+            referencedRelation: "facility_operations_dashboard"
             referencedColumns: ["facility_id"]
           },
           {
@@ -6661,6 +7461,13 @@ export type Database = {
             referencedColumns: ["facility_id"]
           },
           {
+            foreignKeyName: "imaging_studies_facility_id_fkey"
+            columns: ["facility_id"]
+            isOneToOne: false
+            referencedRelation: "facility_operations_dashboard"
+            referencedColumns: ["facility_id"]
+          },
+          {
             foreignKeyName: "imaging_studies_lifecycle_policy_id_fkey"
             columns: ["lifecycle_policy_id"]
             isOneToOne: false
@@ -6760,6 +7567,13 @@ export type Database = {
             referencedColumns: ["facility_id"]
           },
           {
+            foreignKeyName: "imaging_tat_metrics_facility_id_fkey"
+            columns: ["facility_id"]
+            isOneToOne: false
+            referencedRelation: "facility_operations_dashboard"
+            referencedColumns: ["facility_id"]
+          },
+          {
             foreignKeyName: "imaging_tat_metrics_study_id_fkey"
             columns: ["study_id"]
             isOneToOne: false
@@ -6827,6 +7641,13 @@ export type Database = {
             columns: ["facility_id"]
             isOneToOne: false
             referencedRelation: "facility_capabilities"
+            referencedColumns: ["facility_id"]
+          },
+          {
+            foreignKeyName: "imaging_worklists_facility_id_fkey"
+            columns: ["facility_id"]
+            isOneToOne: false
+            referencedRelation: "facility_operations_dashboard"
             referencedColumns: ["facility_id"]
           },
         ]
@@ -7072,6 +7893,13 @@ export type Database = {
             columns: ["facility_id"]
             isOneToOne: false
             referencedRelation: "facility_capabilities"
+            referencedColumns: ["facility_id"]
+          },
+          {
+            foreignKeyName: "lab_analyzers_facility_id_fkey"
+            columns: ["facility_id"]
+            isOneToOne: false
+            referencedRelation: "facility_operations_dashboard"
             referencedColumns: ["facility_id"]
           },
         ]
@@ -7340,6 +8168,13 @@ export type Database = {
             referencedColumns: ["facility_id"]
           },
           {
+            foreignKeyName: "lab_orders_ordering_facility_id_fkey"
+            columns: ["ordering_facility_id"]
+            isOneToOne: false
+            referencedRelation: "facility_operations_dashboard"
+            referencedColumns: ["facility_id"]
+          },
+          {
             foreignKeyName: "lab_orders_patient_id_fkey"
             columns: ["patient_id"]
             isOneToOne: false
@@ -7358,6 +8193,13 @@ export type Database = {
             columns: ["performing_lab_id"]
             isOneToOne: false
             referencedRelation: "facility_capabilities"
+            referencedColumns: ["facility_id"]
+          },
+          {
+            foreignKeyName: "lab_orders_performing_lab_id_fkey"
+            columns: ["performing_lab_id"]
+            isOneToOne: false
+            referencedRelation: "facility_operations_dashboard"
             referencedColumns: ["facility_id"]
           },
         ]
@@ -7722,6 +8564,13 @@ export type Database = {
             referencedColumns: ["facility_id"]
           },
           {
+            foreignKeyName: "lab_routing_rules_destination_lab_id_fkey"
+            columns: ["destination_lab_id"]
+            isOneToOne: false
+            referencedRelation: "facility_operations_dashboard"
+            referencedColumns: ["facility_id"]
+          },
+          {
             foreignKeyName: "lab_routing_rules_source_facility_id_fkey"
             columns: ["source_facility_id"]
             isOneToOne: false
@@ -7733,6 +8582,13 @@ export type Database = {
             columns: ["source_facility_id"]
             isOneToOne: false
             referencedRelation: "facility_capabilities"
+            referencedColumns: ["facility_id"]
+          },
+          {
+            foreignKeyName: "lab_routing_rules_source_facility_id_fkey"
+            columns: ["source_facility_id"]
+            isOneToOne: false
+            referencedRelation: "facility_operations_dashboard"
             referencedColumns: ["facility_id"]
           },
         ]
@@ -8676,6 +9532,91 @@ export type Database = {
         }
         Relationships: []
       }
+      non_standard_closure_summaries: {
+        Row: {
+          closure_reason: string | null
+          closure_type: string
+          counseling_notes: string | null
+          counseling_offered: boolean | null
+          created_at: string
+          document_id: string
+          follow_up_options_provided: string | null
+          id: string
+          patient_id: string
+          patient_signature_captured: boolean | null
+          programme_code: string | null
+          programme_follow_up_required: boolean | null
+          risks_explained: boolean | null
+          tracing_task_created: boolean | null
+          tracing_task_id: string | null
+          updated_at: string
+          visit_id: string
+          witnessed_by: string | null
+        }
+        Insert: {
+          closure_reason?: string | null
+          closure_type: string
+          counseling_notes?: string | null
+          counseling_offered?: boolean | null
+          created_at?: string
+          document_id: string
+          follow_up_options_provided?: string | null
+          id?: string
+          patient_id: string
+          patient_signature_captured?: boolean | null
+          programme_code?: string | null
+          programme_follow_up_required?: boolean | null
+          risks_explained?: boolean | null
+          tracing_task_created?: boolean | null
+          tracing_task_id?: string | null
+          updated_at?: string
+          visit_id: string
+          witnessed_by?: string | null
+        }
+        Update: {
+          closure_reason?: string | null
+          closure_type?: string
+          counseling_notes?: string | null
+          counseling_offered?: boolean | null
+          created_at?: string
+          document_id?: string
+          follow_up_options_provided?: string | null
+          id?: string
+          patient_id?: string
+          patient_signature_captured?: boolean | null
+          programme_code?: string | null
+          programme_follow_up_required?: boolean | null
+          risks_explained?: boolean | null
+          tracing_task_created?: boolean | null
+          tracing_task_id?: string | null
+          updated_at?: string
+          visit_id?: string
+          witnessed_by?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "non_standard_closure_summaries_document_id_fkey"
+            columns: ["document_id"]
+            isOneToOne: false
+            referencedRelation: "clinical_documents"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "non_standard_closure_summaries_patient_id_fkey"
+            columns: ["patient_id"]
+            isOneToOne: false
+            referencedRelation: "patients"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "non_standard_closure_summaries_visit_id_fkey"
+            columns: ["visit_id"]
+            isOneToOne: false
+            referencedRelation: "visits"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       notification_preferences: {
         Row: {
           alerts_enabled: boolean | null
@@ -8888,6 +9829,13 @@ export type Database = {
             columns: ["facility_id"]
             isOneToOne: false
             referencedRelation: "facility_capabilities"
+            referencedColumns: ["facility_id"]
+          },
+          {
+            foreignKeyName: "operational_supervisors_facility_id_fkey"
+            columns: ["facility_id"]
+            isOneToOne: false
+            referencedRelation: "facility_operations_dashboard"
             referencedColumns: ["facility_id"]
           },
           {
@@ -9121,6 +10069,131 @@ export type Database = {
             columns: ["page_id"]
             isOneToOne: false
             referencedRelation: "professional_pages"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      patient_care_state: {
+        Row: {
+          action_overdue: boolean | null
+          alerts: Json | null
+          care_state: string
+          current_service_point: string | null
+          current_workspace_id: string | null
+          current_workspace_name: string | null
+          encounter_id: string | null
+          escalation_needed: boolean | null
+          facility_id: string | null
+          has_stalled_flow: boolean | null
+          id: string
+          last_activity_at: string | null
+          next_action_due_at: string | null
+          next_expected_action: string | null
+          patient_id: string
+          responsible_provider_id: string | null
+          responsible_provider_name: string | null
+          responsible_team: string | null
+          stall_reason: string | null
+          state_started_at: string
+          updated_at: string
+          visit_id: string | null
+        }
+        Insert: {
+          action_overdue?: boolean | null
+          alerts?: Json | null
+          care_state?: string
+          current_service_point?: string | null
+          current_workspace_id?: string | null
+          current_workspace_name?: string | null
+          encounter_id?: string | null
+          escalation_needed?: boolean | null
+          facility_id?: string | null
+          has_stalled_flow?: boolean | null
+          id?: string
+          last_activity_at?: string | null
+          next_action_due_at?: string | null
+          next_expected_action?: string | null
+          patient_id: string
+          responsible_provider_id?: string | null
+          responsible_provider_name?: string | null
+          responsible_team?: string | null
+          stall_reason?: string | null
+          state_started_at?: string
+          updated_at?: string
+          visit_id?: string | null
+        }
+        Update: {
+          action_overdue?: boolean | null
+          alerts?: Json | null
+          care_state?: string
+          current_service_point?: string | null
+          current_workspace_id?: string | null
+          current_workspace_name?: string | null
+          encounter_id?: string | null
+          escalation_needed?: boolean | null
+          facility_id?: string | null
+          has_stalled_flow?: boolean | null
+          id?: string
+          last_activity_at?: string | null
+          next_action_due_at?: string | null
+          next_expected_action?: string | null
+          patient_id?: string
+          responsible_provider_id?: string | null
+          responsible_provider_name?: string | null
+          responsible_team?: string | null
+          stall_reason?: string | null
+          state_started_at?: string
+          updated_at?: string
+          visit_id?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "patient_care_state_current_workspace_id_fkey"
+            columns: ["current_workspace_id"]
+            isOneToOne: false
+            referencedRelation: "workspaces"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "patient_care_state_encounter_id_fkey"
+            columns: ["encounter_id"]
+            isOneToOne: false
+            referencedRelation: "encounters"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "patient_care_state_facility_id_fkey"
+            columns: ["facility_id"]
+            isOneToOne: false
+            referencedRelation: "facilities"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "patient_care_state_facility_id_fkey"
+            columns: ["facility_id"]
+            isOneToOne: false
+            referencedRelation: "facility_capabilities"
+            referencedColumns: ["facility_id"]
+          },
+          {
+            foreignKeyName: "patient_care_state_facility_id_fkey"
+            columns: ["facility_id"]
+            isOneToOne: false
+            referencedRelation: "facility_operations_dashboard"
+            referencedColumns: ["facility_id"]
+          },
+          {
+            foreignKeyName: "patient_care_state_patient_id_fkey"
+            columns: ["patient_id"]
+            isOneToOne: false
+            referencedRelation: "patients"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "patient_care_state_visit_id_fkey"
+            columns: ["visit_id"]
+            isOneToOne: false
+            referencedRelation: "visits"
             referencedColumns: ["id"]
           },
         ]
@@ -10171,6 +11244,118 @@ export type Database = {
           },
           {
             foreignKeyName: "prescriptions_patient_id_fkey"
+            columns: ["patient_id"]
+            isOneToOne: false
+            referencedRelation: "patients"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      procedure_notes: {
+        Row: {
+          anesthesia_type: string | null
+          anesthesiologist_name: string | null
+          assistants: Json | null
+          complication_details: Json | null
+          complications: string | null
+          created_at: string
+          document_id: string
+          encounter_id: string
+          findings: string | null
+          id: string
+          indication: string | null
+          patient_id: string
+          post_procedure_diagnosis: string | null
+          post_procedure_plan: string | null
+          pre_procedure_diagnosis: string | null
+          primary_surgeon_id: string | null
+          primary_surgeon_name: string | null
+          procedure_code: string | null
+          procedure_code_system: string | null
+          procedure_date: string
+          procedure_description: string | null
+          procedure_duration_minutes: number | null
+          procedure_name: string
+          procedure_type: string | null
+          specimens_collected: Json | null
+          technique_used: string | null
+          updated_at: string
+        }
+        Insert: {
+          anesthesia_type?: string | null
+          anesthesiologist_name?: string | null
+          assistants?: Json | null
+          complication_details?: Json | null
+          complications?: string | null
+          created_at?: string
+          document_id: string
+          encounter_id: string
+          findings?: string | null
+          id?: string
+          indication?: string | null
+          patient_id: string
+          post_procedure_diagnosis?: string | null
+          post_procedure_plan?: string | null
+          pre_procedure_diagnosis?: string | null
+          primary_surgeon_id?: string | null
+          primary_surgeon_name?: string | null
+          procedure_code?: string | null
+          procedure_code_system?: string | null
+          procedure_date: string
+          procedure_description?: string | null
+          procedure_duration_minutes?: number | null
+          procedure_name: string
+          procedure_type?: string | null
+          specimens_collected?: Json | null
+          technique_used?: string | null
+          updated_at?: string
+        }
+        Update: {
+          anesthesia_type?: string | null
+          anesthesiologist_name?: string | null
+          assistants?: Json | null
+          complication_details?: Json | null
+          complications?: string | null
+          created_at?: string
+          document_id?: string
+          encounter_id?: string
+          findings?: string | null
+          id?: string
+          indication?: string | null
+          patient_id?: string
+          post_procedure_diagnosis?: string | null
+          post_procedure_plan?: string | null
+          pre_procedure_diagnosis?: string | null
+          primary_surgeon_id?: string | null
+          primary_surgeon_name?: string | null
+          procedure_code?: string | null
+          procedure_code_system?: string | null
+          procedure_date?: string
+          procedure_description?: string | null
+          procedure_duration_minutes?: number | null
+          procedure_name?: string
+          procedure_type?: string | null
+          specimens_collected?: Json | null
+          technique_used?: string | null
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "procedure_notes_document_id_fkey"
+            columns: ["document_id"]
+            isOneToOne: false
+            referencedRelation: "clinical_documents"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "procedure_notes_encounter_id_fkey"
+            columns: ["encounter_id"]
+            isOneToOne: false
+            referencedRelation: "encounters"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "procedure_notes_patient_id_fkey"
             columns: ["patient_id"]
             isOneToOne: false
             referencedRelation: "patients"
@@ -11317,6 +12502,13 @@ export type Database = {
             referencedColumns: ["facility_id"]
           },
           {
+            foreignKeyName: "provider_employment_history_facility_id_fkey"
+            columns: ["facility_id"]
+            isOneToOne: false
+            referencedRelation: "facility_operations_dashboard"
+            referencedColumns: ["facility_id"]
+          },
+          {
             foreignKeyName: "provider_employment_history_provider_id_fkey"
             columns: ["provider_id"]
             isOneToOne: false
@@ -11737,6 +12929,13 @@ export type Database = {
             referencedColumns: ["facility_id"]
           },
           {
+            foreignKeyName: "provider_position_changes_new_facility_id_fkey"
+            columns: ["new_facility_id"]
+            isOneToOne: false
+            referencedRelation: "facility_operations_dashboard"
+            referencedColumns: ["facility_id"]
+          },
+          {
             foreignKeyName: "provider_position_changes_previous_facility_id_fkey"
             columns: ["previous_facility_id"]
             isOneToOne: false
@@ -11748,6 +12947,13 @@ export type Database = {
             columns: ["previous_facility_id"]
             isOneToOne: false
             referencedRelation: "facility_capabilities"
+            referencedColumns: ["facility_id"]
+          },
+          {
+            foreignKeyName: "provider_position_changes_previous_facility_id_fkey"
+            columns: ["previous_facility_id"]
+            isOneToOne: false
+            referencedRelation: "facility_operations_dashboard"
             referencedColumns: ["facility_id"]
           },
           {
@@ -11962,6 +13168,13 @@ export type Database = {
             columns: ["facility_id"]
             isOneToOne: false
             referencedRelation: "facility_capabilities"
+            referencedColumns: ["facility_id"]
+          },
+          {
+            foreignKeyName: "provider_registry_records_facility_id_fkey"
+            columns: ["facility_id"]
+            isOneToOne: false
+            referencedRelation: "facility_operations_dashboard"
             referencedColumns: ["facility_id"]
           },
         ]
@@ -12553,6 +13766,13 @@ export type Database = {
             referencedColumns: ["facility_id"]
           },
           {
+            foreignKeyName: "queue_definitions_facility_id_fkey"
+            columns: ["facility_id"]
+            isOneToOne: false
+            referencedRelation: "facility_operations_dashboard"
+            referencedColumns: ["facility_id"]
+          },
+          {
             foreignKeyName: "queue_definitions_pool_id_fkey"
             columns: ["pool_id"]
             isOneToOne: false
@@ -12642,6 +13862,13 @@ export type Database = {
             columns: ["facility_id"]
             isOneToOne: true
             referencedRelation: "facility_capabilities"
+            referencedColumns: ["facility_id"]
+          },
+          {
+            foreignKeyName: "queue_facility_config_facility_id_fkey"
+            columns: ["facility_id"]
+            isOneToOne: true
+            referencedRelation: "facility_operations_dashboard"
             referencedColumns: ["facility_id"]
           },
         ]
@@ -12865,6 +14092,13 @@ export type Database = {
             columns: ["facility_id"]
             isOneToOne: false
             referencedRelation: "facility_capabilities"
+            referencedColumns: ["facility_id"]
+          },
+          {
+            foreignKeyName: "queue_pathways_facility_id_fkey"
+            columns: ["facility_id"]
+            isOneToOne: false
+            referencedRelation: "facility_operations_dashboard"
             referencedColumns: ["facility_id"]
           },
         ]
@@ -14178,6 +15412,13 @@ export type Database = {
             referencedRelation: "facility_capabilities"
             referencedColumns: ["facility_id"]
           },
+          {
+            foreignKeyName: "roster_audit_log_facility_id_fkey"
+            columns: ["facility_id"]
+            isOneToOne: false
+            referencedRelation: "facility_operations_dashboard"
+            referencedColumns: ["facility_id"]
+          },
         ]
       }
       roster_plans: {
@@ -14236,6 +15477,13 @@ export type Database = {
             columns: ["facility_id"]
             isOneToOne: false
             referencedRelation: "facility_capabilities"
+            referencedColumns: ["facility_id"]
+          },
+          {
+            foreignKeyName: "roster_plans_facility_id_fkey"
+            columns: ["facility_id"]
+            isOneToOne: false
+            referencedRelation: "facility_operations_dashboard"
             referencedColumns: ["facility_id"]
           },
         ]
@@ -14541,6 +15789,13 @@ export type Database = {
             referencedRelation: "facility_capabilities"
             referencedColumns: ["facility_id"]
           },
+          {
+            foreignKeyName: "shift_definitions_facility_id_fkey"
+            columns: ["facility_id"]
+            isOneToOne: false
+            referencedRelation: "facility_operations_dashboard"
+            referencedColumns: ["facility_id"]
+          },
         ]
       }
       shift_handoffs: {
@@ -14714,6 +15969,13 @@ export type Database = {
             referencedColumns: ["facility_id"]
           },
           {
+            foreignKeyName: "shifts_facility_id_fkey"
+            columns: ["facility_id"]
+            isOneToOne: false
+            referencedRelation: "facility_operations_dashboard"
+            referencedColumns: ["facility_id"]
+          },
+          {
             foreignKeyName: "shifts_provider_id_fkey"
             columns: ["provider_id"]
             isOneToOne: false
@@ -14881,6 +16143,13 @@ export type Database = {
             columns: ["facility_id"]
             isOneToOne: false
             referencedRelation: "facility_capabilities"
+            referencedColumns: ["facility_id"]
+          },
+          {
+            foreignKeyName: "sorting_desk_metrics_facility_id_fkey"
+            columns: ["facility_id"]
+            isOneToOne: false
+            referencedRelation: "facility_operations_dashboard"
             referencedColumns: ["facility_id"]
           },
           {
@@ -15065,6 +16334,13 @@ export type Database = {
             columns: ["facility_id"]
             isOneToOne: false
             referencedRelation: "facility_capabilities"
+            referencedColumns: ["facility_id"]
+          },
+          {
+            foreignKeyName: "sorting_sessions_facility_id_fkey"
+            columns: ["facility_id"]
+            isOneToOne: false
+            referencedRelation: "facility_operations_dashboard"
             referencedColumns: ["facility_id"]
           },
           {
@@ -15315,6 +16591,13 @@ export type Database = {
             columns: ["referral_lab_id"]
             isOneToOne: false
             referencedRelation: "facility_capabilities"
+            referencedColumns: ["facility_id"]
+          },
+          {
+            foreignKeyName: "specimens_referral_lab_id_fkey"
+            columns: ["referral_lab_id"]
+            isOneToOne: false
+            referencedRelation: "facility_operations_dashboard"
             referencedColumns: ["facility_id"]
           },
         ]
@@ -16209,6 +17492,13 @@ export type Database = {
             referencedColumns: ["facility_id"]
           },
           {
+            foreignKeyName: "teleconsult_responses_consultant_facility_id_fkey"
+            columns: ["consultant_facility_id"]
+            isOneToOne: false
+            referencedRelation: "facility_operations_dashboard"
+            referencedColumns: ["facility_id"]
+          },
+          {
             foreignKeyName: "teleconsult_responses_patient_id_fkey"
             columns: ["patient_id"]
             isOneToOne: false
@@ -16234,6 +17524,13 @@ export type Database = {
             columns: ["transfer_facility_id"]
             isOneToOne: false
             referencedRelation: "facility_capabilities"
+            referencedColumns: ["facility_id"]
+          },
+          {
+            foreignKeyName: "teleconsult_responses_transfer_facility_id_fkey"
+            columns: ["transfer_facility_id"]
+            isOneToOne: false
+            referencedRelation: "facility_operations_dashboard"
             referencedColumns: ["facility_id"]
           },
         ]
@@ -16372,6 +17669,13 @@ export type Database = {
             referencedColumns: ["facility_id"]
           },
           {
+            foreignKeyName: "teleconsult_sessions_consulting_facility_id_fkey"
+            columns: ["consulting_facility_id"]
+            isOneToOne: false
+            referencedRelation: "facility_operations_dashboard"
+            referencedColumns: ["facility_id"]
+          },
+          {
             foreignKeyName: "teleconsult_sessions_patient_id_fkey"
             columns: ["patient_id"]
             isOneToOne: false
@@ -16393,6 +17697,13 @@ export type Database = {
             referencedColumns: ["facility_id"]
           },
           {
+            foreignKeyName: "teleconsult_sessions_referring_facility_id_fkey"
+            columns: ["referring_facility_id"]
+            isOneToOne: false
+            referencedRelation: "facility_operations_dashboard"
+            referencedColumns: ["facility_id"]
+          },
+          {
             foreignKeyName: "teleconsult_sessions_routed_to_facility_id_fkey"
             columns: ["routed_to_facility_id"]
             isOneToOne: false
@@ -16404,6 +17715,13 @@ export type Database = {
             columns: ["routed_to_facility_id"]
             isOneToOne: false
             referencedRelation: "facility_capabilities"
+            referencedColumns: ["facility_id"]
+          },
+          {
+            foreignKeyName: "teleconsult_sessions_routed_to_facility_id_fkey"
+            columns: ["routed_to_facility_id"]
+            isOneToOne: false
+            referencedRelation: "facility_operations_dashboard"
             referencedColumns: ["facility_id"]
           },
         ]
@@ -16498,6 +17816,13 @@ export type Database = {
             referencedRelation: "facility_capabilities"
             referencedColumns: ["facility_id"]
           },
+          {
+            foreignKeyName: "telemedicine_user_roles_facility_id_fkey"
+            columns: ["facility_id"]
+            isOneToOne: false
+            referencedRelation: "facility_operations_dashboard"
+            referencedColumns: ["facility_id"]
+          },
         ]
       }
       temporary_patient_identities: {
@@ -16577,6 +17902,13 @@ export type Database = {
             columns: ["facility_id"]
             isOneToOne: false
             referencedRelation: "facility_capabilities"
+            referencedColumns: ["facility_id"]
+          },
+          {
+            foreignKeyName: "temporary_patient_identities_facility_id_fkey"
+            columns: ["facility_id"]
+            isOneToOne: false
+            referencedRelation: "facility_operations_dashboard"
             referencedColumns: ["facility_id"]
           },
           {
@@ -16914,6 +18246,150 @@ export type Database = {
           staff_name?: string
         }
         Relationships: []
+      }
+      transfer_summaries: {
+        Row: {
+          acceptance_status: string | null
+          accepted_at: string | null
+          accepted_by: string | null
+          accepting_provider: string | null
+          active_problems: Json | null
+          allergies: Json | null
+          arrival_confirmed_at: string | null
+          created_at: string
+          critical_information: string | null
+          current_medications: Json | null
+          destination_department: string | null
+          destination_facility_id: string | null
+          destination_facility_name: string | null
+          document_id: string
+          handover_notes: string | null
+          id: string
+          ips_document_id: string | null
+          patient_id: string
+          pending_investigations: string | null
+          recent_imaging: Json | null
+          recent_results: Json | null
+          transfer_reason: string
+          updated_at: string
+          urgency: string
+          visit_id: string
+          visit_summary_document_id: string | null
+        }
+        Insert: {
+          acceptance_status?: string | null
+          accepted_at?: string | null
+          accepted_by?: string | null
+          accepting_provider?: string | null
+          active_problems?: Json | null
+          allergies?: Json | null
+          arrival_confirmed_at?: string | null
+          created_at?: string
+          critical_information?: string | null
+          current_medications?: Json | null
+          destination_department?: string | null
+          destination_facility_id?: string | null
+          destination_facility_name?: string | null
+          document_id: string
+          handover_notes?: string | null
+          id?: string
+          ips_document_id?: string | null
+          patient_id: string
+          pending_investigations?: string | null
+          recent_imaging?: Json | null
+          recent_results?: Json | null
+          transfer_reason: string
+          updated_at?: string
+          urgency?: string
+          visit_id: string
+          visit_summary_document_id?: string | null
+        }
+        Update: {
+          acceptance_status?: string | null
+          accepted_at?: string | null
+          accepted_by?: string | null
+          accepting_provider?: string | null
+          active_problems?: Json | null
+          allergies?: Json | null
+          arrival_confirmed_at?: string | null
+          created_at?: string
+          critical_information?: string | null
+          current_medications?: Json | null
+          destination_department?: string | null
+          destination_facility_id?: string | null
+          destination_facility_name?: string | null
+          document_id?: string
+          handover_notes?: string | null
+          id?: string
+          ips_document_id?: string | null
+          patient_id?: string
+          pending_investigations?: string | null
+          recent_imaging?: Json | null
+          recent_results?: Json | null
+          transfer_reason?: string
+          updated_at?: string
+          urgency?: string
+          visit_id?: string
+          visit_summary_document_id?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "transfer_summaries_destination_facility_id_fkey"
+            columns: ["destination_facility_id"]
+            isOneToOne: false
+            referencedRelation: "facilities"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "transfer_summaries_destination_facility_id_fkey"
+            columns: ["destination_facility_id"]
+            isOneToOne: false
+            referencedRelation: "facility_capabilities"
+            referencedColumns: ["facility_id"]
+          },
+          {
+            foreignKeyName: "transfer_summaries_destination_facility_id_fkey"
+            columns: ["destination_facility_id"]
+            isOneToOne: false
+            referencedRelation: "facility_operations_dashboard"
+            referencedColumns: ["facility_id"]
+          },
+          {
+            foreignKeyName: "transfer_summaries_document_id_fkey"
+            columns: ["document_id"]
+            isOneToOne: false
+            referencedRelation: "clinical_documents"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "transfer_summaries_ips_document_id_fkey"
+            columns: ["ips_document_id"]
+            isOneToOne: false
+            referencedRelation: "clinical_documents"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "transfer_summaries_patient_id_fkey"
+            columns: ["patient_id"]
+            isOneToOne: false
+            referencedRelation: "patients"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "transfer_summaries_visit_id_fkey"
+            columns: ["visit_id"]
+            isOneToOne: false
+            referencedRelation: "visits"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "transfer_summaries_visit_summary_document_id_fkey"
+            columns: ["visit_summary_document_id"]
+            isOneToOne: false
+            referencedRelation: "clinical_documents"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       trusted_devices: {
         Row: {
@@ -17433,6 +18909,13 @@ export type Database = {
             referencedRelation: "facility_capabilities"
             referencedColumns: ["facility_id"]
           },
+          {
+            foreignKeyName: "virtual_pools_anchor_facility_id_fkey"
+            columns: ["anchor_facility_id"]
+            isOneToOne: false
+            referencedRelation: "facility_operations_dashboard"
+            referencedColumns: ["facility_id"]
+          },
         ]
       }
       visit_summaries: {
@@ -17618,6 +19101,13 @@ export type Database = {
             referencedColumns: ["facility_id"]
           },
           {
+            foreignKeyName: "visit_summaries_facility_id_fkey"
+            columns: ["facility_id"]
+            isOneToOne: false
+            referencedRelation: "facility_operations_dashboard"
+            referencedColumns: ["facility_id"]
+          },
+          {
             foreignKeyName: "visit_summaries_patient_id_fkey"
             columns: ["patient_id"]
             isOneToOne: false
@@ -17636,6 +19126,160 @@ export type Database = {
             columns: ["shr_bundle_id"]
             isOneToOne: false
             referencedRelation: "shr_bundles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      visits: {
+        Row: {
+          admission_reason: string | null
+          admission_source: string | null
+          attending_physician_id: string | null
+          bed_id: string | null
+          conclusion_signed_at: string | null
+          conclusion_signed_by: string | null
+          created_at: string
+          created_by: string | null
+          end_date: string | null
+          expected_discharge_date: string | null
+          facility_id: string | null
+          facility_name: string | null
+          id: string
+          identity_reconciled_at: string | null
+          meds_reconciled: boolean | null
+          outcome: Database["public"]["Enums"]["visit_outcome"] | null
+          outcome_at: string | null
+          outcome_by: string | null
+          outcome_details: string | null
+          patient_id: string
+          pending_results_assigned: boolean | null
+          programme_code: string | null
+          programme_name: string | null
+          start_date: string
+          status: Database["public"]["Enums"]["visit_status"]
+          summary_generated: boolean | null
+          temporary_identity_id: string | null
+          transfer_reason: string | null
+          transferred_from_visit_id: string | null
+          transferred_to_visit_id: string | null
+          updated_at: string
+          visit_number: string
+          visit_type: Database["public"]["Enums"]["visit_type"]
+          ward_id: string | null
+        }
+        Insert: {
+          admission_reason?: string | null
+          admission_source?: string | null
+          attending_physician_id?: string | null
+          bed_id?: string | null
+          conclusion_signed_at?: string | null
+          conclusion_signed_by?: string | null
+          created_at?: string
+          created_by?: string | null
+          end_date?: string | null
+          expected_discharge_date?: string | null
+          facility_id?: string | null
+          facility_name?: string | null
+          id?: string
+          identity_reconciled_at?: string | null
+          meds_reconciled?: boolean | null
+          outcome?: Database["public"]["Enums"]["visit_outcome"] | null
+          outcome_at?: string | null
+          outcome_by?: string | null
+          outcome_details?: string | null
+          patient_id: string
+          pending_results_assigned?: boolean | null
+          programme_code?: string | null
+          programme_name?: string | null
+          start_date?: string
+          status?: Database["public"]["Enums"]["visit_status"]
+          summary_generated?: boolean | null
+          temporary_identity_id?: string | null
+          transfer_reason?: string | null
+          transferred_from_visit_id?: string | null
+          transferred_to_visit_id?: string | null
+          updated_at?: string
+          visit_number: string
+          visit_type?: Database["public"]["Enums"]["visit_type"]
+          ward_id?: string | null
+        }
+        Update: {
+          admission_reason?: string | null
+          admission_source?: string | null
+          attending_physician_id?: string | null
+          bed_id?: string | null
+          conclusion_signed_at?: string | null
+          conclusion_signed_by?: string | null
+          created_at?: string
+          created_by?: string | null
+          end_date?: string | null
+          expected_discharge_date?: string | null
+          facility_id?: string | null
+          facility_name?: string | null
+          id?: string
+          identity_reconciled_at?: string | null
+          meds_reconciled?: boolean | null
+          outcome?: Database["public"]["Enums"]["visit_outcome"] | null
+          outcome_at?: string | null
+          outcome_by?: string | null
+          outcome_details?: string | null
+          patient_id?: string
+          pending_results_assigned?: boolean | null
+          programme_code?: string | null
+          programme_name?: string | null
+          start_date?: string
+          status?: Database["public"]["Enums"]["visit_status"]
+          summary_generated?: boolean | null
+          temporary_identity_id?: string | null
+          transfer_reason?: string | null
+          transferred_from_visit_id?: string | null
+          transferred_to_visit_id?: string | null
+          updated_at?: string
+          visit_number?: string
+          visit_type?: Database["public"]["Enums"]["visit_type"]
+          ward_id?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "visits_facility_id_fkey"
+            columns: ["facility_id"]
+            isOneToOne: false
+            referencedRelation: "facilities"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "visits_facility_id_fkey"
+            columns: ["facility_id"]
+            isOneToOne: false
+            referencedRelation: "facility_capabilities"
+            referencedColumns: ["facility_id"]
+          },
+          {
+            foreignKeyName: "visits_facility_id_fkey"
+            columns: ["facility_id"]
+            isOneToOne: false
+            referencedRelation: "facility_operations_dashboard"
+            referencedColumns: ["facility_id"]
+          },
+          {
+            foreignKeyName: "visits_patient_id_fkey"
+            columns: ["patient_id"]
+            isOneToOne: false
+            referencedRelation: "patients"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "visits_transferred_from_visit_id_fkey"
+            columns: ["transferred_from_visit_id"]
+            isOneToOne: false
+            referencedRelation: "visits"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "visits_transferred_to_visit_id_fkey"
+            columns: ["transferred_to_visit_id"]
+            isOneToOne: false
+            referencedRelation: "visits"
             referencedColumns: ["id"]
           },
         ]
@@ -17978,6 +19622,13 @@ export type Database = {
             referencedColumns: ["facility_id"]
           },
           {
+            foreignKeyName: "workspaces_facility_id_fkey"
+            columns: ["facility_id"]
+            isOneToOne: false
+            referencedRelation: "facility_operations_dashboard"
+            referencedColumns: ["facility_id"]
+          },
+          {
             foreignKeyName: "workspaces_parent_workspace_id_fkey"
             columns: ["parent_workspace_id"]
             isOneToOne: false
@@ -17999,6 +19650,42 @@ export type Database = {
           facility_type_code: string | null
           facility_type_name: string | null
           level_of_care: string | null
+        }
+        Relationships: []
+      }
+      facility_operations_dashboard: {
+        Row: {
+          arrivals_today: number | null
+          facility_id: string | null
+          facility_name: string | null
+          investigations_pending: number | null
+          queue_backlog: number | null
+          ready_for_discharge: number | null
+          sorting_pending: number | null
+          stalled_flows: number | null
+          transfers_pending: number | null
+        }
+        Insert: {
+          arrivals_today?: never
+          facility_id?: string | null
+          facility_name?: string | null
+          investigations_pending?: never
+          queue_backlog?: never
+          ready_for_discharge?: never
+          sorting_pending?: never
+          stalled_flows?: never
+          transfers_pending?: never
+        }
+        Update: {
+          arrivals_today?: never
+          facility_id?: string | null
+          facility_name?: string | null
+          investigations_pending?: never
+          queue_backlog?: never
+          ready_for_discharge?: never
+          sorting_pending?: never
+          stalled_flows?: never
+          transfers_pending?: never
         }
         Relationships: []
       }
@@ -18064,6 +19751,7 @@ export type Database = {
       }
       generate_claim_number: { Args: never; Returns: string }
       generate_client_registry_id: { Args: never; Returns: string }
+      generate_document_number: { Args: never; Returns: string }
       generate_encounter_number: { Args: never; Returns: string }
       generate_facility_registry_id: {
         Args: { p_province_code?: string }
@@ -18102,6 +19790,7 @@ export type Database = {
       generate_theatre_booking_number: { Args: never; Returns: string }
       generate_transaction_number: { Args: never; Returns: string }
       generate_upid: { Args: never; Returns: string }
+      generate_visit_number: { Args: never; Returns: string }
       get_above_site_roles: {
         Args: { _user_id: string }
         Returns: {
@@ -18247,8 +19936,30 @@ export type Database = {
         | "proxy"
         | "next_of_kin"
         | "emergency_contact"
+      clinical_document_type:
+        | "ips"
+        | "visit_summary"
+        | "discharge_summary"
+        | "ed_summary"
+        | "transfer_summary"
+        | "referral_summary"
+        | "lab_report"
+        | "imaging_report"
+        | "procedure_note"
+        | "death_summary"
+        | "lama_summary"
+        | "operative_note"
+        | "consultation_note"
+        | "progress_note"
       clinical_role: "doctor" | "nurse" | "specialist" | "patient" | "admin"
       cover_request_status: "pending" | "approved" | "denied" | "expired"
+      document_status:
+        | "draft"
+        | "pending_signature"
+        | "final"
+        | "amended"
+        | "superseded"
+        | "entered_in_error"
       ehr_access_scope:
         | "read_summary"
         | "read_full"
@@ -18418,6 +20129,25 @@ export type Database = {
         | "specialist"
         | "manager"
       triage_urgency: "emergency" | "very_urgent" | "urgent" | "routine"
+      visit_outcome:
+        | "discharged_home"
+        | "discharged_care"
+        | "transferred"
+        | "admitted"
+        | "death"
+        | "lama"
+        | "absconded"
+        | "administrative_closure"
+        | "ongoing"
+      visit_status: "planned" | "active" | "completed" | "cancelled" | "on_hold"
+      visit_type:
+        | "outpatient"
+        | "inpatient"
+        | "emergency"
+        | "day_case"
+        | "home_care"
+        | "telehealth"
+        | "programme"
       workspace_role: "staff" | "supervisor" | "manager"
       workspace_transfer_reason:
         | "rotation"
@@ -18595,8 +20325,32 @@ export const Constants = {
         "next_of_kin",
         "emergency_contact",
       ],
+      clinical_document_type: [
+        "ips",
+        "visit_summary",
+        "discharge_summary",
+        "ed_summary",
+        "transfer_summary",
+        "referral_summary",
+        "lab_report",
+        "imaging_report",
+        "procedure_note",
+        "death_summary",
+        "lama_summary",
+        "operative_note",
+        "consultation_note",
+        "progress_note",
+      ],
       clinical_role: ["doctor", "nurse", "specialist", "patient", "admin"],
       cover_request_status: ["pending", "approved", "denied", "expired"],
+      document_status: [
+        "draft",
+        "pending_signature",
+        "final",
+        "amended",
+        "superseded",
+        "entered_in_error",
+      ],
       ehr_access_scope: [
         "read_summary",
         "read_full",
@@ -18787,6 +20541,27 @@ export const Constants = {
         "manager",
       ],
       triage_urgency: ["emergency", "very_urgent", "urgent", "routine"],
+      visit_outcome: [
+        "discharged_home",
+        "discharged_care",
+        "transferred",
+        "admitted",
+        "death",
+        "lama",
+        "absconded",
+        "administrative_closure",
+        "ongoing",
+      ],
+      visit_status: ["planned", "active", "completed", "cancelled", "on_hold"],
+      visit_type: [
+        "outpatient",
+        "inpatient",
+        "emergency",
+        "day_case",
+        "home_care",
+        "telehealth",
+        "programme",
+      ],
       workspace_role: ["staff", "supervisor", "manager"],
       workspace_transfer_reason: [
         "rotation",
