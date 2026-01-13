@@ -11,7 +11,8 @@ export type SystemRole =
   | 'support_staff'       // IT/technical support staff
   | 'operations_manager'  // Operations oversight across facilities
   | 'finance_manager'     // Financial oversight
-  | 'hr_manager';         // HR/staffing oversight
+  | 'hr_manager'          // HR/staffing oversight
+  | 'dev_tester';         // Development/testing role with full visibility
 
 export interface SystemRoleAssignment {
   id: string;
@@ -33,11 +34,20 @@ interface UseSystemRolesReturn {
   isSuperAdmin: boolean;
   isSupportStaff: boolean;
   isManager: boolean;
+  isDevTester: boolean;
   hasSystemRole: (role: SystemRole) => boolean;
   canAccessAllFacilities: boolean;
+  canBypassRestrictions: boolean; // For dev/test mode
   getManagedFacilityIds: () => string[];
   refetch: () => Promise<void>;
 }
+
+// Dev/test emails that get unrestricted access
+const DEV_TEST_EMAILS = [
+  'admin@impilo.health',
+  'rgongora536@gmail.com',
+  'sarah.moyo@impilo.health',
+];
 
 export function useSystemRoles(): UseSystemRolesReturn {
   const { user, profile } = useAuth();
@@ -65,6 +75,9 @@ export function useSystemRoles(): UseSystemRolesReturn {
       }
 
       const hasAdminRole = userRoles?.some(r => r.role === 'admin') || profile?.role === 'admin';
+      
+      // Check if user email is in dev/test list
+      const isDevTestUser = user.email && DEV_TEST_EMAILS.includes(user.email.toLowerCase());
 
       // Build system roles from available data
       const roles: SystemRoleAssignment[] = [];
@@ -74,6 +87,17 @@ export function useSystemRoles(): UseSystemRolesReturn {
           id: 'admin-role',
           user_id: user.id,
           system_role: 'system_superadmin',
+          scope: { isNational: true },
+          is_active: true,
+          created_at: new Date().toISOString(),
+        });
+      }
+
+      if (isDevTestUser) {
+        roles.push({
+          id: 'dev-tester-role',
+          user_id: user.id,
+          system_role: 'dev_tester',
           scope: { isNational: true },
           is_active: true,
           created_at: new Date().toISOString(),
@@ -105,14 +129,18 @@ export function useSystemRoles(): UseSystemRolesReturn {
   }, [systemRoles]);
 
   const isSuperAdmin = hasSystemRole('system_superadmin');
+  const isDevTester = hasSystemRole('dev_tester');
   const isSupportStaff = hasSystemRole('support_staff') || isSuperAdmin;
   const isManager = hasSystemRole('facility_manager') || 
                     hasSystemRole('operations_manager') || 
                     hasSystemRole('finance_manager') ||
                     hasSystemRole('hr_manager');
 
-  const canAccessAllFacilities = isSuperAdmin || 
+  const canAccessAllFacilities = isSuperAdmin || isDevTester ||
     systemRoles.some(r => r.scope?.isNational);
+
+  // Dev/testers and superadmins can bypass all restrictions
+  const canBypassRestrictions = isSuperAdmin || isDevTester;
 
   const getManagedFacilityIds = useCallback((): string[] => {
     const facilityIds = new Set<string>();
@@ -130,8 +158,10 @@ export function useSystemRoles(): UseSystemRolesReturn {
     isSuperAdmin,
     isSupportStaff,
     isManager,
+    isDevTester,
     hasSystemRole,
     canAccessAllFacilities,
+    canBypassRestrictions,
     getManagedFacilityIds,
     refetch: fetchSystemRoles,
   };
