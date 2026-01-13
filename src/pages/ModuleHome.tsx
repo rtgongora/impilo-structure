@@ -19,13 +19,7 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { HealthDocumentScanner } from "@/components/documents/HealthDocumentScanner";
-import { TimelineFeed } from "@/components/social/TimelineFeed";
-import { CommunitiesList } from "@/components/social/CommunitiesList";
-import { ClubsList } from "@/components/social/ClubsList";
-import { ProfessionalPages } from "@/components/social/ProfessionalPages";
-import { CrowdfundingCampaigns } from "@/components/social/CrowdfundingCampaigns";
-import { NewsFeedWidget } from "@/components/social/NewsFeedWidget";
-import { PatientPortal } from "@/components/portal/PatientPortal";
+import { PersonalHub } from "@/components/home/PersonalHub";
 import { ExpandableCategoryCard } from "@/components/home/ExpandableCategoryCard";
 import { 
   Users,
@@ -311,196 +305,6 @@ const workModuleCategories: ModuleCategory[] = [
   },
 ];
 
-type SocialSection = 'timeline' | 'communities' | 'clubs' | 'pages' | 'crowdfunding';
-
-const socialNavItems = [
-  { id: 'timeline' as SocialSection, label: 'Timeline', icon: MessageSquare, description: 'Your health feed' },
-  { id: 'communities' as SocialSection, label: 'Communities', icon: Users, description: 'Support groups' },
-  { id: 'clubs' as SocialSection, label: 'Clubs', icon: Trophy, description: 'Wellness & fitness' },
-  { id: 'pages' as SocialSection, label: 'Pages', icon: Building2, description: 'Professionals' },
-  { id: 'crowdfunding' as SocialSection, label: 'Fundraising', icon: Megaphone, description: 'Support causes' },
-];
-
-function SocialHubLayout() {
-  const navigate = useNavigate();
-  const [activeSection, setActiveSection] = useState<SocialSection>('timeline');
-
-  const renderSocialContent = () => {
-    switch (activeSection) {
-      case 'timeline':
-        return <TimelineFeed />;
-      case 'communities':
-        return <CommunitiesList onSelectCommunity={() => {}} />;
-      case 'clubs':
-        return <ClubsList onSelectClub={() => {}} />;
-      case 'pages':
-        return <ProfessionalPages onSelectPage={() => {}} />;
-      case 'crowdfunding':
-        return <CrowdfundingCampaigns />;
-      default:
-        return <TimelineFeed />;
-    }
-  };
-
-  return (
-    <div className="flex flex-col lg:flex-row gap-4 sm:gap-6">
-      {/* Left Sidebar Navigation */}
-      <div className="hidden lg:block w-64 shrink-0">
-        <Card className="sticky top-24">
-          <CardHeader className="pb-3">
-            <div className="flex items-center gap-3">
-              <div className="w-10 h-10 rounded-xl bg-purple-500 flex items-center justify-center">
-                <Users className="h-5 w-5 text-white" />
-              </div>
-              <div>
-                <CardTitle className="text-base">Social Hub</CardTitle>
-                <CardDescription className="text-xs">Connect & share</CardDescription>
-              </div>
-            </div>
-          </CardHeader>
-          <CardContent className="p-2">
-            <nav className="space-y-1">
-              {socialNavItems.map((item) => (
-                <button
-                  key={item.id}
-                  onClick={() => setActiveSection(item.id)}
-                  className={`w-full flex items-center gap-3 px-3 py-2.5 rounded-lg text-left transition-all ${
-                    activeSection === item.id
-                      ? 'bg-purple-500/10 text-purple-600 font-medium'
-                      : 'hover:bg-muted text-muted-foreground hover:text-foreground'
-                  }`}
-                >
-                  <item.icon className={`h-5 w-5 ${activeSection === item.id ? 'text-purple-500' : ''}`} />
-                  <div>
-                    <p className="text-sm">{item.label}</p>
-                    <p className="text-xs text-muted-foreground">{item.description}</p>
-                  </div>
-                </button>
-              ))}
-            </nav>
-          </CardContent>
-        </Card>
-
-        {/* Document Scanner */}
-        <Card className="mt-4 bg-gradient-to-br from-purple-500/5 to-pink-500/5 border-purple-200/50">
-          <CardContent className="p-4">
-            <div className="flex items-center gap-3 mb-3">
-              <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-purple-500 to-pink-600 flex items-center justify-center">
-                <ScanLine className="h-4 w-4 text-white" />
-              </div>
-              <div>
-                <p className="text-sm font-medium">Share Docs</p>
-                <p className="text-xs text-muted-foreground">Scan & share</p>
-              </div>
-            </div>
-            <HealthDocumentScanner variant="button" className="w-full bg-purple-500 hover:bg-purple-600 text-white" />
-          </CardContent>
-        </Card>
-
-        {/* Health Marketplace */}
-        <Card className="mt-4 bg-gradient-to-br from-green-500/5 to-emerald-500/5 border-green-200/50">
-          <CardContent className="p-4">
-            <div className="flex items-center gap-3 mb-3">
-              <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-green-500 to-emerald-600 flex items-center justify-center">
-                <Store className="h-4 w-4 text-white" />
-              </div>
-              <div>
-                <p className="text-sm font-medium">Marketplace</p>
-                <p className="text-xs text-muted-foreground">Shop health products</p>
-              </div>
-            </div>
-            <Button 
-              variant="outline" 
-              className="w-full border-green-500/30 hover:bg-green-500 hover:text-white"
-              onClick={() => navigate("/marketplace")}
-            >
-              Browse Products
-            </Button>
-          </CardContent>
-        </Card>
-
-        {/* Communication Hub */}
-        <Card className="mt-4 bg-gradient-to-br from-indigo-500/5 to-blue-500/5 border-indigo-200/50">
-          <CardContent className="p-4">
-            <div className="flex items-center gap-3 mb-3">
-              <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-indigo-500 to-blue-600 flex items-center justify-center">
-                <MessageSquare className="h-4 w-4 text-white" />
-              </div>
-              <div>
-                <p className="text-sm font-medium">Communication</p>
-                <p className="text-xs text-muted-foreground">Messages & calls</p>
-              </div>
-            </div>
-            <Button 
-              variant="outline" 
-              className="w-full border-indigo-500/30 hover:bg-indigo-500 hover:text-white"
-              onClick={() => navigate("/communication")}
-            >
-              Open Hub
-            </Button>
-          </CardContent>
-        </Card>
-      </div>
-
-      {/* Main Content Area */}
-      <div className="flex-1 min-w-0">
-        {/* Mobile Navigation */}
-        <div className="lg:hidden mb-3 sm:mb-4">
-          <ScrollArea className="w-full">
-            <div className="flex gap-1.5 sm:gap-2 pb-2">
-              {socialNavItems.map((item) => (
-                <Button
-                  key={item.id}
-                  variant={activeSection === item.id ? "default" : "outline"}
-                  size="sm"
-                  className={`text-xs h-8 px-2.5 sm:px-3 ${activeSection === item.id ? "bg-purple-500 hover:bg-purple-600" : ""}`}
-                  onClick={() => setActiveSection(item.id)}
-                >
-                  <item.icon className="h-3.5 w-3.5 mr-1" />
-                  <span className="hidden xs:inline">{item.label}</span>
-                </Button>
-              ))}
-            </div>
-          </ScrollArea>
-        </div>
-
-        {/* Section Header */}
-        <div className="flex items-center justify-between mb-3 sm:mb-4">
-          <div className="flex items-center gap-2 sm:gap-3">
-            {(() => {
-              const currentItem = socialNavItems.find(item => item.id === activeSection);
-              const Icon = currentItem?.icon || MessageSquare;
-              return (
-                <>
-                  <div className="w-8 h-8 sm:w-10 sm:h-10 rounded-lg sm:rounded-xl bg-purple-500/10 flex items-center justify-center">
-                    <Icon className="h-4 w-4 sm:h-5 sm:w-5 text-purple-500" />
-                  </div>
-                  <div>
-                    <h3 className="text-base sm:text-lg font-semibold">{currentItem?.label}</h3>
-                    <p className="text-xs sm:text-sm text-muted-foreground">{currentItem?.description}</p>
-                  </div>
-                </>
-              );
-            })()}
-          </div>
-          <div className="lg:hidden">
-            <HealthDocumentScanner variant="button" className="bg-purple-500 hover:bg-purple-600 text-white text-xs h-8" />
-          </div>
-        </div>
-
-        {/* Content */}
-        {renderSocialContent()}
-      </div>
-
-      {/* Right Sidebar */}
-      <div className="hidden xl:block w-80 shrink-0">
-        <div className="sticky top-24 space-y-4">
-          <NewsFeedWidget />
-        </div>
-      </div>
-    </div>
-  );
-}
 
 export default function ModuleHome() {
   const { profile, signOut } = useAuth();
@@ -510,13 +314,13 @@ export default function ModuleHome() {
   // Detect if user is a client (patient) vs provider
   const isClient = profile?.role === "client" || profile?.role === "patient";
   
-  // Default to portal tab for clients, work tab for providers
-  const [activeTab, setActiveTab] = useState(isClient ? "portal" : "work");
+  // Default to personal tab for clients, work tab for providers
+  const [activeTab, setActiveTab] = useState(isClient ? "personal" : "work");
   
   // Update tab when profile loads (for cases where profile loads after initial render)
   useEffect(() => {
     if (profile?.role === "client" || profile?.role === "patient") {
-      setActiveTab("portal");
+      setActiveTab("personal");
     }
   }, [profile?.role]);
 
@@ -677,20 +481,16 @@ export default function ModuleHome() {
 
           {/* Tabs - Fill remaining space */}
           <Tabs value={activeTab} onValueChange={setActiveTab} className="flex-1 flex flex-col min-h-0">
-            <TabsList className={`grid w-full h-10 p-1 mb-4 ${isClient ? 'grid-cols-2' : 'grid-cols-3'}`}>
+            <TabsList className={`grid w-full h-10 p-1 mb-4 ${isClient ? 'grid-cols-1' : 'grid-cols-2'}`}>
               {!isClient && (
                 <TabsTrigger value="work" className="flex items-center justify-center gap-2 text-sm data-[state=active]:bg-primary data-[state=active]:text-primary-foreground">
                   <Briefcase className="h-4 w-4" />
                   Work
                 </TabsTrigger>
               )}
-              <TabsTrigger value="portal" className="flex items-center justify-center gap-2 text-sm data-[state=active]:bg-pink-500 data-[state=active]:text-white">
+              <TabsTrigger value="personal" className="flex items-center justify-center gap-2 text-sm data-[state=active]:bg-gradient-to-r data-[state=active]:from-pink-500 data-[state=active]:to-purple-500 data-[state=active]:text-white">
                 <Heart className="h-4 w-4" />
-                Health
-              </TabsTrigger>
-              <TabsTrigger value="social" className="flex items-center justify-center gap-2 text-sm data-[state=active]:bg-purple-500 data-[state=active]:text-white">
-                <Users className="h-4 w-4" />
-                Social
+                Personal
               </TabsTrigger>
             </TabsList>
 
@@ -849,14 +649,9 @@ export default function ModuleHome() {
               </section>
             </TabsContent>
 
-            {/* My Personal Health Portal Tab */}
-            <TabsContent value="portal" className="mt-0 flex-1 overflow-auto">
-              <PatientPortal />
-            </TabsContent>
-
-            {/* Health Social Hub Tab */}
-            <TabsContent value="social" className="mt-0 flex-1 overflow-auto">
-              <SocialHubLayout />
+            {/* Personal Hub Tab (Health + Social unified) */}
+            <TabsContent value="personal" className="mt-0 flex-1 overflow-auto">
+              <PersonalHub />
             </TabsContent>
           </Tabs>
         </div>
