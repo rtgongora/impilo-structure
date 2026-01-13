@@ -6878,15 +6878,23 @@ export type Database = {
           encounter_number: string
           encounter_sequence: number | null
           encounter_type: string
+          facility_id: string | null
+          geo_latitude: number | null
+          geo_longitude: number | null
           id: string
+          location_description: string | null
           notes: string | null
           patient_id: string
           primary_diagnosis: string | null
+          provider_license_number: string | null
           status: string
           triage_category: string | null
           updated_at: string
           visit_id: string | null
           ward: string | null
+          work_context_type:
+            | Database["public"]["Enums"]["work_context_type"]
+            | null
         }
         Insert: {
           admission_date?: string
@@ -6899,15 +6907,23 @@ export type Database = {
           encounter_number: string
           encounter_sequence?: number | null
           encounter_type: string
+          facility_id?: string | null
+          geo_latitude?: number | null
+          geo_longitude?: number | null
           id?: string
+          location_description?: string | null
           notes?: string | null
           patient_id: string
           primary_diagnosis?: string | null
+          provider_license_number?: string | null
           status?: string
           triage_category?: string | null
           updated_at?: string
           visit_id?: string | null
           ward?: string | null
+          work_context_type?:
+            | Database["public"]["Enums"]["work_context_type"]
+            | null
         }
         Update: {
           admission_date?: string
@@ -6920,17 +6936,53 @@ export type Database = {
           encounter_number?: string
           encounter_sequence?: number | null
           encounter_type?: string
+          facility_id?: string | null
+          geo_latitude?: number | null
+          geo_longitude?: number | null
           id?: string
+          location_description?: string | null
           notes?: string | null
           patient_id?: string
           primary_diagnosis?: string | null
+          provider_license_number?: string | null
           status?: string
           triage_category?: string | null
           updated_at?: string
           visit_id?: string | null
           ward?: string | null
+          work_context_type?:
+            | Database["public"]["Enums"]["work_context_type"]
+            | null
         }
         Relationships: [
+          {
+            foreignKeyName: "encounters_facility_id_fkey"
+            columns: ["facility_id"]
+            isOneToOne: false
+            referencedRelation: "facilities"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "encounters_facility_id_fkey"
+            columns: ["facility_id"]
+            isOneToOne: false
+            referencedRelation: "facility_capabilities"
+            referencedColumns: ["facility_id"]
+          },
+          {
+            foreignKeyName: "encounters_facility_id_fkey"
+            columns: ["facility_id"]
+            isOneToOne: false
+            referencedRelation: "facility_operations_dashboard"
+            referencedColumns: ["facility_id"]
+          },
+          {
+            foreignKeyName: "encounters_facility_id_fkey"
+            columns: ["facility_id"]
+            isOneToOne: false
+            referencedRelation: "provider_facility_context"
+            referencedColumns: ["facility_id"]
+          },
           {
             foreignKeyName: "encounters_patient_id_fkey"
             columns: ["patient_id"]
@@ -7028,9 +7080,11 @@ export type Database = {
           longitude: number | null
           managing_org_contact: string | null
           managing_org_name: string | null
+          managing_organization_id: string | null
           name: string
           operating_hours: Json | null
           operational_status: string | null
+          organization_id: string | null
           ownership_type_id: string | null
           phone: string | null
           phone_alt: string | null
@@ -7098,9 +7152,11 @@ export type Database = {
           longitude?: number | null
           managing_org_contact?: string | null
           managing_org_name?: string | null
+          managing_organization_id?: string | null
           name: string
           operating_hours?: Json | null
           operational_status?: string | null
+          organization_id?: string | null
           ownership_type_id?: string | null
           phone?: string | null
           phone_alt?: string | null
@@ -7168,9 +7224,11 @@ export type Database = {
           longitude?: number | null
           managing_org_contact?: string | null
           managing_org_name?: string | null
+          managing_organization_id?: string | null
           name?: string
           operating_hours?: Json | null
           operational_status?: string | null
+          organization_id?: string | null
           ownership_type_id?: string | null
           phone?: string | null
           phone_alt?: string | null
@@ -7216,6 +7274,20 @@ export type Database = {
             referencedColumns: ["id"]
           },
           {
+            foreignKeyName: "facilities_managing_organization_id_fkey"
+            columns: ["managing_organization_id"]
+            isOneToOne: false
+            referencedRelation: "organizations"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "facilities_organization_id_fkey"
+            columns: ["organization_id"]
+            isOneToOne: false
+            referencedRelation: "organizations"
+            referencedColumns: ["id"]
+          },
+          {
             foreignKeyName: "facilities_ownership_type_id_fkey"
             columns: ["ownership_type_id"]
             isOneToOne: false
@@ -7235,6 +7307,75 @@ export type Database = {
             isOneToOne: false
             referencedRelation: "provider_facility_context"
             referencedColumns: ["provider_id"]
+          },
+        ]
+      }
+      facility_admin_assignments: {
+        Row: {
+          admin_unit_id: string
+          assignment_type: string
+          created_at: string | null
+          effective_from: string | null
+          effective_to: string | null
+          facility_id: string
+          id: string
+          is_primary: boolean | null
+        }
+        Insert: {
+          admin_unit_id: string
+          assignment_type?: string
+          created_at?: string | null
+          effective_from?: string | null
+          effective_to?: string | null
+          facility_id: string
+          id?: string
+          is_primary?: boolean | null
+        }
+        Update: {
+          admin_unit_id?: string
+          assignment_type?: string
+          created_at?: string | null
+          effective_from?: string | null
+          effective_to?: string | null
+          facility_id?: string
+          id?: string
+          is_primary?: boolean | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "facility_admin_assignments_admin_unit_id_fkey"
+            columns: ["admin_unit_id"]
+            isOneToOne: false
+            referencedRelation: "org_administrative_units"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "facility_admin_assignments_facility_id_fkey"
+            columns: ["facility_id"]
+            isOneToOne: false
+            referencedRelation: "facilities"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "facility_admin_assignments_facility_id_fkey"
+            columns: ["facility_id"]
+            isOneToOne: false
+            referencedRelation: "facility_capabilities"
+            referencedColumns: ["facility_id"]
+          },
+          {
+            foreignKeyName: "facility_admin_assignments_facility_id_fkey"
+            columns: ["facility_id"]
+            isOneToOne: false
+            referencedRelation: "facility_operations_dashboard"
+            referencedColumns: ["facility_id"]
+          },
+          {
+            foreignKeyName: "facility_admin_assignments_facility_id_fkey"
+            columns: ["facility_id"]
+            isOneToOne: false
+            referencedRelation: "provider_facility_context"
+            referencedColumns: ["facility_id"]
           },
         ]
       }
@@ -13073,6 +13214,244 @@ export type Database = {
           },
         ]
       }
+      org_administrative_units: {
+        Row: {
+          can_access_patient_data: boolean | null
+          contact_email: string | null
+          contact_phone: string | null
+          created_at: string | null
+          geographic_scope: Json | null
+          head_user_id: string | null
+          id: string
+          is_active: boolean | null
+          level_depth: number
+          name: string
+          organization_id: string
+          parent_unit_id: string | null
+          unit_type: string
+          updated_at: string | null
+        }
+        Insert: {
+          can_access_patient_data?: boolean | null
+          contact_email?: string | null
+          contact_phone?: string | null
+          created_at?: string | null
+          geographic_scope?: Json | null
+          head_user_id?: string | null
+          id?: string
+          is_active?: boolean | null
+          level_depth?: number
+          name: string
+          organization_id: string
+          parent_unit_id?: string | null
+          unit_type: string
+          updated_at?: string | null
+        }
+        Update: {
+          can_access_patient_data?: boolean | null
+          contact_email?: string | null
+          contact_phone?: string | null
+          created_at?: string | null
+          geographic_scope?: Json | null
+          head_user_id?: string | null
+          id?: string
+          is_active?: boolean | null
+          level_depth?: number
+          name?: string
+          organization_id?: string
+          parent_unit_id?: string | null
+          unit_type?: string
+          updated_at?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "org_administrative_units_organization_id_fkey"
+            columns: ["organization_id"]
+            isOneToOne: false
+            referencedRelation: "organizations"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "org_administrative_units_parent_unit_id_fkey"
+            columns: ["parent_unit_id"]
+            isOneToOne: false
+            referencedRelation: "org_administrative_units"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      organization_staff: {
+        Row: {
+          admin_unit_id: string | null
+          can_manage_billing: boolean | null
+          can_manage_facilities: boolean | null
+          can_manage_staff: boolean | null
+          can_view_reports: boolean | null
+          created_at: string | null
+          department: string | null
+          employee_number: string | null
+          employment_type: string | null
+          end_date: string | null
+          id: string
+          is_active: boolean | null
+          is_org_admin: boolean | null
+          job_title: string
+          organization_id: string
+          provider_id: string | null
+          start_date: string
+          updated_at: string | null
+          user_category: Database["public"]["Enums"]["user_category"]
+          user_id: string
+        }
+        Insert: {
+          admin_unit_id?: string | null
+          can_manage_billing?: boolean | null
+          can_manage_facilities?: boolean | null
+          can_manage_staff?: boolean | null
+          can_view_reports?: boolean | null
+          created_at?: string | null
+          department?: string | null
+          employee_number?: string | null
+          employment_type?: string | null
+          end_date?: string | null
+          id?: string
+          is_active?: boolean | null
+          is_org_admin?: boolean | null
+          job_title: string
+          organization_id: string
+          provider_id?: string | null
+          start_date?: string
+          updated_at?: string | null
+          user_category: Database["public"]["Enums"]["user_category"]
+          user_id: string
+        }
+        Update: {
+          admin_unit_id?: string | null
+          can_manage_billing?: boolean | null
+          can_manage_facilities?: boolean | null
+          can_manage_staff?: boolean | null
+          can_view_reports?: boolean | null
+          created_at?: string | null
+          department?: string | null
+          employee_number?: string | null
+          employment_type?: string | null
+          end_date?: string | null
+          id?: string
+          is_active?: boolean | null
+          is_org_admin?: boolean | null
+          job_title?: string
+          organization_id?: string
+          provider_id?: string | null
+          start_date?: string
+          updated_at?: string | null
+          user_category?: Database["public"]["Enums"]["user_category"]
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "organization_staff_admin_unit_id_fkey"
+            columns: ["admin_unit_id"]
+            isOneToOne: false
+            referencedRelation: "org_administrative_units"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "organization_staff_organization_id_fkey"
+            columns: ["organization_id"]
+            isOneToOne: false
+            referencedRelation: "organizations"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "organization_staff_provider_id_fkey"
+            columns: ["provider_id"]
+            isOneToOne: false
+            referencedRelation: "provider_scheduling_info"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "organization_staff_provider_id_fkey"
+            columns: ["provider_id"]
+            isOneToOne: false
+            referencedRelation: "providers"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      organizations: {
+        Row: {
+          address: Json | null
+          country_code: string | null
+          created_at: string | null
+          created_by: string | null
+          id: string
+          is_active: boolean | null
+          jurisdiction: string | null
+          logo_url: string | null
+          name: string
+          org_type: Database["public"]["Enums"]["organization_type"]
+          parent_organization_id: string | null
+          primary_contact_email: string | null
+          primary_contact_phone: string | null
+          registration_number: string | null
+          settings: Json | null
+          short_name: string | null
+          subscription_tier: string | null
+          tax_id: string | null
+          updated_at: string | null
+        }
+        Insert: {
+          address?: Json | null
+          country_code?: string | null
+          created_at?: string | null
+          created_by?: string | null
+          id?: string
+          is_active?: boolean | null
+          jurisdiction?: string | null
+          logo_url?: string | null
+          name: string
+          org_type: Database["public"]["Enums"]["organization_type"]
+          parent_organization_id?: string | null
+          primary_contact_email?: string | null
+          primary_contact_phone?: string | null
+          registration_number?: string | null
+          settings?: Json | null
+          short_name?: string | null
+          subscription_tier?: string | null
+          tax_id?: string | null
+          updated_at?: string | null
+        }
+        Update: {
+          address?: Json | null
+          country_code?: string | null
+          created_at?: string | null
+          created_by?: string | null
+          id?: string
+          is_active?: boolean | null
+          jurisdiction?: string | null
+          logo_url?: string | null
+          name?: string
+          org_type?: Database["public"]["Enums"]["organization_type"]
+          parent_organization_id?: string | null
+          primary_contact_email?: string | null
+          primary_contact_phone?: string | null
+          registration_number?: string | null
+          settings?: Json | null
+          short_name?: string | null
+          subscription_tier?: string | null
+          tax_id?: string | null
+          updated_at?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "organizations_parent_organization_id_fkey"
+            columns: ["parent_organization_id"]
+            isOneToOne: false
+            referencedRelation: "organizations"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       outreach_session_costs: {
         Row: {
           cold_chain_cost: number | null
@@ -14276,6 +14655,75 @@ export type Database = {
           },
         ]
       }
+      platform_roles: {
+        Row: {
+          can_create_test_data: boolean | null
+          can_impersonate_for_support: boolean | null
+          can_modify_platform_config: boolean | null
+          can_view_all_organizations: boolean | null
+          can_view_anonymized_clinical: boolean | null
+          created_at: string | null
+          expires_at: string | null
+          granted_at: string | null
+          granted_by: string | null
+          id: string
+          is_active: boolean | null
+          rate_limit_per_hour: number | null
+          requires_2fa: boolean | null
+          requires_approval_for_actions: boolean | null
+          restricted_to_organizations: string[] | null
+          revoke_reason: string | null
+          revoked_at: string | null
+          role_type: Database["public"]["Enums"]["platform_role_type"]
+          updated_at: string | null
+          user_id: string
+        }
+        Insert: {
+          can_create_test_data?: boolean | null
+          can_impersonate_for_support?: boolean | null
+          can_modify_platform_config?: boolean | null
+          can_view_all_organizations?: boolean | null
+          can_view_anonymized_clinical?: boolean | null
+          created_at?: string | null
+          expires_at?: string | null
+          granted_at?: string | null
+          granted_by?: string | null
+          id?: string
+          is_active?: boolean | null
+          rate_limit_per_hour?: number | null
+          requires_2fa?: boolean | null
+          requires_approval_for_actions?: boolean | null
+          restricted_to_organizations?: string[] | null
+          revoke_reason?: string | null
+          revoked_at?: string | null
+          role_type: Database["public"]["Enums"]["platform_role_type"]
+          updated_at?: string | null
+          user_id: string
+        }
+        Update: {
+          can_create_test_data?: boolean | null
+          can_impersonate_for_support?: boolean | null
+          can_modify_platform_config?: boolean | null
+          can_view_all_organizations?: boolean | null
+          can_view_anonymized_clinical?: boolean | null
+          created_at?: string | null
+          expires_at?: string | null
+          granted_at?: string | null
+          granted_by?: string | null
+          id?: string
+          is_active?: boolean | null
+          rate_limit_per_hour?: number | null
+          requires_2fa?: boolean | null
+          requires_approval_for_actions?: boolean | null
+          restricted_to_organizations?: string[] | null
+          revoke_reason?: string | null
+          revoked_at?: string | null
+          role_type?: Database["public"]["Enums"]["platform_role_type"]
+          updated_at?: string | null
+          user_id?: string
+        }
+        Relationships: []
+      }
       pool_case_assignments: {
         Row: {
           assigned_at: string | null
@@ -15382,12 +15830,14 @@ export type Database = {
           license_number: string | null
           password_reset_reason: string | null
           phone: string | null
+          primary_organization_id: string | null
           provider_registry_id: string | null
           role: Database["public"]["Enums"]["clinical_role"]
           specialty: string | null
           totp_enabled: boolean
           totp_secret: string | null
           updated_at: string
+          user_category: Database["public"]["Enums"]["user_category"] | null
           user_id: string
         }
         Insert: {
@@ -15407,12 +15857,14 @@ export type Database = {
           license_number?: string | null
           password_reset_reason?: string | null
           phone?: string | null
+          primary_organization_id?: string | null
           provider_registry_id?: string | null
           role?: Database["public"]["Enums"]["clinical_role"]
           specialty?: string | null
           totp_enabled?: boolean
           totp_secret?: string | null
           updated_at?: string
+          user_category?: Database["public"]["Enums"]["user_category"] | null
           user_id: string
         }
         Update: {
@@ -15432,15 +15884,25 @@ export type Database = {
           license_number?: string | null
           password_reset_reason?: string | null
           phone?: string | null
+          primary_organization_id?: string | null
           provider_registry_id?: string | null
           role?: Database["public"]["Enums"]["clinical_role"]
           specialty?: string | null
           totp_enabled?: boolean
           totp_secret?: string | null
           updated_at?: string
+          user_category?: Database["public"]["Enums"]["user_category"] | null
           user_id?: string
         }
-        Relationships: []
+        Relationships: [
+          {
+            foreignKeyName: "profiles_primary_organization_id_fkey"
+            columns: ["primary_organization_id"]
+            isOneToOne: false
+            referencedRelation: "organizations"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       provider_affiliations: {
         Row: {
@@ -26170,6 +26632,16 @@ export type Database = {
           workspace_name: string
         }[]
       }
+      get_user_organizations: {
+        Args: { _user_id: string }
+        Returns: {
+          is_org_admin: boolean
+          job_title: string
+          organization_id: string
+          organization_name: string
+          user_category: Database["public"]["Enums"]["user_category"]
+        }[]
+      }
       get_user_workspaces: {
         Args: { _facility_id?: string; _user_id: string }
         Returns: {
@@ -26183,6 +26655,13 @@ export type Database = {
         }[]
       }
       has_above_site_role: { Args: { _user_id: string }; Returns: boolean }
+      has_platform_role: {
+        Args: {
+          _role_type: Database["public"]["Enums"]["platform_role_type"]
+          _user_id: string
+        }
+        Returns: boolean
+      }
       has_registry_role: {
         Args: {
           _registry_role: Database["public"]["Enums"]["registry_role"]
@@ -26204,10 +26683,12 @@ export type Database = {
         }
         Returns: boolean
       }
+      is_licensed_practitioner: { Args: { _user_id: string }; Returns: boolean }
       is_operational_supervisor: {
         Args: { _facility_id?: string; _user_id: string }
         Returns: boolean
       }
+      is_platform_superuser: { Args: { _user_id: string }; Returns: boolean }
       update_account_balances: {
         Args: { p_account_id: string }
         Returns: undefined
@@ -26518,6 +26999,13 @@ export type Database = {
         | "facility_ops_manager"
         | "virtual_pool_supervisor"
         | "department_head"
+      organization_type:
+        | "government"
+        | "private"
+        | "ngo"
+        | "faith_based"
+        | "academic"
+        | "development_partner"
       ownership_type:
         | "sole"
         | "partnership"
@@ -26560,6 +27048,11 @@ export type Database = {
         | "failed"
         | "expired"
         | "cancelled"
+      platform_role_type:
+        | "platform_superuser"
+        | "platform_support"
+        | "platform_auditor"
+        | "platform_tester"
       privilege_status:
         | "active"
         | "suspended"
@@ -26693,6 +27186,7 @@ export type Database = {
         | "reversed"
         | "disputed"
       triage_urgency: "emergency" | "very_urgent" | "urgent" | "routine"
+      user_category: "regulated_practitioner" | "unregulated_staff"
       visit_outcome:
         | "discharged_home"
         | "discharged_care"
@@ -26712,6 +27206,12 @@ export type Database = {
         | "home_care"
         | "telehealth"
         | "programme"
+      work_context_type:
+        | "facility"
+        | "independent"
+        | "emergency"
+        | "community_outreach"
+        | "platform_direct"
       workspace_role: "staff" | "supervisor" | "manager"
       workspace_transfer_reason:
         | "rotation"
@@ -27175,6 +27675,14 @@ export const Constants = {
         "virtual_pool_supervisor",
         "department_head",
       ],
+      organization_type: [
+        "government",
+        "private",
+        "ngo",
+        "faith_based",
+        "academic",
+        "development_partner",
+      ],
       ownership_type: [
         "sole",
         "partnership",
@@ -27221,6 +27729,12 @@ export const Constants = {
         "failed",
         "expired",
         "cancelled",
+      ],
+      platform_role_type: [
+        "platform_superuser",
+        "platform_support",
+        "platform_auditor",
+        "platform_tester",
       ],
       privilege_status: [
         "active",
@@ -27370,6 +27884,7 @@ export const Constants = {
         "disputed",
       ],
       triage_urgency: ["emergency", "very_urgent", "urgent", "routine"],
+      user_category: ["regulated_practitioner", "unregulated_staff"],
       visit_outcome: [
         "discharged_home",
         "discharged_care",
@@ -27390,6 +27905,13 @@ export const Constants = {
         "home_care",
         "telehealth",
         "programme",
+      ],
+      work_context_type: [
+        "facility",
+        "independent",
+        "emergency",
+        "community_outreach",
+        "platform_direct",
       ],
       workspace_role: ["staff", "supervisor", "manager"],
       workspace_transfer_reason: [
