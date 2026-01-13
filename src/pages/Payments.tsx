@@ -11,14 +11,13 @@ import { ClaimsManagement } from "@/components/payments/ClaimsManagement";
 import { CashReconciliation } from "@/components/payments/CashReconciliation";
 import { CostTrackingDashboard } from "@/components/payments/CostTrackingDashboard";
 import { RemittanceProcessing } from "@/components/payments/RemittanceProcessing";
-import { ScrollArea, ScrollBar } from "@/components/ui/scroll-area";
 
 const Payments = () => {
   return (
     <AppLayout title="Payments & Billing">
       <Tabs defaultValue="cashier" className="p-4 space-y-4">
-        <ScrollArea className="w-full whitespace-nowrap">
-          <TabsList className="inline-flex w-max">
+        <div className="overflow-x-auto">
+          <TabsList className="inline-flex w-max min-w-full">
             <TabsTrigger value="cashier">Cashier Dashboard</TabsTrigger>
             <TabsTrigger value="reconciliation">Cash Reconciliation</TabsTrigger>
             <TabsTrigger value="gateway">Payment Gateway</TabsTrigger>
@@ -29,8 +28,7 @@ const Payments = () => {
             <TabsTrigger value="remittance">Remittance Processing</TabsTrigger>
             <TabsTrigger value="costs">Cost Tracking</TabsTrigger>
           </TabsList>
-          <ScrollBar orientation="horizontal" />
-        </ScrollArea>
+        </div>
         
         <TabsContent value="cashier">
           <CashierBillingDashboard />
