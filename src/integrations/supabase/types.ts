@@ -1370,6 +1370,103 @@ export type Database = {
           },
         ]
       }
+      cash_reconciliations: {
+        Row: {
+          actual_cash: number | null
+          approved_at: string | null
+          approved_by: string | null
+          cash_drawer_id: string | null
+          cashier_id: string | null
+          closing_balance: number | null
+          created_at: string | null
+          expected_cash: number
+          facility_id: string
+          id: string
+          notes: string | null
+          opening_balance: number | null
+          reconciliation_date: string
+          status: string
+          submitted_at: string | null
+          submitted_by: string | null
+          total_receipts: number | null
+          total_refunds: number | null
+          transactions_count: number | null
+          updated_at: string | null
+          variance: number | null
+          variance_explanation: string | null
+        }
+        Insert: {
+          actual_cash?: number | null
+          approved_at?: string | null
+          approved_by?: string | null
+          cash_drawer_id?: string | null
+          cashier_id?: string | null
+          closing_balance?: number | null
+          created_at?: string | null
+          expected_cash?: number
+          facility_id: string
+          id?: string
+          notes?: string | null
+          opening_balance?: number | null
+          reconciliation_date: string
+          status?: string
+          submitted_at?: string | null
+          submitted_by?: string | null
+          total_receipts?: number | null
+          total_refunds?: number | null
+          transactions_count?: number | null
+          updated_at?: string | null
+          variance?: number | null
+          variance_explanation?: string | null
+        }
+        Update: {
+          actual_cash?: number | null
+          approved_at?: string | null
+          approved_by?: string | null
+          cash_drawer_id?: string | null
+          cashier_id?: string | null
+          closing_balance?: number | null
+          created_at?: string | null
+          expected_cash?: number
+          facility_id?: string
+          id?: string
+          notes?: string | null
+          opening_balance?: number | null
+          reconciliation_date?: string
+          status?: string
+          submitted_at?: string | null
+          submitted_by?: string | null
+          total_receipts?: number | null
+          total_refunds?: number | null
+          transactions_count?: number | null
+          updated_at?: string | null
+          variance?: number | null
+          variance_explanation?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "cash_reconciliations_facility_id_fkey"
+            columns: ["facility_id"]
+            isOneToOne: false
+            referencedRelation: "facilities"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "cash_reconciliations_facility_id_fkey"
+            columns: ["facility_id"]
+            isOneToOne: false
+            referencedRelation: "facility_capabilities"
+            referencedColumns: ["facility_id"]
+          },
+          {
+            foreignKeyName: "cash_reconciliations_facility_id_fkey"
+            columns: ["facility_id"]
+            isOneToOne: false
+            referencedRelation: "facility_operations_dashboard"
+            referencedColumns: ["facility_id"]
+          },
+        ]
+      }
       channel_members: {
         Row: {
           channel_id: string
@@ -11405,6 +11502,230 @@ export type Database = {
         }
         Relationships: []
       }
+      payment_notifications: {
+        Row: {
+          channel: string
+          created_at: string | null
+          delivered_at: string | null
+          failed_at: string | null
+          failure_reason: string | null
+          id: string
+          message_content: string | null
+          message_template: string | null
+          notification_type: string
+          patient_id: string | null
+          payment_request_id: string | null
+          provider_message_id: string | null
+          recipient_email: string | null
+          recipient_phone: string | null
+          sent_at: string | null
+          status: string
+        }
+        Insert: {
+          channel: string
+          created_at?: string | null
+          delivered_at?: string | null
+          failed_at?: string | null
+          failure_reason?: string | null
+          id?: string
+          message_content?: string | null
+          message_template?: string | null
+          notification_type: string
+          patient_id?: string | null
+          payment_request_id?: string | null
+          provider_message_id?: string | null
+          recipient_email?: string | null
+          recipient_phone?: string | null
+          sent_at?: string | null
+          status?: string
+        }
+        Update: {
+          channel?: string
+          created_at?: string | null
+          delivered_at?: string | null
+          failed_at?: string | null
+          failure_reason?: string | null
+          id?: string
+          message_content?: string | null
+          message_template?: string | null
+          notification_type?: string
+          patient_id?: string | null
+          payment_request_id?: string | null
+          provider_message_id?: string | null
+          recipient_email?: string | null
+          recipient_phone?: string | null
+          sent_at?: string | null
+          status?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "payment_notifications_patient_id_fkey"
+            columns: ["patient_id"]
+            isOneToOne: false
+            referencedRelation: "patients"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "payment_notifications_payment_request_id_fkey"
+            columns: ["payment_request_id"]
+            isOneToOne: false
+            referencedRelation: "payment_requests"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      payment_requests: {
+        Row: {
+          account_id: string | null
+          allowed_methods: string[] | null
+          amount: number
+          callback_url: string | null
+          cancelled_at: string | null
+          checkout_token: string | null
+          created_at: string | null
+          created_by: string | null
+          currency: string
+          expires_at: string | null
+          facility_id: string | null
+          failed_at: string | null
+          id: string
+          idempotency_key: string | null
+          invoice_id: string | null
+          metadata: Json | null
+          notes: string | null
+          paid_at: string | null
+          patient_id: string | null
+          payer_email: string | null
+          payer_name: string | null
+          payer_phone: string | null
+          payment_link: string | null
+          payment_request_number: string
+          preferred_channel: string | null
+          purpose: string
+          sent_at: string | null
+          short_reference: string | null
+          status: string
+          visit_id: string | null
+          webhook_secret: string | null
+        }
+        Insert: {
+          account_id?: string | null
+          allowed_methods?: string[] | null
+          amount: number
+          callback_url?: string | null
+          cancelled_at?: string | null
+          checkout_token?: string | null
+          created_at?: string | null
+          created_by?: string | null
+          currency?: string
+          expires_at?: string | null
+          facility_id?: string | null
+          failed_at?: string | null
+          id?: string
+          idempotency_key?: string | null
+          invoice_id?: string | null
+          metadata?: Json | null
+          notes?: string | null
+          paid_at?: string | null
+          patient_id?: string | null
+          payer_email?: string | null
+          payer_name?: string | null
+          payer_phone?: string | null
+          payment_link?: string | null
+          payment_request_number: string
+          preferred_channel?: string | null
+          purpose: string
+          sent_at?: string | null
+          short_reference?: string | null
+          status?: string
+          visit_id?: string | null
+          webhook_secret?: string | null
+        }
+        Update: {
+          account_id?: string | null
+          allowed_methods?: string[] | null
+          amount?: number
+          callback_url?: string | null
+          cancelled_at?: string | null
+          checkout_token?: string | null
+          created_at?: string | null
+          created_by?: string | null
+          currency?: string
+          expires_at?: string | null
+          facility_id?: string | null
+          failed_at?: string | null
+          id?: string
+          idempotency_key?: string | null
+          invoice_id?: string | null
+          metadata?: Json | null
+          notes?: string | null
+          paid_at?: string | null
+          patient_id?: string | null
+          payer_email?: string | null
+          payer_name?: string | null
+          payer_phone?: string | null
+          payment_link?: string | null
+          payment_request_number?: string
+          preferred_channel?: string | null
+          purpose?: string
+          sent_at?: string | null
+          short_reference?: string | null
+          status?: string
+          visit_id?: string | null
+          webhook_secret?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "payment_requests_account_id_fkey"
+            columns: ["account_id"]
+            isOneToOne: false
+            referencedRelation: "visit_financial_accounts"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "payment_requests_facility_id_fkey"
+            columns: ["facility_id"]
+            isOneToOne: false
+            referencedRelation: "facilities"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "payment_requests_facility_id_fkey"
+            columns: ["facility_id"]
+            isOneToOne: false
+            referencedRelation: "facility_capabilities"
+            referencedColumns: ["facility_id"]
+          },
+          {
+            foreignKeyName: "payment_requests_facility_id_fkey"
+            columns: ["facility_id"]
+            isOneToOne: false
+            referencedRelation: "facility_operations_dashboard"
+            referencedColumns: ["facility_id"]
+          },
+          {
+            foreignKeyName: "payment_requests_invoice_id_fkey"
+            columns: ["invoice_id"]
+            isOneToOne: false
+            referencedRelation: "invoices"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "payment_requests_patient_id_fkey"
+            columns: ["patient_id"]
+            isOneToOne: false
+            referencedRelation: "patients"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "payment_requests_visit_id_fkey"
+            columns: ["visit_id"]
+            isOneToOne: false
+            referencedRelation: "visits"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       payment_transactions: {
         Row: {
           amount: number
@@ -11470,6 +11791,78 @@ export type Database = {
             columns: ["patient_id"]
             isOneToOne: false
             referencedRelation: "patients"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      payment_webhooks: {
+        Row: {
+          id: string
+          is_duplicate: boolean | null
+          is_processed: boolean | null
+          parsed_amount: number | null
+          parsed_status: string | null
+          parsed_txn_id: string | null
+          payment_channel: string
+          payment_request_id: string | null
+          payment_transaction_id: string | null
+          processed_at: string | null
+          processing_error: string | null
+          raw_payload: Json
+          received_at: string | null
+          signature: string | null
+          webhook_id: string | null
+          webhook_type: string
+        }
+        Insert: {
+          id?: string
+          is_duplicate?: boolean | null
+          is_processed?: boolean | null
+          parsed_amount?: number | null
+          parsed_status?: string | null
+          parsed_txn_id?: string | null
+          payment_channel: string
+          payment_request_id?: string | null
+          payment_transaction_id?: string | null
+          processed_at?: string | null
+          processing_error?: string | null
+          raw_payload: Json
+          received_at?: string | null
+          signature?: string | null
+          webhook_id?: string | null
+          webhook_type: string
+        }
+        Update: {
+          id?: string
+          is_duplicate?: boolean | null
+          is_processed?: boolean | null
+          parsed_amount?: number | null
+          parsed_status?: string | null
+          parsed_txn_id?: string | null
+          payment_channel?: string
+          payment_request_id?: string | null
+          payment_transaction_id?: string | null
+          processed_at?: string | null
+          processing_error?: string | null
+          raw_payload?: Json
+          received_at?: string | null
+          signature?: string | null
+          webhook_id?: string | null
+          webhook_type?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "payment_webhooks_payment_request_id_fkey"
+            columns: ["payment_request_id"]
+            isOneToOne: false
+            referencedRelation: "payment_requests"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "payment_webhooks_payment_transaction_id_fkey"
+            columns: ["payment_transaction_id"]
+            isOneToOne: false
+            referencedRelation: "payment_transactions"
             referencedColumns: ["id"]
           },
         ]
@@ -14998,6 +15391,134 @@ export type Database = {
           },
         ]
       }
+      receipts: {
+        Row: {
+          account_id: string | null
+          amount: number
+          created_at: string | null
+          created_by: string | null
+          currency: string
+          facility_id: string | null
+          id: string
+          invoice_id: string | null
+          is_voided: boolean | null
+          last_printed_at: string | null
+          patient_id: string
+          payment_method: string
+          payment_transaction_id: string | null
+          print_count: number | null
+          provider_reference: string | null
+          receipt_date: string
+          receipt_number: string
+          receipt_type: string
+          transaction_reference: string | null
+          void_approved_by: string | null
+          void_reason: string | null
+          voided_at: string | null
+          voided_by: string | null
+        }
+        Insert: {
+          account_id?: string | null
+          amount: number
+          created_at?: string | null
+          created_by?: string | null
+          currency?: string
+          facility_id?: string | null
+          id?: string
+          invoice_id?: string | null
+          is_voided?: boolean | null
+          last_printed_at?: string | null
+          patient_id: string
+          payment_method: string
+          payment_transaction_id?: string | null
+          print_count?: number | null
+          provider_reference?: string | null
+          receipt_date?: string
+          receipt_number: string
+          receipt_type?: string
+          transaction_reference?: string | null
+          void_approved_by?: string | null
+          void_reason?: string | null
+          voided_at?: string | null
+          voided_by?: string | null
+        }
+        Update: {
+          account_id?: string | null
+          amount?: number
+          created_at?: string | null
+          created_by?: string | null
+          currency?: string
+          facility_id?: string | null
+          id?: string
+          invoice_id?: string | null
+          is_voided?: boolean | null
+          last_printed_at?: string | null
+          patient_id?: string
+          payment_method?: string
+          payment_transaction_id?: string | null
+          print_count?: number | null
+          provider_reference?: string | null
+          receipt_date?: string
+          receipt_number?: string
+          receipt_type?: string
+          transaction_reference?: string | null
+          void_approved_by?: string | null
+          void_reason?: string | null
+          voided_at?: string | null
+          voided_by?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "receipts_account_id_fkey"
+            columns: ["account_id"]
+            isOneToOne: false
+            referencedRelation: "visit_financial_accounts"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "receipts_facility_id_fkey"
+            columns: ["facility_id"]
+            isOneToOne: false
+            referencedRelation: "facilities"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "receipts_facility_id_fkey"
+            columns: ["facility_id"]
+            isOneToOne: false
+            referencedRelation: "facility_capabilities"
+            referencedColumns: ["facility_id"]
+          },
+          {
+            foreignKeyName: "receipts_facility_id_fkey"
+            columns: ["facility_id"]
+            isOneToOne: false
+            referencedRelation: "facility_operations_dashboard"
+            referencedColumns: ["facility_id"]
+          },
+          {
+            foreignKeyName: "receipts_invoice_id_fkey"
+            columns: ["invoice_id"]
+            isOneToOne: false
+            referencedRelation: "invoices"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "receipts_patient_id_fkey"
+            columns: ["patient_id"]
+            isOneToOne: false
+            referencedRelation: "patients"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "receipts_payment_transaction_id_fkey"
+            columns: ["payment_transaction_id"]
+            isOneToOne: false
+            referencedRelation: "payment_transactions"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       ref_cadres: {
         Row: {
           category: string | null
@@ -16037,6 +16558,146 @@ export type Database = {
           },
           {
             foreignKeyName: "referrals_patient_id_fkey"
+            columns: ["patient_id"]
+            isOneToOne: false
+            referencedRelation: "patients"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      refunds: {
+        Row: {
+          account_id: string | null
+          approval_threshold: number | null
+          approved_at: string | null
+          approved_by: string | null
+          chargeback_received_at: string | null
+          created_at: string | null
+          facility_id: string | null
+          id: string
+          original_receipt_id: string
+          original_transaction_id: string | null
+          patient_id: string | null
+          processed_at: string | null
+          processed_by: string | null
+          provider_chargeback_id: string | null
+          refund_amount: number
+          refund_method: string | null
+          refund_number: string
+          refund_reason: string
+          refund_reference: string | null
+          refund_type: string
+          rejected_at: string | null
+          rejected_by: string | null
+          rejection_reason: string | null
+          requested_at: string | null
+          requested_by: string | null
+          requires_approval: boolean | null
+          status: string
+        }
+        Insert: {
+          account_id?: string | null
+          approval_threshold?: number | null
+          approved_at?: string | null
+          approved_by?: string | null
+          chargeback_received_at?: string | null
+          created_at?: string | null
+          facility_id?: string | null
+          id?: string
+          original_receipt_id: string
+          original_transaction_id?: string | null
+          patient_id?: string | null
+          processed_at?: string | null
+          processed_by?: string | null
+          provider_chargeback_id?: string | null
+          refund_amount: number
+          refund_method?: string | null
+          refund_number: string
+          refund_reason: string
+          refund_reference?: string | null
+          refund_type: string
+          rejected_at?: string | null
+          rejected_by?: string | null
+          rejection_reason?: string | null
+          requested_at?: string | null
+          requested_by?: string | null
+          requires_approval?: boolean | null
+          status?: string
+        }
+        Update: {
+          account_id?: string | null
+          approval_threshold?: number | null
+          approved_at?: string | null
+          approved_by?: string | null
+          chargeback_received_at?: string | null
+          created_at?: string | null
+          facility_id?: string | null
+          id?: string
+          original_receipt_id?: string
+          original_transaction_id?: string | null
+          patient_id?: string | null
+          processed_at?: string | null
+          processed_by?: string | null
+          provider_chargeback_id?: string | null
+          refund_amount?: number
+          refund_method?: string | null
+          refund_number?: string
+          refund_reason?: string
+          refund_reference?: string | null
+          refund_type?: string
+          rejected_at?: string | null
+          rejected_by?: string | null
+          rejection_reason?: string | null
+          requested_at?: string | null
+          requested_by?: string | null
+          requires_approval?: boolean | null
+          status?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "refunds_account_id_fkey"
+            columns: ["account_id"]
+            isOneToOne: false
+            referencedRelation: "visit_financial_accounts"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "refunds_facility_id_fkey"
+            columns: ["facility_id"]
+            isOneToOne: false
+            referencedRelation: "facilities"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "refunds_facility_id_fkey"
+            columns: ["facility_id"]
+            isOneToOne: false
+            referencedRelation: "facility_capabilities"
+            referencedColumns: ["facility_id"]
+          },
+          {
+            foreignKeyName: "refunds_facility_id_fkey"
+            columns: ["facility_id"]
+            isOneToOne: false
+            referencedRelation: "facility_operations_dashboard"
+            referencedColumns: ["facility_id"]
+          },
+          {
+            foreignKeyName: "refunds_original_receipt_id_fkey"
+            columns: ["original_receipt_id"]
+            isOneToOne: false
+            referencedRelation: "receipts"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "refunds_original_transaction_id_fkey"
+            columns: ["original_transaction_id"]
+            isOneToOne: false
+            referencedRelation: "payment_transactions"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "refunds_patient_id_fkey"
             columns: ["patient_id"]
             isOneToOne: false
             referencedRelation: "patients"
@@ -21225,6 +21886,35 @@ export type Database = {
         | "employer"
         | "donor"
         | "other"
+      payment_channel:
+        | "paynow"
+        | "ecocash"
+        | "onemoney"
+        | "innbucks"
+        | "stripe"
+        | "dpo_paygate"
+        | "zipit"
+        | "rtgs"
+        | "cbz_bank"
+        | "cash_facility"
+        | "cheque_facility"
+      payment_method_v2:
+        | "cash"
+        | "mobile_money"
+        | "card"
+        | "bank_transfer"
+        | "qr_code"
+        | "cheque"
+        | "insurance_remittance"
+        | "government_remittance"
+      payment_request_status:
+        | "created"
+        | "sent"
+        | "in_progress"
+        | "paid"
+        | "failed"
+        | "expired"
+        | "cancelled"
       product_category_type:
         | "pharmaceutical"
         | "medical_device"
@@ -21330,6 +22020,13 @@ export type Database = {
         | "clinician"
         | "specialist"
         | "manager"
+      transaction_status:
+        | "pending"
+        | "processing"
+        | "success"
+        | "failed"
+        | "reversed"
+        | "disputed"
       triage_urgency: "emergency" | "very_urgent" | "urgent" | "routine"
       visit_outcome:
         | "discharged_home"
@@ -21684,6 +22381,38 @@ export const Constants = {
         "donor",
         "other",
       ],
+      payment_channel: [
+        "paynow",
+        "ecocash",
+        "onemoney",
+        "innbucks",
+        "stripe",
+        "dpo_paygate",
+        "zipit",
+        "rtgs",
+        "cbz_bank",
+        "cash_facility",
+        "cheque_facility",
+      ],
+      payment_method_v2: [
+        "cash",
+        "mobile_money",
+        "card",
+        "bank_transfer",
+        "qr_code",
+        "cheque",
+        "insurance_remittance",
+        "government_remittance",
+      ],
+      payment_request_status: [
+        "created",
+        "sent",
+        "in_progress",
+        "paid",
+        "failed",
+        "expired",
+        "cancelled",
+      ],
       product_category_type: [
         "pharmaceutical",
         "medical_device",
@@ -21800,6 +22529,14 @@ export const Constants = {
         "clinician",
         "specialist",
         "manager",
+      ],
+      transaction_status: [
+        "pending",
+        "processing",
+        "success",
+        "failed",
+        "reversed",
+        "disputed",
       ],
       triage_urgency: ["emergency", "very_urgent", "urgent", "routine"],
       visit_outcome: [
