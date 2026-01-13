@@ -43,7 +43,7 @@ const PAYERS = [
 
 export function ClaimsManagement() {
   const { claims, loading: claimsLoading, createClaim, submitClaim, refetch } = useClaims();
-  const { advices: remittances, loading: remittancesLoading } = useRemittanceAdvices();
+  const { remittances, loading: remittancesLoading } = useRemittanceAdvices();
   const { chargeSheets } = useChargeSheets();
 
   const [searchTerm, setSearchTerm] = useState("");
@@ -66,9 +66,9 @@ export function ClaimsManagement() {
   const stats = {
     total: claims.length,
     draft: claims.filter(c => c.status === "draft").length,
-    submitted: claims.filter(c => c.status === "submitted" || c.status === "pending").length,
-    approved: claims.filter(c => c.status === "approved" || c.status === "paid").length,
-    denied: claims.filter(c => c.status === "denied" || c.status === "rejected").length,
+    submitted: claims.filter(c => c.status === "submitted" || c.status === "processing" || c.status === "acknowledged").length,
+    approved: claims.filter(c => c.status === "approved" || c.status === "paid" || c.status === "partially_approved").length,
+    denied: claims.filter(c => c.status === "denied").length,
     totalClaimed: claims.reduce((sum, c) => sum + c.total_claimed, 0),
     totalApproved: claims.reduce((sum, c) => sum + (c.total_approved || 0), 0),
   };
@@ -77,16 +77,19 @@ export function ClaimsManagement() {
     switch (status) {
       case "approved":
       case "paid":
+      case "partially_approved":
         return <Badge className="bg-success text-success-foreground"><CheckCircle2 className="h-3 w-3 mr-1" />{status}</Badge>;
       case "submitted":
-      case "pending":
       case "processing":
+      case "acknowledged":
         return <Badge className="bg-warning text-warning-foreground"><Clock className="h-3 w-3 mr-1" />{status}</Badge>;
       case "denied":
-      case "rejected":
+      case "written_off":
         return <Badge className="bg-destructive text-destructive-foreground"><XCircle className="h-3 w-3 mr-1" />{status}</Badge>;
       case "draft":
         return <Badge variant="secondary"><FileText className="h-3 w-3 mr-1" />{status}</Badge>;
+      case "appealed":
+        return <Badge className="bg-primary text-primary-foreground"><Gavel className="h-3 w-3 mr-1" />{status}</Badge>;
       default:
         return <Badge variant="outline">{status}</Badge>;
     }
@@ -107,32 +110,39 @@ export function ClaimsManagement() {
     const totalAmount = selected.reduce((sum, c) => sum + c.net_amount, 0);
     const firstCharge = selected[0];
 
-    await createClaim({
-      patient_id: firstCharge.patient_id,
-      visit_id: firstCharge.visit_id,
-      payer_name: payer?.name || "",
-      payer_code: payer?.code,
-      claim_type: "insurance",
-      total_claimed: totalAmount,
-      member_id: claimForm.memberId || undefined,
-      group_number: claimForm.groupNumber || undefined,
-      authorization_number: claimForm.authNumber || undefined,
-      notes: claimForm.notes || undefined,
-    });
-
-    setShowNewClaimDialog(false);
-    setSelectedCharges([]);
-    setClaimForm({
-      payerId: "",
-      memberId: "",
-      groupNumber: "",
-      authNumber: "",
-      notes: ""
-    });
+    try {
+      await createClaim({
+        patient_id: firstCharge.patient_id,
+        visit_id: firstCharge.visit_id,
+        payer_name: payer?.name || "",
+        claim_type: "insurance",
+        total_claimed: totalAmount,
+        member_id: claimForm.memberId || undefined,
+        group_number: claimForm.groupNumber || undefined,
+        notes: claimForm.notes || undefined,
+      });
+      toast.success("Claim created successfully");
+      setShowNewClaimDialog(false);
+      setSelectedCharges([]);
+      setClaimForm({
+        payerId: "",
+        memberId: "",
+        groupNumber: "",
+        authNumber: "",
+        notes: ""
+      });
+    } catch (err) {
+      toast.error("Failed to create claim");
+    }
   };
 
   const handleSubmitClaim = async (claimId: string) => {
-    await submitClaim(claimId);
+    const success = await submitClaim(claimId);
+    if (success) {
+      toast.success("Claim submitted successfully");
+    } else {
+      toast.error("Failed to submit claim");
+    }
   };
 
   const filteredClaims = claims.filter(claim => {
@@ -373,7 +383,7 @@ export function ClaimsManagement() {
                     <SelectItem value="all">All Status</SelectItem>
                     <SelectItem value="draft">Draft</SelectItem>
                     <SelectItem value="submitted">Submitted</SelectItem>
-                    <SelectItem value="pending">Pending</SelectItem>
+                    <SelectItem value="processing">Processing</SelectItem>
                     <SelectItem value="approved">Approved</SelectItem>
                     <SelectItem value="denied">Denied</SelectItem>
                     <SelectItem value="paid">Paid</SelectItem>
@@ -414,23 +424,15 @@ export function ClaimsManagement() {
                             <p className="text-xs text-muted-foreground flex items-center gap-1">
                               <Calendar className="h-3 w-3" />
                               {format(new Date(claim.created_at || ""), "dd MMM yyyy")}
-                              {claim.submitted_at && (
-                                <span className="ml-2">• Submitted: {format(new Date(claim.submitted_at), "dd MMM yyyy")}</span>
-                              )}
                             </p>
                           </div>
                         </div>
                         <div className="flex items-center gap-6">
                           <div className="text-right">
-                            <p className="font-bold">${claim.total_claimed.toLocaleString()}</p>
+                            <p className="text-lg font-bold">${claim.total_claimed.toFixed(2)}</p>
                             {claim.total_approved !== null && claim.total_approved > 0 && (
                               <p className="text-sm text-success">
-                                Approved: ${claim.total_approved.toLocaleString()}
-                              </p>
-                            )}
-                            {claim.total_denied !== null && claim.total_denied > 0 && (
-                              <p className="text-sm text-destructive">
-                                Denied: ${claim.total_denied.toLocaleString()}
+                                Approved: ${claim.total_approved.toFixed(2)}
                               </p>
                             )}
                           </div>
@@ -444,7 +446,7 @@ export function ClaimsManagement() {
                                 Submit
                               </Button>
                             )}
-                            {(claim.status === "denied" || claim.status === "rejected") && (
+                            {claim.status === "denied" && (
                               <Button variant="outline" size="sm">
                                 <Gavel className="h-4 w-4 mr-1" />
                                 Appeal
@@ -465,20 +467,16 @@ export function ClaimsManagement() {
         <TabsContent value="remittances">
           <Card>
             <CardHeader>
-              <CardTitle className="text-base">Remittance Advices (ERA/EOB)</CardTitle>
-              <CardDescription>Payment explanations received from payers</CardDescription>
+              <CardTitle className="text-base">Remittance Advices</CardTitle>
+              <CardDescription>Electronic Remittance Advice (ERA) and payment postings</CardDescription>
             </CardHeader>
             <CardContent>
               <ScrollArea className="h-[400px]">
                 <div className="space-y-3">
-                  {remittancesLoading ? (
-                    <div className="flex items-center justify-center py-8">
-                      <RefreshCw className="h-6 w-6 animate-spin text-muted-foreground" />
-                    </div>
-                  ) : remittances.length === 0 ? (
+                  {remittances.length === 0 ? (
                     <div className="text-center py-8 text-muted-foreground">
-                      <DollarSign className="h-12 w-12 mx-auto mb-2 opacity-50" />
-                      <p>No remittance advices</p>
+                      <FileText className="h-12 w-12 mx-auto mb-2 opacity-50" />
+                      <p>No remittance advices found</p>
                     </div>
                   ) : (
                     remittances.map((remittance) => (
@@ -487,34 +485,30 @@ export function ClaimsManagement() {
                         className="flex items-center justify-between p-4 border rounded-lg hover:bg-muted/50 transition-colors"
                       >
                         <div className="flex items-center gap-4">
-                          <div className="h-12 w-12 rounded-lg bg-success/10 flex items-center justify-center">
-                            <DollarSign className="h-6 w-6 text-success" />
+                          <div className="h-10 w-10 rounded-lg bg-success/10 flex items-center justify-center">
+                            <DollarSign className="h-5 w-5 text-success" />
                           </div>
                           <div>
                             <p className="font-medium">{remittance.remittance_number}</p>
                             <p className="text-sm text-muted-foreground">
                               {remittance.payer_name}
                             </p>
-                            <p className="text-xs text-muted-foreground">
-                              Received: {format(new Date(remittance.received_date), "dd MMM yyyy")}
-                            </p>
                           </div>
                         </div>
                         <div className="flex items-center gap-6">
                           <div className="text-right">
-                            <p className="font-bold text-success">
-                              ${remittance.payment_amount.toLocaleString()}
-                            </p>
+                            <p className="font-bold text-success">${remittance.payment_amount.toFixed(2)}</p>
                             <p className="text-sm text-muted-foreground">
-                              {remittance.claims_count} claims
+                              {format(new Date(remittance.payment_date), "dd MMM yyyy")}
                             </p>
                           </div>
-                          <Badge className={remittance.is_processed ? "bg-success text-success-foreground" : "bg-warning text-warning-foreground"}>
-                            {remittance.is_processed ? "Processed" : "Pending"}
-                          </Badge>
+                          {remittance.is_processed ? (
+                            <Badge className="bg-success text-success-foreground">Processed</Badge>
+                          ) : (
+                            <Badge className="bg-warning text-warning-foreground">Pending</Badge>
+                          )}
                           <Button variant="outline" size="sm">
-                            <Eye className="h-4 w-4 mr-1" />
-                            View
+                            <Eye className="h-4 w-4" />
                           </Button>
                         </div>
                       </div>

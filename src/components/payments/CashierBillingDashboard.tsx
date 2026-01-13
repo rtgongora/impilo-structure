@@ -37,7 +37,7 @@ export function CashierBillingDashboard() {
   const { chargeSheets, loading: chargesLoading } = useChargeSheets();
   const { invoices, loading: invoicesLoading, createInvoice } = useInvoices();
   const { accounts, loading: accountsLoading } = useVisitAccounts();
-  const { requests: paymentRequests, loading: paymentsLoading, createPaymentRequest } = usePaymentRequests();
+  const { requests: paymentRequests, loading: paymentsLoading, createPaymentRequest, stats: paymentStats } = usePaymentRequests();
   const { receipts } = useReceipts();
   
   const [searchTerm, setSearchTerm] = useState("");
@@ -87,17 +87,17 @@ export function CashierBillingDashboard() {
     const firstCharge = selected[0];
     const totalAmount = selected.reduce((sum, c) => sum + c.net_amount, 0);
 
-    await createInvoice({
-      visit_id: firstCharge.visit_id,
-      patient_id: firstCharge.patient_id,
-      account_id: firstCharge.account_id || undefined,
-      total_amount: totalAmount,
-      patient_portion: totalAmount,
-      payer_portion: 0,
-      status: "draft"
-    });
-
-    setSelectedCharges([]);
+    try {
+      await createInvoice({
+        visit_id: firstCharge.visit_id,
+        patient_id: firstCharge.patient_id,
+        total_amount: totalAmount,
+      });
+      toast.success("Invoice created successfully");
+      setSelectedCharges([]);
+    } catch (err) {
+      toast.error("Failed to create invoice");
+    }
   };
 
   const handleProcessPayment = async () => {
@@ -109,18 +109,23 @@ export function CashierBillingDashboard() {
     const invoice = invoices.find(i => i.id === selectedInvoice);
     if (!invoice) return;
 
-    await createPaymentRequest({
-      invoice_id: selectedInvoice,
-      visit_id: invoice.visit_id,
-      patient_id: invoice.patient_id,
-      amount: parseFloat(paymentAmount),
-      channel: paymentMethod as any,
-    });
-
-    setShowPaymentDialog(false);
-    setSelectedInvoice(null);
-    setPaymentMethod("");
-    setPaymentAmount("");
+    try {
+      await createPaymentRequest({
+        invoice_id: selectedInvoice,
+        visit_id: invoice.visit_id || undefined,
+        patient_id: invoice.patient_id,
+        amount: parseFloat(paymentAmount),
+        purpose: `Payment for invoice ${invoice.invoice_number}`,
+        preferred_channel: paymentMethod,
+      });
+      toast.success("Payment request created");
+      setShowPaymentDialog(false);
+      setSelectedInvoice(null);
+      setPaymentMethod("");
+      setPaymentAmount("");
+    } catch (err) {
+      toast.error("Failed to create payment request");
+    }
   };
 
   const filteredCharges = chargeSheets.filter(c => {
@@ -406,14 +411,28 @@ export function CashierBillingDashboard() {
                                       type="number"
                                       value={paymentAmount}
                                       onChange={(e) => setPaymentAmount(e.target.value)}
-                                      placeholder={(invoice.total_amount - invoice.amount_paid).toFixed(2)}
+                                      placeholder="0.00"
                                     />
+                                    <Button
+                                      variant="link"
+                                      className="p-0 h-auto text-sm"
+                                      onClick={() => setPaymentAmount((invoice.total_amount - invoice.amount_paid).toFixed(2))}
+                                    >
+                                      Pay full balance
+                                    </Button>
                                   </div>
 
-                                  <Button className="w-full" onClick={handleProcessPayment}>
-                                    <Send className="h-4 w-4 mr-2" />
-                                    Process Payment
-                                  </Button>
+                                  <div className="flex justify-end gap-2">
+                                    <Button variant="outline" onClick={() => setShowPaymentDialog(false)}>
+                                      Cancel
+                                    </Button>
+                                    <Button 
+                                      onClick={handleProcessPayment}
+                                      disabled={!paymentMethod || !paymentAmount}
+                                    >
+                                      Process Payment
+                                    </Button>
+                                  </div>
                                 </div>
                               </DialogContent>
                             </Dialog>
@@ -432,8 +451,26 @@ export function CashierBillingDashboard() {
         <TabsContent value="payments">
           <Card>
             <CardHeader>
-              <CardTitle className="text-base">Payment Requests</CardTitle>
-              <CardDescription>Track payment status across all channels</CardDescription>
+              <div className="flex items-center justify-between">
+                <div>
+                  <CardTitle className="text-base">Payment Requests</CardTitle>
+                  <CardDescription>Track payment request status across all channels</CardDescription>
+                </div>
+                <div className="flex gap-2">
+                  <Badge variant="outline" className="flex gap-1">
+                    <Banknote className="h-3 w-3" /> Cash: {paymentStats.cash}
+                  </Badge>
+                  <Badge variant="outline" className="flex gap-1">
+                    <Smartphone className="h-3 w-3" /> Mobile: {paymentStats.mobile}
+                  </Badge>
+                  <Badge variant="outline" className="flex gap-1">
+                    <CreditCard className="h-3 w-3" /> Card: {paymentStats.card}
+                  </Badge>
+                  <Badge variant="outline" className="flex gap-1">
+                    <Building2 className="h-3 w-3" /> Bank: {paymentStats.bank}
+                  </Badge>
+                </div>
+              </div>
             </CardHeader>
             <CardContent>
               <ScrollArea className="h-[400px]">
@@ -441,25 +478,34 @@ export function CashierBillingDashboard() {
                   {paymentRequests.map((request) => (
                     <div
                       key={request.id}
-                      className="flex items-center justify-between p-4 border rounded-lg"
+                      className="flex items-center justify-between p-4 border rounded-lg hover:bg-muted/50 transition-colors"
                     >
                       <div className="flex items-center gap-4">
                         <div className="h-10 w-10 rounded-lg bg-primary/10 flex items-center justify-center">
-                          {request.channel === "cash" && <Banknote className="h-5 w-5 text-primary" />}
-                          {request.channel === "card" && <CreditCard className="h-5 w-5 text-primary" />}
-                          {request.channel === "mobile_money" && <Smartphone className="h-5 w-5 text-primary" />}
-                          {request.channel === "bank_transfer" && <Building2 className="h-5 w-5 text-primary" />}
+                          {request.preferred_channel === "cash" && <Banknote className="h-5 w-5 text-primary" />}
+                          {request.preferred_channel === "mobile_money" && <Smartphone className="h-5 w-5 text-primary" />}
+                          {request.preferred_channel === "card" && <CreditCard className="h-5 w-5 text-primary" />}
+                          {request.preferred_channel === "bank_transfer" && <Building2 className="h-5 w-5 text-primary" />}
+                          {!request.preferred_channel && <DollarSign className="h-5 w-5 text-primary" />}
                         </div>
                         <div>
-                          <p className="font-medium">{request.request_number}</p>
+                          <p className="font-medium">{request.payment_request_number}</p>
                           <p className="text-sm text-muted-foreground capitalize">
-                            {request.channel?.replace("_", " ")} • {format(new Date(request.created_at || ""), "dd MMM HH:mm")}
+                            {(request.preferred_channel || "unknown").replace("_", " ")}
                           </p>
                         </div>
                       </div>
-                      <div className="flex items-center gap-4">
-                        <p className="font-bold">{request.currency} {request.amount.toFixed(2)}</p>
+                      <div className="flex items-center gap-6">
+                        <div className="text-right">
+                          <p className="font-bold">${request.amount.toFixed(2)}</p>
+                          <p className="text-sm text-muted-foreground">
+                            {format(new Date(request.created_at || ""), "dd MMM HH:mm")}
+                          </p>
+                        </div>
                         {getStatusBadge(request.status)}
+                        <Button variant="outline" size="sm">
+                          <Eye className="h-4 w-4" />
+                        </Button>
                       </div>
                     </div>
                   ))}
@@ -473,8 +519,8 @@ export function CashierBillingDashboard() {
         <TabsContent value="receipts">
           <Card>
             <CardHeader>
-              <CardTitle className="text-base">Payment Receipts</CardTitle>
-              <CardDescription>View and print confirmed payment receipts</CardDescription>
+              <CardTitle className="text-base">Receipts</CardTitle>
+              <CardDescription>View and print payment receipts</CardDescription>
             </CardHeader>
             <CardContent>
               <ScrollArea className="h-[400px]">
@@ -482,7 +528,7 @@ export function CashierBillingDashboard() {
                   {receipts.map((receipt) => (
                     <div
                       key={receipt.id}
-                      className="flex items-center justify-between p-4 border rounded-lg"
+                      className="flex items-center justify-between p-4 border rounded-lg hover:bg-muted/50 transition-colors"
                     >
                       <div className="flex items-center gap-4">
                         <div className="h-10 w-10 rounded-lg bg-success/10 flex items-center justify-center">
@@ -490,16 +536,25 @@ export function CashierBillingDashboard() {
                         </div>
                         <div>
                           <p className="font-medium">{receipt.receipt_number}</p>
-                          <p className="text-sm text-muted-foreground capitalize">
-                            {receipt.payment_method?.replace("_", " ")} • {format(new Date(receipt.receipt_date), "dd MMM yyyy")}
+                          <p className="text-sm text-muted-foreground">
+                            {format(new Date(receipt.receipt_date), "dd MMM yyyy HH:mm")}
                           </p>
                         </div>
                       </div>
-                      <div className="flex items-center gap-4">
-                        <p className="font-bold text-success">{receipt.currency} {receipt.amount.toFixed(2)}</p>
+                      <div className="flex items-center gap-6">
+                        <div className="text-right">
+                          <p className="font-bold">${receipt.amount.toFixed(2)}</p>
+                          <p className="text-sm text-muted-foreground capitalize">
+                            {receipt.payment_method.replace("_", " ")}
+                          </p>
+                        </div>
+                        {receipt.is_voided ? (
+                          <Badge variant="destructive">Voided</Badge>
+                        ) : (
+                          <Badge className="bg-success text-success-foreground">Paid</Badge>
+                        )}
                         <Button variant="outline" size="sm">
-                          <Printer className="h-4 w-4 mr-2" />
-                          Print
+                          <Printer className="h-4 w-4" />
                         </Button>
                       </div>
                     </div>

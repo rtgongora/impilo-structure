@@ -30,31 +30,18 @@ import { format } from "date-fns";
 import { toast } from "sonner";
 
 export function RemittanceProcessing() {
-  const { advices: remittances, loading, createRemittance, processRemittance, refetch } = useRemittanceAdvices();
+  const { remittances, loading, stats, refetch } = useRemittanceAdvices();
 
   const [searchTerm, setSearchTerm] = useState("");
   const [statusFilter, setStatusFilter] = useState("all");
   const [showImportDialog, setShowImportDialog] = useState(false);
   const [selectedRemittance, setSelectedRemittance] = useState<string | null>(null);
 
-  // Stats
-  const stats = {
-    total: remittances.length,
-    pending: remittances.filter(r => !r.is_processed).length,
-    processed: remittances.filter(r => r.is_processed).length,
-    totalPayments: remittances.reduce((sum, r) => sum + r.payment_amount, 0),
-    pendingAmount: remittances.filter(r => !r.is_processed).reduce((sum, r) => sum + r.payment_amount, 0),
-  };
-
   const getStatusBadge = (isProcessed: boolean) => {
     if (isProcessed) {
       return <Badge className="bg-success text-success-foreground"><CheckCircle2 className="h-3 w-3 mr-1" />Processed</Badge>;
     }
     return <Badge className="bg-warning text-warning-foreground"><Clock className="h-3 w-3 mr-1" />Pending</Badge>;
-  };
-
-  const handleProcessRemittance = async (remittanceId: string) => {
-    await processRemittance(remittanceId);
   };
 
   const filteredRemittances = remittances.filter(rem => {
@@ -79,7 +66,7 @@ export function RemittanceProcessing() {
               </div>
               <div>
                 <p className="text-sm text-muted-foreground">Total ERAs</p>
-                <p className="text-2xl font-bold">{stats.total}</p>
+                <p className="text-2xl font-bold">{remittances.length}</p>
               </div>
             </div>
           </CardContent>
@@ -92,7 +79,7 @@ export function RemittanceProcessing() {
               </div>
               <div>
                 <p className="text-sm text-muted-foreground">Pending</p>
-                <p className="text-2xl font-bold">{stats.pending}</p>
+                <p className="text-2xl font-bold">{stats.unprocessed}</p>
               </div>
             </div>
           </CardContent>
@@ -105,7 +92,7 @@ export function RemittanceProcessing() {
               </div>
               <div>
                 <p className="text-sm text-muted-foreground">Total Received</p>
-                <p className="text-2xl font-bold">${stats.totalPayments.toLocaleString()}</p>
+                <p className="text-2xl font-bold">${stats.totalReceived.toLocaleString()}</p>
               </div>
             </div>
           </CardContent>
@@ -118,7 +105,9 @@ export function RemittanceProcessing() {
               </div>
               <div>
                 <p className="text-sm text-muted-foreground">Pending Amount</p>
-                <p className="text-2xl font-bold">${stats.pendingAmount.toLocaleString()}</p>
+                <p className="text-2xl font-bold">
+                  ${remittances.filter(r => !r.is_processed).reduce((sum, r) => sum + r.payment_amount, 0).toLocaleString()}
+                </p>
               </div>
             </div>
           </CardContent>
@@ -260,11 +249,11 @@ export function RemittanceProcessing() {
                             <div className="flex items-center gap-4 mt-1 text-xs text-muted-foreground">
                               <span className="flex items-center gap-1">
                                 <Calendar className="h-3 w-3" />
-                                Received: {format(new Date(remittance.received_date), "dd MMM yyyy")}
+                                Payment: {format(new Date(remittance.payment_date), "dd MMM yyyy")}
                               </span>
-                              {remittance.check_eft_date && (
+                              {remittance.check_number && (
                                 <span>
-                                  Check/EFT: {format(new Date(remittance.check_eft_date), "dd MMM yyyy")}
+                                  Check: {remittance.check_number}
                                 </span>
                               )}
                             </div>
@@ -275,9 +264,6 @@ export function RemittanceProcessing() {
                             <p className="text-2xl font-bold text-success">
                               ${remittance.payment_amount.toLocaleString()}
                             </p>
-                            <p className="text-sm text-muted-foreground">
-                              {remittance.claims_count} claims
-                            </p>
                           </div>
                           <div className="flex gap-2">
                             <Button variant="outline" size="sm">
@@ -285,10 +271,7 @@ export function RemittanceProcessing() {
                               Details
                             </Button>
                             {!remittance.is_processed && (
-                              <Button 
-                                size="sm" 
-                                onClick={() => handleProcessRemittance(remittance.id)}
-                              >
+                              <Button size="sm">
                                 <CheckCircle2 className="h-4 w-4 mr-1" />
                                 Process
                               </Button>
@@ -303,12 +286,12 @@ export function RemittanceProcessing() {
                           <p className="text-sm font-medium mb-2">Claims Summary</p>
                           <div className="grid grid-cols-4 gap-4 text-sm">
                             <div className="p-2 bg-muted rounded">
-                              <p className="text-muted-foreground">Total Billed</p>
-                              <p className="font-bold">${(remittance.payment_amount * 1.2).toFixed(2)}</p>
+                              <p className="text-muted-foreground">Total Claimed</p>
+                              <p className="font-bold">${(remittance.total_claimed || 0).toFixed(2)}</p>
                             </div>
                             <div className="p-2 bg-success/10 rounded">
-                              <p className="text-muted-foreground">Allowed</p>
-                              <p className="font-bold text-success">${(remittance.payment_amount * 1.05).toFixed(2)}</p>
+                              <p className="text-muted-foreground">Approved</p>
+                              <p className="font-bold text-success">${(remittance.total_approved || 0).toFixed(2)}</p>
                             </div>
                             <div className="p-2 bg-primary/10 rounded">
                               <p className="text-muted-foreground">Paid</p>
@@ -316,7 +299,7 @@ export function RemittanceProcessing() {
                             </div>
                             <div className="p-2 bg-warning/10 rounded">
                               <p className="text-muted-foreground">Adjustments</p>
-                              <p className="font-bold text-warning">${(remittance.payment_amount * 0.15).toFixed(2)}</p>
+                              <p className="font-bold text-warning">${(remittance.adjustments || 0).toFixed(2)}</p>
                             </div>
                           </div>
                         </div>

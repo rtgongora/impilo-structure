@@ -75,29 +75,26 @@ export function CashReconciliation() {
     const opening = parseFloat(reconciliationForm.openingBalance) || 0;
     const actual = parseFloat(reconciliationForm.actualCash) || 0;
     const expected = opening + todayTotal - todayRefunds;
-    const variance = actual - expected;
 
-    await createReconciliation({
-      reconciliation_date: format(today, "yyyy-MM-dd"),
-      opening_balance: opening,
-      total_receipts: todayTotal,
-      total_refunds: todayRefunds,
-      expected_cash: expected,
-      actual_cash: actual,
-      closing_balance: actual,
-      variance: variance,
-      variance_explanation: reconciliationForm.varianceExplanation || undefined,
-      notes: reconciliationForm.notes || undefined,
-      transactions_count: todayReceipts.length,
-    });
-
-    setShowNewReconciliation(false);
-    setReconciliationForm({
-      openingBalance: "",
-      actualCash: "",
-      notes: "",
-      varianceExplanation: ""
-    });
+    try {
+      await createReconciliation({
+        facility_id: "00000000-0000-0000-0000-000000000001", // Default facility - would come from context
+        reconciliation_date: format(today, "yyyy-MM-dd"),
+        opening_balance: opening,
+        expected_cash: expected,
+        actual_cash: actual,
+      });
+      toast.success("Reconciliation created successfully");
+      setShowNewReconciliation(false);
+      setReconciliationForm({
+        openingBalance: "",
+        actualCash: "",
+        notes: "",
+        varianceExplanation: ""
+      });
+    } catch (err) {
+      toast.error("Failed to create reconciliation");
+    }
   };
 
   const expectedCash = (parseFloat(reconciliationForm.openingBalance) || 0) + todayTotal - todayRefunds;

@@ -31,12 +31,12 @@ export function useChargeSheets(visitId?: string, patientId?: string) {
       let query = supabase
         .from("charge_sheets")
         .select(`*, patient:patients(first_name, last_name, mrn)`)
-        .order("created_at", { ascending: false });
+        .order("service_date", { ascending: false });
 
       if (visitId) query = query.eq("visit_id", visitId);
       if (patientId) query = query.eq("patient_id", patientId);
 
-      const { data, error: fetchError } = await query.limit(200);
+      const { data, error: fetchError } = await query.limit(100);
       if (fetchError) throw fetchError;
       setCharges((data as ChargeSheet[]) || []);
     } catch (err: any) {
@@ -56,7 +56,7 @@ export function useChargeSheets(visitId?: string, patientId?: string) {
     total: charges.reduce((sum, c) => sum + c.net_amount, 0),
   };
 
-  return { charges, loading, error, totals, refetch: fetchCharges };
+  return { charges, chargeSheets: charges, loading, error, totals, refetch: fetchCharges };
 }
 
 export function useInvoices(patientId?: string) {
@@ -73,7 +73,7 @@ export function useInvoices(patientId?: string) {
       let query = supabase
         .from("invoices")
         .select(`*, patient:patients(first_name, last_name, mrn)`)
-        .order("created_at", { ascending: false });
+        .order("invoice_date", { ascending: false });
 
       if (patientId) query = query.eq("patient_id", patientId);
 
@@ -91,13 +91,35 @@ export function useInvoices(patientId?: string) {
     fetchInvoices();
   }, [fetchInvoices]);
 
-  const stats = {
-    totalOutstanding: invoices.filter(i => i.status !== "paid").reduce((sum, i) => sum + i.balance_due, 0),
-    overdueCount: invoices.filter(i => i.status === "overdue").length,
-    draftCount: invoices.filter(i => i.status === "draft").length,
+  const createInvoice = async (data: {
+    patient_id: string;
+    visit_id?: string;
+    total_amount: number;
+    notes?: string;
+  }) => {
+    const { data: result, error } = await supabase
+      .from("invoices")
+      .insert({
+        patient_id: data.patient_id,
+        visit_id: data.visit_id,
+        total_amount: data.total_amount,
+        notes: data.notes,
+      })
+      .select()
+      .single();
+
+    if (error) throw error;
+    await fetchInvoices();
+    return result;
   };
 
-  return { invoices, loading, error, stats, refetch: fetchInvoices };
+  const stats = {
+    totalOutstanding: invoices.reduce((sum, inv) => sum + (inv.balance_due || 0), 0),
+    overdueCount: invoices.filter(inv => inv.status === "overdue").length,
+    draftCount: invoices.filter(inv => inv.status === "draft").length,
+  };
+
+  return { invoices, loading, error, stats, refetch: fetchInvoices, createInvoice };
 }
 
 export function useVisitAccounts(patientId?: string) {

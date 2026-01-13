@@ -45,13 +45,43 @@ export function usePaymentRequests(patientId?: string) {
     fetchRequests();
   }, [fetchRequests]);
 
+  const createPaymentRequest = async (data: {
+    patient_id: string;
+    amount: number;
+    purpose: string;
+    preferred_channel?: string;
+    invoice_id?: string;
+    visit_id?: string;
+    payer_name?: string;
+    payer_phone?: string;
+    payer_email?: string;
+  }) => {
+    const { data: result, error } = await supabase
+      .from("payment_requests")
+      .insert({
+        ...data,
+        payment_request_number: `PAY-${Date.now()}`,
+        created_by: user?.id,
+      })
+      .select()
+      .single();
+
+    if (error) throw error;
+    await fetchRequests();
+    return result;
+  };
+
   const stats = {
     pending: requests.filter(r => r.status === "pending").length,
     processing: requests.filter(r => r.status === "processing").length,
     completed: requests.filter(r => r.status === "paid").length,
+    cash: requests.filter(r => r.preferred_channel === "cash").length,
+    mobile: requests.filter(r => r.preferred_channel === "mobile_money").length,
+    card: requests.filter(r => r.preferred_channel === "card").length,
+    bank: requests.filter(r => r.preferred_channel === "bank_transfer").length,
   };
 
-  return { requests, loading, error, stats, refetch: fetchRequests };
+  return { requests, loading, error, stats, refetch: fetchRequests, createPaymentRequest };
 }
 
 export function useReceipts(patientId?: string) {
@@ -128,5 +158,46 @@ export function useCashReconciliations(facilityId?: string) {
     fetchReconciliations();
   }, [fetchReconciliations]);
 
-  return { reconciliations, loading, error, refetch: fetchReconciliations };
+  const createReconciliation = async (data: {
+    facility_id: string;
+    reconciliation_date: string;
+    opening_balance: number;
+    expected_cash: number;
+    actual_cash?: number;
+  }) => {
+    const { data: result, error } = await supabase
+      .from("cash_reconciliations")
+      .insert({
+        ...data,
+        cashier_id: user?.id,
+      })
+      .select()
+      .single();
+
+    if (error) throw error;
+    await fetchReconciliations();
+    return result;
+  };
+
+  const submitReconciliation = async (id: string, actualCash: number, varianceExplanation?: string) => {
+    const expectedCash = reconciliations.find(r => r.id === id)?.expected_cash || 0;
+    const variance = actualCash - expectedCash;
+
+    const { error } = await supabase
+      .from("cash_reconciliations")
+      .update({
+        actual_cash: actualCash,
+        variance,
+        variance_explanation: varianceExplanation,
+        status: "submitted",
+        submitted_at: new Date().toISOString(),
+        submitted_by: user?.id,
+      })
+      .eq("id", id);
+
+    if (error) throw error;
+    await fetchReconciliations();
+  };
+
+  return { reconciliations, loading, error, refetch: fetchReconciliations, createReconciliation, submitReconciliation };
 }
