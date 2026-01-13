@@ -678,6 +678,124 @@ export type Database = {
         }
         Relationships: []
       }
+      bed_day_costs: {
+        Row: {
+          accommodation_cost: number | null
+          accrual_date: string
+          accrual_sequence: number
+          acuity_level: string | null
+          acuity_multiplier: number | null
+          bed_id: string | null
+          billing_event_emitted: boolean | null
+          catering_cost: number | null
+          cleaning_cost: number | null
+          created_at: string | null
+          created_by: string | null
+          currency: string
+          facility_id: string | null
+          id: string
+          is_billable: boolean | null
+          linen_laundry_cost: number | null
+          nursing_baseline_cost: number | null
+          patient_id: string | null
+          total_bed_day_cost: number
+          utilities_cost: number | null
+          visit_id: string
+          ward_id: string | null
+        }
+        Insert: {
+          accommodation_cost?: number | null
+          accrual_date: string
+          accrual_sequence?: number
+          acuity_level?: string | null
+          acuity_multiplier?: number | null
+          bed_id?: string | null
+          billing_event_emitted?: boolean | null
+          catering_cost?: number | null
+          cleaning_cost?: number | null
+          created_at?: string | null
+          created_by?: string | null
+          currency?: string
+          facility_id?: string | null
+          id?: string
+          is_billable?: boolean | null
+          linen_laundry_cost?: number | null
+          nursing_baseline_cost?: number | null
+          patient_id?: string | null
+          total_bed_day_cost?: number
+          utilities_cost?: number | null
+          visit_id: string
+          ward_id?: string | null
+        }
+        Update: {
+          accommodation_cost?: number | null
+          accrual_date?: string
+          accrual_sequence?: number
+          acuity_level?: string | null
+          acuity_multiplier?: number | null
+          bed_id?: string | null
+          billing_event_emitted?: boolean | null
+          catering_cost?: number | null
+          cleaning_cost?: number | null
+          created_at?: string | null
+          created_by?: string | null
+          currency?: string
+          facility_id?: string | null
+          id?: string
+          is_billable?: boolean | null
+          linen_laundry_cost?: number | null
+          nursing_baseline_cost?: number | null
+          patient_id?: string | null
+          total_bed_day_cost?: number
+          utilities_cost?: number | null
+          visit_id?: string
+          ward_id?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "bed_day_costs_bed_id_fkey"
+            columns: ["bed_id"]
+            isOneToOne: false
+            referencedRelation: "beds"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "bed_day_costs_facility_id_fkey"
+            columns: ["facility_id"]
+            isOneToOne: false
+            referencedRelation: "facilities"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "bed_day_costs_facility_id_fkey"
+            columns: ["facility_id"]
+            isOneToOne: false
+            referencedRelation: "facility_capabilities"
+            referencedColumns: ["facility_id"]
+          },
+          {
+            foreignKeyName: "bed_day_costs_facility_id_fkey"
+            columns: ["facility_id"]
+            isOneToOne: false
+            referencedRelation: "facility_operations_dashboard"
+            referencedColumns: ["facility_id"]
+          },
+          {
+            foreignKeyName: "bed_day_costs_patient_id_fkey"
+            columns: ["patient_id"]
+            isOneToOne: false
+            referencedRelation: "patients"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "bed_day_costs_visit_id_fkey"
+            columns: ["visit_id"]
+            isOneToOne: false
+            referencedRelation: "visits"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       beds: {
         Row: {
           acuity_level: string | null
@@ -3201,6 +3319,201 @@ export type Database = {
             isOneToOne: false
             referencedRelation: "prescription_items"
             referencedColumns: ["id"]
+          },
+        ]
+      }
+      cost_events: {
+        Row: {
+          billing_event_emitted: boolean | null
+          cost_breakdown: Json
+          created_at: string | null
+          created_by: string | null
+          currency: string
+          duration_minutes: number | null
+          encounter_id: string | null
+          event_timestamp: string
+          event_type: Database["public"]["Enums"]["cost_event_type"]
+          facility_id: string | null
+          id: string
+          is_billable: boolean | null
+          notes: string | null
+          patient_id: string | null
+          source_entity_id: string
+          source_entity_type: string
+          staff_id: string | null
+          staff_role: string | null
+          total_internal_cost: number
+          visit_id: string | null
+          workspace_id: string | null
+        }
+        Insert: {
+          billing_event_emitted?: boolean | null
+          cost_breakdown?: Json
+          created_at?: string | null
+          created_by?: string | null
+          currency?: string
+          duration_minutes?: number | null
+          encounter_id?: string | null
+          event_timestamp?: string
+          event_type: Database["public"]["Enums"]["cost_event_type"]
+          facility_id?: string | null
+          id?: string
+          is_billable?: boolean | null
+          notes?: string | null
+          patient_id?: string | null
+          source_entity_id: string
+          source_entity_type: string
+          staff_id?: string | null
+          staff_role?: string | null
+          total_internal_cost?: number
+          visit_id?: string | null
+          workspace_id?: string | null
+        }
+        Update: {
+          billing_event_emitted?: boolean | null
+          cost_breakdown?: Json
+          created_at?: string | null
+          created_by?: string | null
+          currency?: string
+          duration_minutes?: number | null
+          encounter_id?: string | null
+          event_timestamp?: string
+          event_type?: Database["public"]["Enums"]["cost_event_type"]
+          facility_id?: string | null
+          id?: string
+          is_billable?: boolean | null
+          notes?: string | null
+          patient_id?: string | null
+          source_entity_id?: string
+          source_entity_type?: string
+          staff_id?: string | null
+          staff_role?: string | null
+          total_internal_cost?: number
+          visit_id?: string | null
+          workspace_id?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "cost_events_encounter_id_fkey"
+            columns: ["encounter_id"]
+            isOneToOne: false
+            referencedRelation: "encounters"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "cost_events_facility_id_fkey"
+            columns: ["facility_id"]
+            isOneToOne: false
+            referencedRelation: "facilities"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "cost_events_facility_id_fkey"
+            columns: ["facility_id"]
+            isOneToOne: false
+            referencedRelation: "facility_capabilities"
+            referencedColumns: ["facility_id"]
+          },
+          {
+            foreignKeyName: "cost_events_facility_id_fkey"
+            columns: ["facility_id"]
+            isOneToOne: false
+            referencedRelation: "facility_operations_dashboard"
+            referencedColumns: ["facility_id"]
+          },
+          {
+            foreignKeyName: "cost_events_patient_id_fkey"
+            columns: ["patient_id"]
+            isOneToOne: false
+            referencedRelation: "patients"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "cost_events_visit_id_fkey"
+            columns: ["visit_id"]
+            isOneToOne: false
+            referencedRelation: "visits"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "cost_events_workspace_id_fkey"
+            columns: ["workspace_id"]
+            isOneToOne: false
+            referencedRelation: "workspaces"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      cost_rates: {
+        Row: {
+          category: Database["public"]["Enums"]["cost_category"]
+          cost_per_unit: number
+          created_at: string | null
+          created_by: string | null
+          currency: string
+          effective_from: string
+          effective_to: string | null
+          facility_id: string | null
+          id: string
+          is_active: boolean | null
+          notes: string | null
+          resource_type: string
+          unit_of_measure: string
+          updated_at: string | null
+        }
+        Insert: {
+          category: Database["public"]["Enums"]["cost_category"]
+          cost_per_unit: number
+          created_at?: string | null
+          created_by?: string | null
+          currency?: string
+          effective_from?: string
+          effective_to?: string | null
+          facility_id?: string | null
+          id?: string
+          is_active?: boolean | null
+          notes?: string | null
+          resource_type: string
+          unit_of_measure: string
+          updated_at?: string | null
+        }
+        Update: {
+          category?: Database["public"]["Enums"]["cost_category"]
+          cost_per_unit?: number
+          created_at?: string | null
+          created_by?: string | null
+          currency?: string
+          effective_from?: string
+          effective_to?: string | null
+          facility_id?: string | null
+          id?: string
+          is_active?: boolean | null
+          notes?: string | null
+          resource_type?: string
+          unit_of_measure?: string
+          updated_at?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "cost_rates_facility_id_fkey"
+            columns: ["facility_id"]
+            isOneToOne: false
+            referencedRelation: "facilities"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "cost_rates_facility_id_fkey"
+            columns: ["facility_id"]
+            isOneToOne: false
+            referencedRelation: "facility_capabilities"
+            referencedColumns: ["facility_id"]
+          },
+          {
+            foreignKeyName: "cost_rates_facility_id_fkey"
+            columns: ["facility_id"]
+            isOneToOne: false
+            referencedRelation: "facility_operations_dashboard"
+            referencedColumns: ["facility_id"]
           },
         ]
       }
@@ -9851,6 +10164,103 @@ export type Database = {
             isOneToOne: false
             referencedRelation: "providers"
             referencedColumns: ["id"]
+          },
+        ]
+      }
+      outreach_session_costs: {
+        Row: {
+          cold_chain_cost: number | null
+          consumables_cost: number | null
+          cost_center: string | null
+          cost_per_patient: number | null
+          created_at: string | null
+          created_by: string | null
+          currency: string
+          distance_km: number | null
+          driver_cost: number | null
+          facility_id: string | null
+          fuel_cost: number | null
+          id: string
+          patients_served: number | null
+          per_diem_cost: number | null
+          programme_code: string | null
+          session_date: string
+          session_id: string
+          staff_count: number | null
+          total_session_cost: number
+          total_staff_cost: number | null
+          total_staff_time_minutes: number | null
+          vehicle_depreciation: number | null
+        }
+        Insert: {
+          cold_chain_cost?: number | null
+          consumables_cost?: number | null
+          cost_center?: string | null
+          cost_per_patient?: number | null
+          created_at?: string | null
+          created_by?: string | null
+          currency?: string
+          distance_km?: number | null
+          driver_cost?: number | null
+          facility_id?: string | null
+          fuel_cost?: number | null
+          id?: string
+          patients_served?: number | null
+          per_diem_cost?: number | null
+          programme_code?: string | null
+          session_date: string
+          session_id: string
+          staff_count?: number | null
+          total_session_cost?: number
+          total_staff_cost?: number | null
+          total_staff_time_minutes?: number | null
+          vehicle_depreciation?: number | null
+        }
+        Update: {
+          cold_chain_cost?: number | null
+          consumables_cost?: number | null
+          cost_center?: string | null
+          cost_per_patient?: number | null
+          created_at?: string | null
+          created_by?: string | null
+          currency?: string
+          distance_km?: number | null
+          driver_cost?: number | null
+          facility_id?: string | null
+          fuel_cost?: number | null
+          id?: string
+          patients_served?: number | null
+          per_diem_cost?: number | null
+          programme_code?: string | null
+          session_date?: string
+          session_id?: string
+          staff_count?: number | null
+          total_session_cost?: number
+          total_staff_cost?: number | null
+          total_staff_time_minutes?: number | null
+          vehicle_depreciation?: number | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "outreach_session_costs_facility_id_fkey"
+            columns: ["facility_id"]
+            isOneToOne: false
+            referencedRelation: "facilities"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "outreach_session_costs_facility_id_fkey"
+            columns: ["facility_id"]
+            isOneToOne: false
+            referencedRelation: "facility_capabilities"
+            referencedColumns: ["facility_id"]
+          },
+          {
+            foreignKeyName: "outreach_session_costs_facility_id_fkey"
+            columns: ["facility_id"]
+            isOneToOne: false
+            referencedRelation: "facility_operations_dashboard"
+            referencedColumns: ["facility_id"]
           },
         ]
       }
@@ -18918,6 +19328,111 @@ export type Database = {
           },
         ]
       }
+      visit_cost_summaries: {
+        Row: {
+          cost_to_charge_ratio: number | null
+          created_at: string | null
+          currency: string
+          facility_id: string | null
+          grand_total_cost: number | null
+          id: string
+          last_calculated_at: string | null
+          margin: number | null
+          patient_id: string | null
+          total_accommodation_cost: number | null
+          total_catering_cost: number | null
+          total_charges: number | null
+          total_consumables_cost: number | null
+          total_equipment_cost: number | null
+          total_other_cost: number | null
+          total_overhead_cost: number | null
+          total_staff_cost: number | null
+          total_transport_cost: number | null
+          updated_at: string | null
+          visit_id: string
+        }
+        Insert: {
+          cost_to_charge_ratio?: number | null
+          created_at?: string | null
+          currency?: string
+          facility_id?: string | null
+          grand_total_cost?: number | null
+          id?: string
+          last_calculated_at?: string | null
+          margin?: number | null
+          patient_id?: string | null
+          total_accommodation_cost?: number | null
+          total_catering_cost?: number | null
+          total_charges?: number | null
+          total_consumables_cost?: number | null
+          total_equipment_cost?: number | null
+          total_other_cost?: number | null
+          total_overhead_cost?: number | null
+          total_staff_cost?: number | null
+          total_transport_cost?: number | null
+          updated_at?: string | null
+          visit_id: string
+        }
+        Update: {
+          cost_to_charge_ratio?: number | null
+          created_at?: string | null
+          currency?: string
+          facility_id?: string | null
+          grand_total_cost?: number | null
+          id?: string
+          last_calculated_at?: string | null
+          margin?: number | null
+          patient_id?: string | null
+          total_accommodation_cost?: number | null
+          total_catering_cost?: number | null
+          total_charges?: number | null
+          total_consumables_cost?: number | null
+          total_equipment_cost?: number | null
+          total_other_cost?: number | null
+          total_overhead_cost?: number | null
+          total_staff_cost?: number | null
+          total_transport_cost?: number | null
+          updated_at?: string | null
+          visit_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "visit_cost_summaries_facility_id_fkey"
+            columns: ["facility_id"]
+            isOneToOne: false
+            referencedRelation: "facilities"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "visit_cost_summaries_facility_id_fkey"
+            columns: ["facility_id"]
+            isOneToOne: false
+            referencedRelation: "facility_capabilities"
+            referencedColumns: ["facility_id"]
+          },
+          {
+            foreignKeyName: "visit_cost_summaries_facility_id_fkey"
+            columns: ["facility_id"]
+            isOneToOne: false
+            referencedRelation: "facility_operations_dashboard"
+            referencedColumns: ["facility_id"]
+          },
+          {
+            foreignKeyName: "visit_cost_summaries_patient_id_fkey"
+            columns: ["patient_id"]
+            isOneToOne: false
+            referencedRelation: "patients"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "visit_cost_summaries_visit_id_fkey"
+            columns: ["visit_id"]
+            isOneToOne: true
+            referencedRelation: "visits"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       visit_summaries: {
         Row: {
           allergies_verified: Json | null
@@ -19724,6 +20239,10 @@ export type Database = {
       }
     }
     Functions: {
+      calculate_visit_cost_summary: {
+        Args: { p_visit_id: string }
+        Returns: undefined
+      }
       can_access_facility_in_jurisdiction: {
         Args: { _facility_id: string; _user_id: string }
         Returns: boolean
@@ -19952,6 +20471,27 @@ export type Database = {
         | "consultation_note"
         | "progress_note"
       clinical_role: "doctor" | "nurse" | "specialist" | "patient" | "admin"
+      cost_category:
+        | "staff_time"
+        | "consumables"
+        | "equipment_depreciation"
+        | "facility_overhead"
+        | "transport"
+        | "accommodation"
+        | "catering"
+        | "linen_laundry"
+        | "utilities"
+        | "cold_chain"
+        | "per_diem"
+        | "other"
+      cost_event_type:
+        | "encounter_completed"
+        | "service_completed"
+        | "bed_day_accrued"
+        | "consumable_used"
+        | "procedure_performed"
+        | "transport_provided"
+        | "outreach_session"
       cover_request_status: "pending" | "approved" | "denied" | "expired"
       document_status:
         | "draft"
@@ -19974,6 +20514,15 @@ export type Database = {
         | "intern"
         | "student"
       facility_ops_mode: "simple" | "standard" | "advanced"
+      financial_state:
+        | "pending"
+        | "deposit_required"
+        | "copay_pending"
+        | "cleared"
+        | "partial"
+        | "overdue"
+        | "exempt"
+        | "written_off"
       fulfillment_status:
         | "draft"
         | "submitted"
@@ -20342,6 +20891,29 @@ export const Constants = {
         "progress_note",
       ],
       clinical_role: ["doctor", "nurse", "specialist", "patient", "admin"],
+      cost_category: [
+        "staff_time",
+        "consumables",
+        "equipment_depreciation",
+        "facility_overhead",
+        "transport",
+        "accommodation",
+        "catering",
+        "linen_laundry",
+        "utilities",
+        "cold_chain",
+        "per_diem",
+        "other",
+      ],
+      cost_event_type: [
+        "encounter_completed",
+        "service_completed",
+        "bed_day_accrued",
+        "consumable_used",
+        "procedure_performed",
+        "transport_provided",
+        "outreach_session",
+      ],
       cover_request_status: ["pending", "approved", "denied", "expired"],
       document_status: [
         "draft",
@@ -20367,6 +20939,16 @@ export const Constants = {
         "student",
       ],
       facility_ops_mode: ["simple", "standard", "advanced"],
+      financial_state: [
+        "pending",
+        "deposit_required",
+        "copay_pending",
+        "cleared",
+        "partial",
+        "overdue",
+        "exempt",
+        "written_off",
+      ],
       fulfillment_status: [
         "draft",
         "submitted",
