@@ -1704,6 +1704,268 @@ export type Database = {
           },
         ]
       }
+      claim_line_items: {
+        Row: {
+          adjudication_code: string | null
+          adjudication_reason: string | null
+          adjudication_status: string | null
+          approved_amount: number | null
+          charge_sheet_id: string | null
+          claim_id: string
+          claimed_amount: number
+          created_at: string | null
+          denied_amount: number | null
+          id: string
+          line_number: number
+          primary_diagnosis_code: string | null
+          quantity: number
+          rendering_provider_id: string | null
+          rendering_provider_npi: string | null
+          secondary_diagnosis_codes: string[] | null
+          service_code: string
+          service_date: string
+          service_description: string
+          unit_price: number
+        }
+        Insert: {
+          adjudication_code?: string | null
+          adjudication_reason?: string | null
+          adjudication_status?: string | null
+          approved_amount?: number | null
+          charge_sheet_id?: string | null
+          claim_id: string
+          claimed_amount: number
+          created_at?: string | null
+          denied_amount?: number | null
+          id?: string
+          line_number: number
+          primary_diagnosis_code?: string | null
+          quantity?: number
+          rendering_provider_id?: string | null
+          rendering_provider_npi?: string | null
+          secondary_diagnosis_codes?: string[] | null
+          service_code: string
+          service_date: string
+          service_description: string
+          unit_price: number
+        }
+        Update: {
+          adjudication_code?: string | null
+          adjudication_reason?: string | null
+          adjudication_status?: string | null
+          approved_amount?: number | null
+          charge_sheet_id?: string | null
+          claim_id?: string
+          claimed_amount?: number
+          created_at?: string | null
+          denied_amount?: number | null
+          id?: string
+          line_number?: number
+          primary_diagnosis_code?: string | null
+          quantity?: number
+          rendering_provider_id?: string | null
+          rendering_provider_npi?: string | null
+          secondary_diagnosis_codes?: string[] | null
+          service_code?: string
+          service_date?: string
+          service_description?: string
+          unit_price?: number
+        }
+        Relationships: [
+          {
+            foreignKeyName: "claim_line_items_charge_sheet_id_fkey"
+            columns: ["charge_sheet_id"]
+            isOneToOne: false
+            referencedRelation: "charge_sheets"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "claim_line_items_claim_id_fkey"
+            columns: ["claim_id"]
+            isOneToOne: false
+            referencedRelation: "claims"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      claims: {
+        Row: {
+          account_id: string | null
+          acknowledgment_date: string | null
+          adjudication_date: string | null
+          amount_paid: number | null
+          appeal_date: string | null
+          appeal_reason: string | null
+          appeal_status: string | null
+          authorization_number: string | null
+          claim_number: string
+          claim_type: Database["public"]["Enums"]["claim_type"]
+          created_at: string | null
+          created_by: string | null
+          currency: string
+          denial_codes: string[] | null
+          denial_reason: string | null
+          facility_id: string | null
+          group_number: string | null
+          id: string
+          internal_notes: string | null
+          is_appealed: boolean | null
+          member_id: string | null
+          notes: string | null
+          paid_date: string | null
+          patient_id: string
+          patient_responsibility: number | null
+          payer_code: string | null
+          payer_id: string | null
+          payer_name: string
+          payment_reference: string | null
+          processing_date: string | null
+          remittance_advice_id: string | null
+          status: Database["public"]["Enums"]["claim_status"]
+          submission_date: string | null
+          submission_method: string | null
+          submission_reference: string | null
+          submitted_at: string | null
+          submitted_by: string | null
+          total_approved: number | null
+          total_claimed: number
+          total_denied: number | null
+          updated_at: string | null
+          visit_id: string | null
+        }
+        Insert: {
+          account_id?: string | null
+          acknowledgment_date?: string | null
+          adjudication_date?: string | null
+          amount_paid?: number | null
+          appeal_date?: string | null
+          appeal_reason?: string | null
+          appeal_status?: string | null
+          authorization_number?: string | null
+          claim_number: string
+          claim_type: Database["public"]["Enums"]["claim_type"]
+          created_at?: string | null
+          created_by?: string | null
+          currency?: string
+          denial_codes?: string[] | null
+          denial_reason?: string | null
+          facility_id?: string | null
+          group_number?: string | null
+          id?: string
+          internal_notes?: string | null
+          is_appealed?: boolean | null
+          member_id?: string | null
+          notes?: string | null
+          paid_date?: string | null
+          patient_id: string
+          patient_responsibility?: number | null
+          payer_code?: string | null
+          payer_id?: string | null
+          payer_name: string
+          payment_reference?: string | null
+          processing_date?: string | null
+          remittance_advice_id?: string | null
+          status?: Database["public"]["Enums"]["claim_status"]
+          submission_date?: string | null
+          submission_method?: string | null
+          submission_reference?: string | null
+          submitted_at?: string | null
+          submitted_by?: string | null
+          total_approved?: number | null
+          total_claimed?: number
+          total_denied?: number | null
+          updated_at?: string | null
+          visit_id?: string | null
+        }
+        Update: {
+          account_id?: string | null
+          acknowledgment_date?: string | null
+          adjudication_date?: string | null
+          amount_paid?: number | null
+          appeal_date?: string | null
+          appeal_reason?: string | null
+          appeal_status?: string | null
+          authorization_number?: string | null
+          claim_number?: string
+          claim_type?: Database["public"]["Enums"]["claim_type"]
+          created_at?: string | null
+          created_by?: string | null
+          currency?: string
+          denial_codes?: string[] | null
+          denial_reason?: string | null
+          facility_id?: string | null
+          group_number?: string | null
+          id?: string
+          internal_notes?: string | null
+          is_appealed?: boolean | null
+          member_id?: string | null
+          notes?: string | null
+          paid_date?: string | null
+          patient_id?: string
+          patient_responsibility?: number | null
+          payer_code?: string | null
+          payer_id?: string | null
+          payer_name?: string
+          payment_reference?: string | null
+          processing_date?: string | null
+          remittance_advice_id?: string | null
+          status?: Database["public"]["Enums"]["claim_status"]
+          submission_date?: string | null
+          submission_method?: string | null
+          submission_reference?: string | null
+          submitted_at?: string | null
+          submitted_by?: string | null
+          total_approved?: number | null
+          total_claimed?: number
+          total_denied?: number | null
+          updated_at?: string | null
+          visit_id?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "claims_account_id_fkey"
+            columns: ["account_id"]
+            isOneToOne: false
+            referencedRelation: "visit_financial_accounts"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "claims_facility_id_fkey"
+            columns: ["facility_id"]
+            isOneToOne: false
+            referencedRelation: "facilities"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "claims_facility_id_fkey"
+            columns: ["facility_id"]
+            isOneToOne: false
+            referencedRelation: "facility_capabilities"
+            referencedColumns: ["facility_id"]
+          },
+          {
+            foreignKeyName: "claims_facility_id_fkey"
+            columns: ["facility_id"]
+            isOneToOne: false
+            referencedRelation: "facility_operations_dashboard"
+            referencedColumns: ["facility_id"]
+          },
+          {
+            foreignKeyName: "claims_patient_id_fkey"
+            columns: ["patient_id"]
+            isOneToOne: false
+            referencedRelation: "patients"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "claims_visit_id_fkey"
+            columns: ["visit_id"]
+            isOneToOne: false
+            referencedRelation: "visits"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       client_duplicate_queue: {
         Row: {
           client_a_id: string
@@ -16795,6 +17057,183 @@ export type Database = {
         }
         Relationships: []
       }
+      remittance_advices: {
+        Row: {
+          adjustments: number | null
+          check_number: string | null
+          created_at: string | null
+          currency: string
+          file_format: string | null
+          file_reference: string | null
+          id: string
+          is_processed: boolean | null
+          is_reconciled: boolean | null
+          payer_code: string | null
+          payer_id: string | null
+          payer_name: string
+          payment_amount: number
+          payment_date: string
+          payment_method: string | null
+          payment_reference: string | null
+          period_end: string | null
+          period_start: string | null
+          processed_at: string | null
+          processing_errors: Json | null
+          raw_file_path: string | null
+          received_at: string | null
+          reconciled_at: string | null
+          reconciled_by: string | null
+          remittance_number: string
+          total_approved: number | null
+          total_claimed: number | null
+          total_claims: number | null
+          total_denied: number | null
+        }
+        Insert: {
+          adjustments?: number | null
+          check_number?: string | null
+          created_at?: string | null
+          currency?: string
+          file_format?: string | null
+          file_reference?: string | null
+          id?: string
+          is_processed?: boolean | null
+          is_reconciled?: boolean | null
+          payer_code?: string | null
+          payer_id?: string | null
+          payer_name: string
+          payment_amount: number
+          payment_date: string
+          payment_method?: string | null
+          payment_reference?: string | null
+          period_end?: string | null
+          period_start?: string | null
+          processed_at?: string | null
+          processing_errors?: Json | null
+          raw_file_path?: string | null
+          received_at?: string | null
+          reconciled_at?: string | null
+          reconciled_by?: string | null
+          remittance_number: string
+          total_approved?: number | null
+          total_claimed?: number | null
+          total_claims?: number | null
+          total_denied?: number | null
+        }
+        Update: {
+          adjustments?: number | null
+          check_number?: string | null
+          created_at?: string | null
+          currency?: string
+          file_format?: string | null
+          file_reference?: string | null
+          id?: string
+          is_processed?: boolean | null
+          is_reconciled?: boolean | null
+          payer_code?: string | null
+          payer_id?: string | null
+          payer_name?: string
+          payment_amount?: number
+          payment_date?: string
+          payment_method?: string | null
+          payment_reference?: string | null
+          period_end?: string | null
+          period_start?: string | null
+          processed_at?: string | null
+          processing_errors?: Json | null
+          raw_file_path?: string | null
+          received_at?: string | null
+          reconciled_at?: string | null
+          reconciled_by?: string | null
+          remittance_number?: string
+          total_approved?: number | null
+          total_claimed?: number | null
+          total_claims?: number | null
+          total_denied?: number | null
+        }
+        Relationships: []
+      }
+      remittance_line_items: {
+        Row: {
+          adjustment_amount: number | null
+          adjustment_codes: string[] | null
+          allowed_amount: number | null
+          billed_amount: number
+          claim_id: string | null
+          claim_number: string | null
+          created_at: string | null
+          id: string
+          is_matched: boolean | null
+          match_discrepancy: string | null
+          matched_at: string | null
+          paid_amount: number
+          patient_member_id: string | null
+          patient_name: string | null
+          patient_responsibility: number | null
+          remark_codes: string[] | null
+          remittance_advice_id: string
+          service_date_from: string | null
+          service_date_to: string | null
+        }
+        Insert: {
+          adjustment_amount?: number | null
+          adjustment_codes?: string[] | null
+          allowed_amount?: number | null
+          billed_amount: number
+          claim_id?: string | null
+          claim_number?: string | null
+          created_at?: string | null
+          id?: string
+          is_matched?: boolean | null
+          match_discrepancy?: string | null
+          matched_at?: string | null
+          paid_amount: number
+          patient_member_id?: string | null
+          patient_name?: string | null
+          patient_responsibility?: number | null
+          remark_codes?: string[] | null
+          remittance_advice_id: string
+          service_date_from?: string | null
+          service_date_to?: string | null
+        }
+        Update: {
+          adjustment_amount?: number | null
+          adjustment_codes?: string[] | null
+          allowed_amount?: number | null
+          billed_amount?: number
+          claim_id?: string | null
+          claim_number?: string | null
+          created_at?: string | null
+          id?: string
+          is_matched?: boolean | null
+          match_discrepancy?: string | null
+          matched_at?: string | null
+          paid_amount?: number
+          patient_member_id?: string | null
+          patient_name?: string | null
+          patient_responsibility?: number | null
+          remark_codes?: string[] | null
+          remittance_advice_id?: string
+          service_date_from?: string | null
+          service_date_to?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "remittance_line_items_claim_id_fkey"
+            columns: ["claim_id"]
+            isOneToOne: false
+            referencedRelation: "claims"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "remittance_line_items_remittance_advice_id_fkey"
+            columns: ["remittance_advice_id"]
+            isOneToOne: false
+            referencedRelation: "remittance_advices"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       room_bookings: {
         Row: {
           attendees: string[] | null
@@ -17090,6 +17529,100 @@ export type Database = {
           updated_at?: string | null
         }
         Relationships: []
+      }
+      settlement_reconciliations: {
+        Row: {
+          actual_amount: number | null
+          actual_transactions: number | null
+          amount_variance: number | null
+          bank_reference: string | null
+          bank_statement_path: string | null
+          created_at: string | null
+          discrepancy_notes: string | null
+          expected_amount: number | null
+          expected_transactions: number | null
+          facility_id: string | null
+          id: string
+          payment_channel: string
+          provider_report_path: string | null
+          resolution_action: string | null
+          resolved_at: string | null
+          resolved_by: string | null
+          settlement_date: string
+          settlement_reference: string | null
+          status: string
+          transaction_variance: number | null
+          updated_at: string | null
+        }
+        Insert: {
+          actual_amount?: number | null
+          actual_transactions?: number | null
+          amount_variance?: number | null
+          bank_reference?: string | null
+          bank_statement_path?: string | null
+          created_at?: string | null
+          discrepancy_notes?: string | null
+          expected_amount?: number | null
+          expected_transactions?: number | null
+          facility_id?: string | null
+          id?: string
+          payment_channel: string
+          provider_report_path?: string | null
+          resolution_action?: string | null
+          resolved_at?: string | null
+          resolved_by?: string | null
+          settlement_date: string
+          settlement_reference?: string | null
+          status?: string
+          transaction_variance?: number | null
+          updated_at?: string | null
+        }
+        Update: {
+          actual_amount?: number | null
+          actual_transactions?: number | null
+          amount_variance?: number | null
+          bank_reference?: string | null
+          bank_statement_path?: string | null
+          created_at?: string | null
+          discrepancy_notes?: string | null
+          expected_amount?: number | null
+          expected_transactions?: number | null
+          facility_id?: string | null
+          id?: string
+          payment_channel?: string
+          provider_report_path?: string | null
+          resolution_action?: string | null
+          resolved_at?: string | null
+          resolved_by?: string | null
+          settlement_date?: string
+          settlement_reference?: string | null
+          status?: string
+          transaction_variance?: number | null
+          updated_at?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "settlement_reconciliations_facility_id_fkey"
+            columns: ["facility_id"]
+            isOneToOne: false
+            referencedRelation: "facilities"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "settlement_reconciliations_facility_id_fkey"
+            columns: ["facility_id"]
+            isOneToOne: false
+            referencedRelation: "facility_capabilities"
+            referencedColumns: ["facility_id"]
+          },
+          {
+            foreignKeyName: "settlement_reconciliations_facility_id_fkey"
+            columns: ["facility_id"]
+            isOneToOne: false
+            referencedRelation: "facility_operations_dashboard"
+            referencedColumns: ["facility_id"]
+          },
+        ]
       }
       shift_assignments: {
         Row: {
@@ -20004,6 +20537,66 @@ export type Database = {
         }
         Relationships: []
       }
+      unmatched_transactions: {
+        Row: {
+          amount: number
+          created_at: string | null
+          currency: string
+          id: string
+          matched_at: string | null
+          matched_by: string | null
+          matched_to_id: string | null
+          matched_to_type: string | null
+          patient_hint: string | null
+          payer_reference: string | null
+          provider_reference: string | null
+          raw_data: Json | null
+          resolution_notes: string | null
+          source_reference: string | null
+          source_type: string
+          status: string
+          transaction_date: string
+        }
+        Insert: {
+          amount: number
+          created_at?: string | null
+          currency?: string
+          id?: string
+          matched_at?: string | null
+          matched_by?: string | null
+          matched_to_id?: string | null
+          matched_to_type?: string | null
+          patient_hint?: string | null
+          payer_reference?: string | null
+          provider_reference?: string | null
+          raw_data?: Json | null
+          resolution_notes?: string | null
+          source_reference?: string | null
+          source_type: string
+          status?: string
+          transaction_date: string
+        }
+        Update: {
+          amount?: number
+          created_at?: string | null
+          currency?: string
+          id?: string
+          matched_at?: string | null
+          matched_by?: string | null
+          matched_to_id?: string | null
+          matched_to_type?: string | null
+          patient_hint?: string | null
+          payer_reference?: string | null
+          provider_reference?: string | null
+          raw_data?: Json | null
+          resolution_notes?: string | null
+          source_reference?: string | null
+          source_type?: string
+          status?: string
+          transaction_date?: string
+        }
+        Relationships: []
+      }
       user_follows: {
         Row: {
           created_at: string
@@ -21736,6 +22329,23 @@ export type Database = {
         | "disputed"
         | "waived"
         | "cancelled"
+      claim_status:
+        | "draft"
+        | "submitted"
+        | "acknowledged"
+        | "processing"
+        | "approved"
+        | "partially_approved"
+        | "denied"
+        | "appealed"
+        | "paid"
+        | "written_off"
+      claim_type:
+        | "insurance"
+        | "government"
+        | "employer"
+        | "donor"
+        | "workers_comp"
       client_lifecycle_state:
         | "draft"
         | "active"
@@ -22212,6 +22822,25 @@ export const Constants = {
         "disputed",
         "waived",
         "cancelled",
+      ],
+      claim_status: [
+        "draft",
+        "submitted",
+        "acknowledged",
+        "processing",
+        "approved",
+        "partially_approved",
+        "denied",
+        "appealed",
+        "paid",
+        "written_off",
+      ],
+      claim_type: [
+        "insurance",
+        "government",
+        "employer",
+        "donor",
+        "workers_comp",
       ],
       client_lifecycle_state: [
         "draft",
