@@ -178,10 +178,24 @@ const Dashboard = () => {
                   <User className="h-3.5 w-3.5 text-primary" />
                   <CardTitle>My Worklist</CardTitle>
                 </div>
-                <TabsList className="h-7">
-                  <TabsTrigger value="worklist" onClick={() => setActiveTab("worklist")} className={activeTab === "worklist" ? "bg-background" : ""}>Patients</TabsTrigger>
-                  <TabsTrigger value="tasks" onClick={() => setActiveTab("tasks")} className={activeTab === "tasks" ? "bg-background" : ""}>Tasks</TabsTrigger>
-                </TabsList>
+                <div className="flex gap-1">
+                  <Button 
+                    variant={activeTab === "worklist" ? "default" : "outline"} 
+                    size="sm" 
+                    className="h-7 text-xs"
+                    onClick={() => setActiveTab("worklist")}
+                  >
+                    Patients
+                  </Button>
+                  <Button 
+                    variant={activeTab === "tasks" ? "default" : "outline"} 
+                    size="sm" 
+                    className="h-7 text-xs"
+                    onClick={() => setActiveTab("tasks")}
+                  >
+                    Tasks
+                  </Button>
+                </div>
               </div>
             </CardHeader>
             <CardContent className="p-2.5 pt-0">
