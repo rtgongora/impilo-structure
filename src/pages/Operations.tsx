@@ -8,6 +8,7 @@ import { ShiftIndicator } from "@/components/shift/ShiftIndicator";
 import { RosterDashboard } from "@/components/roster/RosterDashboard";
 import { OnDutyView } from "@/components/roster/OnDutyView";
 import { CoverRequestWorkflow } from "@/components/roster/CoverRequestWorkflow";
+import { FacilityControlTower } from "@/components/operations/FacilityControlTower";
 import { useAuth } from "@/contexts/AuthContext";
 import { useSearchParams } from "react-router-dom";
 import { 
@@ -16,7 +17,8 @@ import {
   Users, 
   ClipboardList, 
   ArrowRightLeft,
-  Building2 
+  Building2,
+  Gauge
 } from "lucide-react";
 
 export default function Operations() {
@@ -60,7 +62,11 @@ export default function Operations() {
         </div>
 
         <Tabs value={activeTab} onValueChange={handleTabChange} className="w-full">
-          <TabsList className="grid w-full grid-cols-5 lg:w-auto lg:inline-grid">
+          <TabsList className="grid w-full grid-cols-6 lg:w-auto lg:inline-grid">
+            <TabsTrigger value="control-tower" className="flex items-center gap-2">
+              <Gauge className="h-4 w-4" />
+              <span className="hidden sm:inline">Control Tower</span>
+            </TabsTrigger>
             <TabsTrigger value="shift" className="flex items-center gap-2">
               <Clock className="h-4 w-4" />
               <span className="hidden sm:inline">My Shift</span>
@@ -82,6 +88,10 @@ export default function Operations() {
               <span className="hidden sm:inline">Workspaces</span>
             </TabsTrigger>
           </TabsList>
+
+          <TabsContent value="control-tower" className="mt-6">
+            <FacilityControlTower facilityId={facilityId} facilityName={facilityName} />
+          </TabsContent>
 
           <TabsContent value="shift" className="mt-6">
             <div className="grid gap-6 md:grid-cols-2">

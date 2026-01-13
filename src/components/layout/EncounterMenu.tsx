@@ -11,8 +11,11 @@ import {
   FileEdit,
   CheckCircle,
   ChevronRight,
+  FolderOpen,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
+import { Button } from "@/components/ui/button";
+import { Separator } from "@/components/ui/separator";
 
 const iconMap: Record<string, React.ComponentType<{ className?: string }>> = {
   LayoutDashboard,
@@ -26,10 +29,19 @@ const iconMap: Record<string, React.ComponentType<{ className?: string }>> = {
 };
 
 export function EncounterMenu() {
-  const { activeMenuItem, setActiveMenuItem, isCriticalEventActive, activeWorkspace } = useEHR();
+  const { activeMenuItem, setActiveMenuItem, isCriticalEventActive, activeWorkspace, openWorkspace, closeWorkspace } = useEHR();
 
   // De-emphasize menu during critical events or active workspaces
-  const isDeemphasized = isCriticalEventActive || activeWorkspace !== null;
+  const isDeemphasized = isCriticalEventActive || (activeWorkspace !== null && activeWorkspace.type !== "patient_file");
+  const isPatientFileOpen = activeWorkspace?.type === "patient_file";
+
+  const handlePatientFileClick = () => {
+    if (isPatientFileOpen) {
+      closeWorkspace();
+    } else {
+      openWorkspace("patient_file");
+    }
+  };
 
   return (
     <aside
@@ -44,6 +56,21 @@ export function EncounterMenu() {
           Encounter Record
         </h2>
         <p className="text-xs text-muted-foreground mt-0.5">Clinical Documentation</p>
+      </div>
+
+      {/* Patient File Button */}
+      <div className="p-2 border-b border-border">
+        <Button
+          variant={isPatientFileOpen ? "secondary" : "outline"}
+          className="w-full justify-start gap-2"
+          onClick={handlePatientFileClick}
+        >
+          <FolderOpen className="h-4 w-4" />
+          Patient File
+          {isPatientFileOpen && (
+            <span className="ml-auto text-xs text-muted-foreground">Active</span>
+          )}
+        </Button>
       </div>
 
       {/* Menu Items */}
