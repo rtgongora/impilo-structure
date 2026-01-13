@@ -25501,6 +25501,12 @@ export type Database = {
         | "facility_ops_manager"
         | "virtual_pool_supervisor"
         | "department_head"
+      ownership_type:
+        | "sole"
+        | "partnership"
+        | "shareholder"
+        | "trust"
+        | "cooperative"
       payer_type:
         | "patient"
         | "insurance"
@@ -25537,6 +25543,26 @@ export type Database = {
         | "failed"
         | "expired"
         | "cancelled"
+      privilege_status:
+        | "active"
+        | "suspended"
+        | "expired"
+        | "revoked"
+        | "pending_approval"
+      privilege_type:
+        | "admitting"
+        | "prescribing"
+        | "surgery"
+        | "anesthesia"
+        | "radiology_order"
+        | "lab_order"
+        | "blood_transfusion"
+        | "controlled_substances"
+        | "discharge"
+        | "death_certification"
+        | "birth_notification"
+        | "teaching"
+        | "supervision"
       product_category_type:
         | "pharmaceutical"
         | "medical_device"
@@ -26103,6 +26129,13 @@ export const Constants = {
         "virtual_pool_supervisor",
         "department_head",
       ],
+      ownership_type: [
+        "sole",
+        "partnership",
+        "shareholder",
+        "trust",
+        "cooperative",
+      ],
       payer_type: [
         "patient",
         "insurance",
@@ -26142,6 +26175,28 @@ export const Constants = {
         "failed",
         "expired",
         "cancelled",
+      ],
+      privilege_status: [
+        "active",
+        "suspended",
+        "expired",
+        "revoked",
+        "pending_approval",
+      ],
+      privilege_type: [
+        "admitting",
+        "prescribing",
+        "surgery",
+        "anesthesia",
+        "radiology_order",
+        "lab_order",
+        "blood_transfusion",
+        "controlled_substances",
+        "discharge",
+        "death_certification",
+        "birth_notification",
+        "teaching",
+        "supervision",
       ],
       product_category_type: [
         "pharmaceutical",
