@@ -185,6 +185,13 @@ export type Database = {
             referencedColumns: ["facility_id"]
           },
           {
+            foreignKeyName: "above_site_interventions_target_facility_id_fkey"
+            columns: ["target_facility_id"]
+            isOneToOne: false
+            referencedRelation: "provider_facility_context"
+            referencedColumns: ["facility_id"]
+          },
+          {
             foreignKeyName: "above_site_interventions_target_pool_id_fkey"
             columns: ["target_pool_id"]
             isOneToOne: false
@@ -346,6 +353,13 @@ export type Database = {
             columns: ["selected_facility_id"]
             isOneToOne: false
             referencedRelation: "facility_operations_dashboard"
+            referencedColumns: ["facility_id"]
+          },
+          {
+            foreignKeyName: "above_site_sessions_selected_facility_id_fkey"
+            columns: ["selected_facility_id"]
+            isOneToOne: false
+            referencedRelation: "provider_facility_context"
             referencedColumns: ["facility_id"]
           },
         ]
@@ -704,6 +718,13 @@ export type Database = {
             referencedRelation: "facility_operations_dashboard"
             referencedColumns: ["facility_id"]
           },
+          {
+            foreignKeyName: "approval_matrix_config_facility_id_fkey"
+            columns: ["facility_id"]
+            isOneToOne: false
+            referencedRelation: "provider_facility_context"
+            referencedColumns: ["facility_id"]
+          },
         ]
       }
       audit_logs: {
@@ -842,6 +863,13 @@ export type Database = {
             columns: ["facility_id"]
             isOneToOne: false
             referencedRelation: "facility_operations_dashboard"
+            referencedColumns: ["facility_id"]
+          },
+          {
+            foreignKeyName: "bed_day_costs_facility_id_fkey"
+            columns: ["facility_id"]
+            isOneToOne: false
+            referencedRelation: "provider_facility_context"
             referencedColumns: ["facility_id"]
           },
           {
@@ -1315,6 +1343,13 @@ export type Database = {
             columns: ["facility_id"]
             isOneToOne: false
             referencedRelation: "facility_operations_dashboard"
+            referencedColumns: ["facility_id"]
+          },
+          {
+            foreignKeyName: "birth_notifications_facility_id_fkey"
+            columns: ["facility_id"]
+            isOneToOne: false
+            referencedRelation: "provider_facility_context"
             referencedColumns: ["facility_id"]
           },
           {
@@ -1823,6 +1858,13 @@ export type Database = {
             referencedRelation: "facility_operations_dashboard"
             referencedColumns: ["facility_id"]
           },
+          {
+            foreignKeyName: "cash_reconciliations_facility_id_fkey"
+            columns: ["facility_id"]
+            isOneToOne: false
+            referencedRelation: "provider_facility_context"
+            referencedColumns: ["facility_id"]
+          },
         ]
       }
       channel_members: {
@@ -2044,6 +2086,13 @@ export type Database = {
             columns: ["facility_id"]
             isOneToOne: false
             referencedRelation: "facility_operations_dashboard"
+            referencedColumns: ["facility_id"]
+          },
+          {
+            foreignKeyName: "charge_sheets_facility_id_fkey"
+            columns: ["facility_id"]
+            isOneToOne: false
+            referencedRelation: "provider_facility_context"
             referencedColumns: ["facility_id"]
           },
           {
@@ -2309,6 +2358,13 @@ export type Database = {
             referencedColumns: ["facility_id"]
           },
           {
+            foreignKeyName: "claims_facility_id_fkey"
+            columns: ["facility_id"]
+            isOneToOne: false
+            referencedRelation: "provider_facility_context"
+            referencedColumns: ["facility_id"]
+          },
+          {
             foreignKeyName: "claims_patient_id_fkey"
             columns: ["patient_id"]
             isOneToOne: false
@@ -2375,6 +2431,13 @@ export type Database = {
             columns: ["facility_id"]
             isOneToOne: false
             referencedRelation: "facility_operations_dashboard"
+            referencedColumns: ["facility_id"]
+          },
+          {
+            foreignKeyName: "clearance_checklist_templates_facility_id_fkey"
+            columns: ["facility_id"]
+            isOneToOne: false
+            referencedRelation: "provider_facility_context"
             referencedColumns: ["facility_id"]
           },
         ]
@@ -2909,6 +2972,13 @@ export type Database = {
             columns: ["facility_id"]
             isOneToOne: false
             referencedRelation: "facility_operations_dashboard"
+            referencedColumns: ["facility_id"]
+          },
+          {
+            foreignKeyName: "client_queue_requests_facility_id_fkey"
+            columns: ["facility_id"]
+            isOneToOne: false
+            referencedRelation: "provider_facility_context"
             referencedColumns: ["facility_id"]
           },
           {
@@ -3588,6 +3658,13 @@ export type Database = {
             columns: ["authoring_facility_id"]
             isOneToOne: false
             referencedRelation: "facility_operations_dashboard"
+            referencedColumns: ["facility_id"]
+          },
+          {
+            foreignKeyName: "clinical_documents_authoring_facility_id_fkey"
+            columns: ["authoring_facility_id"]
+            isOneToOne: false
+            referencedRelation: "provider_facility_context"
             referencedColumns: ["facility_id"]
           },
           {
@@ -4407,6 +4484,13 @@ export type Database = {
             referencedColumns: ["facility_id"]
           },
           {
+            foreignKeyName: "cost_events_facility_id_fkey"
+            columns: ["facility_id"]
+            isOneToOne: false
+            referencedRelation: "provider_facility_context"
+            referencedColumns: ["facility_id"]
+          },
+          {
             foreignKeyName: "cost_events_patient_id_fkey"
             columns: ["patient_id"]
             isOneToOne: false
@@ -4498,6 +4582,13 @@ export type Database = {
             columns: ["facility_id"]
             isOneToOne: false
             referencedRelation: "facility_operations_dashboard"
+            referencedColumns: ["facility_id"]
+          },
+          {
+            foreignKeyName: "cost_rates_facility_id_fkey"
+            columns: ["facility_id"]
+            isOneToOne: false
+            referencedRelation: "provider_facility_context"
             referencedColumns: ["facility_id"]
           },
         ]
@@ -4639,6 +4730,13 @@ export type Database = {
             referencedColumns: ["facility_id"]
           },
           {
+            foreignKeyName: "cover_requests_facility_id_fkey"
+            columns: ["facility_id"]
+            isOneToOne: false
+            referencedRelation: "provider_facility_context"
+            referencedColumns: ["facility_id"]
+          },
+          {
             foreignKeyName: "cover_requests_pool_id_fkey"
             columns: ["pool_id"]
             isOneToOne: false
@@ -4742,6 +4840,13 @@ export type Database = {
             columns: ["facility_id"]
             isOneToOne: false
             referencedRelation: "facility_operations_dashboard"
+            referencedColumns: ["facility_id"]
+          },
+          {
+            foreignKeyName: "coverage_rules_facility_id_fkey"
+            columns: ["facility_id"]
+            isOneToOne: false
+            referencedRelation: "provider_facility_context"
             referencedColumns: ["facility_id"]
           },
           {
@@ -5572,6 +5677,13 @@ export type Database = {
             referencedColumns: ["facility_id"]
           },
           {
+            foreignKeyName: "death_notifications_facility_id_fkey"
+            columns: ["facility_id"]
+            isOneToOne: false
+            referencedRelation: "provider_facility_context"
+            referencedColumns: ["facility_id"]
+          },
+          {
             foreignKeyName: "death_notifications_visit_id_fkey"
             columns: ["visit_id"]
             isOneToOne: false
@@ -5945,6 +6057,13 @@ export type Database = {
             columns: ["facility_id"]
             isOneToOne: false
             referencedRelation: "facility_operations_dashboard"
+            referencedColumns: ["facility_id"]
+          },
+          {
+            foreignKeyName: "discharge_cases_facility_id_fkey"
+            columns: ["facility_id"]
+            isOneToOne: false
+            referencedRelation: "provider_facility_context"
             referencedColumns: ["facility_id"]
           },
           {
@@ -6490,6 +6609,13 @@ export type Database = {
             referencedColumns: ["facility_id"]
           },
           {
+            foreignKeyName: "document_references_facility_id_fkey"
+            columns: ["facility_id"]
+            isOneToOne: false
+            referencedRelation: "provider_facility_context"
+            referencedColumns: ["facility_id"]
+          },
+          {
             foreignKeyName: "document_references_patient_id_fkey"
             columns: ["patient_id"]
             isOneToOne: false
@@ -6661,6 +6787,13 @@ export type Database = {
             isOneToOne: false
             referencedRelation: "health_providers"
             referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "eligibility_decisions_provider_id_fkey"
+            columns: ["provider_id"]
+            isOneToOne: false
+            referencedRelation: "provider_facility_context"
+            referencedColumns: ["provider_id"]
           },
         ]
       }
@@ -7096,6 +7229,13 @@ export type Database = {
             referencedRelation: "health_providers"
             referencedColumns: ["id"]
           },
+          {
+            foreignKeyName: "facilities_practitioner_in_charge_id_fkey"
+            columns: ["practitioner_in_charge_id"]
+            isOneToOne: false
+            referencedRelation: "provider_facility_context"
+            referencedColumns: ["provider_id"]
+          },
         ]
       }
       facility_admin_hierarchies: {
@@ -7353,6 +7493,13 @@ export type Database = {
             referencedRelation: "facility_operations_dashboard"
             referencedColumns: ["facility_id"]
           },
+          {
+            foreignKeyName: "facility_change_requests_facility_id_fkey"
+            columns: ["facility_id"]
+            isOneToOne: false
+            referencedRelation: "provider_facility_context"
+            referencedColumns: ["facility_id"]
+          },
         ]
       }
       facility_history: {
@@ -7406,6 +7553,13 @@ export type Database = {
             columns: ["facility_id"]
             isOneToOne: false
             referencedRelation: "facility_operations_dashboard"
+            referencedColumns: ["facility_id"]
+          },
+          {
+            foreignKeyName: "facility_history_facility_id_fkey"
+            columns: ["facility_id"]
+            isOneToOne: false
+            referencedRelation: "provider_facility_context"
             referencedColumns: ["facility_id"]
           },
         ]
@@ -7464,6 +7618,13 @@ export type Database = {
             columns: ["facility_id"]
             isOneToOne: false
             referencedRelation: "facility_operations_dashboard"
+            referencedColumns: ["facility_id"]
+          },
+          {
+            foreignKeyName: "facility_identifiers_facility_id_fkey"
+            columns: ["facility_id"]
+            isOneToOne: false
+            referencedRelation: "provider_facility_context"
             referencedColumns: ["facility_id"]
           },
         ]
@@ -7557,6 +7718,13 @@ export type Database = {
             columns: ["facility_id"]
             isOneToOne: true
             referencedRelation: "facility_operations_dashboard"
+            referencedColumns: ["facility_id"]
+          },
+          {
+            foreignKeyName: "facility_operations_config_facility_id_fkey"
+            columns: ["facility_id"]
+            isOneToOne: true
+            referencedRelation: "provider_facility_context"
             referencedColumns: ["facility_id"]
           },
         ]
@@ -7713,6 +7881,13 @@ export type Database = {
             columns: ["candidate_facility_id"]
             isOneToOne: false
             referencedRelation: "facility_operations_dashboard"
+            referencedColumns: ["facility_id"]
+          },
+          {
+            foreignKeyName: "facility_reconciliation_matches_candidate_facility_id_fkey"
+            columns: ["candidate_facility_id"]
+            isOneToOne: false
+            referencedRelation: "provider_facility_context"
             referencedColumns: ["facility_id"]
           },
           {
@@ -7894,6 +8069,13 @@ export type Database = {
             referencedRelation: "facility_operations_dashboard"
             referencedColumns: ["facility_id"]
           },
+          {
+            foreignKeyName: "facility_registry_records_facility_id_fkey"
+            columns: ["facility_id"]
+            isOneToOne: false
+            referencedRelation: "provider_facility_context"
+            referencedColumns: ["facility_id"]
+          },
         ]
       }
       facility_registry_roles: {
@@ -8057,6 +8239,13 @@ export type Database = {
             columns: ["facility_id"]
             isOneToOne: false
             referencedRelation: "facility_operations_dashboard"
+            referencedColumns: ["facility_id"]
+          },
+          {
+            foreignKeyName: "facility_services_facility_id_fkey"
+            columns: ["facility_id"]
+            isOneToOne: false
+            referencedRelation: "provider_facility_context"
             referencedColumns: ["facility_id"]
           },
           {
@@ -8838,6 +9027,13 @@ export type Database = {
             referencedRelation: "health_providers"
             referencedColumns: ["id"]
           },
+          {
+            foreignKeyName: "idp_revocation_events_provider_id_fkey"
+            columns: ["provider_id"]
+            isOneToOne: false
+            referencedRelation: "provider_facility_context"
+            referencedColumns: ["provider_id"]
+          },
         ]
       }
       imaging_annotations: {
@@ -9044,6 +9240,13 @@ export type Database = {
             referencedColumns: ["facility_id"]
           },
           {
+            foreignKeyName: "imaging_audit_log_actor_facility_id_fkey"
+            columns: ["actor_facility_id"]
+            isOneToOne: false
+            referencedRelation: "provider_facility_context"
+            referencedColumns: ["facility_id"]
+          },
+          {
             foreignKeyName: "imaging_audit_log_instance_id_fkey"
             columns: ["instance_id"]
             isOneToOne: false
@@ -9160,6 +9363,13 @@ export type Database = {
             referencedColumns: ["facility_id"]
           },
           {
+            foreignKeyName: "imaging_consults_consulting_facility_id_fkey"
+            columns: ["consulting_facility_id"]
+            isOneToOne: false
+            referencedRelation: "provider_facility_context"
+            referencedColumns: ["facility_id"]
+          },
+          {
             foreignKeyName: "imaging_consults_requesting_facility_id_fkey"
             columns: ["requesting_facility_id"]
             isOneToOne: false
@@ -9178,6 +9388,13 @@ export type Database = {
             columns: ["requesting_facility_id"]
             isOneToOne: false
             referencedRelation: "facility_operations_dashboard"
+            referencedColumns: ["facility_id"]
+          },
+          {
+            foreignKeyName: "imaging_consults_requesting_facility_id_fkey"
+            columns: ["requesting_facility_id"]
+            isOneToOne: false
+            referencedRelation: "provider_facility_context"
             referencedColumns: ["facility_id"]
           },
           {
@@ -9523,6 +9740,13 @@ export type Database = {
             referencedRelation: "facility_operations_dashboard"
             referencedColumns: ["facility_id"]
           },
+          {
+            foreignKeyName: "imaging_lifecycle_policies_facility_id_fkey"
+            columns: ["facility_id"]
+            isOneToOne: false
+            referencedRelation: "provider_facility_context"
+            referencedColumns: ["facility_id"]
+          },
         ]
       }
       imaging_prefetch_rules: {
@@ -9777,6 +10001,13 @@ export type Database = {
             referencedColumns: ["facility_id"]
           },
           {
+            foreignKeyName: "imaging_routing_rules_source_facility_id_fkey"
+            columns: ["source_facility_id"]
+            isOneToOne: false
+            referencedRelation: "provider_facility_context"
+            referencedColumns: ["facility_id"]
+          },
+          {
             foreignKeyName: "imaging_routing_rules_target_facility_id_fkey"
             columns: ["target_facility_id"]
             isOneToOne: false
@@ -9795,6 +10026,13 @@ export type Database = {
             columns: ["target_facility_id"]
             isOneToOne: false
             referencedRelation: "facility_operations_dashboard"
+            referencedColumns: ["facility_id"]
+          },
+          {
+            foreignKeyName: "imaging_routing_rules_target_facility_id_fkey"
+            columns: ["target_facility_id"]
+            isOneToOne: false
+            referencedRelation: "provider_facility_context"
             referencedColumns: ["facility_id"]
           },
           {
@@ -9995,6 +10233,13 @@ export type Database = {
             referencedColumns: ["facility_id"]
           },
           {
+            foreignKeyName: "imaging_studies_facility_id_fkey"
+            columns: ["facility_id"]
+            isOneToOne: false
+            referencedRelation: "provider_facility_context"
+            referencedColumns: ["facility_id"]
+          },
+          {
             foreignKeyName: "imaging_studies_lifecycle_policy_id_fkey"
             columns: ["lifecycle_policy_id"]
             isOneToOne: false
@@ -10101,6 +10346,13 @@ export type Database = {
             referencedColumns: ["facility_id"]
           },
           {
+            foreignKeyName: "imaging_tat_metrics_facility_id_fkey"
+            columns: ["facility_id"]
+            isOneToOne: false
+            referencedRelation: "provider_facility_context"
+            referencedColumns: ["facility_id"]
+          },
+          {
             foreignKeyName: "imaging_tat_metrics_study_id_fkey"
             columns: ["study_id"]
             isOneToOne: false
@@ -10175,6 +10427,13 @@ export type Database = {
             columns: ["facility_id"]
             isOneToOne: false
             referencedRelation: "facility_operations_dashboard"
+            referencedColumns: ["facility_id"]
+          },
+          {
+            foreignKeyName: "imaging_worklists_facility_id_fkey"
+            columns: ["facility_id"]
+            isOneToOne: false
+            referencedRelation: "provider_facility_context"
             referencedColumns: ["facility_id"]
           },
         ]
@@ -10444,6 +10703,13 @@ export type Database = {
             referencedColumns: ["facility_id"]
           },
           {
+            foreignKeyName: "invoices_facility_id_fkey"
+            columns: ["facility_id"]
+            isOneToOne: false
+            referencedRelation: "provider_facility_context"
+            referencedColumns: ["facility_id"]
+          },
+          {
             foreignKeyName: "invoices_patient_id_fkey"
             columns: ["patient_id"]
             isOneToOne: false
@@ -10635,6 +10901,13 @@ export type Database = {
             columns: ["facility_id"]
             isOneToOne: false
             referencedRelation: "facility_operations_dashboard"
+            referencedColumns: ["facility_id"]
+          },
+          {
+            foreignKeyName: "lab_analyzers_facility_id_fkey"
+            columns: ["facility_id"]
+            isOneToOne: false
+            referencedRelation: "provider_facility_context"
             referencedColumns: ["facility_id"]
           },
         ]
@@ -10910,6 +11183,13 @@ export type Database = {
             referencedColumns: ["facility_id"]
           },
           {
+            foreignKeyName: "lab_orders_ordering_facility_id_fkey"
+            columns: ["ordering_facility_id"]
+            isOneToOne: false
+            referencedRelation: "provider_facility_context"
+            referencedColumns: ["facility_id"]
+          },
+          {
             foreignKeyName: "lab_orders_patient_id_fkey"
             columns: ["patient_id"]
             isOneToOne: false
@@ -10935,6 +11215,13 @@ export type Database = {
             columns: ["performing_lab_id"]
             isOneToOne: false
             referencedRelation: "facility_operations_dashboard"
+            referencedColumns: ["facility_id"]
+          },
+          {
+            foreignKeyName: "lab_orders_performing_lab_id_fkey"
+            columns: ["performing_lab_id"]
+            isOneToOne: false
+            referencedRelation: "provider_facility_context"
             referencedColumns: ["facility_id"]
           },
         ]
@@ -11306,6 +11593,13 @@ export type Database = {
             referencedColumns: ["facility_id"]
           },
           {
+            foreignKeyName: "lab_routing_rules_destination_lab_id_fkey"
+            columns: ["destination_lab_id"]
+            isOneToOne: false
+            referencedRelation: "provider_facility_context"
+            referencedColumns: ["facility_id"]
+          },
+          {
             foreignKeyName: "lab_routing_rules_source_facility_id_fkey"
             columns: ["source_facility_id"]
             isOneToOne: false
@@ -11324,6 +11618,13 @@ export type Database = {
             columns: ["source_facility_id"]
             isOneToOne: false
             referencedRelation: "facility_operations_dashboard"
+            referencedColumns: ["facility_id"]
+          },
+          {
+            foreignKeyName: "lab_routing_rules_source_facility_id_fkey"
+            columns: ["source_facility_id"]
+            isOneToOne: false
+            referencedRelation: "provider_facility_context"
             referencedColumns: ["facility_id"]
           },
         ]
@@ -11615,6 +11916,13 @@ export type Database = {
             referencedColumns: ["id"]
           },
           {
+            foreignKeyName: "license_payments_provider_id_fkey"
+            columns: ["provider_id"]
+            isOneToOne: false
+            referencedRelation: "provider_facility_context"
+            referencedColumns: ["provider_id"]
+          },
+          {
             foreignKeyName: "license_payments_transaction_id_fkey"
             columns: ["transaction_id"]
             isOneToOne: false
@@ -11725,6 +12033,13 @@ export type Database = {
             isOneToOne: false
             referencedRelation: "health_providers"
             referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "license_renewal_applications_provider_id_fkey"
+            columns: ["provider_id"]
+            isOneToOne: false
+            referencedRelation: "provider_facility_context"
+            referencedColumns: ["provider_id"]
           },
         ]
       }
@@ -11950,6 +12265,13 @@ export type Database = {
             columns: ["certifier_facility_id"]
             isOneToOne: false
             referencedRelation: "facility_operations_dashboard"
+            referencedColumns: ["facility_id"]
+          },
+          {
+            foreignKeyName: "mccd_records_certifier_facility_id_fkey"
+            columns: ["certifier_facility_id"]
+            isOneToOne: false
+            referencedRelation: "provider_facility_context"
             referencedColumns: ["facility_id"]
           },
           {
@@ -12729,6 +13051,13 @@ export type Database = {
             referencedColumns: ["facility_id"]
           },
           {
+            foreignKeyName: "operational_supervisors_facility_id_fkey"
+            columns: ["facility_id"]
+            isOneToOne: false
+            referencedRelation: "provider_facility_context"
+            referencedColumns: ["facility_id"]
+          },
+          {
             foreignKeyName: "operational_supervisors_provider_id_fkey"
             columns: ["provider_id"]
             isOneToOne: false
@@ -12837,6 +13166,13 @@ export type Database = {
             columns: ["facility_id"]
             isOneToOne: false
             referencedRelation: "facility_operations_dashboard"
+            referencedColumns: ["facility_id"]
+          },
+          {
+            foreignKeyName: "outreach_session_costs_facility_id_fkey"
+            columns: ["facility_id"]
+            isOneToOne: false
+            referencedRelation: "provider_facility_context"
             referencedColumns: ["facility_id"]
           },
         ]
@@ -13167,6 +13503,13 @@ export type Database = {
             columns: ["facility_id"]
             isOneToOne: false
             referencedRelation: "facility_operations_dashboard"
+            referencedColumns: ["facility_id"]
+          },
+          {
+            foreignKeyName: "patient_care_state_facility_id_fkey"
+            columns: ["facility_id"]
+            isOneToOne: false
+            referencedRelation: "provider_facility_context"
             referencedColumns: ["facility_id"]
           },
           {
@@ -13760,6 +14103,13 @@ export type Database = {
             columns: ["facility_id"]
             isOneToOne: false
             referencedRelation: "facility_operations_dashboard"
+            referencedColumns: ["facility_id"]
+          },
+          {
+            foreignKeyName: "payment_requests_facility_id_fkey"
+            columns: ["facility_id"]
+            isOneToOne: false
+            referencedRelation: "provider_facility_context"
             referencedColumns: ["facility_id"]
           },
           {
@@ -15094,16 +15444,21 @@ export type Database = {
       }
       provider_affiliations: {
         Row: {
+          administrative_role_v2: string | null
+          affiliation_type_v2: string | null
           created_at: string
           created_by: string | null
           deactivated_at: string | null
           deactivated_by: string | null
           deactivation_reason: string | null
           department: string | null
+          employer_name: string | null
+          employer_type_v2: string | null
           employment_type: Database["public"]["Enums"]["employment_type"]
           end_date: string | null
           facility_id: string
           facility_name: string
+          hours_per_week: number | null
           id: string
           is_active: boolean | null
           is_primary: boolean | null
@@ -15115,16 +15470,21 @@ export type Database = {
           updated_at: string
         }
         Insert: {
+          administrative_role_v2?: string | null
+          affiliation_type_v2?: string | null
           created_at?: string
           created_by?: string | null
           deactivated_at?: string | null
           deactivated_by?: string | null
           deactivation_reason?: string | null
           department?: string | null
+          employer_name?: string | null
+          employer_type_v2?: string | null
           employment_type: Database["public"]["Enums"]["employment_type"]
           end_date?: string | null
           facility_id: string
           facility_name: string
+          hours_per_week?: number | null
           id?: string
           is_active?: boolean | null
           is_primary?: boolean | null
@@ -15136,16 +15496,21 @@ export type Database = {
           updated_at?: string
         }
         Update: {
+          administrative_role_v2?: string | null
+          affiliation_type_v2?: string | null
           created_at?: string
           created_by?: string | null
           deactivated_at?: string | null
           deactivated_by?: string | null
           deactivation_reason?: string | null
           department?: string | null
+          employer_name?: string | null
+          employer_type_v2?: string | null
           employment_type?: Database["public"]["Enums"]["employment_type"]
           end_date?: string | null
           facility_id?: string
           facility_name?: string
+          hours_per_week?: number | null
           id?: string
           is_active?: boolean | null
           is_primary?: boolean | null
@@ -15163,6 +15528,13 @@ export type Database = {
             isOneToOne: false
             referencedRelation: "health_providers"
             referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "provider_affiliations_provider_id_fkey"
+            columns: ["provider_id"]
+            isOneToOne: false
+            referencedRelation: "provider_facility_context"
+            referencedColumns: ["provider_id"]
           },
         ]
       }
@@ -15245,6 +15617,13 @@ export type Database = {
             referencedRelation: "health_providers"
             referencedColumns: ["id"]
           },
+          {
+            foreignKeyName: "provider_cpd_activities_provider_id_fkey"
+            columns: ["provider_id"]
+            isOneToOne: false
+            referencedRelation: "provider_facility_context"
+            referencedColumns: ["provider_id"]
+          },
         ]
       }
       provider_cpd_cycles: {
@@ -15297,6 +15676,13 @@ export type Database = {
             isOneToOne: false
             referencedRelation: "health_providers"
             referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "provider_cpd_cycles_provider_id_fkey"
+            columns: ["provider_id"]
+            isOneToOne: false
+            referencedRelation: "provider_facility_context"
+            referencedColumns: ["provider_id"]
           },
         ]
       }
@@ -15359,6 +15745,13 @@ export type Database = {
             isOneToOne: false
             referencedRelation: "health_providers"
             referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "provider_dependents_provider_id_fkey"
+            columns: ["provider_id"]
+            isOneToOne: false
+            referencedRelation: "provider_facility_context"
+            referencedColumns: ["provider_id"]
           },
         ]
       }
@@ -15445,6 +15838,13 @@ export type Database = {
             isOneToOne: false
             referencedRelation: "health_providers"
             referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "provider_disciplinary_provider_id_fkey"
+            columns: ["provider_id"]
+            isOneToOne: false
+            referencedRelation: "provider_facility_context"
+            referencedColumns: ["provider_id"]
           },
         ]
       }
@@ -15549,6 +15949,13 @@ export type Database = {
             referencedRelation: "health_providers"
             referencedColumns: ["id"]
           },
+          {
+            foreignKeyName: "provider_documents_provider_id_fkey"
+            columns: ["provider_id"]
+            isOneToOne: false
+            referencedRelation: "provider_facility_context"
+            referencedColumns: ["provider_id"]
+          },
         ]
       }
       provider_education: {
@@ -15632,6 +16039,13 @@ export type Database = {
             referencedRelation: "health_providers"
             referencedColumns: ["id"]
           },
+          {
+            foreignKeyName: "provider_education_provider_id_fkey"
+            columns: ["provider_id"]
+            isOneToOne: false
+            referencedRelation: "provider_facility_context"
+            referencedColumns: ["provider_id"]
+          },
         ]
       }
       provider_emergency_contacts: {
@@ -15690,6 +16104,13 @@ export type Database = {
             isOneToOne: false
             referencedRelation: "health_providers"
             referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "provider_emergency_contacts_provider_id_fkey"
+            columns: ["provider_id"]
+            isOneToOne: false
+            referencedRelation: "provider_facility_context"
+            referencedColumns: ["provider_id"]
           },
         ]
       }
@@ -15792,11 +16213,25 @@ export type Database = {
             referencedColumns: ["facility_id"]
           },
           {
+            foreignKeyName: "provider_employment_history_facility_id_fkey"
+            columns: ["facility_id"]
+            isOneToOne: false
+            referencedRelation: "provider_facility_context"
+            referencedColumns: ["facility_id"]
+          },
+          {
             foreignKeyName: "provider_employment_history_provider_id_fkey"
             columns: ["provider_id"]
             isOneToOne: false
             referencedRelation: "health_providers"
             referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "provider_employment_history_provider_id_fkey"
+            columns: ["provider_id"]
+            isOneToOne: false
+            referencedRelation: "provider_facility_context"
+            referencedColumns: ["provider_id"]
           },
         ]
       }
@@ -15869,11 +16304,25 @@ export type Database = {
             referencedColumns: ["facility_id"]
           },
           {
+            foreignKeyName: "provider_facility_ownership_facility_id_fkey"
+            columns: ["facility_id"]
+            isOneToOne: false
+            referencedRelation: "provider_facility_context"
+            referencedColumns: ["facility_id"]
+          },
+          {
             foreignKeyName: "provider_facility_ownership_provider_id_fkey"
             columns: ["provider_id"]
             isOneToOne: false
             referencedRelation: "health_providers"
             referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "provider_facility_ownership_provider_id_fkey"
+            columns: ["provider_id"]
+            isOneToOne: false
+            referencedRelation: "provider_facility_context"
+            referencedColumns: ["provider_id"]
           },
         ]
       }
@@ -15930,6 +16379,13 @@ export type Database = {
             isOneToOne: false
             referencedRelation: "health_providers"
             referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "provider_identifiers_provider_id_fkey"
+            columns: ["provider_id"]
+            isOneToOne: false
+            referencedRelation: "provider_facility_context"
+            referencedColumns: ["provider_id"]
           },
         ]
       }
@@ -16006,11 +16462,25 @@ export type Database = {
             referencedColumns: ["id"]
           },
           {
+            foreignKeyName: "provider_leave_acting_replacement_id_fkey"
+            columns: ["acting_replacement_id"]
+            isOneToOne: false
+            referencedRelation: "provider_facility_context"
+            referencedColumns: ["provider_id"]
+          },
+          {
             foreignKeyName: "provider_leave_provider_id_fkey"
             columns: ["provider_id"]
             isOneToOne: false
             referencedRelation: "health_providers"
             referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "provider_leave_provider_id_fkey"
+            columns: ["provider_id"]
+            isOneToOne: false
+            referencedRelation: "provider_facility_context"
+            referencedColumns: ["provider_id"]
           },
         ]
       }
@@ -16085,6 +16555,13 @@ export type Database = {
             isOneToOne: false
             referencedRelation: "health_providers"
             referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "provider_licenses_provider_id_fkey"
+            columns: ["provider_id"]
+            isOneToOne: false
+            referencedRelation: "provider_facility_context"
+            referencedColumns: ["provider_id"]
           },
         ]
       }
@@ -16191,11 +16668,25 @@ export type Database = {
             referencedColumns: ["id"]
           },
           {
+            foreignKeyName: "provider_performance_evaluator_id_fkey"
+            columns: ["evaluator_id"]
+            isOneToOne: false
+            referencedRelation: "provider_facility_context"
+            referencedColumns: ["provider_id"]
+          },
+          {
             foreignKeyName: "provider_performance_provider_id_fkey"
             columns: ["provider_id"]
             isOneToOne: false
             referencedRelation: "health_providers"
             referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "provider_performance_provider_id_fkey"
+            columns: ["provider_id"]
+            isOneToOne: false
+            referencedRelation: "provider_facility_context"
+            referencedColumns: ["provider_id"]
           },
         ]
       }
@@ -16275,6 +16766,13 @@ export type Database = {
             referencedColumns: ["id"]
           },
           {
+            foreignKeyName: "provider_position_changes_affiliation_id_fkey"
+            columns: ["affiliation_id"]
+            isOneToOne: false
+            referencedRelation: "provider_facility_context"
+            referencedColumns: ["affiliation_id"]
+          },
+          {
             foreignKeyName: "provider_position_changes_new_facility_id_fkey"
             columns: ["new_facility_id"]
             isOneToOne: false
@@ -16296,6 +16794,13 @@ export type Database = {
             referencedColumns: ["facility_id"]
           },
           {
+            foreignKeyName: "provider_position_changes_new_facility_id_fkey"
+            columns: ["new_facility_id"]
+            isOneToOne: false
+            referencedRelation: "provider_facility_context"
+            referencedColumns: ["facility_id"]
+          },
+          {
             foreignKeyName: "provider_position_changes_previous_facility_id_fkey"
             columns: ["previous_facility_id"]
             isOneToOne: false
@@ -16314,6 +16819,13 @@ export type Database = {
             columns: ["previous_facility_id"]
             isOneToOne: false
             referencedRelation: "facility_operations_dashboard"
+            referencedColumns: ["facility_id"]
+          },
+          {
+            foreignKeyName: "provider_position_changes_previous_facility_id_fkey"
+            columns: ["previous_facility_id"]
+            isOneToOne: false
+            referencedRelation: "provider_facility_context"
             referencedColumns: ["facility_id"]
           },
           {
@@ -16322,6 +16834,13 @@ export type Database = {
             isOneToOne: false
             referencedRelation: "health_providers"
             referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "provider_position_changes_provider_id_fkey"
+            columns: ["provider_id"]
+            isOneToOne: false
+            referencedRelation: "provider_facility_context"
+            referencedColumns: ["provider_id"]
           },
         ]
       }
@@ -16409,11 +16928,25 @@ export type Database = {
             referencedColumns: ["facility_id"]
           },
           {
+            foreignKeyName: "provider_privileges_facility_id_fkey"
+            columns: ["facility_id"]
+            isOneToOne: false
+            referencedRelation: "provider_facility_context"
+            referencedColumns: ["facility_id"]
+          },
+          {
             foreignKeyName: "provider_privileges_provider_id_fkey"
             columns: ["provider_id"]
             isOneToOne: false
             referencedRelation: "health_providers"
             referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "provider_privileges_provider_id_fkey"
+            columns: ["provider_id"]
+            isOneToOne: false
+            referencedRelation: "provider_facility_context"
+            referencedColumns: ["provider_id"]
           },
         ]
       }
@@ -16629,6 +17162,13 @@ export type Database = {
             referencedRelation: "facility_operations_dashboard"
             referencedColumns: ["facility_id"]
           },
+          {
+            foreignKeyName: "provider_registry_records_facility_id_fkey"
+            columns: ["facility_id"]
+            isOneToOne: false
+            referencedRelation: "provider_facility_context"
+            referencedColumns: ["facility_id"]
+          },
         ]
       }
       provider_salary: {
@@ -16714,6 +17254,13 @@ export type Database = {
             isOneToOne: false
             referencedRelation: "health_providers"
             referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "provider_salary_provider_id_fkey"
+            columns: ["provider_id"]
+            isOneToOne: false
+            referencedRelation: "provider_facility_context"
+            referencedColumns: ["provider_id"]
           },
         ]
       }
@@ -16818,6 +17365,13 @@ export type Database = {
             isOneToOne: false
             referencedRelation: "health_providers"
             referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "provider_state_transitions_provider_id_fkey"
+            columns: ["provider_id"]
+            isOneToOne: false
+            referencedRelation: "provider_facility_context"
+            referencedColumns: ["provider_id"]
           },
         ]
       }
@@ -16928,6 +17482,13 @@ export type Database = {
             isOneToOne: false
             referencedRelation: "health_providers"
             referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "provider_training_provider_id_fkey"
+            columns: ["provider_id"]
+            isOneToOne: false
+            referencedRelation: "provider_facility_context"
+            referencedColumns: ["provider_id"]
           },
         ]
       }
@@ -17225,6 +17786,13 @@ export type Database = {
             referencedColumns: ["facility_id"]
           },
           {
+            foreignKeyName: "queue_definitions_facility_id_fkey"
+            columns: ["facility_id"]
+            isOneToOne: false
+            referencedRelation: "provider_facility_context"
+            referencedColumns: ["facility_id"]
+          },
+          {
             foreignKeyName: "queue_definitions_pool_id_fkey"
             columns: ["pool_id"]
             isOneToOne: false
@@ -17321,6 +17889,13 @@ export type Database = {
             columns: ["facility_id"]
             isOneToOne: true
             referencedRelation: "facility_operations_dashboard"
+            referencedColumns: ["facility_id"]
+          },
+          {
+            foreignKeyName: "queue_facility_config_facility_id_fkey"
+            columns: ["facility_id"]
+            isOneToOne: true
+            referencedRelation: "provider_facility_context"
             referencedColumns: ["facility_id"]
           },
         ]
@@ -17553,6 +18128,13 @@ export type Database = {
             referencedRelation: "facility_operations_dashboard"
             referencedColumns: ["facility_id"]
           },
+          {
+            foreignKeyName: "queue_pathways_facility_id_fkey"
+            columns: ["facility_id"]
+            isOneToOne: false
+            referencedRelation: "provider_facility_context"
+            referencedColumns: ["facility_id"]
+          },
         ]
       }
       queue_transitions: {
@@ -17722,6 +18304,13 @@ export type Database = {
             columns: ["facility_id"]
             isOneToOne: false
             referencedRelation: "facility_operations_dashboard"
+            referencedColumns: ["facility_id"]
+          },
+          {
+            foreignKeyName: "receipts_facility_id_fkey"
+            columns: ["facility_id"]
+            isOneToOne: false
+            referencedRelation: "provider_facility_context"
             referencedColumns: ["facility_id"]
           },
           {
@@ -18911,6 +19500,13 @@ export type Database = {
             referencedColumns: ["facility_id"]
           },
           {
+            foreignKeyName: "refunds_facility_id_fkey"
+            columns: ["facility_id"]
+            isOneToOne: false
+            referencedRelation: "provider_facility_context"
+            referencedColumns: ["facility_id"]
+          },
+          {
             foreignKeyName: "refunds_original_receipt_id_fkey"
             columns: ["original_receipt_id"]
             isOneToOne: false
@@ -19316,6 +19912,13 @@ export type Database = {
             referencedRelation: "facility_operations_dashboard"
             referencedColumns: ["facility_id"]
           },
+          {
+            foreignKeyName: "roster_audit_log_facility_id_fkey"
+            columns: ["facility_id"]
+            isOneToOne: false
+            referencedRelation: "provider_facility_context"
+            referencedColumns: ["facility_id"]
+          },
         ]
       }
       roster_plans: {
@@ -19381,6 +19984,13 @@ export type Database = {
             columns: ["facility_id"]
             isOneToOne: false
             referencedRelation: "facility_operations_dashboard"
+            referencedColumns: ["facility_id"]
+          },
+          {
+            foreignKeyName: "roster_plans_facility_id_fkey"
+            columns: ["facility_id"]
+            isOneToOne: false
+            referencedRelation: "provider_facility_context"
             referencedColumns: ["facility_id"]
           },
         ]
@@ -19588,6 +20198,13 @@ export type Database = {
             referencedRelation: "facility_operations_dashboard"
             referencedColumns: ["facility_id"]
           },
+          {
+            foreignKeyName: "settlement_reconciliations_facility_id_fkey"
+            columns: ["facility_id"]
+            isOneToOne: false
+            referencedRelation: "provider_facility_context"
+            referencedColumns: ["facility_id"]
+          },
         ]
       }
       shift_assignments: {
@@ -19787,6 +20404,13 @@ export type Database = {
             referencedRelation: "facility_operations_dashboard"
             referencedColumns: ["facility_id"]
           },
+          {
+            foreignKeyName: "shift_definitions_facility_id_fkey"
+            columns: ["facility_id"]
+            isOneToOne: false
+            referencedRelation: "provider_facility_context"
+            referencedColumns: ["facility_id"]
+          },
         ]
       }
       shift_handoffs: {
@@ -19967,6 +20591,13 @@ export type Database = {
             referencedColumns: ["facility_id"]
           },
           {
+            foreignKeyName: "shifts_facility_id_fkey"
+            columns: ["facility_id"]
+            isOneToOne: false
+            referencedRelation: "provider_facility_context"
+            referencedColumns: ["facility_id"]
+          },
+          {
             foreignKeyName: "shifts_provider_id_fkey"
             columns: ["provider_id"]
             isOneToOne: false
@@ -20141,6 +20772,13 @@ export type Database = {
             columns: ["facility_id"]
             isOneToOne: false
             referencedRelation: "facility_operations_dashboard"
+            referencedColumns: ["facility_id"]
+          },
+          {
+            foreignKeyName: "sorting_desk_metrics_facility_id_fkey"
+            columns: ["facility_id"]
+            isOneToOne: false
+            referencedRelation: "provider_facility_context"
             referencedColumns: ["facility_id"]
           },
           {
@@ -20332,6 +20970,13 @@ export type Database = {
             columns: ["facility_id"]
             isOneToOne: false
             referencedRelation: "facility_operations_dashboard"
+            referencedColumns: ["facility_id"]
+          },
+          {
+            foreignKeyName: "sorting_sessions_facility_id_fkey"
+            columns: ["facility_id"]
+            isOneToOne: false
+            referencedRelation: "provider_facility_context"
             referencedColumns: ["facility_id"]
           },
           {
@@ -20589,6 +21234,13 @@ export type Database = {
             columns: ["referral_lab_id"]
             isOneToOne: false
             referencedRelation: "facility_operations_dashboard"
+            referencedColumns: ["facility_id"]
+          },
+          {
+            foreignKeyName: "specimens_referral_lab_id_fkey"
+            columns: ["referral_lab_id"]
+            isOneToOne: false
+            referencedRelation: "provider_facility_context"
             referencedColumns: ["facility_id"]
           },
         ]
@@ -21209,6 +21861,13 @@ export type Database = {
             referencedRelation: "facility_operations_dashboard"
             referencedColumns: ["facility_id"]
           },
+          {
+            foreignKeyName: "tariffs_facility_id_fkey"
+            columns: ["facility_id"]
+            isOneToOne: false
+            referencedRelation: "provider_facility_context"
+            referencedColumns: ["facility_id"]
+          },
         ]
       }
       teleconsult_access_log: {
@@ -21572,6 +22231,13 @@ export type Database = {
             referencedColumns: ["facility_id"]
           },
           {
+            foreignKeyName: "teleconsult_responses_consultant_facility_id_fkey"
+            columns: ["consultant_facility_id"]
+            isOneToOne: false
+            referencedRelation: "provider_facility_context"
+            referencedColumns: ["facility_id"]
+          },
+          {
             foreignKeyName: "teleconsult_responses_patient_id_fkey"
             columns: ["patient_id"]
             isOneToOne: false
@@ -21604,6 +22270,13 @@ export type Database = {
             columns: ["transfer_facility_id"]
             isOneToOne: false
             referencedRelation: "facility_operations_dashboard"
+            referencedColumns: ["facility_id"]
+          },
+          {
+            foreignKeyName: "teleconsult_responses_transfer_facility_id_fkey"
+            columns: ["transfer_facility_id"]
+            isOneToOne: false
+            referencedRelation: "provider_facility_context"
             referencedColumns: ["facility_id"]
           },
         ]
@@ -21749,6 +22422,13 @@ export type Database = {
             referencedColumns: ["facility_id"]
           },
           {
+            foreignKeyName: "teleconsult_sessions_consulting_facility_id_fkey"
+            columns: ["consulting_facility_id"]
+            isOneToOne: false
+            referencedRelation: "provider_facility_context"
+            referencedColumns: ["facility_id"]
+          },
+          {
             foreignKeyName: "teleconsult_sessions_patient_id_fkey"
             columns: ["patient_id"]
             isOneToOne: false
@@ -21777,6 +22457,13 @@ export type Database = {
             referencedColumns: ["facility_id"]
           },
           {
+            foreignKeyName: "teleconsult_sessions_referring_facility_id_fkey"
+            columns: ["referring_facility_id"]
+            isOneToOne: false
+            referencedRelation: "provider_facility_context"
+            referencedColumns: ["facility_id"]
+          },
+          {
             foreignKeyName: "teleconsult_sessions_routed_to_facility_id_fkey"
             columns: ["routed_to_facility_id"]
             isOneToOne: false
@@ -21795,6 +22482,13 @@ export type Database = {
             columns: ["routed_to_facility_id"]
             isOneToOne: false
             referencedRelation: "facility_operations_dashboard"
+            referencedColumns: ["facility_id"]
+          },
+          {
+            foreignKeyName: "teleconsult_sessions_routed_to_facility_id_fkey"
+            columns: ["routed_to_facility_id"]
+            isOneToOne: false
+            referencedRelation: "provider_facility_context"
             referencedColumns: ["facility_id"]
           },
         ]
@@ -21896,6 +22590,13 @@ export type Database = {
             referencedRelation: "facility_operations_dashboard"
             referencedColumns: ["facility_id"]
           },
+          {
+            foreignKeyName: "telemedicine_user_roles_facility_id_fkey"
+            columns: ["facility_id"]
+            isOneToOne: false
+            referencedRelation: "provider_facility_context"
+            referencedColumns: ["facility_id"]
+          },
         ]
       }
       temporary_patient_identities: {
@@ -21982,6 +22683,13 @@ export type Database = {
             columns: ["facility_id"]
             isOneToOne: false
             referencedRelation: "facility_operations_dashboard"
+            referencedColumns: ["facility_id"]
+          },
+          {
+            foreignKeyName: "temporary_patient_identities_facility_id_fkey"
+            columns: ["facility_id"]
+            isOneToOne: false
+            referencedRelation: "provider_facility_context"
             referencedColumns: ["facility_id"]
           },
           {
@@ -22425,6 +23133,13 @@ export type Database = {
             columns: ["destination_facility_id"]
             isOneToOne: false
             referencedRelation: "facility_operations_dashboard"
+            referencedColumns: ["facility_id"]
+          },
+          {
+            foreignKeyName: "transfer_summaries_destination_facility_id_fkey"
+            columns: ["destination_facility_id"]
+            isOneToOne: false
+            referencedRelation: "provider_facility_context"
             referencedColumns: ["facility_id"]
           },
           {
@@ -23216,6 +23931,13 @@ export type Database = {
             referencedRelation: "facility_operations_dashboard"
             referencedColumns: ["facility_id"]
           },
+          {
+            foreignKeyName: "virtual_pools_anchor_facility_id_fkey"
+            columns: ["anchor_facility_id"]
+            isOneToOne: false
+            referencedRelation: "provider_facility_context"
+            referencedColumns: ["facility_id"]
+          },
         ]
       }
       visit_cost_summaries: {
@@ -23305,6 +24027,13 @@ export type Database = {
             columns: ["facility_id"]
             isOneToOne: false
             referencedRelation: "facility_operations_dashboard"
+            referencedColumns: ["facility_id"]
+          },
+          {
+            foreignKeyName: "visit_cost_summaries_facility_id_fkey"
+            columns: ["facility_id"]
+            isOneToOne: false
+            referencedRelation: "provider_facility_context"
             referencedColumns: ["facility_id"]
           },
           {
@@ -23428,6 +24157,13 @@ export type Database = {
             columns: ["facility_id"]
             isOneToOne: false
             referencedRelation: "facility_operations_dashboard"
+            referencedColumns: ["facility_id"]
+          },
+          {
+            foreignKeyName: "visit_financial_accounts_facility_id_fkey"
+            columns: ["facility_id"]
+            isOneToOne: false
+            referencedRelation: "provider_facility_context"
             referencedColumns: ["facility_id"]
           },
           {
@@ -23636,6 +24372,13 @@ export type Database = {
             referencedColumns: ["facility_id"]
           },
           {
+            foreignKeyName: "visit_summaries_facility_id_fkey"
+            columns: ["facility_id"]
+            isOneToOne: false
+            referencedRelation: "provider_facility_context"
+            referencedColumns: ["facility_id"]
+          },
+          {
             foreignKeyName: "visit_summaries_patient_id_fkey"
             columns: ["patient_id"]
             isOneToOne: false
@@ -23787,6 +24530,13 @@ export type Database = {
             columns: ["facility_id"]
             isOneToOne: false
             referencedRelation: "facility_operations_dashboard"
+            referencedColumns: ["facility_id"]
+          },
+          {
+            foreignKeyName: "visits_facility_id_fkey"
+            columns: ["facility_id"]
+            isOneToOne: false
+            referencedRelation: "provider_facility_context"
             referencedColumns: ["facility_id"]
           },
           {
@@ -25142,6 +25892,13 @@ export type Database = {
             referencedColumns: ["facility_id"]
           },
           {
+            foreignKeyName: "workspaces_facility_id_fkey"
+            columns: ["facility_id"]
+            isOneToOne: false
+            referencedRelation: "provider_facility_context"
+            referencedColumns: ["facility_id"]
+          },
+          {
             foreignKeyName: "workspaces_parent_workspace_id_fkey"
             columns: ["parent_workspace_id"]
             isOneToOne: false
@@ -25199,6 +25956,37 @@ export type Database = {
           sorting_pending?: never
           stalled_flows?: never
           transfers_pending?: never
+        }
+        Relationships: []
+      }
+      provider_facility_context: {
+        Row: {
+          administrative_role: string | null
+          affiliation_id: string | null
+          affiliation_privileges: string[] | null
+          affiliation_type: string | null
+          can_access_facility: boolean | null
+          context_label: string | null
+          department: string | null
+          employer_name: string | null
+          employer_type: string | null
+          employment_status: string | null
+          employment_type: Database["public"]["Enums"]["employment_type"] | null
+          facility_id: string | null
+          facility_name: string | null
+          facility_type: string | null
+          hours_per_week: number | null
+          is_operator: boolean | null
+          is_pic: boolean | null
+          is_primary: boolean | null
+          job_title: string | null
+          level_of_care: string | null
+          ownership_percentage: number | null
+          ownership_type: string | null
+          provider_id: string | null
+          provider_name: string | null
+          user_id: string | null
+          varapi_id: string | null
         }
         Relationships: []
       }
@@ -25343,6 +26131,21 @@ export type Database = {
         Returns: number
       }
       get_next_queue_sequence: { Args: { p_queue_id: string }; Returns: number }
+      get_provider_facilities: {
+        Args: { _user_id: string }
+        Returns: {
+          can_access: boolean
+          context_label: string
+          facility_id: string
+          facility_name: string
+          facility_type: string
+          is_owner: boolean
+          is_pic: boolean
+          is_primary: boolean
+          level_of_care: string
+          privileges: string[]
+        }[]
+      }
       get_queue_metrics: {
         Args: { p_queue_id: string }
         Returns: {
@@ -25439,6 +26242,23 @@ export type Database = {
         | "digital_health_manager"
         | "quality_assurance_officer"
         | "regulator_inspector"
+      administrative_role:
+        | "ceo"
+        | "medical_director"
+        | "nursing_director"
+        | "hod"
+        | "unit_lead"
+        | "matron"
+        | "sister_in_charge"
+        | "coordinator"
+        | "supervisor"
+      affiliation_type:
+        | "employed"
+        | "contracted"
+        | "honorary"
+        | "locum"
+        | "volunteer"
+        | "student"
       app_role: "admin" | "moderator" | "user"
       approval_status: "pending" | "approved" | "suspended" | "rejected"
       arrival_mode: "walk_in" | "appointment" | "referral" | "emergency"
@@ -25614,6 +26434,15 @@ export type Database = {
         | "read_write"
         | "orders_only"
         | "notes_only"
+      employer_type:
+        | "facility"
+        | "mohcc"
+        | "ngo"
+        | "agency"
+        | "self"
+        | "university"
+        | "mission"
+        | "private_company"
       employment_type:
         | "permanent"
         | "contract"
@@ -26038,6 +26867,25 @@ export const Constants = {
         "quality_assurance_officer",
         "regulator_inspector",
       ],
+      administrative_role: [
+        "ceo",
+        "medical_director",
+        "nursing_director",
+        "hod",
+        "unit_lead",
+        "matron",
+        "sister_in_charge",
+        "coordinator",
+        "supervisor",
+      ],
+      affiliation_type: [
+        "employed",
+        "contracted",
+        "honorary",
+        "locum",
+        "volunteer",
+        "student",
+      ],
       app_role: ["admin", "moderator", "user"],
       approval_status: ["pending", "approved", "suspended", "rejected"],
       arrival_mode: ["walk_in", "appointment", "referral", "emergency"],
@@ -26231,6 +27079,16 @@ export const Constants = {
         "read_write",
         "orders_only",
         "notes_only",
+      ],
+      employer_type: [
+        "facility",
+        "mohcc",
+        "ngo",
+        "agency",
+        "self",
+        "university",
+        "mission",
+        "private_company",
       ],
       employment_type: [
         "permanent",
