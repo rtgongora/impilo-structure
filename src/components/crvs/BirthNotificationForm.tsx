@@ -212,20 +212,19 @@ export function BirthNotificationForm({
     try {
       const { error } = await supabase
         .from('birth_notifications')
-        .insert({
-          status: 'draft',
+        .insert([{
           source: 'facility',
           child_given_names: formData.childGivenNames || null,
           child_family_name: formData.childFamilyName || null,
-          child_sex: formData.childSex,
-          date_of_birth: formData.dateOfBirth,
+          child_sex: formData.childSex || 'unknown',
+          date_of_birth: formData.dateOfBirth || new Date().toISOString().split('T')[0],
           time_of_birth: formData.timeOfBirth || null,
           is_date_estimated: formData.isDateEstimated,
           birth_weight_grams: formData.birthWeightGrams ? parseInt(formData.birthWeightGrams) : null,
           plurality: formData.plurality,
           birth_order: parseInt(formData.birthOrder) || 1,
-          mother_given_names: formData.motherGivenNames,
-          mother_family_name: formData.motherFamilyName,
+          mother_given_names: formData.motherGivenNames || 'Unknown',
+          mother_family_name: formData.motherFamilyName || 'Unknown',
           mother_maiden_name: formData.motherMaidenName || null,
           mother_date_of_birth: formData.motherDateOfBirth || null,
           mother_national_id: formData.motherNationalId || null,
@@ -260,14 +259,20 @@ export function BirthNotificationForm({
           birth_attendant_role: formData.birthAttendantRole || null,
           birth_attendant_qualification: formData.birthAttendantQualification || null,
           notifier_role: formData.notifierRole,
-          notifier_name: formData.notifierName,
+          notifier_name: formData.notifierName || 'Draft User',
           notifier_contact: formData.notifierContact || null,
           notifier_relationship: formData.notifierRelationship || null,
           is_late_registration: formData.isLateRegistration,
           late_registration_reason: formData.lateRegistrationReason || null,
           encounter_id: encounterId || null,
           visit_id: null,
-          birth_occurred_at: `${formData.dateOfBirth}T${formData.timeOfBirth || '00:00'}:00`,
+          birth_occurred_at: formData.dateOfBirth 
+            ? `${formData.dateOfBirth}T${formData.timeOfBirth || '00:00'}:00`
+            : new Date().toISOString(),
+        }] as any);
+
+      if (error) throw error;
+            : new Date().toISOString(),
         });
 
       if (error) throw error;
@@ -285,7 +290,7 @@ export function BirthNotificationForm({
     try {
       const { data, error } = await supabase
         .from('birth_notifications')
-        .insert({
+        .insert([{
           status: 'submitted',
           source: 'facility',
           child_given_names: formData.childGivenNames || null,
@@ -342,7 +347,7 @@ export function BirthNotificationForm({
           visit_id: null,
           birth_occurred_at: `${formData.dateOfBirth}T${formData.timeOfBirth || '00:00'}:00`,
           submitted_at: new Date().toISOString(),
-        })
+        }] as any)
         .select()
         .single();
 

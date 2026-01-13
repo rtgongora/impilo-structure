@@ -183,7 +183,7 @@ export function DeathNotificationForm({
     try {
       const { data, error } = await supabase
         .from('death_notifications')
-        .insert({
+        .insert([{
           status: 'submitted',
           source: 'facility',
           deceased_given_names: formData.deceasedGivenNames,
@@ -192,34 +192,29 @@ export function DeathNotificationForm({
           deceased_date_of_birth: formData.deceasedDateOfBirth || null,
           deceased_national_id: formData.deceasedNationalId || null,
           deceased_passport: formData.deceasedPassport || null,
-          deceased_age_at_death: formData.deceasedAgeAtDeath ? parseInt(formData.deceasedAgeAtDeath) : null,
+          deceased_age_years: formData.deceasedAgeAtDeath ? parseInt(formData.deceasedAgeAtDeath) : null,
           deceased_occupation: formData.deceasedOccupation || null,
           deceased_marital_status: formData.deceasedMaritalStatus || null,
-          deceased_residence_province: formData.deceasedResidenceProvince || null,
-          deceased_residence_district: formData.deceasedResidenceDistrict || null,
+          residence_province: formData.deceasedResidenceProvince || null,
+          residence_district: formData.deceasedResidenceDistrict || null,
           date_of_death: formData.dateOfDeath,
           time_of_death: formData.timeOfDeath || null,
           is_date_estimated: formData.isDateEstimated,
-          manner_of_death: formData.mannerOfDeath,
-          place_of_death: formData.placeOfDeath,
+          manner_of_death: formData.mannerOfDeath as 'natural' | 'accident' | 'suicide' | 'homicide' | 'pending' | 'undetermined',
           facility_id: facilityId || null,
           community_province: formData.communityProvince || null,
           community_district: formData.communityDistrict || null,
           community_ward: formData.communityWard || null,
           community_village: formData.communityVillage || null,
-          cause_of_death_type: formData.causeOfDeathType,
-          primary_cause_of_death: formData.primaryCauseOfDeath || null,
-          secondary_causes: formData.secondaryCauses ? formData.secondaryCauses.split(',').map(s => s.trim()) : null,
-          disposal_method: formData.disposalMethod || null,
-          burial_permit_issued: formData.burialPermitIssued,
-          burial_permit_number: formData.burialPermitNumber || null,
-          informant_name: formData.informantName || null,
-          informant_relationship: formData.informantRelationship || null,
+          informant_name: formData.informantName || 'Unknown',
+          informant_relationship: formData.informantRelationship || 'Unknown',
           informant_contact: formData.informantContact || null,
+          notifier_name: formData.informantName || 'Unknown',
+          notifier_role: formData.notifierRole,
           encounter_id: encounterId || null,
           death_occurred_at: `${formData.dateOfDeath}T${formData.timeOfDeath || '00:00'}:00`,
           submitted_at: new Date().toISOString(),
-        })
+        }] as any)
         .select()
         .single();
 
@@ -243,19 +238,21 @@ export function DeathNotificationForm({
     try {
       const { error } = await supabase
         .from('death_notifications')
-        .insert({
-          status: 'draft',
+        .insert([{
           source: 'facility',
-          deceased_given_names: formData.deceasedGivenNames,
-          deceased_family_name: formData.deceasedFamilyName,
-          deceased_sex: formData.deceasedSex,
+          deceased_given_names: formData.deceasedGivenNames || 'Unknown',
+          deceased_family_name: formData.deceasedFamilyName || 'Unknown',
+          deceased_sex: formData.deceasedSex || 'unknown',
           date_of_death: formData.dateOfDeath || new Date().toISOString().split('T')[0],
           death_occurred_at: formData.dateOfDeath 
             ? `${formData.dateOfDeath}T${formData.timeOfDeath || '00:00'}:00`
             : new Date().toISOString(),
-          cause_of_death_type: formData.causeOfDeathType,
+          informant_name: formData.informantName || 'Draft User',
+          informant_relationship: formData.informantRelationship || 'Unknown',
+          notifier_name: formData.informantName || 'Draft User',
+          notifier_role: formData.notifierRole,
           facility_id: facilityId || null,
-        });
+        }] as any);
 
       if (error) throw error;
       toast.success("Draft saved successfully");
