@@ -21822,6 +21822,991 @@ export type Database = {
           },
         ]
       }
+      wellness_activity_logs: {
+        Row: {
+          active_minutes: number | null
+          activity_date: string
+          activity_type: string
+          calories_burned: number | null
+          created_at: string
+          device_name: string | null
+          distance_meters: number | null
+          duration_minutes: number | null
+          id: string
+          intensity: string | null
+          notes: string | null
+          source: string | null
+          steps: number | null
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          active_minutes?: number | null
+          activity_date?: string
+          activity_type: string
+          calories_burned?: number | null
+          created_at?: string
+          device_name?: string | null
+          distance_meters?: number | null
+          duration_minutes?: number | null
+          id?: string
+          intensity?: string | null
+          notes?: string | null
+          source?: string | null
+          steps?: number | null
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          active_minutes?: number | null
+          activity_date?: string
+          activity_type?: string
+          calories_burned?: number | null
+          created_at?: string
+          device_name?: string | null
+          distance_meters?: number | null
+          duration_minutes?: number | null
+          id?: string
+          intensity?: string | null
+          notes?: string | null
+          source?: string | null
+          steps?: number | null
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
+      wellness_challenge_participants: {
+        Row: {
+          challenge_id: string
+          completed_at: string | null
+          id: string
+          is_completed: boolean | null
+          joined_at: string
+          last_updated_at: string | null
+          progress_value: number | null
+          rank: number | null
+          user_id: string
+        }
+        Insert: {
+          challenge_id: string
+          completed_at?: string | null
+          id?: string
+          is_completed?: boolean | null
+          joined_at?: string
+          last_updated_at?: string | null
+          progress_value?: number | null
+          rank?: number | null
+          user_id: string
+        }
+        Update: {
+          challenge_id?: string
+          completed_at?: string | null
+          id?: string
+          is_completed?: boolean | null
+          joined_at?: string
+          last_updated_at?: string | null
+          progress_value?: number | null
+          rank?: number | null
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "wellness_challenge_participants_challenge_id_fkey"
+            columns: ["challenge_id"]
+            isOneToOne: false
+            referencedRelation: "wellness_challenges"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      wellness_challenges: {
+        Row: {
+          challenge_type: string
+          community_id: string | null
+          cover_image_url: string | null
+          created_at: string
+          created_by: string
+          description: string | null
+          end_date: string
+          has_leaderboard: boolean | null
+          id: string
+          is_public: boolean | null
+          max_participants: number | null
+          name: string
+          participant_count: number | null
+          prizes: string | null
+          rules: string | null
+          start_date: string
+          status: string | null
+          target_metric: string
+          target_unit: string
+          target_value: number
+          updated_at: string
+        }
+        Insert: {
+          challenge_type: string
+          community_id?: string | null
+          cover_image_url?: string | null
+          created_at?: string
+          created_by: string
+          description?: string | null
+          end_date: string
+          has_leaderboard?: boolean | null
+          id?: string
+          is_public?: boolean | null
+          max_participants?: number | null
+          name: string
+          participant_count?: number | null
+          prizes?: string | null
+          rules?: string | null
+          start_date: string
+          status?: string | null
+          target_metric: string
+          target_unit: string
+          target_value: number
+          updated_at?: string
+        }
+        Update: {
+          challenge_type?: string
+          community_id?: string | null
+          cover_image_url?: string | null
+          created_at?: string
+          created_by?: string
+          description?: string | null
+          end_date?: string
+          has_leaderboard?: boolean | null
+          id?: string
+          is_public?: boolean | null
+          max_participants?: number | null
+          name?: string
+          participant_count?: number | null
+          prizes?: string | null
+          rules?: string | null
+          start_date?: string
+          status?: string | null
+          target_metric?: string
+          target_unit?: string
+          target_value?: number
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "wellness_challenges_community_id_fkey"
+            columns: ["community_id"]
+            isOneToOne: false
+            referencedRelation: "wellness_communities"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      wellness_communities: {
+        Row: {
+          category: string
+          community_type: string
+          cover_image_url: string | null
+          created_at: string
+          created_by: string
+          description: string | null
+          icon_url: string | null
+          id: string
+          is_active: boolean | null
+          is_official: boolean | null
+          member_count: number | null
+          name: string
+          rules: string | null
+          updated_at: string
+        }
+        Insert: {
+          category: string
+          community_type?: string
+          cover_image_url?: string | null
+          created_at?: string
+          created_by: string
+          description?: string | null
+          icon_url?: string | null
+          id?: string
+          is_active?: boolean | null
+          is_official?: boolean | null
+          member_count?: number | null
+          name: string
+          rules?: string | null
+          updated_at?: string
+        }
+        Update: {
+          category?: string
+          community_type?: string
+          cover_image_url?: string | null
+          created_at?: string
+          created_by?: string
+          description?: string | null
+          icon_url?: string | null
+          id?: string
+          is_active?: boolean | null
+          is_official?: boolean | null
+          member_count?: number | null
+          name?: string
+          rules?: string | null
+          updated_at?: string
+        }
+        Relationships: []
+      }
+      wellness_community_members: {
+        Row: {
+          community_id: string
+          id: string
+          is_muted: boolean | null
+          joined_at: string
+          role: string | null
+          user_id: string
+        }
+        Insert: {
+          community_id: string
+          id?: string
+          is_muted?: boolean | null
+          joined_at?: string
+          role?: string | null
+          user_id: string
+        }
+        Update: {
+          community_id?: string
+          id?: string
+          is_muted?: boolean | null
+          joined_at?: string
+          role?: string | null
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "wellness_community_members_community_id_fkey"
+            columns: ["community_id"]
+            isOneToOne: false
+            referencedRelation: "wellness_communities"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      wellness_community_posts: {
+        Row: {
+          author_id: string
+          comments_count: number | null
+          community_id: string
+          content: string
+          created_at: string
+          id: string
+          is_hidden: boolean | null
+          is_pinned: boolean | null
+          likes_count: number | null
+          media_urls: string[] | null
+          post_type: string | null
+          updated_at: string
+        }
+        Insert: {
+          author_id: string
+          comments_count?: number | null
+          community_id: string
+          content: string
+          created_at?: string
+          id?: string
+          is_hidden?: boolean | null
+          is_pinned?: boolean | null
+          likes_count?: number | null
+          media_urls?: string[] | null
+          post_type?: string | null
+          updated_at?: string
+        }
+        Update: {
+          author_id?: string
+          comments_count?: number | null
+          community_id?: string
+          content?: string
+          created_at?: string
+          id?: string
+          is_hidden?: boolean | null
+          is_pinned?: boolean | null
+          likes_count?: number | null
+          media_urls?: string[] | null
+          post_type?: string | null
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "wellness_community_posts_community_id_fkey"
+            columns: ["community_id"]
+            isOneToOne: false
+            referencedRelation: "wellness_communities"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      wellness_device_connections: {
+        Row: {
+          connection_type: string | null
+          created_at: string
+          device_brand: string | null
+          device_id: string | null
+          device_model: string | null
+          device_type: string
+          id: string
+          is_active: boolean | null
+          last_synced_at: string | null
+          sync_settings: Json | null
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          connection_type?: string | null
+          created_at?: string
+          device_brand?: string | null
+          device_id?: string | null
+          device_model?: string | null
+          device_type: string
+          id?: string
+          is_active?: boolean | null
+          last_synced_at?: string | null
+          sync_settings?: Json | null
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          connection_type?: string | null
+          created_at?: string
+          device_brand?: string | null
+          device_id?: string | null
+          device_model?: string | null
+          device_type?: string
+          id?: string
+          is_active?: boolean | null
+          last_synced_at?: string | null
+          sync_settings?: Json | null
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
+      wellness_event_registrations: {
+        Row: {
+          attended_at: string | null
+          event_id: string
+          id: string
+          payment_reference: string | null
+          payment_status: string | null
+          registered_at: string
+          registration_status: string | null
+          user_id: string
+        }
+        Insert: {
+          attended_at?: string | null
+          event_id: string
+          id?: string
+          payment_reference?: string | null
+          payment_status?: string | null
+          registered_at?: string
+          registration_status?: string | null
+          user_id: string
+        }
+        Update: {
+          attended_at?: string | null
+          event_id?: string
+          id?: string
+          payment_reference?: string | null
+          payment_status?: string | null
+          registered_at?: string
+          registration_status?: string | null
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "wellness_event_registrations_event_id_fkey"
+            columns: ["event_id"]
+            isOneToOne: false
+            referencedRelation: "wellness_events"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      wellness_events: {
+        Row: {
+          category: string
+          community_id: string | null
+          cover_image_url: string | null
+          created_at: string
+          currency: string | null
+          current_participants: number | null
+          description: string | null
+          end_time: string | null
+          event_type: string
+          host_id: string | null
+          host_name: string | null
+          id: string
+          is_virtual: boolean | null
+          location: string | null
+          max_participants: number | null
+          price: number | null
+          registration_deadline: string | null
+          start_time: string
+          status: string | null
+          title: string
+          updated_at: string
+          virtual_link: string | null
+        }
+        Insert: {
+          category: string
+          community_id?: string | null
+          cover_image_url?: string | null
+          created_at?: string
+          currency?: string | null
+          current_participants?: number | null
+          description?: string | null
+          end_time?: string | null
+          event_type: string
+          host_id?: string | null
+          host_name?: string | null
+          id?: string
+          is_virtual?: boolean | null
+          location?: string | null
+          max_participants?: number | null
+          price?: number | null
+          registration_deadline?: string | null
+          start_time: string
+          status?: string | null
+          title: string
+          updated_at?: string
+          virtual_link?: string | null
+        }
+        Update: {
+          category?: string
+          community_id?: string | null
+          cover_image_url?: string | null
+          created_at?: string
+          currency?: string | null
+          current_participants?: number | null
+          description?: string | null
+          end_time?: string | null
+          event_type?: string
+          host_id?: string | null
+          host_name?: string | null
+          id?: string
+          is_virtual?: boolean | null
+          location?: string | null
+          max_participants?: number | null
+          price?: number | null
+          registration_deadline?: string | null
+          start_time?: string
+          status?: string | null
+          title?: string
+          updated_at?: string
+          virtual_link?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "wellness_events_community_id_fkey"
+            columns: ["community_id"]
+            isOneToOne: false
+            referencedRelation: "wellness_communities"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      wellness_goals: {
+        Row: {
+          created_at: string
+          goal_type: string
+          id: string
+          is_active: boolean | null
+          period: string
+          target_unit: string
+          target_value: number
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          goal_type: string
+          id?: string
+          is_active?: boolean | null
+          period?: string
+          target_unit: string
+          target_value: number
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          goal_type?: string
+          id?: string
+          is_active?: boolean | null
+          period?: string
+          target_unit?: string
+          target_value?: number
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
+      wellness_journal_entries: {
+        Row: {
+          content: string
+          created_at: string
+          entry_date: string
+          id: string
+          is_private: boolean | null
+          mood_at_writing: number | null
+          tags: string[] | null
+          title: string | null
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          content: string
+          created_at?: string
+          entry_date?: string
+          id?: string
+          is_private?: boolean | null
+          mood_at_writing?: number | null
+          tags?: string[] | null
+          title?: string | null
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          content?: string
+          created_at?: string
+          entry_date?: string
+          id?: string
+          is_private?: boolean | null
+          mood_at_writing?: number | null
+          tags?: string[] | null
+          title?: string | null
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
+      wellness_marketplace_services: {
+        Row: {
+          availability_schedule: Json | null
+          category: string
+          created_at: string
+          currency: string | null
+          description: string | null
+          duration_minutes: number | null
+          id: string
+          images: string[] | null
+          is_active: boolean | null
+          is_verified: boolean | null
+          is_virtual: boolean | null
+          location: string | null
+          price: number
+          provider_id: string
+          provider_name: string
+          provider_type: string
+          rating: number | null
+          review_count: number | null
+          service_type: string
+          title: string
+          updated_at: string
+        }
+        Insert: {
+          availability_schedule?: Json | null
+          category: string
+          created_at?: string
+          currency?: string | null
+          description?: string | null
+          duration_minutes?: number | null
+          id?: string
+          images?: string[] | null
+          is_active?: boolean | null
+          is_verified?: boolean | null
+          is_virtual?: boolean | null
+          location?: string | null
+          price: number
+          provider_id: string
+          provider_name: string
+          provider_type: string
+          rating?: number | null
+          review_count?: number | null
+          service_type: string
+          title: string
+          updated_at?: string
+        }
+        Update: {
+          availability_schedule?: Json | null
+          category?: string
+          created_at?: string
+          currency?: string | null
+          description?: string | null
+          duration_minutes?: number | null
+          id?: string
+          images?: string[] | null
+          is_active?: boolean | null
+          is_verified?: boolean | null
+          is_virtual?: boolean | null
+          location?: string | null
+          price?: number
+          provider_id?: string
+          provider_name?: string
+          provider_type?: string
+          rating?: number | null
+          review_count?: number | null
+          service_type?: string
+          title?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
+      wellness_mood_logs: {
+        Row: {
+          anxiety_level: number | null
+          created_at: string
+          energy_level: number | null
+          id: string
+          log_date: string
+          log_time: string | null
+          mood_rating: number
+          mood_tags: string[] | null
+          notes: string | null
+          stress_level: number | null
+          user_id: string
+        }
+        Insert: {
+          anxiety_level?: number | null
+          created_at?: string
+          energy_level?: number | null
+          id?: string
+          log_date?: string
+          log_time?: string | null
+          mood_rating: number
+          mood_tags?: string[] | null
+          notes?: string | null
+          stress_level?: number | null
+          user_id: string
+        }
+        Update: {
+          anxiety_level?: number | null
+          created_at?: string
+          energy_level?: number | null
+          id?: string
+          log_date?: string
+          log_time?: string | null
+          mood_rating?: number
+          mood_tags?: string[] | null
+          notes?: string | null
+          stress_level?: number | null
+          user_id?: string
+        }
+        Relationships: []
+      }
+      wellness_nutrition_logs: {
+        Row: {
+          calories: number | null
+          created_at: string
+          dietary_tags: string[] | null
+          id: string
+          log_date: string
+          log_time: string | null
+          meal_description: string | null
+          meal_type: string | null
+          notes: string | null
+          photo_url: string | null
+          user_id: string
+          water_intake_ml: number | null
+        }
+        Insert: {
+          calories?: number | null
+          created_at?: string
+          dietary_tags?: string[] | null
+          id?: string
+          log_date?: string
+          log_time?: string | null
+          meal_description?: string | null
+          meal_type?: string | null
+          notes?: string | null
+          photo_url?: string | null
+          user_id: string
+          water_intake_ml?: number | null
+        }
+        Update: {
+          calories?: number | null
+          created_at?: string
+          dietary_tags?: string[] | null
+          id?: string
+          log_date?: string
+          log_time?: string | null
+          meal_description?: string | null
+          meal_type?: string | null
+          notes?: string | null
+          photo_url?: string | null
+          user_id?: string
+          water_intake_ml?: number | null
+        }
+        Relationships: []
+      }
+      wellness_preventive_reminders: {
+        Row: {
+          completed_at: string | null
+          created_at: string
+          description: string | null
+          due_date: string | null
+          frequency: string | null
+          id: string
+          is_completed: boolean | null
+          is_dismissed: boolean | null
+          reminder_type: string
+          snoozed_until: string | null
+          source: string | null
+          title: string
+          user_id: string
+        }
+        Insert: {
+          completed_at?: string | null
+          created_at?: string
+          description?: string | null
+          due_date?: string | null
+          frequency?: string | null
+          id?: string
+          is_completed?: boolean | null
+          is_dismissed?: boolean | null
+          reminder_type: string
+          snoozed_until?: string | null
+          source?: string | null
+          title: string
+          user_id: string
+        }
+        Update: {
+          completed_at?: string | null
+          created_at?: string
+          description?: string | null
+          due_date?: string | null
+          frequency?: string | null
+          id?: string
+          is_completed?: boolean | null
+          is_dismissed?: boolean | null
+          reminder_type?: string
+          snoozed_until?: string | null
+          source?: string | null
+          title?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
+      wellness_service_bookings: {
+        Row: {
+          booking_date: string
+          booking_time: string | null
+          created_at: string
+          duration_minutes: number | null
+          id: string
+          notes: string | null
+          payment_amount: number | null
+          payment_reference: string | null
+          payment_status: string | null
+          provider_notes: string | null
+          rating: number | null
+          review: string | null
+          service_id: string
+          status: string | null
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          booking_date: string
+          booking_time?: string | null
+          created_at?: string
+          duration_minutes?: number | null
+          id?: string
+          notes?: string | null
+          payment_amount?: number | null
+          payment_reference?: string | null
+          payment_status?: string | null
+          provider_notes?: string | null
+          rating?: number | null
+          review?: string | null
+          service_id: string
+          status?: string | null
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          booking_date?: string
+          booking_time?: string | null
+          created_at?: string
+          duration_minutes?: number | null
+          id?: string
+          notes?: string | null
+          payment_amount?: number | null
+          payment_reference?: string | null
+          payment_status?: string | null
+          provider_notes?: string | null
+          rating?: number | null
+          review?: string | null
+          service_id?: string
+          status?: string | null
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "wellness_service_bookings_service_id_fkey"
+            columns: ["service_id"]
+            isOneToOne: false
+            referencedRelation: "wellness_marketplace_services"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      wellness_sleep_logs: {
+        Row: {
+          bedtime: string | null
+          created_at: string
+          device_name: string | null
+          duration_hours: number | null
+          id: string
+          nap_duration_minutes: number | null
+          naps_count: number | null
+          notes: string | null
+          quality_rating: number | null
+          sleep_date: string
+          source: string | null
+          user_id: string
+          wake_time: string | null
+        }
+        Insert: {
+          bedtime?: string | null
+          created_at?: string
+          device_name?: string | null
+          duration_hours?: number | null
+          id?: string
+          nap_duration_minutes?: number | null
+          naps_count?: number | null
+          notes?: string | null
+          quality_rating?: number | null
+          sleep_date: string
+          source?: string | null
+          user_id: string
+          wake_time?: string | null
+        }
+        Update: {
+          bedtime?: string | null
+          created_at?: string
+          device_name?: string | null
+          duration_hours?: number | null
+          id?: string
+          nap_duration_minutes?: number | null
+          naps_count?: number | null
+          notes?: string | null
+          quality_rating?: number | null
+          sleep_date?: string
+          source?: string | null
+          user_id?: string
+          wake_time?: string | null
+        }
+        Relationships: []
+      }
+      wellness_streaks: {
+        Row: {
+          created_at: string
+          current_streak: number | null
+          goal_id: string | null
+          id: string
+          last_achieved_date: string | null
+          longest_streak: number | null
+          streak_type: string
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          current_streak?: number | null
+          goal_id?: string | null
+          id?: string
+          last_achieved_date?: string | null
+          longest_streak?: number | null
+          streak_type: string
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          current_streak?: number | null
+          goal_id?: string | null
+          id?: string
+          last_achieved_date?: string | null
+          longest_streak?: number | null
+          streak_type?: string
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "wellness_streaks_goal_id_fkey"
+            columns: ["goal_id"]
+            isOneToOne: false
+            referencedRelation: "wellness_goals"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      wellness_vitals: {
+        Row: {
+          context: string | null
+          created_at: string
+          device_name: string | null
+          id: string
+          notes: string | null
+          promoted_at: string | null
+          promoted_by: string | null
+          promoted_to_clinical: boolean | null
+          recorded_at: string
+          shared_at: string | null
+          shared_with_provider: boolean | null
+          source: string | null
+          unit: string
+          user_id: string
+          value_numeric: number | null
+          value_secondary: number | null
+          vital_type: string
+        }
+        Insert: {
+          context?: string | null
+          created_at?: string
+          device_name?: string | null
+          id?: string
+          notes?: string | null
+          promoted_at?: string | null
+          promoted_by?: string | null
+          promoted_to_clinical?: boolean | null
+          recorded_at?: string
+          shared_at?: string | null
+          shared_with_provider?: boolean | null
+          source?: string | null
+          unit: string
+          user_id: string
+          value_numeric?: number | null
+          value_secondary?: number | null
+          vital_type: string
+        }
+        Update: {
+          context?: string | null
+          created_at?: string
+          device_name?: string | null
+          id?: string
+          notes?: string | null
+          promoted_at?: string | null
+          promoted_by?: string | null
+          promoted_to_clinical?: boolean | null
+          recorded_at?: string
+          shared_at?: string | null
+          shared_with_provider?: boolean | null
+          source?: string | null
+          unit?: string
+          user_id?: string
+          value_numeric?: number | null
+          value_secondary?: number | null
+          vital_type?: string
+        }
+        Relationships: []
+      }
       workspace_audit_log: {
         Row: {
           action: string
