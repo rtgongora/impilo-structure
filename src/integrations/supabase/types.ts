@@ -15830,14 +15830,12 @@ export type Database = {
           license_number: string | null
           password_reset_reason: string | null
           phone: string | null
-          primary_organization_id: string | null
           provider_registry_id: string | null
           role: Database["public"]["Enums"]["clinical_role"]
           specialty: string | null
           totp_enabled: boolean
           totp_secret: string | null
           updated_at: string
-          user_category: Database["public"]["Enums"]["user_category"] | null
           user_id: string
         }
         Insert: {
@@ -15857,14 +15855,12 @@ export type Database = {
           license_number?: string | null
           password_reset_reason?: string | null
           phone?: string | null
-          primary_organization_id?: string | null
           provider_registry_id?: string | null
           role?: Database["public"]["Enums"]["clinical_role"]
           specialty?: string | null
           totp_enabled?: boolean
           totp_secret?: string | null
           updated_at?: string
-          user_category?: Database["public"]["Enums"]["user_category"] | null
           user_id: string
         }
         Update: {
@@ -15884,25 +15880,15 @@ export type Database = {
           license_number?: string | null
           password_reset_reason?: string | null
           phone?: string | null
-          primary_organization_id?: string | null
           provider_registry_id?: string | null
           role?: Database["public"]["Enums"]["clinical_role"]
           specialty?: string | null
           totp_enabled?: boolean
           totp_secret?: string | null
           updated_at?: string
-          user_category?: Database["public"]["Enums"]["user_category"] | null
           user_id?: string
         }
-        Relationships: [
-          {
-            foreignKeyName: "profiles_primary_organization_id_fkey"
-            columns: ["primary_organization_id"]
-            isOneToOne: false
-            referencedRelation: "organizations"
-            referencedColumns: ["id"]
-          },
-        ]
+        Relationships: []
       }
       provider_affiliations: {
         Row: {
@@ -26686,6 +26672,10 @@ export type Database = {
       is_licensed_practitioner: { Args: { _user_id: string }; Returns: boolean }
       is_operational_supervisor: {
         Args: { _facility_id?: string; _user_id: string }
+        Returns: boolean
+      }
+      is_org_admin: {
+        Args: { _organization_id: string; _user_id: string }
         Returns: boolean
       }
       is_platform_superuser: { Args: { _user_id: string }; Returns: boolean }
