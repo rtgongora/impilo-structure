@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Users, LayoutDashboard, QrCode, Settings, GitBranch } from "lucide-react";
+import { Users, LayoutDashboard, QrCode, Settings, GitBranch, CalendarDays } from "lucide-react";
 import { 
   QueueWorkstation, 
   SupervisorDashboard, 
@@ -9,10 +9,11 @@ import {
   QueuePathwayEditor 
 } from "@/components/queue";
 import { SelfCheckInKiosk } from "@/components/booking/SelfCheckInKiosk";
+import { BookingManager } from "@/components/booking/BookingManager";
 import { AppLayout } from "@/components/layout/AppLayout";
 import { useQueueManagement } from "@/hooks/useQueueManagement";
 
-type TabValue = 'workstation' | 'supervisor' | 'check-in' | 'config' | 'pathways';
+type TabValue = 'workstation' | 'supervisor' | 'bookings' | 'check-in' | 'config' | 'pathways';
 
 const Queue = () => {
   const [activeTab, setActiveTab] = useState<TabValue>('workstation');
@@ -42,6 +43,10 @@ const Queue = () => {
               <LayoutDashboard className="h-3 w-3" />
               <span className="hidden sm:inline">Supervisor</span>
             </TabsTrigger>
+            <TabsTrigger value="bookings" className="flex items-center gap-1">
+              <CalendarDays className="h-3 w-3" />
+              <span className="hidden sm:inline">Bookings</span>
+            </TabsTrigger>
             <TabsTrigger value="check-in" className="flex items-center gap-1">
               <QrCode className="h-3 w-3" />
               <span className="hidden sm:inline">Check-In</span>
@@ -67,6 +72,9 @@ const Queue = () => {
                   setActiveTab('workstation');
                 }} 
               />
+            </TabsContent>
+            <TabsContent value="bookings" className="h-full mt-0">
+              <BookingManager />
             </TabsContent>
             <TabsContent value="check-in" className="h-full mt-0">
               <div className="max-w-md mx-auto">

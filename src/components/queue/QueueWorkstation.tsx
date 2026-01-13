@@ -23,15 +23,22 @@ import {
 } from '@/components/ui/dialog';
 import { Textarea } from '@/components/ui/textarea';
 import { Label } from '@/components/ui/label';
+import {
+  ResizableHandle,
+  ResizablePanel,
+  ResizablePanelGroup,
+} from '@/components/ui/resizable';
 import { 
   Phone, 
   Plus, 
   RefreshCw,
   Users,
   FileText,
+  CalendarCheck,
 } from 'lucide-react';
 import { QueueItemCard } from './QueueItemCard';
 import { QueueMetricsBar } from './QueueMetricsBar';
+import { QueueAppointmentsPanel } from './QueueAppointmentsPanel';
 import { useQueueManagement, useQueueItems } from '@/hooks/useQueueManagement';
 import { Skeleton } from '@/components/ui/skeleton';
 import type { QueueDefinition, QueuePriority, QueueItem } from '@/types/queue';
