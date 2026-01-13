@@ -1,15 +1,16 @@
 // WorkplaceSelectionHub - Post-login hub for selecting work context
 // Shows profile summary, all work locations, key alerts, and context selection
+// Supports: clinical facilities, above-site oversight, combined views, remote/pool work, and support mode
 
 import React, { useMemo } from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import { motion } from 'framer-motion';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { ScrollArea } from '@/components/ui/scroll-area';
-import { Separator } from '@/components/ui/separator';
 import { Skeleton } from '@/components/ui/skeleton';
+import { Separator } from '@/components/ui/separator';
 import {
   Building2,
   MapPin,
@@ -25,26 +26,47 @@ import {
   Map,
   Video,
   Heart,
-  Briefcase,
   Home,
   Wifi,
   Network,
+  Layers,
+  Settings,
+  Headphones,
+  Eye,
+  Stethoscope,
+  BarChart3,
+  Users,
+  Briefcase,
+  Lock,
+  Zap,
 } from 'lucide-react';
 import { useAuth } from '@/contexts/AuthContext';
 import { useProviderFacilities, type ProviderFacility } from '@/hooks/useProviderFacilities';
 import { useAboveSiteRole } from '@/hooks/useAboveSiteRole';
+import { useSystemRoles } from '@/hooks/useSystemRoles';
+import { useTelemedicinePools } from '@/hooks/useTelemedicinePools';
 import type { ContextOption } from '@/types/aboveSite';
-import impiloLogo from '@/assets/impilo-logo.png';
+import type { AccessMode } from '@/hooks/useActiveWorkContext';
 
 interface WorkplaceSelectionHubProps {
   onFacilitySelect: (facility: ProviderFacility) => void;
   onAboveSiteSelect: (
     roleId: string,
+    roleType: string,
     contextType: string,
     contextLabel: string,
-    jurisdiction?: { province?: string; district?: string; programme?: string }
+    jurisdiction?: { province?: string; district?: string; programme?: string; facilityIds?: string[] },
+    canAccessPatientData?: boolean,
+    canIntervene?: boolean
   ) => void;
-  onRemoteSelect: () => void;
+  onCombinedViewSelect: (
+    totalFacilities: number,
+    levels: string[],
+    regions: string[],
+    aboveSiteRoleId?: string
+  ) => void;
+  onRemoteSelect: (isClinical?: boolean, poolId?: string, poolName?: string) => void;
+  onSupportModeSelect?: (targetFacilityId?: string, targetFacilityName?: string, reason?: string) => void;
 }
 
 // Level of care display order and styling
@@ -78,7 +100,9 @@ const CONTEXT_ICONS: Record<string, React.ReactNode> = {
 export function WorkplaceSelectionHub({
   onFacilitySelect,
   onAboveSiteSelect,
+  onCombinedViewSelect,
   onRemoteSelect,
+  onSupportModeSelect,
 }: WorkplaceSelectionHubProps) {
   const { profile } = useAuth();
   const { facilities, loading: facilitiesLoading } = useProviderFacilities();
@@ -88,6 +112,8 @@ export function WorkplaceSelectionHub({
     availableContexts,
     loading: aboveSiteLoading 
   } = useAboveSiteRole();
+  const { isSuperAdmin, isSupportStaff, isManager, loading: systemRolesLoading } = useSystemRoles();
+  const { pools, hasPoolAssignment, loading: poolsLoading } = useTelemedicinePools();
 
   // Group facilities by level of care
   const groupedFacilities = useMemo(() => {
@@ -105,8 +131,31 @@ export function WorkplaceSelectionHub({
     });
   }, [facilities]);
 
-  const loading = facilitiesLoading || aboveSiteLoading;
-  const hasNoWorkplaces = !loading && facilities.length === 0 && !isAboveSiteUser;
+  // Calculate stats for combined view option
+  const facilityStats = useMemo(() => {
+    const levels = new Set<string>();
+    const regions = new Set<string>();
+    
+    facilities.forEach(f => {
+      if (f.level_of_care) levels.add(f.level_of_care);
+      // TODO: Extract region from facility data when available
+    });
+    
+    return {
+      total: facilities.length,
+      levels: Array.from(levels),
+      regions: Array.from(regions),
+    };
+  }, [facilities]);
+
+  const loading = facilitiesLoading || aboveSiteLoading || systemRolesLoading || poolsLoading;
+  const hasNoWorkplaces = !loading && facilities.length === 0 && !isAboveSiteUser && !isSuperAdmin && !hasPoolAssignment;
+  
+  // Determine if user should see combined view option
+  const showCombinedViewOption = facilities.length > 3 || (isManager && facilities.length > 1);
+  
+  // Determine if user has clinical access at any facility
+  const hasClinicalFacilities = facilities.some(f => f.can_access);
 
   const getDisplayName = () => {
     const role = profile?.role;
@@ -116,18 +165,46 @@ export function WorkplaceSelectionHub({
     return name;
   };
 
+  const getRoleDescription = () => {
+    if (isSuperAdmin) return 'System Administrator';
+    if (isSupportStaff) return 'Technical Support';
+    if (isManager) return 'Facility Manager';
+    if (isAboveSiteUser) return 'Oversight Role';
+    return profile?.role || 'Healthcare Worker';
+  };
+
   const handleAboveSiteClick = (context: ContextOption) => {
-    const roleId = aboveSiteRoles[0]?.id || '';
+    const role = aboveSiteRoles[0];
+    if (!role) return;
+    
     onAboveSiteSelect(
-      roleId,
+      role.id,
+      role.role_type,
       context.type,
       context.label,
       context.scope ? {
         province: context.scope.level === 'province' ? context.scope.value : undefined,
         district: context.scope.level === 'district' ? context.scope.value : undefined,
         programme: context.scope.level === 'programme' ? context.scope.value : undefined,
-      } : undefined
+      } : undefined,
+      role.can_access_patient_data,
+      role.can_intervene
     );
+  };
+
+  const handleCombinedViewClick = () => {
+    onCombinedViewSelect(
+      facilityStats.total,
+      facilityStats.levels,
+      facilityStats.regions,
+      aboveSiteRoles[0]?.id
+    );
+  };
+
+  const handleSupportModeClick = () => {
+    if (onSupportModeSelect) {
+      onSupportModeSelect();
+    }
   };
 
   return (
@@ -145,11 +222,17 @@ export function WorkplaceSelectionHub({
             <h2 className="text-xl font-bold truncate">{getDisplayName()}</h2>
             <div className="flex items-center gap-2 mt-1 flex-wrap">
               <Badge variant="secondary" className="capitalize">
-                {profile?.role || 'Provider'}
+                {getRoleDescription()}
               </Badge>
               {profile?.specialty && (
                 <Badge variant="outline" className="text-xs">
                   {profile.specialty}
+                </Badge>
+              )}
+              {isSuperAdmin && (
+                <Badge className="bg-rose-100 text-rose-700 border-rose-200 text-xs">
+                  <Shield className="h-3 w-3 mr-1" />
+                  Superadmin
                 </Badge>
               )}
             </div>
@@ -183,7 +266,7 @@ export function WorkplaceSelectionHub({
           Where are you working from today?
         </h3>
         <p className="text-sm text-muted-foreground mt-1">
-          Select your work location to access relevant modules and patient data
+          Select your work location to access relevant modules and data
         </p>
       </div>
 
@@ -212,7 +295,86 @@ export function WorkplaceSelectionHub({
             </Card>
           )}
 
-          {/* Facility Workplaces */}
+          {/* System Support Mode (Superadmin Only) */}
+          {!loading && isSuperAdmin && (
+            <div className="space-y-2">
+              <h4 className="text-xs font-medium text-muted-foreground uppercase tracking-wide px-1 flex items-center gap-1">
+                <Settings className="h-3.5 w-3.5" />
+                System Administration
+              </h4>
+              <motion.button
+                initial={{ opacity: 0, y: 10 }}
+                animate={{ opacity: 1, y: 0 }}
+                onClick={handleSupportModeClick}
+                className="w-full p-4 rounded-lg border-2 border-rose-200 bg-rose-50/50 hover:border-rose-400 hover:bg-rose-100/50 transition-all text-left flex items-center gap-4 group"
+              >
+                <div className="h-12 w-12 rounded-xl bg-rose-100 flex items-center justify-center text-rose-600 group-hover:bg-rose-600 group-hover:text-white transition-colors">
+                  <Headphones className="h-6 w-6" />
+                </div>
+                <div className="flex-1 min-w-0">
+                  <div className="flex items-center gap-2">
+                    <p className="font-medium">Technical Support Mode</p>
+                    <Badge className="bg-rose-100 text-rose-700 text-xs">Admin</Badge>
+                  </div>
+                  <p className="text-sm text-muted-foreground">
+                    Access any facility for technical support (no patient data)
+                  </p>
+                </div>
+                <ChevronRight className="h-5 w-5 text-muted-foreground group-hover:text-rose-600 transition-colors flex-shrink-0" />
+              </motion.button>
+            </div>
+          )}
+
+          {/* Combined/Aggregate View Option */}
+          {!loading && showCombinedViewOption && (
+            <div className="space-y-2">
+              <h4 className="text-xs font-medium text-muted-foreground uppercase tracking-wide px-1 flex items-center gap-1">
+                <Layers className="h-3.5 w-3.5" />
+                Aggregate Views
+              </h4>
+              <motion.button
+                initial={{ opacity: 0, y: 10 }}
+                animate={{ opacity: 1, y: 0 }}
+                onClick={handleCombinedViewClick}
+                className="w-full p-4 rounded-lg border border-indigo-200 bg-indigo-50/30 hover:border-indigo-400 hover:bg-indigo-100/50 transition-all text-left flex items-center gap-4 group"
+              >
+                <div className="h-12 w-12 rounded-xl bg-indigo-100 flex items-center justify-center text-indigo-600 group-hover:bg-indigo-600 group-hover:text-white transition-colors">
+                  <BarChart3 className="h-6 w-6" />
+                </div>
+                <div className="flex-1 min-w-0">
+                  <div className="flex items-center gap-2">
+                    <p className="font-medium">Combined View</p>
+                    <Badge variant="outline" className="text-xs">
+                      {facilityStats.total} facilities
+                    </Badge>
+                  </div>
+                  <p className="text-sm text-muted-foreground">
+                    Aggregate dashboard across all your facilities
+                  </p>
+                  <div className="flex items-center gap-1 mt-1">
+                    <Lock className="h-3 w-3 text-amber-500" />
+                    <span className="text-xs text-amber-600">No patient data access</span>
+                  </div>
+                </div>
+                <ChevronRight className="h-5 w-5 text-muted-foreground group-hover:text-indigo-600 transition-colors flex-shrink-0" />
+              </motion.button>
+            </div>
+          )}
+
+          {/* Clinical Facility Workplaces */}
+          {!loading && hasClinicalFacilities && groupedFacilities.length > 0 && (
+            <>
+              <Separator className="my-2" />
+              <div className="flex items-center gap-2 px-1">
+                <Stethoscope className="h-4 w-4 text-primary" />
+                <span className="text-sm font-medium">Clinical Workplaces</span>
+                <Badge variant="secondary" className="text-xs ml-auto">
+                  {facilities.length} locations
+                </Badge>
+              </div>
+            </>
+          )}
+          
           {!loading && groupedFacilities.map(([level, levelFacilities]) => (
             <div key={level} className="space-y-2">
               <h4 className="text-xs font-medium text-muted-foreground uppercase tracking-wide px-1">
@@ -225,25 +387,66 @@ export function WorkplaceSelectionHub({
                   onSelect={() => onFacilitySelect(facility)}
                   levelColor={LEVEL_COLORS[level] || 'bg-gray-100 text-gray-700'}
                   index={index}
+                  showClinicalIndicator={true}
                 />
               ))}
             </div>
           ))}
 
-          {/* Above-Site Options */}
+          {/* Above-Site / Oversight Options */}
           {!loading && isAboveSiteUser && availableContexts.length > 0 && (
             <div className="space-y-2">
+              <Separator className="my-2" />
               <h4 className="text-xs font-medium text-muted-foreground uppercase tracking-wide px-1 flex items-center gap-1">
-                <Globe className="h-3.5 w-3.5" />
-                Above-Site / Oversight Roles
+                <Eye className="h-3.5 w-3.5" />
+                Oversight Roles
               </h4>
+              <p className="text-xs text-muted-foreground px-1 mb-2">
+                Administrative oversight without direct patient care
+              </p>
               {availableContexts.map((context, index) => (
                 <AboveSiteContextCard
                   key={`${context.type}-${index}`}
                   context={context}
                   onSelect={() => handleAboveSiteClick(context)}
                   index={index}
+                  canAccessPatientData={aboveSiteRoles[0]?.can_access_patient_data}
                 />
+              ))}
+            </div>
+          )}
+
+          {/* Telemedicine / Virtual Pools */}
+          {!loading && hasPoolAssignment && (
+            <div className="space-y-2">
+              <Separator className="my-2" />
+              <h4 className="text-xs font-medium text-muted-foreground uppercase tracking-wide px-1 flex items-center gap-1">
+                <Video className="h-3.5 w-3.5" />
+                Virtual Care Pools
+              </h4>
+              {pools.map((pool, index) => (
+                <motion.button
+                  key={pool.id}
+                  initial={{ opacity: 0, y: 10 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ delay: 0.2 + index * 0.05 }}
+                  onClick={() => onRemoteSelect(true, pool.id, pool.name)}
+                  className="w-full p-4 rounded-lg border border-teal-200 bg-teal-50/30 hover:border-teal-400 hover:bg-teal-100/50 transition-all text-left flex items-center gap-4 group"
+                >
+                  <div className="h-12 w-12 rounded-xl bg-teal-100 flex items-center justify-center text-teal-600 group-hover:bg-teal-600 group-hover:text-white transition-colors">
+                    <Video className="h-6 w-6" />
+                  </div>
+                  <div className="flex-1 min-w-0">
+                    <div className="flex items-center gap-2">
+                      <p className="font-medium truncate">{pool.name}</p>
+                      <Badge className="bg-teal-100 text-teal-700 text-xs">Clinical</Badge>
+                    </div>
+                    <p className="text-sm text-muted-foreground truncate">
+                      {pool.description || 'Telemedicine consultations'}
+                    </p>
+                  </div>
+                  <ChevronRight className="h-5 w-5 text-muted-foreground group-hover:text-teal-600 transition-colors flex-shrink-0" />
+                </motion.button>
               ))}
             </div>
           )}
@@ -251,6 +454,7 @@ export function WorkplaceSelectionHub({
           {/* Remote Work Option */}
           {!loading && (
             <div className="space-y-2">
+              <Separator className="my-2" />
               <h4 className="text-xs font-medium text-muted-foreground uppercase tracking-wide px-1 flex items-center gap-1">
                 <Wifi className="h-3.5 w-3.5" />
                 Other Options
@@ -259,7 +463,7 @@ export function WorkplaceSelectionHub({
                 initial={{ opacity: 0, y: 10 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ delay: 0.3 }}
-                onClick={onRemoteSelect}
+                onClick={() => onRemoteSelect(false)}
                 className="w-full p-4 rounded-lg border border-dashed border-border hover:border-primary/50 hover:bg-muted/30 transition-all text-left flex items-center gap-4 group"
               >
                 <div className="h-12 w-12 rounded-xl bg-muted flex items-center justify-center text-muted-foreground group-hover:bg-primary/10 group-hover:text-primary transition-colors">
@@ -270,8 +474,12 @@ export function WorkplaceSelectionHub({
                   <p className="text-sm text-muted-foreground">
                     Administrative tasks, documentation, or training
                   </p>
+                  <div className="flex items-center gap-1 mt-1">
+                    <Lock className="h-3 w-3 text-amber-500" />
+                    <span className="text-xs text-amber-600">No patient data access</span>
+                  </div>
                 </div>
-                <ChevronRight className="h-5 w-5 text-muted-foreground group-hover:text-primary transition-colors" />
+                <ChevronRight className="h-5 w-5 text-muted-foreground group-hover:text-primary transition-colors flex-shrink-0" />
               </motion.button>
             </div>
           )}
@@ -287,11 +495,13 @@ function FacilityCard({
   onSelect,
   levelColor,
   index,
+  showClinicalIndicator,
 }: {
   facility: ProviderFacility;
   onSelect: () => void;
   levelColor: string;
   index: number;
+  showClinicalIndicator?: boolean;
 }) {
   return (
     <motion.button
@@ -320,6 +530,12 @@ function FacilityCard({
           <Badge variant="secondary" className="text-xs">
             {facility.context_label}
           </Badge>
+          {showClinicalIndicator && facility.can_access && (
+            <Badge className="text-xs bg-green-100 text-green-700 border-green-200">
+              <Stethoscope className="h-3 w-3 mr-1" />
+              Clinical
+            </Badge>
+          )}
           {facility.is_pic && (
             <Badge className="text-xs bg-indigo-100 text-indigo-700 border-indigo-200">
               <Shield className="h-3 w-3 mr-1" />
@@ -345,10 +561,12 @@ function AboveSiteContextCard({
   context,
   onSelect,
   index,
+  canAccessPatientData,
 }: {
   context: ContextOption;
   onSelect: () => void;
   index: number;
+  canAccessPatientData?: boolean;
 }) {
   return (
     <motion.button
@@ -367,6 +585,12 @@ function AboveSiteContextCard({
         <p className="text-sm text-muted-foreground truncate">
           {context.description}
         </p>
+        {!canAccessPatientData && (
+          <div className="flex items-center gap-1 mt-1">
+            <Lock className="h-3 w-3 text-amber-500" />
+            <span className="text-xs text-amber-600">Aggregate data only</span>
+          </div>
+        )}
       </div>
       
       <ChevronRight className="h-5 w-5 text-muted-foreground group-hover:text-indigo-600 transition-colors flex-shrink-0" />
