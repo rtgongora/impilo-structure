@@ -502,17 +502,26 @@ export type Database = {
           actual_end: string | null
           actual_start: string | null
           appointment_type: string
+          booking_reference: string | null
+          checked_in_at: string | null
           created_at: string
           created_by: string | null
           department: string | null
           encounter_id: string | null
+          follow_up_created_at: string | null
+          follow_up_created_by: string | null
+          follow_up_needed: boolean | null
+          follow_up_reason: string | null
           id: string
           is_recurring: boolean | null
           location: string | null
+          missed_at: string | null
           notes: string | null
           patient_id: string | null
           priority: string | null
           provider_id: string | null
+          queue_id: string | null
+          queue_item_id: string | null
           reason: string | null
           recurrence_pattern: Json | null
           reminder_sent: boolean | null
@@ -526,17 +535,26 @@ export type Database = {
           actual_end?: string | null
           actual_start?: string | null
           appointment_type: string
+          booking_reference?: string | null
+          checked_in_at?: string | null
           created_at?: string
           created_by?: string | null
           department?: string | null
           encounter_id?: string | null
+          follow_up_created_at?: string | null
+          follow_up_created_by?: string | null
+          follow_up_needed?: boolean | null
+          follow_up_reason?: string | null
           id?: string
           is_recurring?: boolean | null
           location?: string | null
+          missed_at?: string | null
           notes?: string | null
           patient_id?: string | null
           priority?: string | null
           provider_id?: string | null
+          queue_id?: string | null
+          queue_item_id?: string | null
           reason?: string | null
           recurrence_pattern?: Json | null
           reminder_sent?: boolean | null
@@ -550,17 +568,26 @@ export type Database = {
           actual_end?: string | null
           actual_start?: string | null
           appointment_type?: string
+          booking_reference?: string | null
+          checked_in_at?: string | null
           created_at?: string
           created_by?: string | null
           department?: string | null
           encounter_id?: string | null
+          follow_up_created_at?: string | null
+          follow_up_created_by?: string | null
+          follow_up_needed?: boolean | null
+          follow_up_reason?: string | null
           id?: string
           is_recurring?: boolean | null
           location?: string | null
+          missed_at?: string | null
           notes?: string | null
           patient_id?: string | null
           priority?: string | null
           provider_id?: string | null
+          queue_id?: string | null
+          queue_item_id?: string | null
           reason?: string | null
           recurrence_pattern?: Json | null
           reminder_sent?: boolean | null
@@ -583,6 +610,20 @@ export type Database = {
             columns: ["patient_id"]
             isOneToOne: false
             referencedRelation: "patients"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "appointments_queue_id_fkey"
+            columns: ["queue_id"]
+            isOneToOne: false
+            referencedRelation: "queue_definitions"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "appointments_queue_item_id_fkey"
+            columns: ["queue_item_id"]
+            isOneToOne: false
+            referencedRelation: "queue_items"
             referencedColumns: ["id"]
           },
         ]
@@ -18016,6 +18057,10 @@ export type Database = {
           p_requested_role?: string
         }
         Returns: Json
+      }
+      flag_missed_appointments: {
+        Args: { hours_threshold?: number }
+        Returns: number
       }
       generate_claim_number: { Args: never; Returns: string }
       generate_client_registry_id: { Args: never; Returns: string }

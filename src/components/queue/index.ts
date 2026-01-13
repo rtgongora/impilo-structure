@@ -6,3 +6,4 @@ export { SupervisorDashboard } from './SupervisorDashboard';
 export { QueueConfigManager } from './QueueConfigManager';
 export { QueuePathwayEditor } from './QueuePathwayEditor';
 export { QueueToEncounterBridge } from './QueueToEncounterBridge';
+export { QueueAppointmentsPanel } from './QueueAppointmentsPanel';
