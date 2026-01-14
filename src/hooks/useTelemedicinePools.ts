@@ -54,8 +54,9 @@ export function useTelemedicinePools(): UseTelemedicinePoolsReturn {
           description,
           pool_type,
           is_active,
-          specialties,
-          coverage_hours
+          service_tags,
+          operating_hours,
+          is_24_7
         `)
         .eq('is_active', true);
 
@@ -76,8 +77,8 @@ export function useTelemedicinePools(): UseTelemedicinePoolsReturn {
         description: p.description,
         pool_type: p.pool_type || 'telemedicine',
         is_active: p.is_active,
-        specialties: p.specialties,
-        coverage_hours: p.coverage_hours,
+        specialties: p.service_tags, // Map service_tags to specialties
+        coverage_hours: p.operating_hours, // Map operating_hours to coverage_hours
       }));
 
       setPools(mappedPools);
