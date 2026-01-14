@@ -1,8 +1,9 @@
 import { useAuth } from '@/contexts/AuthContext';
+import { useSystemRoles } from '@/hooks/useSystemRoles';
 
-export type ClinicalRole = 'doctor' | 'nurse' | 'specialist' | 'patient' | 'admin';
+export type ClinicalRole = 'doctor' | 'nurse' | 'specialist' | 'patient' | 'admin' | 'superadmin';
 
-export type Permission = 
+export type Permission =
   | 'view_patient_records'
   | 'edit_patient_records'
   | 'prescribe_medication'
@@ -25,6 +26,27 @@ export type Permission =
 
 // Define which roles have which permissions
 const rolePermissions: Record<ClinicalRole, Permission[]> = {
+  superadmin: [
+    'view_patient_records',
+    'edit_patient_records',
+    'prescribe_medication',
+    'administer_medication',
+    'order_labs',
+    'view_lab_results',
+    'create_referrals',
+    'manage_teleconsults',
+    'view_vitals',
+    'edit_vitals',
+    'manage_beds',
+    'manage_queue',
+    'view_clinical_notes',
+    'write_clinical_notes',
+    'manage_users',
+    'system_admin',
+    'critical_events',
+    'view_care_plans',
+    'edit_care_plans',
+  ],
   admin: [
     'view_patient_records',
     'edit_patient_records',
@@ -124,41 +146,73 @@ export const permissionDescriptions: Record<Permission, string> = {
 
 export const usePermissions = () => {
   const { profile, loading } = useAuth();
+  const { canBypassRestrictions, isSuperAdmin, loading: systemRolesLoading } = useSystemRoles();
   
   const role = profile?.role as ClinicalRole | undefined;
   
+  // Get all possible permissions for bypass mode
+  const allPermissions: Permission[] = [
+    'view_patient_records',
+    'edit_patient_records',
+    'prescribe_medication',
+    'administer_medication',
+    'order_labs',
+    'view_lab_results',
+    'create_referrals',
+    'manage_teleconsults',
+    'view_vitals',
+    'edit_vitals',
+    'manage_beds',
+    'manage_queue',
+    'view_clinical_notes',
+    'write_clinical_notes',
+    'manage_users',
+    'system_admin',
+    'critical_events',
+    'view_care_plans',
+    'edit_care_plans',
+  ];
+  
   const hasPermission = (permission: Permission): boolean => {
+    // Superadmins and dev/testers can bypass all restrictions
+    if (canBypassRestrictions || isSuperAdmin) return true;
     if (!role) return false;
     return rolePermissions[role]?.includes(permission) ?? false;
   };
   
   const hasAnyPermission = (permissions: Permission[]): boolean => {
+    if (canBypassRestrictions || isSuperAdmin) return true;
     return permissions.some(hasPermission);
   };
   
   const hasAllPermissions = (permissions: Permission[]): boolean => {
+    if (canBypassRestrictions || isSuperAdmin) return true;
     return permissions.every(hasPermission);
   };
   
   const isRole = (roles: ClinicalRole | ClinicalRole[]): boolean => {
+    // Superadmins can act as any role
+    if (canBypassRestrictions || isSuperAdmin) return true;
     if (!role) return false;
     const roleArray = Array.isArray(roles) ? roles : [roles];
     return roleArray.includes(role);
   };
   
   const getPermissions = (): Permission[] => {
+    if (canBypassRestrictions || isSuperAdmin) return allPermissions;
     if (!role) return [];
     return rolePermissions[role] ?? [];
   };
 
   return {
-    role,
-    loading,
+    role: canBypassRestrictions ? 'superadmin' : role,
+    loading: loading || systemRolesLoading,
     hasPermission,
     hasAnyPermission,
     hasAllPermissions,
     isRole,
     getPermissions,
     isAuthenticated: !!profile,
+    isSuperAdmin: canBypassRestrictions || isSuperAdmin,
   };
 };
