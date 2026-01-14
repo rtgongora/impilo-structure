@@ -86,11 +86,41 @@ serve(async (req) => {
       }
     });
 
-    const results: { email: string; success: boolean; error?: string; userId?: string }[] = [];
+    const results: { email: string; success: boolean; error?: string; userId?: string; action?: string }[] = [];
 
     for (const user of testUsers) {
       try {
-        // Create user in auth
+        // Check if user already exists
+        const { data: existingUsers } = await supabaseAdmin.auth.admin.listUsers();
+        const existingUser = existingUsers?.users?.find(u => u.email === user.email);
+
+        if (existingUser) {
+          // Update password for existing user
+          const { error: updateError } = await supabaseAdmin.auth.admin.updateUserById(
+            existingUser.id,
+            { password: user.password, email_confirm: true }
+          );
+
+          if (updateError) {
+            throw updateError;
+          }
+
+          // Update profile
+          await supabaseAdmin
+            .from('profiles')
+            .update({
+              provider_registry_id: user.providerId,
+              facility_id: user.facilityId,
+              license_number: user.providerId ? user.providerId.split('-').slice(-2).join('-') : null
+            })
+            .eq('user_id', existingUser.id);
+
+          results.push({ email: user.email, success: true, userId: existingUser.id, action: 'updated' });
+          console.log(`Updated user: ${user.email}`);
+          continue;
+        }
+
+        // Create new user in auth
         const { data: authData, error: authError } = await supabaseAdmin.auth.admin.createUser({
           email: user.email,
           password: user.password,
@@ -104,11 +134,6 @@ serve(async (req) => {
         });
 
         if (authError) {
-          // Check if user already exists
-          if (authError.message.includes('already been registered')) {
-            results.push({ email: user.email, success: false, error: 'User already exists' });
-            continue;
-          }
           throw authError;
         }
 
