@@ -18,6 +18,7 @@ import Charges from "./pages/Charges";
 import Registration from "./pages/Registration";
 import Auth from "./pages/Auth";
 import ResetPassword from "./pages/ResetPassword";
+import ForgotPassword from "./pages/ForgotPassword";
 import ProfileSettings from "./pages/ProfileSettings";
 import AdminDashboard from "./pages/AdminDashboard";
 import Queue from "./pages/Queue";
@@ -75,6 +76,7 @@ const App = () => (
           <Routes>
             <Route path="/auth" element={<Auth />} />
             <Route path="/reset-password" element={<ResetPassword />} />
+            <Route path="/forgot-password" element={<ForgotPassword />} />
             <Route path="/" element={
               <ProtectedRoute>
                 <ModuleHome />

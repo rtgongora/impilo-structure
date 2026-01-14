@@ -400,7 +400,7 @@ const Auth = () => {
                       <button
                         type="button"
                         className="text-xs text-primary hover:text-primary/80 transition-colors"
-                        onClick={() => navigate("/reset-password")}
+                        onClick={() => navigate("/forgot-password")}
                       >
                         Forgot password?
                       </button>
