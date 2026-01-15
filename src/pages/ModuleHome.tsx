@@ -279,6 +279,7 @@ const workModuleCategories: ModuleCategory[] = [
     roles: ['admin', 'doctor', 'specialist', 'hie_admin'],
     modules: [
       { id: "above-site", label: "Above-Site Dashboard", description: "District, provincial & national oversight", icon: TrendingUp, path: "/above-site", color: "bg-rose-600", roles: ["admin", "hie_admin"] },
+      { id: "landela", label: "Landela DMS", description: "Document management & scanning", icon: ScanLine, path: "/landela", color: "bg-cyan-600" },
       { id: "reports", label: "Reports & Analytics", description: "Dashboards & insights", icon: BarChart3, path: "/reports", color: "bg-violet-500" },
       { id: "report-builder", label: "Custom Reports", description: "Build custom reports & queries", icon: FileCheck, path: "/reports", color: "bg-indigo-500", roles: ["admin"] },
       { id: "registry-management", label: "Registry Management", description: "Manage HIE registries", icon: Database, path: "/registry-management", color: "bg-purple-600", roles: ["admin", "hie_admin"] },
