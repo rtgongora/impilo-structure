@@ -12195,6 +12195,1130 @@ export type Database = {
         }
         Relationships: []
       }
+      landela_annotations: {
+        Row: {
+          annotation_type: string
+          color: string | null
+          content: string | null
+          created_at: string | null
+          created_by: string
+          document_id: string
+          height: number | null
+          id: string
+          is_private: boolean | null
+          page_number: number
+          updated_at: string | null
+          width: number | null
+          x_position: number | null
+          y_position: number | null
+        }
+        Insert: {
+          annotation_type: string
+          color?: string | null
+          content?: string | null
+          created_at?: string | null
+          created_by: string
+          document_id: string
+          height?: number | null
+          id?: string
+          is_private?: boolean | null
+          page_number?: number
+          updated_at?: string | null
+          width?: number | null
+          x_position?: number | null
+          y_position?: number | null
+        }
+        Update: {
+          annotation_type?: string
+          color?: string | null
+          content?: string | null
+          created_at?: string | null
+          created_by?: string
+          document_id?: string
+          height?: number | null
+          id?: string
+          is_private?: boolean | null
+          page_number?: number
+          updated_at?: string | null
+          width?: number | null
+          x_position?: number | null
+          y_position?: number | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "landela_annotations_document_id_fkey"
+            columns: ["document_id"]
+            isOneToOne: false
+            referencedRelation: "landela_documents"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      landela_audit_log: {
+        Row: {
+          action: string
+          break_glass_approved_by: string | null
+          break_glass_reason: string | null
+          created_at: string | null
+          details: Json | null
+          document_id: string | null
+          facility_id: string | null
+          id: string
+          ip_address: unknown
+          package_id: string | null
+          patient_id: string | null
+          share_id: string | null
+          user_agent: string | null
+          user_id: string
+        }
+        Insert: {
+          action: string
+          break_glass_approved_by?: string | null
+          break_glass_reason?: string | null
+          created_at?: string | null
+          details?: Json | null
+          document_id?: string | null
+          facility_id?: string | null
+          id?: string
+          ip_address?: unknown
+          package_id?: string | null
+          patient_id?: string | null
+          share_id?: string | null
+          user_agent?: string | null
+          user_id: string
+        }
+        Update: {
+          action?: string
+          break_glass_approved_by?: string | null
+          break_glass_reason?: string | null
+          created_at?: string | null
+          details?: Json | null
+          document_id?: string | null
+          facility_id?: string | null
+          id?: string
+          ip_address?: unknown
+          package_id?: string | null
+          patient_id?: string | null
+          share_id?: string | null
+          user_agent?: string | null
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "landela_audit_log_document_id_fkey"
+            columns: ["document_id"]
+            isOneToOne: false
+            referencedRelation: "landela_documents"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "landela_audit_log_facility_id_fkey"
+            columns: ["facility_id"]
+            isOneToOne: false
+            referencedRelation: "facilities"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "landela_audit_log_facility_id_fkey"
+            columns: ["facility_id"]
+            isOneToOne: false
+            referencedRelation: "facility_capabilities"
+            referencedColumns: ["facility_id"]
+          },
+          {
+            foreignKeyName: "landela_audit_log_facility_id_fkey"
+            columns: ["facility_id"]
+            isOneToOne: false
+            referencedRelation: "facility_operations_dashboard"
+            referencedColumns: ["facility_id"]
+          },
+          {
+            foreignKeyName: "landela_audit_log_facility_id_fkey"
+            columns: ["facility_id"]
+            isOneToOne: false
+            referencedRelation: "provider_facility_context"
+            referencedColumns: ["facility_id"]
+          },
+          {
+            foreignKeyName: "landela_audit_log_package_id_fkey"
+            columns: ["package_id"]
+            isOneToOne: false
+            referencedRelation: "landela_packages"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "landela_audit_log_patient_id_fkey"
+            columns: ["patient_id"]
+            isOneToOne: false
+            referencedRelation: "patients"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "landela_audit_log_share_id_fkey"
+            columns: ["share_id"]
+            isOneToOne: false
+            referencedRelation: "landela_document_shares"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      landela_batch_sessions: {
+        Row: {
+          completed_at: string | null
+          created_at: string | null
+          created_by: string | null
+          description: string | null
+          documents_created: number | null
+          documents_indexed: number | null
+          facility_id: string | null
+          id: string
+          separation_method: string | null
+          session_name: string
+          started_at: string | null
+          status: string | null
+          target_document_type_id: string | null
+          target_entity_id: string | null
+          target_entity_type: string | null
+          target_patient_id: string | null
+          total_pages: number | null
+          updated_at: string | null
+        }
+        Insert: {
+          completed_at?: string | null
+          created_at?: string | null
+          created_by?: string | null
+          description?: string | null
+          documents_created?: number | null
+          documents_indexed?: number | null
+          facility_id?: string | null
+          id?: string
+          separation_method?: string | null
+          session_name: string
+          started_at?: string | null
+          status?: string | null
+          target_document_type_id?: string | null
+          target_entity_id?: string | null
+          target_entity_type?: string | null
+          target_patient_id?: string | null
+          total_pages?: number | null
+          updated_at?: string | null
+        }
+        Update: {
+          completed_at?: string | null
+          created_at?: string | null
+          created_by?: string | null
+          description?: string | null
+          documents_created?: number | null
+          documents_indexed?: number | null
+          facility_id?: string | null
+          id?: string
+          separation_method?: string | null
+          session_name?: string
+          started_at?: string | null
+          status?: string | null
+          target_document_type_id?: string | null
+          target_entity_id?: string | null
+          target_entity_type?: string | null
+          target_patient_id?: string | null
+          total_pages?: number | null
+          updated_at?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "landela_batch_sessions_facility_id_fkey"
+            columns: ["facility_id"]
+            isOneToOne: false
+            referencedRelation: "facilities"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "landela_batch_sessions_facility_id_fkey"
+            columns: ["facility_id"]
+            isOneToOne: false
+            referencedRelation: "facility_capabilities"
+            referencedColumns: ["facility_id"]
+          },
+          {
+            foreignKeyName: "landela_batch_sessions_facility_id_fkey"
+            columns: ["facility_id"]
+            isOneToOne: false
+            referencedRelation: "facility_operations_dashboard"
+            referencedColumns: ["facility_id"]
+          },
+          {
+            foreignKeyName: "landela_batch_sessions_facility_id_fkey"
+            columns: ["facility_id"]
+            isOneToOne: false
+            referencedRelation: "provider_facility_context"
+            referencedColumns: ["facility_id"]
+          },
+          {
+            foreignKeyName: "landela_batch_sessions_target_document_type_id_fkey"
+            columns: ["target_document_type_id"]
+            isOneToOne: false
+            referencedRelation: "landela_document_types"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "landela_batch_sessions_target_patient_id_fkey"
+            columns: ["target_patient_id"]
+            isOneToOne: false
+            referencedRelation: "patients"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      landela_clinical_index: {
+        Row: {
+          care_plan_id: string | null
+          created_at: string | null
+          document_id: string
+          encounter_id: string | null
+          event_date: string | null
+          id: string
+          order_ids: string[] | null
+          patient_id: string | null
+          problem_ids: string[] | null
+          program_code: string | null
+          provider_id: string | null
+          service_area: string | null
+          visit_id: string | null
+        }
+        Insert: {
+          care_plan_id?: string | null
+          created_at?: string | null
+          document_id: string
+          encounter_id?: string | null
+          event_date?: string | null
+          id?: string
+          order_ids?: string[] | null
+          patient_id?: string | null
+          problem_ids?: string[] | null
+          program_code?: string | null
+          provider_id?: string | null
+          service_area?: string | null
+          visit_id?: string | null
+        }
+        Update: {
+          care_plan_id?: string | null
+          created_at?: string | null
+          document_id?: string
+          encounter_id?: string | null
+          event_date?: string | null
+          id?: string
+          order_ids?: string[] | null
+          patient_id?: string | null
+          problem_ids?: string[] | null
+          program_code?: string | null
+          provider_id?: string | null
+          service_area?: string | null
+          visit_id?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "landela_clinical_index_care_plan_id_fkey"
+            columns: ["care_plan_id"]
+            isOneToOne: false
+            referencedRelation: "care_plans"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "landela_clinical_index_document_id_fkey"
+            columns: ["document_id"]
+            isOneToOne: false
+            referencedRelation: "landela_documents"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "landela_clinical_index_encounter_id_fkey"
+            columns: ["encounter_id"]
+            isOneToOne: false
+            referencedRelation: "encounters"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "landela_clinical_index_patient_id_fkey"
+            columns: ["patient_id"]
+            isOneToOne: false
+            referencedRelation: "patients"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "landela_clinical_index_visit_id_fkey"
+            columns: ["visit_id"]
+            isOneToOne: false
+            referencedRelation: "visits"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      landela_document_shares: {
+        Row: {
+          access_token: string | null
+          can_download: boolean | null
+          can_print: boolean | null
+          consent_given_at: string | null
+          consent_given_by: string | null
+          consent_reference: string | null
+          created_at: string | null
+          document_id: string
+          expires_at: string
+          id: string
+          max_views: number | null
+          revoked_at: string | null
+          revoked_by: string | null
+          share_reason: string | null
+          shared_by: string
+          shared_with_email: string | null
+          shared_with_facility_id: string | null
+          shared_with_provider_id: string | null
+          shared_with_user_id: string | null
+          view_count: number | null
+          watermark_text: string | null
+        }
+        Insert: {
+          access_token?: string | null
+          can_download?: boolean | null
+          can_print?: boolean | null
+          consent_given_at?: string | null
+          consent_given_by?: string | null
+          consent_reference?: string | null
+          created_at?: string | null
+          document_id: string
+          expires_at: string
+          id?: string
+          max_views?: number | null
+          revoked_at?: string | null
+          revoked_by?: string | null
+          share_reason?: string | null
+          shared_by: string
+          shared_with_email?: string | null
+          shared_with_facility_id?: string | null
+          shared_with_provider_id?: string | null
+          shared_with_user_id?: string | null
+          view_count?: number | null
+          watermark_text?: string | null
+        }
+        Update: {
+          access_token?: string | null
+          can_download?: boolean | null
+          can_print?: boolean | null
+          consent_given_at?: string | null
+          consent_given_by?: string | null
+          consent_reference?: string | null
+          created_at?: string | null
+          document_id?: string
+          expires_at?: string
+          id?: string
+          max_views?: number | null
+          revoked_at?: string | null
+          revoked_by?: string | null
+          share_reason?: string | null
+          shared_by?: string
+          shared_with_email?: string | null
+          shared_with_facility_id?: string | null
+          shared_with_provider_id?: string | null
+          shared_with_user_id?: string | null
+          view_count?: number | null
+          watermark_text?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "landela_document_shares_document_id_fkey"
+            columns: ["document_id"]
+            isOneToOne: false
+            referencedRelation: "landela_documents"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "landela_document_shares_shared_with_facility_id_fkey"
+            columns: ["shared_with_facility_id"]
+            isOneToOne: false
+            referencedRelation: "facilities"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "landela_document_shares_shared_with_facility_id_fkey"
+            columns: ["shared_with_facility_id"]
+            isOneToOne: false
+            referencedRelation: "facility_capabilities"
+            referencedColumns: ["facility_id"]
+          },
+          {
+            foreignKeyName: "landela_document_shares_shared_with_facility_id_fkey"
+            columns: ["shared_with_facility_id"]
+            isOneToOne: false
+            referencedRelation: "facility_operations_dashboard"
+            referencedColumns: ["facility_id"]
+          },
+          {
+            foreignKeyName: "landela_document_shares_shared_with_facility_id_fkey"
+            columns: ["shared_with_facility_id"]
+            isOneToOne: false
+            referencedRelation: "provider_facility_context"
+            referencedColumns: ["facility_id"]
+          },
+        ]
+      }
+      landela_document_types: {
+        Row: {
+          category: string
+          code: string
+          created_at: string | null
+          description: string | null
+          id: string
+          is_active: boolean | null
+          is_immutable: boolean | null
+          mandatory_fields: Json | null
+          name: string
+          requires_approval: boolean | null
+          requires_encounter: boolean | null
+          requires_facility: boolean | null
+          requires_patient: boolean | null
+          requires_provider: boolean | null
+          requires_visit: boolean | null
+          retention_days: number | null
+          updated_at: string | null
+        }
+        Insert: {
+          category: string
+          code: string
+          created_at?: string | null
+          description?: string | null
+          id?: string
+          is_active?: boolean | null
+          is_immutable?: boolean | null
+          mandatory_fields?: Json | null
+          name: string
+          requires_approval?: boolean | null
+          requires_encounter?: boolean | null
+          requires_facility?: boolean | null
+          requires_patient?: boolean | null
+          requires_provider?: boolean | null
+          requires_visit?: boolean | null
+          retention_days?: number | null
+          updated_at?: string | null
+        }
+        Update: {
+          category?: string
+          code?: string
+          created_at?: string | null
+          description?: string | null
+          id?: string
+          is_active?: boolean | null
+          is_immutable?: boolean | null
+          mandatory_fields?: Json | null
+          name?: string
+          requires_approval?: boolean | null
+          requires_encounter?: boolean | null
+          requires_facility?: boolean | null
+          requires_patient?: boolean | null
+          requires_provider?: boolean | null
+          requires_visit?: boolean | null
+          retention_days?: number | null
+          updated_at?: string | null
+        }
+        Relationships: []
+      }
+      landela_documents: {
+        Row: {
+          ai_classification_confidence: number | null
+          ai_classified: boolean | null
+          ai_extracted_entities: Json | null
+          ai_quality_issues: string[] | null
+          ai_quality_score: number | null
+          ai_suggested_type_id: string | null
+          archive_reason: string | null
+          archived_at: string | null
+          archived_by: string | null
+          batch_id: string | null
+          batch_sequence: number | null
+          capture_device: string | null
+          capture_facility_id: string | null
+          captured_at: string
+          captured_by: string | null
+          checksum: string | null
+          created_at: string | null
+          custom_metadata: Json | null
+          description: string | null
+          document_number: string
+          document_type_code: string
+          document_type_id: string | null
+          file_name: string
+          file_size_bytes: number
+          id: string
+          is_current_version: boolean | null
+          mime_type: string
+          ocr_confidence: number | null
+          ocr_processed: boolean | null
+          ocr_text: string | null
+          page_count: number | null
+          previous_version_id: string | null
+          retention_until: string | null
+          sensitivity_level: Database["public"]["Enums"]["landela_sensitivity_level"]
+          source: Database["public"]["Enums"]["landela_capture_source"]
+          status: Database["public"]["Enums"]["landela_document_status"]
+          storage_bucket: string
+          storage_path: string
+          tags: string[] | null
+          title: string
+          updated_at: string | null
+          verification_notes: string | null
+          verified_at: string | null
+          verified_by: string | null
+          version: number
+          version_reason: string | null
+        }
+        Insert: {
+          ai_classification_confidence?: number | null
+          ai_classified?: boolean | null
+          ai_extracted_entities?: Json | null
+          ai_quality_issues?: string[] | null
+          ai_quality_score?: number | null
+          ai_suggested_type_id?: string | null
+          archive_reason?: string | null
+          archived_at?: string | null
+          archived_by?: string | null
+          batch_id?: string | null
+          batch_sequence?: number | null
+          capture_device?: string | null
+          capture_facility_id?: string | null
+          captured_at?: string
+          captured_by?: string | null
+          checksum?: string | null
+          created_at?: string | null
+          custom_metadata?: Json | null
+          description?: string | null
+          document_number?: string
+          document_type_code: string
+          document_type_id?: string | null
+          file_name: string
+          file_size_bytes: number
+          id?: string
+          is_current_version?: boolean | null
+          mime_type: string
+          ocr_confidence?: number | null
+          ocr_processed?: boolean | null
+          ocr_text?: string | null
+          page_count?: number | null
+          previous_version_id?: string | null
+          retention_until?: string | null
+          sensitivity_level?: Database["public"]["Enums"]["landela_sensitivity_level"]
+          source: Database["public"]["Enums"]["landela_capture_source"]
+          status?: Database["public"]["Enums"]["landela_document_status"]
+          storage_bucket?: string
+          storage_path: string
+          tags?: string[] | null
+          title: string
+          updated_at?: string | null
+          verification_notes?: string | null
+          verified_at?: string | null
+          verified_by?: string | null
+          version?: number
+          version_reason?: string | null
+        }
+        Update: {
+          ai_classification_confidence?: number | null
+          ai_classified?: boolean | null
+          ai_extracted_entities?: Json | null
+          ai_quality_issues?: string[] | null
+          ai_quality_score?: number | null
+          ai_suggested_type_id?: string | null
+          archive_reason?: string | null
+          archived_at?: string | null
+          archived_by?: string | null
+          batch_id?: string | null
+          batch_sequence?: number | null
+          capture_device?: string | null
+          capture_facility_id?: string | null
+          captured_at?: string
+          captured_by?: string | null
+          checksum?: string | null
+          created_at?: string | null
+          custom_metadata?: Json | null
+          description?: string | null
+          document_number?: string
+          document_type_code?: string
+          document_type_id?: string | null
+          file_name?: string
+          file_size_bytes?: number
+          id?: string
+          is_current_version?: boolean | null
+          mime_type?: string
+          ocr_confidence?: number | null
+          ocr_processed?: boolean | null
+          ocr_text?: string | null
+          page_count?: number | null
+          previous_version_id?: string | null
+          retention_until?: string | null
+          sensitivity_level?: Database["public"]["Enums"]["landela_sensitivity_level"]
+          source?: Database["public"]["Enums"]["landela_capture_source"]
+          status?: Database["public"]["Enums"]["landela_document_status"]
+          storage_bucket?: string
+          storage_path?: string
+          tags?: string[] | null
+          title?: string
+          updated_at?: string | null
+          verification_notes?: string | null
+          verified_at?: string | null
+          verified_by?: string | null
+          version?: number
+          version_reason?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "landela_documents_ai_suggested_type_id_fkey"
+            columns: ["ai_suggested_type_id"]
+            isOneToOne: false
+            referencedRelation: "landela_document_types"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "landela_documents_capture_facility_id_fkey"
+            columns: ["capture_facility_id"]
+            isOneToOne: false
+            referencedRelation: "facilities"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "landela_documents_capture_facility_id_fkey"
+            columns: ["capture_facility_id"]
+            isOneToOne: false
+            referencedRelation: "facility_capabilities"
+            referencedColumns: ["facility_id"]
+          },
+          {
+            foreignKeyName: "landela_documents_capture_facility_id_fkey"
+            columns: ["capture_facility_id"]
+            isOneToOne: false
+            referencedRelation: "facility_operations_dashboard"
+            referencedColumns: ["facility_id"]
+          },
+          {
+            foreignKeyName: "landela_documents_capture_facility_id_fkey"
+            columns: ["capture_facility_id"]
+            isOneToOne: false
+            referencedRelation: "provider_facility_context"
+            referencedColumns: ["facility_id"]
+          },
+          {
+            foreignKeyName: "landela_documents_document_type_id_fkey"
+            columns: ["document_type_id"]
+            isOneToOne: false
+            referencedRelation: "landela_document_types"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "landela_documents_previous_version_id_fkey"
+            columns: ["previous_version_id"]
+            isOneToOne: false
+            referencedRelation: "landela_documents"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      landela_erp_index: {
+        Row: {
+          amount: number | null
+          approval_status: string | null
+          approval_workflow_id: string | null
+          cost_center: string | null
+          created_at: string | null
+          currency: string | null
+          department: string | null
+          document_id: string
+          id: string
+          invoice_id: string | null
+          invoice_number: string | null
+          payment_id: string | null
+          payment_reference: string | null
+          po_number: string | null
+          project_code: string | null
+          purchase_order_id: string | null
+          supplier_id: string | null
+        }
+        Insert: {
+          amount?: number | null
+          approval_status?: string | null
+          approval_workflow_id?: string | null
+          cost_center?: string | null
+          created_at?: string | null
+          currency?: string | null
+          department?: string | null
+          document_id: string
+          id?: string
+          invoice_id?: string | null
+          invoice_number?: string | null
+          payment_id?: string | null
+          payment_reference?: string | null
+          po_number?: string | null
+          project_code?: string | null
+          purchase_order_id?: string | null
+          supplier_id?: string | null
+        }
+        Update: {
+          amount?: number | null
+          approval_status?: string | null
+          approval_workflow_id?: string | null
+          cost_center?: string | null
+          created_at?: string | null
+          currency?: string | null
+          department?: string | null
+          document_id?: string
+          id?: string
+          invoice_id?: string | null
+          invoice_number?: string | null
+          payment_id?: string | null
+          payment_reference?: string | null
+          po_number?: string | null
+          project_code?: string | null
+          purchase_order_id?: string | null
+          supplier_id?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "landela_erp_index_document_id_fkey"
+            columns: ["document_id"]
+            isOneToOne: false
+            referencedRelation: "landela_documents"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      landela_package_items: {
+        Row: {
+          content: Json | null
+          content_type: string | null
+          created_at: string | null
+          description: string | null
+          document_id: string | null
+          excluded_reason: string | null
+          id: string
+          included: boolean | null
+          item_type: string
+          package_id: string
+          sequence: number | null
+          title: string | null
+        }
+        Insert: {
+          content?: Json | null
+          content_type?: string | null
+          created_at?: string | null
+          description?: string | null
+          document_id?: string | null
+          excluded_reason?: string | null
+          id?: string
+          included?: boolean | null
+          item_type: string
+          package_id: string
+          sequence?: number | null
+          title?: string | null
+        }
+        Update: {
+          content?: Json | null
+          content_type?: string | null
+          created_at?: string | null
+          description?: string | null
+          document_id?: string | null
+          excluded_reason?: string | null
+          id?: string
+          included?: boolean | null
+          item_type?: string
+          package_id?: string
+          sequence?: number | null
+          title?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "landela_package_items_document_id_fkey"
+            columns: ["document_id"]
+            isOneToOne: false
+            referencedRelation: "landela_documents"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "landela_package_items_package_id_fkey"
+            columns: ["package_id"]
+            isOneToOne: false
+            referencedRelation: "landela_packages"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      landela_packages: {
+        Row: {
+          access_token: string | null
+          consent_given_at: string | null
+          consent_given_by: string | null
+          consent_required: boolean | null
+          created_at: string | null
+          created_by: string | null
+          description: string | null
+          expires_at: string | null
+          facility_id: string | null
+          id: string
+          manifest: Json | null
+          package_number: string
+          package_type: string
+          patient_id: string | null
+          shared_with_facility_id: string | null
+          shared_with_provider_id: string | null
+          status: string | null
+          title: string
+          updated_at: string | null
+        }
+        Insert: {
+          access_token?: string | null
+          consent_given_at?: string | null
+          consent_given_by?: string | null
+          consent_required?: boolean | null
+          created_at?: string | null
+          created_by?: string | null
+          description?: string | null
+          expires_at?: string | null
+          facility_id?: string | null
+          id?: string
+          manifest?: Json | null
+          package_number?: string
+          package_type: string
+          patient_id?: string | null
+          shared_with_facility_id?: string | null
+          shared_with_provider_id?: string | null
+          status?: string | null
+          title: string
+          updated_at?: string | null
+        }
+        Update: {
+          access_token?: string | null
+          consent_given_at?: string | null
+          consent_given_by?: string | null
+          consent_required?: boolean | null
+          created_at?: string | null
+          created_by?: string | null
+          description?: string | null
+          expires_at?: string | null
+          facility_id?: string | null
+          id?: string
+          manifest?: Json | null
+          package_number?: string
+          package_type?: string
+          patient_id?: string | null
+          shared_with_facility_id?: string | null
+          shared_with_provider_id?: string | null
+          status?: string | null
+          title?: string
+          updated_at?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "landela_packages_facility_id_fkey"
+            columns: ["facility_id"]
+            isOneToOne: false
+            referencedRelation: "facilities"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "landela_packages_facility_id_fkey"
+            columns: ["facility_id"]
+            isOneToOne: false
+            referencedRelation: "facility_capabilities"
+            referencedColumns: ["facility_id"]
+          },
+          {
+            foreignKeyName: "landela_packages_facility_id_fkey"
+            columns: ["facility_id"]
+            isOneToOne: false
+            referencedRelation: "facility_operations_dashboard"
+            referencedColumns: ["facility_id"]
+          },
+          {
+            foreignKeyName: "landela_packages_facility_id_fkey"
+            columns: ["facility_id"]
+            isOneToOne: false
+            referencedRelation: "provider_facility_context"
+            referencedColumns: ["facility_id"]
+          },
+          {
+            foreignKeyName: "landela_packages_patient_id_fkey"
+            columns: ["patient_id"]
+            isOneToOne: false
+            referencedRelation: "patients"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "landela_packages_shared_with_facility_id_fkey"
+            columns: ["shared_with_facility_id"]
+            isOneToOne: false
+            referencedRelation: "facilities"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "landela_packages_shared_with_facility_id_fkey"
+            columns: ["shared_with_facility_id"]
+            isOneToOne: false
+            referencedRelation: "facility_capabilities"
+            referencedColumns: ["facility_id"]
+          },
+          {
+            foreignKeyName: "landela_packages_shared_with_facility_id_fkey"
+            columns: ["shared_with_facility_id"]
+            isOneToOne: false
+            referencedRelation: "facility_operations_dashboard"
+            referencedColumns: ["facility_id"]
+          },
+          {
+            foreignKeyName: "landela_packages_shared_with_facility_id_fkey"
+            columns: ["shared_with_facility_id"]
+            isOneToOne: false
+            referencedRelation: "provider_facility_context"
+            referencedColumns: ["facility_id"]
+          },
+        ]
+      }
+      landela_print_jobs: {
+        Row: {
+          copies: number | null
+          created_at: string | null
+          document_id: string | null
+          facility_id: string | null
+          id: string
+          include_qr_verification: boolean | null
+          output_storage_path: string | null
+          package_id: string | null
+          print_type: string
+          printed_at: string | null
+          printer_name: string | null
+          qr_verification_url: string | null
+          requested_by: string
+          status: string | null
+          template_id: string | null
+          watermark_text: string | null
+        }
+        Insert: {
+          copies?: number | null
+          created_at?: string | null
+          document_id?: string | null
+          facility_id?: string | null
+          id?: string
+          include_qr_verification?: boolean | null
+          output_storage_path?: string | null
+          package_id?: string | null
+          print_type: string
+          printed_at?: string | null
+          printer_name?: string | null
+          qr_verification_url?: string | null
+          requested_by: string
+          status?: string | null
+          template_id?: string | null
+          watermark_text?: string | null
+        }
+        Update: {
+          copies?: number | null
+          created_at?: string | null
+          document_id?: string | null
+          facility_id?: string | null
+          id?: string
+          include_qr_verification?: boolean | null
+          output_storage_path?: string | null
+          package_id?: string | null
+          print_type?: string
+          printed_at?: string | null
+          printer_name?: string | null
+          qr_verification_url?: string | null
+          requested_by?: string
+          status?: string | null
+          template_id?: string | null
+          watermark_text?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "landela_print_jobs_document_id_fkey"
+            columns: ["document_id"]
+            isOneToOne: false
+            referencedRelation: "landela_documents"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "landela_print_jobs_facility_id_fkey"
+            columns: ["facility_id"]
+            isOneToOne: false
+            referencedRelation: "facilities"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "landela_print_jobs_facility_id_fkey"
+            columns: ["facility_id"]
+            isOneToOne: false
+            referencedRelation: "facility_capabilities"
+            referencedColumns: ["facility_id"]
+          },
+          {
+            foreignKeyName: "landela_print_jobs_facility_id_fkey"
+            columns: ["facility_id"]
+            isOneToOne: false
+            referencedRelation: "facility_operations_dashboard"
+            referencedColumns: ["facility_id"]
+          },
+          {
+            foreignKeyName: "landela_print_jobs_facility_id_fkey"
+            columns: ["facility_id"]
+            isOneToOne: false
+            referencedRelation: "provider_facility_context"
+            referencedColumns: ["facility_id"]
+          },
+          {
+            foreignKeyName: "landela_print_jobs_package_id_fkey"
+            columns: ["package_id"]
+            isOneToOne: false
+            referencedRelation: "landela_packages"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      landela_registry_index: {
+        Row: {
+          certificate_number: string | null
+          created_at: string | null
+          document_id: string
+          id: string
+          is_primary_document: boolean | null
+          registry_entity_id: string
+          registry_type: string
+          valid_from: string | null
+          valid_to: string | null
+        }
+        Insert: {
+          certificate_number?: string | null
+          created_at?: string | null
+          document_id: string
+          id?: string
+          is_primary_document?: boolean | null
+          registry_entity_id: string
+          registry_type: string
+          valid_from?: string | null
+          valid_to?: string | null
+        }
+        Update: {
+          certificate_number?: string | null
+          created_at?: string | null
+          document_id?: string
+          id?: string
+          is_primary_document?: boolean | null
+          registry_entity_id?: string
+          registry_type?: string
+          valid_from?: string | null
+          valid_to?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "landela_registry_index_document_id_fkey"
+            columns: ["document_id"]
+            isOneToOne: false
+            referencedRelation: "landela_documents"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       leave_requests: {
         Row: {
           approved_at: string | null
@@ -27381,6 +28505,25 @@ export type Database = {
         | "national"
         | "virtual_services"
         | "programme"
+      landela_capture_source:
+        | "scanner"
+        | "mobile_camera"
+        | "file_upload"
+        | "email_ingestion"
+        | "watch_folder"
+        | "system_generated"
+        | "bulk_import"
+        | "external_system"
+      landela_document_status:
+        | "uploading"
+        | "processing"
+        | "indexing_required"
+        | "pending_review"
+        | "verified"
+        | "final"
+        | "archived"
+        | "rejected"
+      landela_sensitivity_level: "normal" | "sensitive" | "highly_restricted"
       license_status:
         | "active"
         | "suspended"
@@ -28055,6 +29198,27 @@ export const Constants = {
         "virtual_services",
         "programme",
       ],
+      landela_capture_source: [
+        "scanner",
+        "mobile_camera",
+        "file_upload",
+        "email_ingestion",
+        "watch_folder",
+        "system_generated",
+        "bulk_import",
+        "external_system",
+      ],
+      landela_document_status: [
+        "uploading",
+        "processing",
+        "indexing_required",
+        "pending_review",
+        "verified",
+        "final",
+        "archived",
+        "rejected",
+      ],
+      landela_sensitivity_level: ["normal", "sensitive", "highly_restricted"],
       license_status: [
         "active",
         "suspended",
