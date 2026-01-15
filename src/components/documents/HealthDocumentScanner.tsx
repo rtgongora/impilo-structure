@@ -3,7 +3,6 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from 
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
@@ -22,33 +21,49 @@ import {
   RotateCw,
   Loader2,
 } from "lucide-react";
+import { landelaApi } from "@/lib/api/landela";
 
 interface DocumentType {
   id: string;
   label: string;
   icon: React.ComponentType<{ className?: string }>;
   color: string;
+  landelaCode: string; // Maps to Landela document type codes
 }
 
 const documentTypes: DocumentType[] = [
-  { id: "prescription", label: "Prescription", icon: Pill, color: "bg-emerald-500" },
-  { id: "lab-result", label: "Lab Result", icon: TestTube, color: "bg-amber-500" },
-  { id: "medical-record", label: "Medical Record", icon: FileText, color: "bg-blue-500" },
-  { id: "insurance-card", label: "Insurance Card", icon: CreditCard, color: "bg-purple-500" },
-  { id: "id-document", label: "ID Document", icon: CreditCard, color: "bg-slate-500" },
-  { id: "other", label: "Other Document", icon: Heart, color: "bg-pink-500" },
+  { id: "prescription", label: "Prescription", icon: Pill, color: "bg-emerald-500", landelaCode: "RX" },
+  { id: "lab-result", label: "Lab Result", icon: TestTube, color: "bg-amber-500", landelaCode: "LAB_RESULT" },
+  { id: "medical-record", label: "Medical Record", icon: FileText, color: "bg-blue-500", landelaCode: "CLINICAL_NOTE" },
+  { id: "insurance-card", label: "Insurance Card", icon: CreditCard, color: "bg-purple-500", landelaCode: "INSURANCE_DOC" },
+  { id: "id-document", label: "ID Document", icon: CreditCard, color: "bg-slate-500", landelaCode: "ID_DOCUMENT" },
+  { id: "other", label: "Other Document", icon: Heart, color: "bg-pink-500", landelaCode: "OTHER" },
 ];
 
 interface HealthDocumentScannerProps {
   variant?: "button" | "card" | "floating";
   className?: string;
+  patientId?: string;
+  encounterId?: string;
+  visitId?: string;
+  facilityId?: string;
+  onDocumentScanned?: (documentId: string) => void;
 }
 
-export function HealthDocumentScanner({ variant = "button", className }: HealthDocumentScannerProps) {
+export function HealthDocumentScanner({ 
+  variant = "button", 
+  className,
+  patientId,
+  encounterId,
+  visitId,
+  facilityId,
+  onDocumentScanned,
+}: HealthDocumentScannerProps) {
   const [open, setOpen] = useState(false);
   const [step, setStep] = useState<"select" | "capture" | "preview" | "details">("select");
   const [selectedType, setSelectedType] = useState<string>("");
   const [capturedImage, setCapturedImage] = useState<string | null>(null);
+  const [capturedFile, setCapturedFile] = useState<File | null>(null);
   const [isCapturing, setIsCapturing] = useState(false);
   const [isProcessing, setIsProcessing] = useState(false);
   const [documentName, setDocumentName] = useState("");
@@ -62,6 +77,7 @@ export function HealthDocumentScanner({ variant = "button", className }: HealthD
     setStep("select");
     setSelectedType("");
     setCapturedImage(null);
+    setCapturedFile(null);
     setDocumentName("");
     setDocumentNotes("");
     stopCamera();
@@ -109,6 +125,15 @@ export function HealthDocumentScanner({ variant = "button", className }: HealthD
         ctx.drawImage(videoRef.current, 0, 0);
         const imageData = canvas.toDataURL("image/jpeg", 0.8);
         setCapturedImage(imageData);
+        
+        // Convert to File for Landela upload
+        canvas.toBlob((blob) => {
+          if (blob) {
+            const file = new File([blob], `scan_${Date.now()}.jpg`, { type: "image/jpeg" });
+            setCapturedFile(file);
+          }
+        }, "image/jpeg", 0.8);
+        
         stopCamera();
         setStep("preview");
       }
@@ -118,10 +143,12 @@ export function HealthDocumentScanner({ variant = "button", className }: HealthD
   const handleFileUpload = (event: React.ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0];
     if (file) {
-      if (file.size > 10 * 1024 * 1024) {
-        toast.error("File size must be less than 10MB");
+      if (file.size > 50 * 1024 * 1024) {
+        toast.error("File size must be less than 50MB");
         return;
       }
+      
+      setCapturedFile(file);
       
       const reader = new FileReader();
       reader.onload = (e) => {
@@ -133,18 +160,40 @@ export function HealthDocumentScanner({ variant = "button", className }: HealthD
   };
 
   const handleSaveDocument = async () => {
-    if (!capturedImage || !selectedType) return;
+    if (!capturedFile || !selectedType) return;
     
     setIsProcessing(true);
     
-    // Simulate processing - in real implementation, this would upload to storage
-    await new Promise((resolve) => setTimeout(resolve, 1500));
-    
-    const docType = documentTypes.find((t) => t.id === selectedType);
-    toast.success(`${docType?.label || "Document"} saved successfully!`);
-    
-    setIsProcessing(false);
-    handleOpenChange(false);
+    try {
+      const docType = documentTypes.find((t) => t.id === selectedType);
+      
+      // Upload to Landela DMS
+      const document = await landelaApi.uploadDocument(capturedFile, {
+        title: documentName || `${docType?.label || "Document"} - ${new Date().toLocaleDateString()}`,
+        documentTypeCode: docType?.landelaCode || "OTHER",
+        source: "mobile_camera",
+        facilityId,
+        patientId,
+        encounterId,
+        visitId,
+      });
+      
+      // Auto-process with AI for OCR/extraction
+      try {
+        await landelaApi.processDocument(document.id, "full");
+      } catch (processError) {
+        console.warn("AI processing failed, document still saved:", processError);
+      }
+      
+      toast.success(`${docType?.label || "Document"} saved to Landela DMS!`);
+      onDocumentScanned?.(document.id);
+      handleOpenChange(false);
+    } catch (error) {
+      console.error("Upload error:", error);
+      toast.error(error instanceof Error ? error.message : "Failed to save document");
+    } finally {
+      setIsProcessing(false);
+    }
   };
 
   const renderTrigger = () => {
@@ -313,6 +362,7 @@ export function HealthDocumentScanner({ variant = "button", className }: HealthD
                 variant="outline"
                 onClick={() => {
                   setCapturedImage(null);
+                  setCapturedFile(null);
                   setStep("select");
                 }}
               >
@@ -342,7 +392,7 @@ export function HealthDocumentScanner({ variant = "button", className }: HealthD
                 <Badge variant="secondary">
                   {documentTypes.find((t) => t.id === selectedType)?.label}
                 </Badge>
-                <p className="text-xs text-muted-foreground mt-1">Ready to save</p>
+                <p className="text-xs text-muted-foreground mt-1">Ready to save to Landela DMS</p>
               </div>
             </div>
             
@@ -380,7 +430,7 @@ export function HealthDocumentScanner({ variant = "button", className }: HealthD
                 {isProcessing ? (
                   <>
                     <Loader2 className="h-4 w-4 mr-2 animate-spin" />
-                    Saving...
+                    Saving to Landela...
                   </>
                 ) : (
                   <>
