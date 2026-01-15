@@ -309,9 +309,24 @@ const Auth = () => {
         <div className="w-full max-w-md">
           {view === "method-select" && (
             <div className="space-y-8">
-              {/* Mobile logo */}
+              {/* Mobile logo - long press to reveal maintenance */}
               <div className="lg:hidden flex justify-center mb-8">
-                <img src={impiloLogo} alt="Impilo" className="h-12 w-auto" />
+                <img 
+                  src={impiloLogo} 
+                  alt="Impilo" 
+                  className="h-12 w-auto select-none"
+                  onTouchStart={(e) => {
+                    const timer = setTimeout(() => {
+                      setShowMaintenanceOption(true);
+                      toast.info("Maintenance mode revealed", { duration: 2000 });
+                    }, 1500);
+                    (e.target as HTMLElement).dataset.timer = String(timer);
+                  }}
+                  onTouchEnd={(e) => {
+                    const timer = (e.target as HTMLElement).dataset.timer;
+                    if (timer) clearTimeout(Number(timer));
+                  }}
+                />
               </div>
 
               <div className="text-center lg:text-left">
