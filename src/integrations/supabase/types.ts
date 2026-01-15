@@ -4306,6 +4306,57 @@ export type Database = {
           },
         ]
       }
+      contextual_help_mappings: {
+        Row: {
+          course_id: string | null
+          created_at: string | null
+          element_id: string | null
+          help_text: string | null
+          id: string
+          is_active: boolean | null
+          kb_article_id: string | null
+          priority: number | null
+          screen_path: string
+        }
+        Insert: {
+          course_id?: string | null
+          created_at?: string | null
+          element_id?: string | null
+          help_text?: string | null
+          id?: string
+          is_active?: boolean | null
+          kb_article_id?: string | null
+          priority?: number | null
+          screen_path: string
+        }
+        Update: {
+          course_id?: string | null
+          created_at?: string | null
+          element_id?: string | null
+          help_text?: string | null
+          id?: string
+          is_active?: boolean | null
+          kb_article_id?: string | null
+          priority?: number | null
+          screen_path?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "contextual_help_mappings_course_id_fkey"
+            columns: ["course_id"]
+            isOneToOne: false
+            referencedRelation: "course_catalog"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "contextual_help_mappings_kb_article_id_fkey"
+            columns: ["kb_article_id"]
+            isOneToOne: false
+            referencedRelation: "kb_articles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       controlled_substance_log: {
         Row: {
           action: string
@@ -4646,6 +4697,150 @@ export type Database = {
           },
         ]
       }
+      course_catalog: {
+        Row: {
+          archived_at: string | null
+          course_code: string | null
+          cpd_accreditor: string | null
+          cpd_credits: number | null
+          cpd_validity_months: number | null
+          created_at: string | null
+          description: string | null
+          difficulty: Database["public"]["Enums"]["course_difficulty"] | null
+          duration_minutes: number | null
+          format: Database["public"]["Enums"]["course_format"] | null
+          id: string
+          is_cpd_eligible: boolean | null
+          is_featured: boolean | null
+          is_mandatory: boolean | null
+          is_published: boolean | null
+          language: string | null
+          launch_url: string | null
+          module_tags: string[] | null
+          moodle_course_id: number | null
+          moodle_url: string | null
+          program_areas: string[] | null
+          published_at: string | null
+          requires_enrollment: boolean | null
+          short_description: string | null
+          target_cadres: string[] | null
+          target_facility_types: string[] | null
+          target_roles: string[] | null
+          thumbnail_url: string | null
+          title: string
+          updated_at: string | null
+          version: string | null
+        }
+        Insert: {
+          archived_at?: string | null
+          course_code?: string | null
+          cpd_accreditor?: string | null
+          cpd_credits?: number | null
+          cpd_validity_months?: number | null
+          created_at?: string | null
+          description?: string | null
+          difficulty?: Database["public"]["Enums"]["course_difficulty"] | null
+          duration_minutes?: number | null
+          format?: Database["public"]["Enums"]["course_format"] | null
+          id?: string
+          is_cpd_eligible?: boolean | null
+          is_featured?: boolean | null
+          is_mandatory?: boolean | null
+          is_published?: boolean | null
+          language?: string | null
+          launch_url?: string | null
+          module_tags?: string[] | null
+          moodle_course_id?: number | null
+          moodle_url?: string | null
+          program_areas?: string[] | null
+          published_at?: string | null
+          requires_enrollment?: boolean | null
+          short_description?: string | null
+          target_cadres?: string[] | null
+          target_facility_types?: string[] | null
+          target_roles?: string[] | null
+          thumbnail_url?: string | null
+          title: string
+          updated_at?: string | null
+          version?: string | null
+        }
+        Update: {
+          archived_at?: string | null
+          course_code?: string | null
+          cpd_accreditor?: string | null
+          cpd_credits?: number | null
+          cpd_validity_months?: number | null
+          created_at?: string | null
+          description?: string | null
+          difficulty?: Database["public"]["Enums"]["course_difficulty"] | null
+          duration_minutes?: number | null
+          format?: Database["public"]["Enums"]["course_format"] | null
+          id?: string
+          is_cpd_eligible?: boolean | null
+          is_featured?: boolean | null
+          is_mandatory?: boolean | null
+          is_published?: boolean | null
+          language?: string | null
+          launch_url?: string | null
+          module_tags?: string[] | null
+          moodle_course_id?: number | null
+          moodle_url?: string | null
+          program_areas?: string[] | null
+          published_at?: string | null
+          requires_enrollment?: boolean | null
+          short_description?: string | null
+          target_cadres?: string[] | null
+          target_facility_types?: string[] | null
+          target_roles?: string[] | null
+          thumbnail_url?: string | null
+          title?: string
+          updated_at?: string | null
+          version?: string | null
+        }
+        Relationships: []
+      }
+      course_prerequisites: {
+        Row: {
+          course_id: string | null
+          created_at: string | null
+          id: string
+          is_mandatory: boolean | null
+          min_score: number | null
+          prerequisite_course_id: string | null
+        }
+        Insert: {
+          course_id?: string | null
+          created_at?: string | null
+          id?: string
+          is_mandatory?: boolean | null
+          min_score?: number | null
+          prerequisite_course_id?: string | null
+        }
+        Update: {
+          course_id?: string | null
+          created_at?: string | null
+          id?: string
+          is_mandatory?: boolean | null
+          min_score?: number | null
+          prerequisite_course_id?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "course_prerequisites_course_id_fkey"
+            columns: ["course_id"]
+            isOneToOne: false
+            referencedRelation: "course_catalog"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "course_prerequisites_prerequisite_course_id_fkey"
+            columns: ["prerequisite_course_id"]
+            isOneToOne: false
+            referencedRelation: "course_catalog"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       cover_requests: {
         Row: {
           cover_date: string
@@ -4940,6 +5135,96 @@ export type Database = {
           updated_at?: string | null
         }
         Relationships: []
+      }
+      cpd_ledger: {
+        Row: {
+          activity_date: string
+          activity_description: string | null
+          activity_title: string
+          activity_type: Database["public"]["Enums"]["cpd_activity_type"]
+          certificate_id: string | null
+          course_id: string | null
+          cpd_period_end: string | null
+          cpd_period_start: string | null
+          cpd_period_year: number | null
+          created_at: string | null
+          credits_category: string | null
+          credits_earned: number
+          earned_at: string | null
+          evidence_url: string | null
+          expires_at: string | null
+          external_provider: string | null
+          external_reference: string | null
+          id: string
+          user_id: string
+          verified: boolean | null
+          verified_at: string | null
+          verified_by: string | null
+        }
+        Insert: {
+          activity_date: string
+          activity_description?: string | null
+          activity_title: string
+          activity_type: Database["public"]["Enums"]["cpd_activity_type"]
+          certificate_id?: string | null
+          course_id?: string | null
+          cpd_period_end?: string | null
+          cpd_period_start?: string | null
+          cpd_period_year?: number | null
+          created_at?: string | null
+          credits_category?: string | null
+          credits_earned: number
+          earned_at?: string | null
+          evidence_url?: string | null
+          expires_at?: string | null
+          external_provider?: string | null
+          external_reference?: string | null
+          id?: string
+          user_id: string
+          verified?: boolean | null
+          verified_at?: string | null
+          verified_by?: string | null
+        }
+        Update: {
+          activity_date?: string
+          activity_description?: string | null
+          activity_title?: string
+          activity_type?: Database["public"]["Enums"]["cpd_activity_type"]
+          certificate_id?: string | null
+          course_id?: string | null
+          cpd_period_end?: string | null
+          cpd_period_start?: string | null
+          cpd_period_year?: number | null
+          created_at?: string | null
+          credits_category?: string | null
+          credits_earned?: number
+          earned_at?: string | null
+          evidence_url?: string | null
+          expires_at?: string | null
+          external_provider?: string | null
+          external_reference?: string | null
+          id?: string
+          user_id?: string
+          verified?: boolean | null
+          verified_at?: string | null
+          verified_by?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "cpd_ledger_certificate_id_fkey"
+            columns: ["certificate_id"]
+            isOneToOne: false
+            referencedRelation: "training_certificates"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "cpd_ledger_course_id_fkey"
+            columns: ["course_id"]
+            isOneToOne: false
+            referencedRelation: "course_catalog"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       cpd_requirements: {
         Row: {
@@ -9264,6 +9549,205 @@ export type Database = {
           },
         ]
       }
+      helpdesk_ticket_attachments: {
+        Row: {
+          comment_id: string | null
+          created_at: string | null
+          file_name: string
+          file_size: number | null
+          file_type: string | null
+          id: string
+          storage_path: string
+          ticket_id: string | null
+          uploaded_by: string | null
+        }
+        Insert: {
+          comment_id?: string | null
+          created_at?: string | null
+          file_name: string
+          file_size?: number | null
+          file_type?: string | null
+          id?: string
+          storage_path: string
+          ticket_id?: string | null
+          uploaded_by?: string | null
+        }
+        Update: {
+          comment_id?: string | null
+          created_at?: string | null
+          file_name?: string
+          file_size?: number | null
+          file_type?: string | null
+          id?: string
+          storage_path?: string
+          ticket_id?: string | null
+          uploaded_by?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "helpdesk_ticket_attachments_comment_id_fkey"
+            columns: ["comment_id"]
+            isOneToOne: false
+            referencedRelation: "helpdesk_ticket_comments"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "helpdesk_ticket_attachments_ticket_id_fkey"
+            columns: ["ticket_id"]
+            isOneToOne: false
+            referencedRelation: "helpdesk_tickets"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      helpdesk_ticket_comments: {
+        Row: {
+          author_id: string
+          author_name: string | null
+          content: string
+          created_at: string | null
+          id: string
+          is_internal: boolean | null
+          ticket_id: string | null
+        }
+        Insert: {
+          author_id: string
+          author_name?: string | null
+          content: string
+          created_at?: string | null
+          id?: string
+          is_internal?: boolean | null
+          ticket_id?: string | null
+        }
+        Update: {
+          author_id?: string
+          author_name?: string | null
+          content?: string
+          created_at?: string | null
+          id?: string
+          is_internal?: boolean | null
+          ticket_id?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "helpdesk_ticket_comments_ticket_id_fkey"
+            columns: ["ticket_id"]
+            isOneToOne: false
+            referencedRelation: "helpdesk_tickets"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      helpdesk_tickets: {
+        Row: {
+          assigned_at: string | null
+          assigned_team: string | null
+          assigned_to: string | null
+          category: string | null
+          closed_at: string | null
+          closed_by: string | null
+          created_at: string | null
+          description: string
+          diagnostic_bundle: Json | null
+          first_response_at: string | null
+          id: string
+          module_context: string | null
+          related_kb_article_id: string | null
+          reporter_email: string | null
+          reporter_facility_id: string | null
+          reporter_id: string
+          reporter_name: string | null
+          resolution_notes: string | null
+          resolution_type: string | null
+          resolved_at: string | null
+          satisfaction_comment: string | null
+          satisfaction_rating: number | null
+          screen_context: string | null
+          severity: Database["public"]["Enums"]["ticket_severity"] | null
+          sla_due_at: string | null
+          status: Database["public"]["Enums"]["ticket_status"] | null
+          subcategory: string | null
+          subject: string
+          ticket_number: string
+          updated_at: string | null
+          url_context: string | null
+        }
+        Insert: {
+          assigned_at?: string | null
+          assigned_team?: string | null
+          assigned_to?: string | null
+          category?: string | null
+          closed_at?: string | null
+          closed_by?: string | null
+          created_at?: string | null
+          description: string
+          diagnostic_bundle?: Json | null
+          first_response_at?: string | null
+          id?: string
+          module_context?: string | null
+          related_kb_article_id?: string | null
+          reporter_email?: string | null
+          reporter_facility_id?: string | null
+          reporter_id: string
+          reporter_name?: string | null
+          resolution_notes?: string | null
+          resolution_type?: string | null
+          resolved_at?: string | null
+          satisfaction_comment?: string | null
+          satisfaction_rating?: number | null
+          screen_context?: string | null
+          severity?: Database["public"]["Enums"]["ticket_severity"] | null
+          sla_due_at?: string | null
+          status?: Database["public"]["Enums"]["ticket_status"] | null
+          subcategory?: string | null
+          subject: string
+          ticket_number: string
+          updated_at?: string | null
+          url_context?: string | null
+        }
+        Update: {
+          assigned_at?: string | null
+          assigned_team?: string | null
+          assigned_to?: string | null
+          category?: string | null
+          closed_at?: string | null
+          closed_by?: string | null
+          created_at?: string | null
+          description?: string
+          diagnostic_bundle?: Json | null
+          first_response_at?: string | null
+          id?: string
+          module_context?: string | null
+          related_kb_article_id?: string | null
+          reporter_email?: string | null
+          reporter_facility_id?: string | null
+          reporter_id?: string
+          reporter_name?: string | null
+          resolution_notes?: string | null
+          resolution_type?: string | null
+          resolved_at?: string | null
+          satisfaction_comment?: string | null
+          satisfaction_rating?: number | null
+          screen_context?: string | null
+          severity?: Database["public"]["Enums"]["ticket_severity"] | null
+          sla_due_at?: string | null
+          status?: Database["public"]["Enums"]["ticket_status"] | null
+          subcategory?: string | null
+          subject?: string
+          ticket_number?: string
+          updated_at?: string | null
+          url_context?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "helpdesk_tickets_related_kb_article_id_fkey"
+            columns: ["related_kb_article_id"]
+            isOneToOne: false
+            referencedRelation: "kb_articles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       hpr_audit_log: {
         Row: {
           action: string
@@ -11229,6 +11713,171 @@ export type Database = {
             columns: ["above_site_role_id"]
             isOneToOne: false
             referencedRelation: "above_site_roles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      kb_article_feedback: {
+        Row: {
+          article_id: string | null
+          created_at: string | null
+          feedback_text: string | null
+          id: string
+          is_helpful: boolean
+          user_id: string | null
+        }
+        Insert: {
+          article_id?: string | null
+          created_at?: string | null
+          feedback_text?: string | null
+          id?: string
+          is_helpful: boolean
+          user_id?: string | null
+        }
+        Update: {
+          article_id?: string | null
+          created_at?: string | null
+          feedback_text?: string | null
+          id?: string
+          is_helpful?: boolean
+          user_id?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "kb_article_feedback_article_id_fkey"
+            columns: ["article_id"]
+            isOneToOne: false
+            referencedRelation: "kb_articles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      kb_articles: {
+        Row: {
+          article_type: string | null
+          author_id: string | null
+          category_id: string | null
+          content: string
+          content_html: string | null
+          created_at: string | null
+          excerpt: string | null
+          helpful_count: number | null
+          id: string
+          is_featured: boolean | null
+          is_published: boolean | null
+          keywords: string[] | null
+          module_tags: string[] | null
+          not_helpful_count: number | null
+          published_at: string | null
+          screen_context: string[] | null
+          severity: string | null
+          slug: string
+          target_roles: string[] | null
+          title: string
+          updated_at: string | null
+          version: string | null
+          view_count: number | null
+        }
+        Insert: {
+          article_type?: string | null
+          author_id?: string | null
+          category_id?: string | null
+          content: string
+          content_html?: string | null
+          created_at?: string | null
+          excerpt?: string | null
+          helpful_count?: number | null
+          id?: string
+          is_featured?: boolean | null
+          is_published?: boolean | null
+          keywords?: string[] | null
+          module_tags?: string[] | null
+          not_helpful_count?: number | null
+          published_at?: string | null
+          screen_context?: string[] | null
+          severity?: string | null
+          slug: string
+          target_roles?: string[] | null
+          title: string
+          updated_at?: string | null
+          version?: string | null
+          view_count?: number | null
+        }
+        Update: {
+          article_type?: string | null
+          author_id?: string | null
+          category_id?: string | null
+          content?: string
+          content_html?: string | null
+          created_at?: string | null
+          excerpt?: string | null
+          helpful_count?: number | null
+          id?: string
+          is_featured?: boolean | null
+          is_published?: boolean | null
+          keywords?: string[] | null
+          module_tags?: string[] | null
+          not_helpful_count?: number | null
+          published_at?: string | null
+          screen_context?: string[] | null
+          severity?: string | null
+          slug?: string
+          target_roles?: string[] | null
+          title?: string
+          updated_at?: string | null
+          version?: string | null
+          view_count?: number | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "kb_articles_category_id_fkey"
+            columns: ["category_id"]
+            isOneToOne: false
+            referencedRelation: "kb_categories"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      kb_categories: {
+        Row: {
+          created_at: string | null
+          description: string | null
+          icon: string | null
+          id: string
+          is_published: boolean | null
+          name: string
+          parent_id: string | null
+          sequence_order: number | null
+          slug: string
+        }
+        Insert: {
+          created_at?: string | null
+          description?: string | null
+          icon?: string | null
+          id?: string
+          is_published?: boolean | null
+          name: string
+          parent_id?: string | null
+          sequence_order?: number | null
+          slug: string
+        }
+        Update: {
+          created_at?: string | null
+          description?: string | null
+          icon?: string | null
+          id?: string
+          is_published?: boolean | null
+          name?: string
+          parent_id?: string | null
+          sequence_order?: number | null
+          slug?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "kb_categories_parent_id_fkey"
+            columns: ["parent_id"]
+            isOneToOne: false
+            referencedRelation: "kb_categories"
             referencedColumns: ["id"]
           },
         ]
@@ -14142,6 +14791,33 @@ export type Database = {
           },
         ]
       }
+      moodle_config: {
+        Row: {
+          config_key: string
+          config_value: string | null
+          created_at: string | null
+          id: string
+          is_encrypted: boolean | null
+          updated_at: string | null
+        }
+        Insert: {
+          config_key: string
+          config_value?: string | null
+          created_at?: string | null
+          id?: string
+          is_encrypted?: boolean | null
+          updated_at?: string | null
+        }
+        Update: {
+          config_key?: string
+          config_value?: string | null
+          created_at?: string | null
+          id?: string
+          is_encrypted?: boolean | null
+          updated_at?: string | null
+        }
+        Relationships: []
+      }
       ndr_encounters: {
         Row: {
           admission_date: string
@@ -15232,6 +15908,51 @@ export type Database = {
             columns: ["page_id"]
             isOneToOne: false
             referencedRelation: "professional_pages"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      pathway_courses: {
+        Row: {
+          course_id: string | null
+          created_at: string | null
+          id: string
+          is_mandatory: boolean | null
+          pathway_id: string | null
+          sequence_order: number
+          unlock_after_completion: boolean | null
+        }
+        Insert: {
+          course_id?: string | null
+          created_at?: string | null
+          id?: string
+          is_mandatory?: boolean | null
+          pathway_id?: string | null
+          sequence_order: number
+          unlock_after_completion?: boolean | null
+        }
+        Update: {
+          course_id?: string | null
+          created_at?: string | null
+          id?: string
+          is_mandatory?: boolean | null
+          pathway_id?: string | null
+          sequence_order?: number
+          unlock_after_completion?: boolean | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "pathway_courses_course_id_fkey"
+            columns: ["course_id"]
+            isOneToOne: false
+            referencedRelation: "course_catalog"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "pathway_courses_pathway_id_fkey"
+            columns: ["pathway_id"]
+            isOneToOne: false
+            referencedRelation: "training_pathways"
             referencedColumns: ["id"]
           },
         ]
@@ -25124,6 +25845,491 @@ export type Database = {
         }
         Relationships: []
       }
+      training_access_gates: {
+        Row: {
+          allow_supervisor_override: boolean | null
+          created_at: string | null
+          description: string | null
+          feature_key: string
+          feature_name: string
+          id: string
+          is_active: boolean | null
+          min_quiz_score: number | null
+          must_be_current: boolean | null
+          required_course_id: string | null
+          required_pathway_id: string | null
+          updated_at: string | null
+          validity_months: number | null
+        }
+        Insert: {
+          allow_supervisor_override?: boolean | null
+          created_at?: string | null
+          description?: string | null
+          feature_key: string
+          feature_name: string
+          id?: string
+          is_active?: boolean | null
+          min_quiz_score?: number | null
+          must_be_current?: boolean | null
+          required_course_id?: string | null
+          required_pathway_id?: string | null
+          updated_at?: string | null
+          validity_months?: number | null
+        }
+        Update: {
+          allow_supervisor_override?: boolean | null
+          created_at?: string | null
+          description?: string | null
+          feature_key?: string
+          feature_name?: string
+          id?: string
+          is_active?: boolean | null
+          min_quiz_score?: number | null
+          must_be_current?: boolean | null
+          required_course_id?: string | null
+          required_pathway_id?: string | null
+          updated_at?: string | null
+          validity_months?: number | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "training_access_gates_required_course_id_fkey"
+            columns: ["required_course_id"]
+            isOneToOne: false
+            referencedRelation: "course_catalog"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "training_access_gates_required_pathway_id_fkey"
+            columns: ["required_pathway_id"]
+            isOneToOne: false
+            referencedRelation: "training_pathways"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      training_certificates: {
+        Row: {
+          certificate_number: string
+          certificate_pdf_url: string | null
+          course_id: string | null
+          cpd_accreditor: string | null
+          cpd_credits: number | null
+          created_at: string | null
+          enrollment_id: string | null
+          expires_at: string | null
+          id: string
+          is_valid: boolean | null
+          issued_at: string | null
+          moodle_certificate_id: number | null
+          qr_code_url: string | null
+          revocation_reason: string | null
+          revoked_at: string | null
+          template_id: string | null
+          title: string
+          user_id: string
+          verification_code: string | null
+          verification_url: string | null
+        }
+        Insert: {
+          certificate_number: string
+          certificate_pdf_url?: string | null
+          course_id?: string | null
+          cpd_accreditor?: string | null
+          cpd_credits?: number | null
+          created_at?: string | null
+          enrollment_id?: string | null
+          expires_at?: string | null
+          id?: string
+          is_valid?: boolean | null
+          issued_at?: string | null
+          moodle_certificate_id?: number | null
+          qr_code_url?: string | null
+          revocation_reason?: string | null
+          revoked_at?: string | null
+          template_id?: string | null
+          title: string
+          user_id: string
+          verification_code?: string | null
+          verification_url?: string | null
+        }
+        Update: {
+          certificate_number?: string
+          certificate_pdf_url?: string | null
+          course_id?: string | null
+          cpd_accreditor?: string | null
+          cpd_credits?: number | null
+          created_at?: string | null
+          enrollment_id?: string | null
+          expires_at?: string | null
+          id?: string
+          is_valid?: boolean | null
+          issued_at?: string | null
+          moodle_certificate_id?: number | null
+          qr_code_url?: string | null
+          revocation_reason?: string | null
+          revoked_at?: string | null
+          template_id?: string | null
+          title?: string
+          user_id?: string
+          verification_code?: string | null
+          verification_url?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "training_certificates_course_id_fkey"
+            columns: ["course_id"]
+            isOneToOne: false
+            referencedRelation: "course_catalog"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "training_certificates_enrollment_id_fkey"
+            columns: ["enrollment_id"]
+            isOneToOne: false
+            referencedRelation: "training_enrollments"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      training_enrollments: {
+        Row: {
+          best_quiz_score: number | null
+          completed_at: string | null
+          course_id: string | null
+          created_at: string | null
+          enrolled_at: string | null
+          expires_at: string | null
+          id: string
+          last_quiz_score: number | null
+          last_synced_at: string | null
+          moodle_enrollment_id: number | null
+          passed: boolean | null
+          pathway_id: string | null
+          progress_percent: number | null
+          quiz_attempts: number | null
+          started_at: string | null
+          status: Database["public"]["Enums"]["training_status"] | null
+          updated_at: string | null
+          user_id: string
+        }
+        Insert: {
+          best_quiz_score?: number | null
+          completed_at?: string | null
+          course_id?: string | null
+          created_at?: string | null
+          enrolled_at?: string | null
+          expires_at?: string | null
+          id?: string
+          last_quiz_score?: number | null
+          last_synced_at?: string | null
+          moodle_enrollment_id?: number | null
+          passed?: boolean | null
+          pathway_id?: string | null
+          progress_percent?: number | null
+          quiz_attempts?: number | null
+          started_at?: string | null
+          status?: Database["public"]["Enums"]["training_status"] | null
+          updated_at?: string | null
+          user_id: string
+        }
+        Update: {
+          best_quiz_score?: number | null
+          completed_at?: string | null
+          course_id?: string | null
+          created_at?: string | null
+          enrolled_at?: string | null
+          expires_at?: string | null
+          id?: string
+          last_quiz_score?: number | null
+          last_synced_at?: string | null
+          moodle_enrollment_id?: number | null
+          passed?: boolean | null
+          pathway_id?: string | null
+          progress_percent?: number | null
+          quiz_attempts?: number | null
+          started_at?: string | null
+          status?: Database["public"]["Enums"]["training_status"] | null
+          updated_at?: string | null
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "training_enrollments_course_id_fkey"
+            columns: ["course_id"]
+            isOneToOne: false
+            referencedRelation: "course_catalog"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "training_enrollments_pathway_id_fkey"
+            columns: ["pathway_id"]
+            isOneToOne: false
+            referencedRelation: "training_pathways"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      training_events: {
+        Row: {
+          course_id: string | null
+          created_at: string | null
+          enrollment_id: string | null
+          event_data: Json | null
+          event_type: string
+          id: string
+          moodle_event_id: string | null
+          occurred_at: string | null
+          synced_from_moodle: boolean | null
+          user_id: string
+        }
+        Insert: {
+          course_id?: string | null
+          created_at?: string | null
+          enrollment_id?: string | null
+          event_data?: Json | null
+          event_type: string
+          id?: string
+          moodle_event_id?: string | null
+          occurred_at?: string | null
+          synced_from_moodle?: boolean | null
+          user_id: string
+        }
+        Update: {
+          course_id?: string | null
+          created_at?: string | null
+          enrollment_id?: string | null
+          event_data?: Json | null
+          event_type?: string
+          id?: string
+          moodle_event_id?: string | null
+          occurred_at?: string | null
+          synced_from_moodle?: boolean | null
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "training_events_course_id_fkey"
+            columns: ["course_id"]
+            isOneToOne: false
+            referencedRelation: "course_catalog"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "training_events_enrollment_id_fkey"
+            columns: ["enrollment_id"]
+            isOneToOne: false
+            referencedRelation: "training_enrollments"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      training_gate_overrides: {
+        Row: {
+          created_at: string | null
+          expires_at: string | null
+          gate_id: string | null
+          granted_at: string | null
+          granted_by: string
+          id: string
+          reason: string
+          revoked_at: string | null
+          revoked_by: string | null
+          user_id: string
+        }
+        Insert: {
+          created_at?: string | null
+          expires_at?: string | null
+          gate_id?: string | null
+          granted_at?: string | null
+          granted_by: string
+          id?: string
+          reason: string
+          revoked_at?: string | null
+          revoked_by?: string | null
+          user_id: string
+        }
+        Update: {
+          created_at?: string | null
+          expires_at?: string | null
+          gate_id?: string | null
+          granted_at?: string | null
+          granted_by?: string
+          id?: string
+          reason?: string
+          revoked_at?: string | null
+          revoked_by?: string | null
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "training_gate_overrides_gate_id_fkey"
+            columns: ["gate_id"]
+            isOneToOne: false
+            referencedRelation: "training_access_gates"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      training_notifications: {
+        Row: {
+          action_url: string | null
+          channels: string[] | null
+          created_at: string | null
+          expires_at: string | null
+          id: string
+          is_read: boolean | null
+          message: string
+          notification_type: string
+          priority: string | null
+          read_at: string | null
+          related_course_id: string | null
+          related_pathway_id: string | null
+          scheduled_for: string | null
+          sent_at: string | null
+          title: string
+          user_id: string
+        }
+        Insert: {
+          action_url?: string | null
+          channels?: string[] | null
+          created_at?: string | null
+          expires_at?: string | null
+          id?: string
+          is_read?: boolean | null
+          message: string
+          notification_type: string
+          priority?: string | null
+          read_at?: string | null
+          related_course_id?: string | null
+          related_pathway_id?: string | null
+          scheduled_for?: string | null
+          sent_at?: string | null
+          title: string
+          user_id: string
+        }
+        Update: {
+          action_url?: string | null
+          channels?: string[] | null
+          created_at?: string | null
+          expires_at?: string | null
+          id?: string
+          is_read?: boolean | null
+          message?: string
+          notification_type?: string
+          priority?: string | null
+          read_at?: string | null
+          related_course_id?: string | null
+          related_pathway_id?: string | null
+          scheduled_for?: string | null
+          sent_at?: string | null
+          title?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "training_notifications_related_course_id_fkey"
+            columns: ["related_course_id"]
+            isOneToOne: false
+            referencedRelation: "course_catalog"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "training_notifications_related_pathway_id_fkey"
+            columns: ["related_pathway_id"]
+            isOneToOne: false
+            referencedRelation: "training_pathways"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      training_pathways: {
+        Row: {
+          created_at: string | null
+          description: string | null
+          estimated_duration_hours: number | null
+          id: string
+          is_onboarding: boolean | null
+          is_published: boolean | null
+          name: string
+          pathway_code: string | null
+          sequence_order: number | null
+          target_cadre: string | null
+          target_role: string | null
+          updated_at: string | null
+        }
+        Insert: {
+          created_at?: string | null
+          description?: string | null
+          estimated_duration_hours?: number | null
+          id?: string
+          is_onboarding?: boolean | null
+          is_published?: boolean | null
+          name: string
+          pathway_code?: string | null
+          sequence_order?: number | null
+          target_cadre?: string | null
+          target_role?: string | null
+          updated_at?: string | null
+        }
+        Update: {
+          created_at?: string | null
+          description?: string | null
+          estimated_duration_hours?: number | null
+          id?: string
+          is_onboarding?: boolean | null
+          is_published?: boolean | null
+          name?: string
+          pathway_code?: string | null
+          sequence_order?: number | null
+          target_cadre?: string | null
+          target_role?: string | null
+          updated_at?: string | null
+        }
+        Relationships: []
+      }
+      training_profiles: {
+        Row: {
+          created_at: string | null
+          current_pathway_id: string | null
+          id: string
+          moodle_user_id: number | null
+          moodle_username: string | null
+          onboarding_completed: boolean | null
+          onboarding_completed_at: string | null
+          total_courses_completed: number | null
+          total_cpd_credits: number | null
+          updated_at: string | null
+          user_id: string
+        }
+        Insert: {
+          created_at?: string | null
+          current_pathway_id?: string | null
+          id?: string
+          moodle_user_id?: number | null
+          moodle_username?: string | null
+          onboarding_completed?: boolean | null
+          onboarding_completed_at?: string | null
+          total_courses_completed?: number | null
+          total_cpd_credits?: number | null
+          updated_at?: string | null
+          user_id: string
+        }
+        Update: {
+          created_at?: string | null
+          current_pathway_id?: string | null
+          id?: string
+          moodle_user_id?: number | null
+          moodle_username?: string | null
+          onboarding_completed?: boolean | null
+          onboarding_completed_at?: string | null
+          total_courses_completed?: number | null
+          total_cpd_credits?: number | null
+          updated_at?: string | null
+          user_id?: string
+        }
+        Relationships: []
+      }
       transfer_summaries: {
         Row: {
           acceptance_status: string | null
@@ -28507,7 +29713,25 @@ export type Database = {
         | "procedure_performed"
         | "transport_provided"
         | "outreach_session"
+      course_difficulty: "beginner" | "intermediate" | "advanced" | "expert"
+      course_format:
+        | "microlearning"
+        | "full_course"
+        | "simulation"
+        | "job_aid"
+        | "video"
+        | "webinar"
+        | "classroom"
       cover_request_status: "pending" | "approved" | "denied" | "expired"
+      cpd_activity_type:
+        | "online_course"
+        | "webinar"
+        | "conference"
+        | "workshop"
+        | "peer_review"
+        | "publication"
+        | "supervision"
+        | "other"
       crvs_birth_plurality: "single" | "twin" | "triplet" | "higher_order"
       crvs_certificate_status:
         | "not_requested"
@@ -28866,6 +30090,21 @@ export type Database = {
         | "clinician"
         | "specialist"
         | "manager"
+      ticket_severity: "critical" | "high" | "medium" | "low"
+      ticket_status:
+        | "submitted"
+        | "triaged"
+        | "assigned"
+        | "in_progress"
+        | "resolved"
+        | "closed"
+      training_status:
+        | "not_enrolled"
+        | "enrolled"
+        | "in_progress"
+        | "completed"
+        | "expired"
+        | "recert_due"
       transaction_status:
         | "pending"
         | "processing"
@@ -29182,7 +30421,27 @@ export const Constants = {
         "transport_provided",
         "outreach_session",
       ],
+      course_difficulty: ["beginner", "intermediate", "advanced", "expert"],
+      course_format: [
+        "microlearning",
+        "full_course",
+        "simulation",
+        "job_aid",
+        "video",
+        "webinar",
+        "classroom",
+      ],
       cover_request_status: ["pending", "approved", "denied", "expired"],
+      cpd_activity_type: [
+        "online_course",
+        "webinar",
+        "conference",
+        "workshop",
+        "peer_review",
+        "publication",
+        "supervision",
+        "other",
+      ],
       crvs_birth_plurality: ["single", "twin", "triplet", "higher_order"],
       crvs_certificate_status: [
         "not_requested",
@@ -29583,6 +30842,23 @@ export const Constants = {
         "clinician",
         "specialist",
         "manager",
+      ],
+      ticket_severity: ["critical", "high", "medium", "low"],
+      ticket_status: [
+        "submitted",
+        "triaged",
+        "assigned",
+        "in_progress",
+        "resolved",
+        "closed",
+      ],
+      training_status: [
+        "not_enrolled",
+        "enrolled",
+        "in_progress",
+        "completed",
+        "expired",
+        "recert_due",
       ],
       transaction_status: [
         "pending",
