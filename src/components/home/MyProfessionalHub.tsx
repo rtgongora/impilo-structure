@@ -12,6 +12,7 @@ import { ScrollArea } from '@/components/ui/scroll-area';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Progress } from '@/components/ui/progress';
 import { Input } from '@/components/ui/input';
+import { toast } from 'sonner';
 import {
   Building2,
   Calendar,
@@ -41,6 +42,8 @@ import {
   ClipboardList,
   Stethoscope,
   Crown,
+  Globe,
+  Zap,
 } from 'lucide-react';
 import { useAuth } from '@/contexts/AuthContext';
 import { useProviderFacilities, type ProviderFacility } from '@/hooks/useProviderFacilities';
@@ -75,9 +78,10 @@ const mockCPD = {
 
 interface MyProfessionalHubProps {
   onStartShift?: (facility: ProviderFacility) => void;
+  onSwitchToWork?: () => void;
 }
 
-export function MyProfessionalHub({ onStartShift }: MyProfessionalHubProps) {
+export function MyProfessionalHub({ onStartShift, onSwitchToWork }: MyProfessionalHubProps) {
   const navigate = useNavigate();
   const { profile } = useAuth();
   const { facilities, loading: facilitiesLoading } = useProviderFacilities();
@@ -94,6 +98,24 @@ export function MyProfessionalHub({ onStartShift }: MyProfessionalHubProps) {
   };
 
   const isClinicalRole = ['doctor', 'nurse', 'specialist', 'pharmacist'].includes(profile?.role || '');
+
+  const handleStartShift = (facility: ProviderFacility) => {
+    onStartShift?.(facility);
+    toast.success(`Starting shift at ${facility.facility_name}`, {
+      description: 'Switching to Work tab...',
+    });
+    // Switch to work tab after a brief delay
+    setTimeout(() => {
+      onSwitchToWork?.();
+    }, 500);
+  };
+
+  const handleStartVirtualSession = () => {
+    toast.success('Starting virtual practice session', {
+      description: 'Your license-anchored session is now active.',
+    });
+    navigate('/telemedicine');
+  };
 
   // Aggregate stats
   const stats = {
@@ -323,13 +345,13 @@ export function MyProfessionalHub({ onStartShift }: MyProfessionalHubProps) {
                           <div className="flex flex-col gap-2">
                             <Button 
                               size="sm" 
-                              onClick={() => onStartShift?.(facility)}
+                              onClick={() => handleStartShift(facility)}
                               className="gap-1"
                             >
                               <Play className="h-3 w-3" />
                               Start Shift
                             </Button>
-                            <Button variant="outline" size="sm">
+                            <Button variant="outline" size="sm" onClick={() => navigate('/operations')}>
                               <Eye className="h-3 w-3 mr-1" />
                               View Facility
                             </Button>
@@ -359,8 +381,8 @@ export function MyProfessionalHub({ onStartShift }: MyProfessionalHubProps) {
                         </div>
                       </div>
                     </div>
-                    <Button size="sm" variant="outline">
-                      <Play className="h-3 w-3 mr-1" />
+                    <Button size="sm" variant="outline" onClick={handleStartVirtualSession}>
+                      <Globe className="h-3 w-3 mr-1" />
                       Start Session
                     </Button>
                   </div>

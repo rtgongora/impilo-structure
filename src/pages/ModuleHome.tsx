@@ -726,7 +726,10 @@ export default function ModuleHome() {
 
             {/* My Professional Tab */}
             <TabsContent value="professional" className="mt-0 flex-1 overflow-auto">
-              <MyProfessionalHub onStartShift={selectFacility} />
+              <MyProfessionalHub 
+                onStartShift={selectFacility} 
+                onSwitchToWork={() => setActiveTab('work')}
+              />
             </TabsContent>
 
             {/* Personal Hub Tab (Health + Social unified) */}
