@@ -47,6 +47,8 @@ import {
 } from 'lucide-react';
 import { useAuth } from '@/contexts/AuthContext';
 import { useProviderFacilities, type ProviderFacility } from '@/hooks/useProviderFacilities';
+import { LandelaNotificationsPanel } from '@/components/professional/LandelaNotificationsPanel';
+import { ProfessionalEmailPanel } from '@/components/professional/ProfessionalEmailPanel';
 
 // Mock data for demonstration
 const mockPriorityItems = [
@@ -287,6 +289,12 @@ export function MyProfessionalHub({ onStartShift, onSwitchToWork }: MyProfession
               </div>
             </CardContent>
           </Card>
+
+          {/* Landela DMS & Email - Ministry of Health Integration */}
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <LandelaNotificationsPanel compact />
+            <ProfessionalEmailPanel compact />
+          </div>
         </TabsContent>
 
         {/* Affiliations Tab */}
