@@ -134,7 +134,7 @@ export function MyProfessionalHub({ onStartShift, onSwitchToWork }: MyProfession
   return (
     <div className="flex flex-col h-full">
       <Tabs value={activeTab} onValueChange={setActiveTab} className="flex-1 flex flex-col">
-        <TabsList className="grid w-full grid-cols-5 h-10 p-1 mb-4 flex-shrink-0">
+        <TabsList className="grid w-full grid-cols-5 h-10 p-1 mb-2 flex-shrink-0">
           <TabsTrigger value="dashboard" className="text-xs sm:text-sm">Dashboard</TabsTrigger>
           <TabsTrigger value="affiliations" className="text-xs sm:text-sm">Affiliations</TabsTrigger>
           <TabsTrigger value="patients" className="text-xs sm:text-sm">{isClinicalRole ? 'My Patients' : 'My Tasks'}</TabsTrigger>
