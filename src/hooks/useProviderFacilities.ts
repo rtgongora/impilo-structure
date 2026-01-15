@@ -84,23 +84,22 @@ const DEMO_FACILITIES: ProviderFacility[] = [
   },
 ];
 
-// List of dev/tester emails that should see demo mode
+// List of dev/tester emails that can fallback to demo mode
+// Demo mode only activates if these users have NO real affiliations
 const DEV_TESTER_EMAILS = [
   'dev@impilo.health',
   'admin@impilo.health',
-  'rgongora536@gmail.com',
-  'sarah.moyo@impilo.health',
   'test@impilo.health',
 ];
 
 export function useProviderFacilities(): UseProviderFacilitiesReturn {
-  const { user, profile } = useAuth();
+  const { user } = useAuth();
   const [facilities, setFacilities] = useState<ProviderFacility[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [isDemoMode, setIsDemoMode] = useState(false);
 
-  // Check if user is a dev/tester
+  // Check if user can fallback to demo mode (only for specific test accounts)
   const isDevTester = user?.email && DEV_TESTER_EMAILS.includes(user.email.toLowerCase());
 
   const fetchFacilities = useCallback(async () => {
