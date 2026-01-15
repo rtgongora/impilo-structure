@@ -193,17 +193,19 @@ const Patients = () => {
           <CardHeader className="p-2.5 pb-2 shrink-0">
             <div className="flex items-center justify-between">
               <CardTitle>Patient Directory</CardTitle>
-              <TabsList className="h-7">
-                <TabsTrigger value="all" onClick={() => setActiveTab("all")} className={activeTab === "all" ? "bg-background" : ""}>
-                  All ({patients.length})
-                </TabsTrigger>
-                <TabsTrigger value="active" onClick={() => setActiveTab("active")} className={activeTab === "active" ? "bg-background" : ""}>
-                  Active ({patients.filter(p => p.is_active).length})
-                </TabsTrigger>
-                <TabsTrigger value="inactive" onClick={() => setActiveTab("inactive")} className={activeTab === "inactive" ? "bg-background" : ""}>
-                  Inactive ({patients.filter(p => !p.is_active).length})
-                </TabsTrigger>
-              </TabsList>
+              <Tabs value={activeTab} onValueChange={setActiveTab}>
+                <TabsList className="h-7">
+                  <TabsTrigger value="all">
+                    All ({patients.length})
+                  </TabsTrigger>
+                  <TabsTrigger value="active">
+                    Active ({patients.filter(p => p.is_active).length})
+                  </TabsTrigger>
+                  <TabsTrigger value="inactive">
+                    Inactive ({patients.filter(p => !p.is_active).length})
+                  </TabsTrigger>
+                </TabsList>
+              </Tabs>
             </div>
           </CardHeader>
           <CardContent className="flex-1 p-0 min-h-0">
