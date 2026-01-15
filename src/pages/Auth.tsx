@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useSearchParams } from "react-router-dom";
 import { useAuth } from "@/contexts/AuthContext";
 import { useWorkspace } from "@/contexts/WorkspaceContext";
 import { useAboveSiteRole } from "@/hooks/useAboveSiteRole";
@@ -24,6 +24,7 @@ type AuthView = "method-select" | "lookup" | "biometric" | "workspace" | "email-
 
 const Auth = () => {
   const navigate = useNavigate();
+  const [searchParams] = useSearchParams();
   const { user, loading } = useAuth();
   const { setCurrentDepartment } = useWorkspace();
   const { isAboveSiteUser, roles, availableContexts, startSession, loading: aboveSiteLoading } = useAboveSiteRole();
@@ -32,12 +33,30 @@ const Auth = () => {
   const [provider, setProvider] = useState<ProviderRegistryRecord | null>(null);
   const [facility, setFacility] = useState<FacilityRegistryRecord | null>(null);
   const [pendingAuth, setPendingAuth] = useState<{ method: string; confidence: number } | null>(null);
+  const [showMaintenanceOption, setShowMaintenanceOption] = useState(false);
   
   // Email login state
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
+
+  // Show maintenance option via URL param or keyboard shortcut (Ctrl+Shift+M)
+  useEffect(() => {
+    if (searchParams.get("mode") === "maintenance") {
+      setShowMaintenanceOption(true);
+    }
+
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.ctrlKey && e.shiftKey && e.key === "M") {
+        e.preventDefault();
+        setShowMaintenanceOption(true);
+      }
+    };
+
+    window.addEventListener("keydown", handleKeyDown);
+    return () => window.removeEventListener("keydown", handleKeyDown);
+  }, [searchParams]);
 
   useEffect(() => {
     if (user && view !== "workspace" && view !== "above-site-context") {
@@ -364,26 +383,28 @@ const Auth = () => {
                   </div>
                 </button>
 
-                {/* System Maintenance Login */}
-                <button
-                  onClick={() => setView("system-maintenance")}
-                  className="w-full group relative overflow-hidden rounded-xl border border-amber-500/30 bg-amber-500/5 p-6 text-left transition-all hover:border-amber-500/50 hover:shadow-lg hover:shadow-amber-500/5"
-                >
-                  <div className="flex items-start gap-4">
-                    <div className="h-14 w-14 rounded-xl bg-amber-500/20 flex items-center justify-center shrink-0 group-hover:bg-amber-500/30 transition-colors">
-                      <Wrench className="h-7 w-7 text-amber-600" />
+                {/* System Maintenance Login - Hidden by default */}
+                {showMaintenanceOption && (
+                  <button
+                    onClick={() => setView("system-maintenance")}
+                    className="w-full group relative overflow-hidden rounded-xl border border-amber-500/30 bg-amber-500/5 p-6 text-left transition-all hover:border-amber-500/50 hover:shadow-lg hover:shadow-amber-500/5"
+                  >
+                    <div className="flex items-start gap-4">
+                      <div className="h-14 w-14 rounded-xl bg-amber-500/20 flex items-center justify-center shrink-0 group-hover:bg-amber-500/30 transition-colors">
+                        <Wrench className="h-7 w-7 text-amber-600" />
+                      </div>
+                      <div>
+                        <h3 className="font-semibold text-foreground text-lg">System Maintenance</h3>
+                        <p className="text-sm text-muted-foreground mt-1">
+                          Platform admins & developers only
+                        </p>
+                      </div>
                     </div>
-                    <div>
-                      <h3 className="font-semibold text-foreground text-lg">System Maintenance</h3>
-                      <p className="text-sm text-muted-foreground mt-1">
-                        Platform admins & developers only
-                      </p>
+                    <div className="absolute right-4 top-1/2 -translate-y-1/2 opacity-0 group-hover:opacity-100 transition-opacity">
+                      <ArrowLeft className="h-5 w-5 text-amber-600 rotate-180" />
                     </div>
-                  </div>
-                  <div className="absolute right-4 top-1/2 -translate-y-1/2 opacity-0 group-hover:opacity-100 transition-opacity">
-                    <ArrowLeft className="h-5 w-5 text-amber-600 rotate-180" />
-                  </div>
-                </button>
+                  </button>
+                )}
               </div>
 
               <div className="flex items-center justify-center gap-2 text-xs text-muted-foreground pt-4">
