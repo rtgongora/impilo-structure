@@ -22,6 +22,7 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { HealthDocumentScanner } from "@/components/documents/HealthDocumentScanner";
 import { PersonalHub } from "@/components/home/PersonalHub";
+import { MyProfessionalHub } from "@/components/home/MyProfessionalHub";
 import { ExpandableCategoryCard } from "@/components/home/ExpandableCategoryCard";
 import { 
   Users,
@@ -532,16 +533,22 @@ export default function ModuleHome() {
 
           {/* Tabs - Fill remaining space */}
           <Tabs value={activeTab} onValueChange={setActiveTab} className="flex-1 flex flex-col min-h-0">
-            <TabsList className={`grid w-full h-10 p-1 mb-4 ${isClient ? 'grid-cols-1' : 'grid-cols-2'}`}>
+            <TabsList className={`grid w-full h-10 p-1 mb-4 ${isClient ? 'grid-cols-1' : 'grid-cols-3'}`}>
               {!isClient && (
-                <TabsTrigger value="work" className="flex items-center justify-center gap-2 text-sm data-[state=active]:bg-primary data-[state=active]:text-primary-foreground">
-                  <Briefcase className="h-4 w-4" />
-                  Work
-                </TabsTrigger>
+                <>
+                  <TabsTrigger value="work" className="flex items-center justify-center gap-2 text-sm data-[state=active]:bg-primary data-[state=active]:text-primary-foreground">
+                    <Briefcase className="h-4 w-4" />
+                    Work
+                  </TabsTrigger>
+                  <TabsTrigger value="professional" className="flex items-center justify-center gap-2 text-sm data-[state=active]:bg-gradient-to-r data-[state=active]:from-teal-500 data-[state=active]:to-cyan-500 data-[state=active]:text-white">
+                    <Stethoscope className="h-4 w-4" />
+                    My Professional
+                  </TabsTrigger>
+                </>
               )}
               <TabsTrigger value="personal" className="flex items-center justify-center gap-2 text-sm data-[state=active]:bg-gradient-to-r data-[state=active]:from-pink-500 data-[state=active]:to-purple-500 data-[state=active]:text-white">
                 <Heart className="h-4 w-4" />
-                My Health
+                My Life
               </TabsTrigger>
             </TabsList>
 
@@ -715,6 +722,11 @@ export default function ModuleHome() {
               </section>
               </>
               )}
+            </TabsContent>
+
+            {/* My Professional Tab */}
+            <TabsContent value="professional" className="mt-0 flex-1 overflow-auto">
+              <MyProfessionalHub onStartShift={selectFacility} />
             </TabsContent>
 
             {/* Personal Hub Tab (Health + Social unified) */}

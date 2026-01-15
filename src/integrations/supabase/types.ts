@@ -4872,6 +4872,75 @@ export type Database = {
           },
         ]
       }
+      cpd_activities: {
+        Row: {
+          activity_date: string
+          activity_type: string
+          approved_at: string | null
+          approved_by: string | null
+          certificate_url: string | null
+          completion_date: string | null
+          cpd_cycle_end: string
+          cpd_cycle_start: string
+          created_at: string | null
+          description: string | null
+          evidence_urls: string[] | null
+          id: string
+          points_approved: number | null
+          points_claimed: number
+          provider_id: string
+          provider_name: string | null
+          rejection_reason: string | null
+          status: string
+          title: string
+          updated_at: string | null
+        }
+        Insert: {
+          activity_date: string
+          activity_type: string
+          approved_at?: string | null
+          approved_by?: string | null
+          certificate_url?: string | null
+          completion_date?: string | null
+          cpd_cycle_end: string
+          cpd_cycle_start: string
+          created_at?: string | null
+          description?: string | null
+          evidence_urls?: string[] | null
+          id?: string
+          points_approved?: number | null
+          points_claimed: number
+          provider_id: string
+          provider_name?: string | null
+          rejection_reason?: string | null
+          status?: string
+          title: string
+          updated_at?: string | null
+        }
+        Update: {
+          activity_date?: string
+          activity_type?: string
+          approved_at?: string | null
+          approved_by?: string | null
+          certificate_url?: string | null
+          completion_date?: string | null
+          cpd_cycle_end?: string
+          cpd_cycle_start?: string
+          created_at?: string | null
+          description?: string | null
+          evidence_urls?: string[] | null
+          id?: string
+          points_approved?: number | null
+          points_claimed?: number
+          provider_id?: string
+          provider_name?: string | null
+          rejection_reason?: string | null
+          status?: string
+          title?: string
+          updated_at?: string | null
+        }
+        Relationships: []
+      }
       cpd_requirements: {
         Row: {
           cadre: string
@@ -5791,6 +5860,94 @@ export type Database = {
             columns: ["visit_id"]
             isOneToOne: false
             referencedRelation: "visits"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      device_context_memory: {
+        Row: {
+          created_at: string | null
+          device_fingerprint: string
+          expires_at: string | null
+          facility_id: string | null
+          id: string
+          last_gps_lat: number | null
+          last_gps_lng: number | null
+          last_ip_address: unknown
+          last_used_at: string | null
+          organization_id: string | null
+          user_id: string | null
+          workspace_id: string | null
+        }
+        Insert: {
+          created_at?: string | null
+          device_fingerprint: string
+          expires_at?: string | null
+          facility_id?: string | null
+          id?: string
+          last_gps_lat?: number | null
+          last_gps_lng?: number | null
+          last_ip_address?: unknown
+          last_used_at?: string | null
+          organization_id?: string | null
+          user_id?: string | null
+          workspace_id?: string | null
+        }
+        Update: {
+          created_at?: string | null
+          device_fingerprint?: string
+          expires_at?: string | null
+          facility_id?: string | null
+          id?: string
+          last_gps_lat?: number | null
+          last_gps_lng?: number | null
+          last_ip_address?: unknown
+          last_used_at?: string | null
+          organization_id?: string | null
+          user_id?: string | null
+          workspace_id?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "device_context_memory_facility_id_fkey"
+            columns: ["facility_id"]
+            isOneToOne: false
+            referencedRelation: "facilities"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "device_context_memory_facility_id_fkey"
+            columns: ["facility_id"]
+            isOneToOne: false
+            referencedRelation: "facility_capabilities"
+            referencedColumns: ["facility_id"]
+          },
+          {
+            foreignKeyName: "device_context_memory_facility_id_fkey"
+            columns: ["facility_id"]
+            isOneToOne: false
+            referencedRelation: "facility_operations_dashboard"
+            referencedColumns: ["facility_id"]
+          },
+          {
+            foreignKeyName: "device_context_memory_facility_id_fkey"
+            columns: ["facility_id"]
+            isOneToOne: false
+            referencedRelation: "provider_facility_context"
+            referencedColumns: ["facility_id"]
+          },
+          {
+            foreignKeyName: "device_context_memory_organization_id_fkey"
+            columns: ["organization_id"]
+            isOneToOne: false
+            referencedRelation: "organizations"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "device_context_memory_workspace_id_fkey"
+            columns: ["workspace_id"]
+            isOneToOne: false
+            referencedRelation: "workspaces"
             referencedColumns: ["id"]
           },
         ]
@@ -7763,6 +7920,124 @@ export type Database = {
           },
           {
             foreignKeyName: "facility_identifiers_facility_id_fkey"
+            columns: ["facility_id"]
+            isOneToOne: false
+            referencedRelation: "provider_facility_context"
+            referencedColumns: ["facility_id"]
+          },
+        ]
+      }
+      facility_ip_ranges: {
+        Row: {
+          created_at: string | null
+          description: string | null
+          facility_id: string
+          id: string
+          ip_range_end: unknown
+          ip_range_start: unknown
+          is_active: boolean | null
+        }
+        Insert: {
+          created_at?: string | null
+          description?: string | null
+          facility_id: string
+          id?: string
+          ip_range_end: unknown
+          ip_range_start: unknown
+          is_active?: boolean | null
+        }
+        Update: {
+          created_at?: string | null
+          description?: string | null
+          facility_id?: string
+          id?: string
+          ip_range_end?: unknown
+          ip_range_start?: unknown
+          is_active?: boolean | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "facility_ip_ranges_facility_id_fkey"
+            columns: ["facility_id"]
+            isOneToOne: false
+            referencedRelation: "facilities"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "facility_ip_ranges_facility_id_fkey"
+            columns: ["facility_id"]
+            isOneToOne: false
+            referencedRelation: "facility_capabilities"
+            referencedColumns: ["facility_id"]
+          },
+          {
+            foreignKeyName: "facility_ip_ranges_facility_id_fkey"
+            columns: ["facility_id"]
+            isOneToOne: false
+            referencedRelation: "facility_operations_dashboard"
+            referencedColumns: ["facility_id"]
+          },
+          {
+            foreignKeyName: "facility_ip_ranges_facility_id_fkey"
+            columns: ["facility_id"]
+            isOneToOne: false
+            referencedRelation: "provider_facility_context"
+            referencedColumns: ["facility_id"]
+          },
+        ]
+      }
+      facility_locations: {
+        Row: {
+          created_at: string | null
+          facility_id: string
+          id: string
+          is_primary: boolean | null
+          latitude: number
+          longitude: number
+          radius_meters: number | null
+        }
+        Insert: {
+          created_at?: string | null
+          facility_id: string
+          id?: string
+          is_primary?: boolean | null
+          latitude: number
+          longitude: number
+          radius_meters?: number | null
+        }
+        Update: {
+          created_at?: string | null
+          facility_id?: string
+          id?: string
+          is_primary?: boolean | null
+          latitude?: number
+          longitude?: number
+          radius_meters?: number | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "facility_locations_facility_id_fkey"
+            columns: ["facility_id"]
+            isOneToOne: false
+            referencedRelation: "facilities"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "facility_locations_facility_id_fkey"
+            columns: ["facility_id"]
+            isOneToOne: false
+            referencedRelation: "facility_capabilities"
+            referencedColumns: ["facility_id"]
+          },
+          {
+            foreignKeyName: "facility_locations_facility_id_fkey"
+            columns: ["facility_id"]
+            isOneToOne: false
+            referencedRelation: "facility_operations_dashboard"
+            referencedColumns: ["facility_id"]
+          },
+          {
+            foreignKeyName: "facility_locations_facility_id_fkey"
             columns: ["facility_id"]
             isOneToOne: false
             referencedRelation: "provider_facility_context"
@@ -20778,6 +21053,104 @@ export type Database = {
           },
         ]
       }
+      shift_coverage: {
+        Row: {
+          allow_critical_breakthrough: boolean | null
+          breakthrough_threshold: string | null
+          coverage_type: string
+          covered_by_type: string
+          covered_facility_id: string | null
+          covered_pool_id: string | null
+          covering_pool_id: string | null
+          covering_provider_id: string | null
+          created_at: string | null
+          id: string
+          notes: string | null
+          provider_id: string
+          shift_id: string
+        }
+        Insert: {
+          allow_critical_breakthrough?: boolean | null
+          breakthrough_threshold?: string | null
+          coverage_type: string
+          covered_by_type: string
+          covered_facility_id?: string | null
+          covered_pool_id?: string | null
+          covering_pool_id?: string | null
+          covering_provider_id?: string | null
+          created_at?: string | null
+          id?: string
+          notes?: string | null
+          provider_id: string
+          shift_id: string
+        }
+        Update: {
+          allow_critical_breakthrough?: boolean | null
+          breakthrough_threshold?: string | null
+          coverage_type?: string
+          covered_by_type?: string
+          covered_facility_id?: string | null
+          covered_pool_id?: string | null
+          covering_pool_id?: string | null
+          covering_provider_id?: string | null
+          created_at?: string | null
+          id?: string
+          notes?: string | null
+          provider_id?: string
+          shift_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "shift_coverage_covered_facility_id_fkey"
+            columns: ["covered_facility_id"]
+            isOneToOne: false
+            referencedRelation: "facilities"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "shift_coverage_covered_facility_id_fkey"
+            columns: ["covered_facility_id"]
+            isOneToOne: false
+            referencedRelation: "facility_capabilities"
+            referencedColumns: ["facility_id"]
+          },
+          {
+            foreignKeyName: "shift_coverage_covered_facility_id_fkey"
+            columns: ["covered_facility_id"]
+            isOneToOne: false
+            referencedRelation: "facility_operations_dashboard"
+            referencedColumns: ["facility_id"]
+          },
+          {
+            foreignKeyName: "shift_coverage_covered_facility_id_fkey"
+            columns: ["covered_facility_id"]
+            isOneToOne: false
+            referencedRelation: "provider_facility_context"
+            referencedColumns: ["facility_id"]
+          },
+          {
+            foreignKeyName: "shift_coverage_covered_pool_id_fkey"
+            columns: ["covered_pool_id"]
+            isOneToOne: false
+            referencedRelation: "virtual_pools"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "shift_coverage_covering_pool_id_fkey"
+            columns: ["covering_pool_id"]
+            isOneToOne: false
+            referencedRelation: "virtual_pools"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "shift_coverage_shift_id_fkey"
+            columns: ["shift_id"]
+            isOneToOne: false
+            referencedRelation: "shifts"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       shift_definitions: {
         Row: {
           break_minutes: number | null
@@ -26570,6 +26943,27 @@ export type Database = {
           started_at: string
         }[]
       }
+      get_cpd_summary: {
+        Args: { p_user_id: string }
+        Returns: {
+          activities_count: number
+          cycle_end: string
+          cycle_start: string
+          points_earned: number
+          points_pending: number
+          points_required: number
+        }[]
+      }
+      get_device_context: {
+        Args: { p_device_fingerprint: string }
+        Returns: {
+          facility_id: string
+          facility_name: string
+          last_used_at: string
+          workspace_id: string
+          workspace_name: string
+        }[]
+      }
       get_facility_ops_mode: {
         Args: { _facility_id: string }
         Returns: Database["public"]["Enums"]["facility_ops_mode"]
@@ -26680,6 +27074,15 @@ export type Database = {
         Returns: boolean
       }
       is_platform_superuser: { Args: { _user_id: string }; Returns: boolean }
+      save_device_context: {
+        Args: {
+          p_facility_id: string
+          p_fingerprint: string
+          p_user_id: string
+          p_workspace_id?: string
+        }
+        Returns: string
+      }
       update_account_balances: {
         Args: { p_account_id: string }
         Returns: undefined
