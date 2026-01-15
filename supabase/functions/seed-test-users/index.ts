@@ -67,6 +67,17 @@ const testUsers = [
     providerId: null,
     facilityId: 'GOFR-ZA-001',
     isAdmin: true
+  },
+  {
+    email: 'dev@impilo.health',
+    password: 'DevTest2025!',
+    displayName: 'Dev/Test Account',
+    role: 'admin',
+    specialty: null,
+    department: 'Development',
+    providerId: null,
+    facilityId: null,
+    isDevTester: true
   }
 ];
 
@@ -162,6 +173,13 @@ serve(async (req) => {
           await supabaseAdmin
             .from('user_roles')
             .insert({ user_id: userId, role: 'admin' });
+        }
+
+        // Add dev_tester role if specified
+        if (user.isDevTester) {
+          await supabaseAdmin
+            .from('user_roles')
+            .insert({ user_id: userId, role: 'dev_tester' });
         }
 
         results.push({ email: user.email, success: true, userId });

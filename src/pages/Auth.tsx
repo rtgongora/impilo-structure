@@ -10,16 +10,17 @@ import { BiometricAuth } from "@/components/auth/BiometricAuth";
 import { WorkspaceSelection, type WorkspaceSelectionData } from "@/components/auth/WorkspaceSelection";
 import { AboveSiteContextSelection } from "@/components/auth/AboveSiteContextSelection";
 import { ClientAuth } from "@/components/auth/ClientAuth";
+import { SystemMaintenanceAuth } from "@/components/auth/SystemMaintenanceAuth";
 import { type ProviderRegistryRecord, type FacilityRegistryRecord } from "@/services/registryServices";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Fingerprint, Mail, Shield, ArrowLeft, Eye, EyeOff, Heart, Activity, UserCircle } from "lucide-react";
+import { Fingerprint, Mail, Shield, ArrowLeft, Eye, EyeOff, Heart, Activity, UserCircle, Wrench } from "lucide-react";
 import impiloLogo from "@/assets/impilo-logo.png";
 import type { AboveSiteContextType } from "@/types/aboveSite";
 
-type AuthView = "method-select" | "lookup" | "biometric" | "workspace" | "email-login" | "above-site-context" | "client-auth";
+type AuthView = "method-select" | "lookup" | "biometric" | "workspace" | "email-login" | "above-site-context" | "client-auth" | "system-maintenance";
 
 const Auth = () => {
   const navigate = useNavigate();
@@ -362,6 +363,27 @@ const Auth = () => {
                     <ArrowLeft className="h-5 w-5 text-primary rotate-180" />
                   </div>
                 </button>
+
+                {/* System Maintenance Login */}
+                <button
+                  onClick={() => setView("system-maintenance")}
+                  className="w-full group relative overflow-hidden rounded-xl border border-amber-500/30 bg-amber-500/5 p-6 text-left transition-all hover:border-amber-500/50 hover:shadow-lg hover:shadow-amber-500/5"
+                >
+                  <div className="flex items-start gap-4">
+                    <div className="h-14 w-14 rounded-xl bg-amber-500/20 flex items-center justify-center shrink-0 group-hover:bg-amber-500/30 transition-colors">
+                      <Wrench className="h-7 w-7 text-amber-600" />
+                    </div>
+                    <div>
+                      <h3 className="font-semibold text-foreground text-lg">System Maintenance</h3>
+                      <p className="text-sm text-muted-foreground mt-1">
+                        Platform admins & developers only
+                      </p>
+                    </div>
+                  </div>
+                  <div className="absolute right-4 top-1/2 -translate-y-1/2 opacity-0 group-hover:opacity-100 transition-opacity">
+                    <ArrowLeft className="h-5 w-5 text-amber-600 rotate-180" />
+                  </div>
+                </button>
               </div>
 
               <div className="flex items-center justify-center gap-2 text-xs text-muted-foreground pt-4">
@@ -492,6 +514,10 @@ const Auth = () => {
 
           {view === "client-auth" && (
             <ClientAuth onBack={handleCancel} />
+          )}
+
+          {view === "system-maintenance" && (
+            <SystemMaintenanceAuth onBack={handleCancel} />
           )}
         </div>
       </div>
