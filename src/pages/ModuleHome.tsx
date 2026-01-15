@@ -686,11 +686,11 @@ export default function ModuleHome() {
               {/* Module Categories - Larger cards, 3-4 per row */}
               <section className="flex-1 min-h-0 overflow-auto">
                 <div className="grid grid-cols-3 lg:grid-cols-4 gap-3 h-full" style={{ gridAutoRows: '1fr' }}>
-                  {/* My Practice as first card */}
+                  {/* Practice/Facility Management as first card */}
                   <ExpandableCategoryCard
                     id="my-practice"
-                    title="My Practice"
-                    description="Manage your practice operations"
+                    title="Practice Management"
+                    description="Manage your practice or facility"
                     modules={[
                       { id: "schedule", label: "Schedule", description: "Appointments", icon: Calendar, path: "/appointments", color: "bg-teal-500" },
                       { id: "patients", label: "Patients", description: "Patient panel", icon: Users, path: "/patients", color: "bg-blue-500" },
