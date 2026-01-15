@@ -7,6 +7,13 @@ import { Badge } from '@/components/ui/badge';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from '@/components/ui/dialog';
+import {
   Mail,
   Inbox,
   Send,
@@ -18,8 +25,12 @@ import {
   Loader2,
   RefreshCw,
   AlertCircle,
+  Link2,
+  Plus,
+  Settings,
 } from 'lucide-react';
 import { useProfessionalEmails, type ProfessionalEmail, type EmailFolder } from '@/hooks/useProfessionalEmails';
+import { EmailIntegrationSetup } from './EmailIntegrationSetup';
 
 interface EmailItemProps {
   email: ProfessionalEmail;
@@ -82,6 +93,14 @@ function EmailItem({ email, onMarkAsRead, onToggleStar, onClick }: EmailItemProp
   );
 }
 
+interface LinkedAccount {
+  id: string;
+  provider: string;
+  email: string;
+  status: 'active' | 'error' | 'syncing';
+  lastSync?: string;
+}
+
 interface ProfessionalEmailPanelProps {
   compact?: boolean;
   onOpenEmail?: (email: ProfessionalEmail) => void;
@@ -89,6 +108,8 @@ interface ProfessionalEmailPanelProps {
 
 export function ProfessionalEmailPanel({ compact = false, onOpenEmail }: ProfessionalEmailPanelProps) {
   const [activeFolder, setActiveFolder] = useState<EmailFolder>('inbox');
+  const [showIntegrationSetup, setShowIntegrationSetup] = useState(false);
+  const [linkedAccounts, setLinkedAccounts] = useState<LinkedAccount[]>([]);
   const { emails, unreadCount, loading, error, markAsRead, toggleStar, refresh } = useProfessionalEmails(activeFolder);
 
   const handleEmailClick = (email: ProfessionalEmail) => {
@@ -97,6 +118,14 @@ export function ProfessionalEmailPanel({ compact = false, onOpenEmail }: Profess
     }
     onOpenEmail?.(email);
   };
+
+  const handleAccountLinked = (account: LinkedAccount) => {
+    setLinkedAccounts(prev => [...prev, account]);
+    setShowIntegrationSetup(false);
+  };
+
+  // Show setup prompt if no accounts linked and no emails
+  const showSetupPrompt = linkedAccounts.length === 0 && emails.length === 0 && !loading;
 
   if (loading) {
     return (
@@ -136,62 +165,107 @@ export function ProfessionalEmailPanel({ compact = false, onOpenEmail }: Profess
               </Badge>
             )}
           </CardTitle>
-          <Button variant="ghost" size="icon" className="h-7 w-7" onClick={refresh}>
-            <RefreshCw className="h-3 w-3" />
-          </Button>
+          <div className="flex items-center gap-1">
+            <Dialog open={showIntegrationSetup} onOpenChange={setShowIntegrationSetup}>
+              <DialogTrigger asChild>
+                <Button variant="ghost" size="icon" className="h-7 w-7">
+                  {linkedAccounts.length === 0 ? (
+                    <Link2 className="h-3 w-3" />
+                  ) : (
+                    <Settings className="h-3 w-3" />
+                  )}
+                </Button>
+              </DialogTrigger>
+              <DialogContent className="max-w-md">
+                <DialogHeader>
+                  <DialogTitle>Email Settings</DialogTitle>
+                </DialogHeader>
+                <EmailIntegrationSetup
+                  linkedAccounts={linkedAccounts}
+                  onAccountLinked={handleAccountLinked}
+                  onClose={() => setShowIntegrationSetup(false)}
+                />
+              </DialogContent>
+            </Dialog>
+            <Button variant="ghost" size="icon" className="h-7 w-7" onClick={refresh}>
+              <RefreshCw className="h-3 w-3" />
+            </Button>
+          </div>
         </div>
       </CardHeader>
       <CardContent className="py-0 px-4 pb-4">
-        <Tabs value={activeFolder} onValueChange={(v) => setActiveFolder(v as EmailFolder)}>
-          <TabsList className="grid w-full grid-cols-4 h-8 mb-3">
-            <TabsTrigger value="inbox" className="text-xs">
-              <Inbox className="h-3 w-3 mr-1" />
-              Inbox
-            </TabsTrigger>
-            <TabsTrigger value="sent" className="text-xs">
-              <Send className="h-3 w-3 mr-1" />
-              Sent
-            </TabsTrigger>
-            <TabsTrigger value="archive" className="text-xs">
-              <Archive className="h-3 w-3 mr-1" />
-              Archive
-            </TabsTrigger>
-            <TabsTrigger value="trash" className="text-xs">
-              <Trash2 className="h-3 w-3 mr-1" />
-              Trash
-            </TabsTrigger>
-          </TabsList>
+        {showSetupPrompt ? (
+          <motion.div
+            initial={{ opacity: 0, y: 10 }}
+            animate={{ opacity: 1, y: 0 }}
+            className="text-center py-6"
+          >
+            <div className="p-4 rounded-full bg-primary/10 w-fit mx-auto mb-3">
+              <Link2 className="h-8 w-8 text-primary" />
+            </div>
+            <h4 className="font-medium mb-1">Connect Your Email</h4>
+            <p className="text-sm text-muted-foreground mb-4 max-w-xs mx-auto">
+              Link your MoHCC or professional email account to view and manage messages here
+            </p>
+            <Button onClick={() => setShowIntegrationSetup(true)}>
+              <Plus className="h-4 w-4 mr-2" />
+              Add Email Account
+            </Button>
+          </motion.div>
+        ) : (
+          <Tabs value={activeFolder} onValueChange={(v) => setActiveFolder(v as EmailFolder)}>
+            <TabsList className="grid w-full grid-cols-4 h-8 mb-3">
+              <TabsTrigger value="inbox" className="text-xs">
+                <Inbox className="h-3 w-3 mr-1" />
+                Inbox
+              </TabsTrigger>
+              <TabsTrigger value="sent" className="text-xs">
+                <Send className="h-3 w-3 mr-1" />
+                Sent
+              </TabsTrigger>
+              <TabsTrigger value="archive" className="text-xs">
+                <Archive className="h-3 w-3 mr-1" />
+                Archive
+              </TabsTrigger>
+              <TabsTrigger value="trash" className="text-xs">
+                <Trash2 className="h-3 w-3 mr-1" />
+                Trash
+              </TabsTrigger>
+            </TabsList>
 
-          <TabsContent value={activeFolder} className="mt-0">
-            {emails.length === 0 ? (
-              <div className="text-center py-6">
-                <Mail className="h-8 w-8 mx-auto text-muted-foreground/50 mb-2" />
-                <p className="text-sm text-muted-foreground">
-                  No emails in {activeFolder}
-                </p>
-                <p className="text-xs text-muted-foreground mt-1">
-                  Connect your ministry email to sync messages
-                </p>
-              </div>
-            ) : (
-              <ScrollArea className={compact ? 'h-[200px]' : 'h-[280px]'}>
-                <div className="space-y-2 pr-2">
-                  <AnimatePresence>
-                    {emails.slice(0, compact ? 5 : 15).map((email) => (
-                      <EmailItem
-                        key={email.id}
-                        email={email}
-                        onMarkAsRead={markAsRead}
-                        onToggleStar={toggleStar}
-                        onClick={() => handleEmailClick(email)}
-                      />
-                    ))}
-                  </AnimatePresence>
+            <TabsContent value={activeFolder} className="mt-0">
+              {emails.length === 0 ? (
+                <div className="text-center py-6">
+                  <Mail className="h-8 w-8 mx-auto text-muted-foreground/50 mb-2" />
+                  <p className="text-sm text-muted-foreground">
+                    No emails in {activeFolder}
+                  </p>
+                  {linkedAccounts.length > 0 && (
+                    <p className="text-xs text-muted-foreground mt-1">
+                      Syncing may take a few moments
+                    </p>
+                  )}
                 </div>
-              </ScrollArea>
-            )}
-          </TabsContent>
-        </Tabs>
+              ) : (
+                <ScrollArea className={compact ? 'h-[200px]' : 'h-[280px]'}>
+                  <div className="space-y-2 pr-2">
+                    <AnimatePresence>
+                      {emails.slice(0, compact ? 5 : 15).map((email) => (
+                        <EmailItem
+                          key={email.id}
+                          email={email}
+                          onMarkAsRead={markAsRead}
+                          onToggleStar={toggleStar}
+                          onClick={() => handleEmailClick(email)}
+                        />
+                      ))}
+                    </AnimatePresence>
+                  </div>
+                </ScrollArea>
+              )}
+            </TabsContent>
+          </Tabs>
+        )}
       </CardContent>
     </Card>
   );
