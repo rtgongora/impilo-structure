@@ -284,8 +284,8 @@ export function LandelaDocumentViewer({ documentId, onClose }: LandelaDocumentVi
           <ScrollArea className="flex-1">
             <TabsContent value="details" className="p-4 m-0 space-y-4">
               <div>
-                <Label className="text-xs text-muted-foreground">Document Number</Label>
-                <p className="text-sm font-mono">{document.document_number}</p>
+                <Label className="text-xs text-muted-foreground">Document ID</Label>
+                <p className="text-sm font-mono">{document.id.slice(0, 8)}</p>
               </div>
               
               <div>

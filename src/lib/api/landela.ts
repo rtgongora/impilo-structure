@@ -3,6 +3,9 @@ import type { Json } from "@/integrations/supabase/types";
 
 type LandelaDocumentStatus = "uploading" | "processing" | "indexing_required" | "pending_review" | "verified" | "final" | "archived" | "rejected";
 type LandelaCaptureSource = "scanner" | "mobile_camera" | "file_upload" | "email_ingestion" | "watch_folder" | "system_generated" | "bulk_import" | "external_system";
+
+export interface LandelaDocument {
+  id: string;
   document_type_code: string;
   document_type_id: string | null;
   title: string;
@@ -126,6 +129,15 @@ export const landelaApi = {
     return data as unknown as LandelaDocument;
   },
 
+  // Get document download URL
+  async getDocumentUrl(doc: LandelaDocument): Promise<string | null> {
+    const { data } = await supabase.storage
+      .from(doc.storage_bucket)
+      .createSignedUrl(doc.storage_path, 3600); // 1 hour expiry
+
+    return data?.signedUrl || null;
+  },
+
   // Upload document
   async uploadDocument(
     file: File,
@@ -146,7 +158,6 @@ export const landelaApi = {
 
     // Generate storage path
     const timestamp = Date.now();
-    const ext = file.name.split(".").pop() || "pdf";
     const storagePath = `${user.id}/${timestamp}_${file.name}`;
 
     // Upload to storage
@@ -199,24 +210,6 @@ export const landelaApi = {
 
     // Log upload
     await landelaApi.logAction("upload", doc.id, { fileName: file.name, fileSize: file.size });
-    if (metadata.patientId) {
-      await supabase.from("landela_clinical_index").insert({
-        document_id: doc.id,
-        patient_id: metadata.patientId,
-        encounter_id: metadata.encounterId,
-        visit_id: metadata.visitId,
-      });
-    }
-
-    // Log upload
-    await supabase.from("landela_audit_log").insert({
-      action: "upload",
-      document_id: doc.id,
-      user_id: user.id,
-      facility_id: metadata.facilityId,
-      patient_id: metadata.patientId,
-      details: { fileName: file.name, fileSize: file.size },
-    });
 
     return doc as unknown as LandelaDocument;
   },
@@ -243,33 +236,6 @@ export const landelaApi = {
     const { data: { user } } = await supabase.auth.getUser();
     if (user) {
       await landelaApi.logAction("update_metadata", id, updates as Record<string, unknown>);
-    }
-  },
-    id: string,
-    updates: {
-      title?: string;
-      description?: string;
-      document_type_code?: string;
-      document_type_id?: string;
-      tags?: string[];
-      custom_metadata?: Record<string, unknown>;
-    }
-  ): Promise<void> {
-    const { error } = await supabase
-      .from("landela_documents")
-      .update(updates)
-      .eq("id", id);
-
-    if (error) throw error;
-
-    const { data: { user } } = await supabase.auth.getUser();
-    if (user) {
-      await supabase.from("landela_audit_log").insert({
-        action: "update_metadata",
-        document_id: id,
-        user_id: user.id,
-        details: updates,
-      });
     }
   },
 
@@ -307,6 +273,8 @@ export const landelaApi = {
 
     await landelaApi.logAction("verify", id, { notes });
   },
+
+  // Batch Sessions
   async createBatchSession(data: {
     sessionName: string;
     separationMethod: string;
@@ -404,7 +372,7 @@ export const landelaApi = {
       action,
       document_id: documentId,
       user_id: user.id,
-      details,
+      details: details as Json,
     });
   },
 };
