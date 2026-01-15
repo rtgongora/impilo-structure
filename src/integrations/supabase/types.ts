@@ -12985,6 +12985,68 @@ export type Database = {
           },
         ]
       }
+      landela_notifications: {
+        Row: {
+          action_url: string | null
+          created_at: string
+          document_id: string | null
+          expires_at: string | null
+          id: string
+          is_read: boolean | null
+          message: string | null
+          metadata: Json | null
+          notification_type: string
+          priority: string | null
+          read_at: string | null
+          recipient_user_id: string
+          sender_name: string | null
+          sender_user_id: string | null
+          title: string
+        }
+        Insert: {
+          action_url?: string | null
+          created_at?: string
+          document_id?: string | null
+          expires_at?: string | null
+          id?: string
+          is_read?: boolean | null
+          message?: string | null
+          metadata?: Json | null
+          notification_type: string
+          priority?: string | null
+          read_at?: string | null
+          recipient_user_id: string
+          sender_name?: string | null
+          sender_user_id?: string | null
+          title: string
+        }
+        Update: {
+          action_url?: string | null
+          created_at?: string
+          document_id?: string | null
+          expires_at?: string | null
+          id?: string
+          is_read?: boolean | null
+          message?: string | null
+          metadata?: Json | null
+          notification_type?: string
+          priority?: string | null
+          read_at?: string | null
+          recipient_user_id?: string
+          sender_name?: string | null
+          sender_user_id?: string | null
+          title?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "landela_notifications_document_id_fkey"
+            columns: ["document_id"]
+            isOneToOne: false
+            referencedRelation: "landela_documents"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       landela_package_items: {
         Row: {
           content: Json | null
@@ -17111,6 +17173,95 @@ export type Database = {
           website?: string | null
         }
         Relationships: []
+      }
+      professional_emails: {
+        Row: {
+          attachments: Json | null
+          bcc_addresses: string[] | null
+          body_html: string | null
+          body_text: string | null
+          cc_addresses: string[] | null
+          created_at: string
+          external_message_id: string | null
+          folder: string
+          from_address: string
+          from_name: string | null
+          has_attachments: boolean | null
+          id: string
+          in_reply_to: string | null
+          is_important: boolean | null
+          is_read: boolean | null
+          is_starred: boolean | null
+          labels: string[] | null
+          received_at: string
+          sent_at: string | null
+          subject: string
+          thread_id: string | null
+          to_addresses: string[]
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          attachments?: Json | null
+          bcc_addresses?: string[] | null
+          body_html?: string | null
+          body_text?: string | null
+          cc_addresses?: string[] | null
+          created_at?: string
+          external_message_id?: string | null
+          folder?: string
+          from_address: string
+          from_name?: string | null
+          has_attachments?: boolean | null
+          id?: string
+          in_reply_to?: string | null
+          is_important?: boolean | null
+          is_read?: boolean | null
+          is_starred?: boolean | null
+          labels?: string[] | null
+          received_at?: string
+          sent_at?: string | null
+          subject: string
+          thread_id?: string | null
+          to_addresses: string[]
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          attachments?: Json | null
+          bcc_addresses?: string[] | null
+          body_html?: string | null
+          body_text?: string | null
+          cc_addresses?: string[] | null
+          created_at?: string
+          external_message_id?: string | null
+          folder?: string
+          from_address?: string
+          from_name?: string | null
+          has_attachments?: boolean | null
+          id?: string
+          in_reply_to?: string | null
+          is_important?: boolean | null
+          is_read?: boolean | null
+          is_starred?: boolean | null
+          labels?: string[] | null
+          received_at?: string
+          sent_at?: string | null
+          subject?: string
+          thread_id?: string | null
+          to_addresses?: string[]
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "professional_emails_in_reply_to_fkey"
+            columns: ["in_reply_to"]
+            isOneToOne: false
+            referencedRelation: "professional_emails"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       professional_pages: {
         Row: {
