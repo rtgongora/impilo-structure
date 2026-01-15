@@ -61,6 +61,7 @@ import Telemedicine from "./pages/Telemedicine";
 import PatientSorting from "./pages/PatientSorting";
 import Discharge from "./pages/Discharge";
 import WorkspaceManagement from "./pages/WorkspaceManagement";
+import Landela from "./pages/Landela";
 const queryClient = new QueryClient();
 
 const App = () => (
@@ -300,6 +301,11 @@ const App = () => (
             <Route path="/workspace-management" element={
               <ProtectedRoute>
                 <WorkspaceManagement />
+              </ProtectedRoute>
+            } />
+            <Route path="/landela" element={
+              <ProtectedRoute>
+                <Landela />
               </ProtectedRoute>
             } />
             {/* Shared Summary Routes - publicly accessible with valid token */}
