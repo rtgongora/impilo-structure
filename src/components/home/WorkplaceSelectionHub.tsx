@@ -118,7 +118,7 @@ export function WorkplaceSelectionHub({
   onCommunityOutreachSelect,
 }: WorkplaceSelectionHubProps) {
   const { profile } = useAuth();
-  const { facilities, loading: facilitiesLoading } = useProviderFacilities();
+  const { facilities, loading: facilitiesLoading, isDemoMode } = useProviderFacilities();
   const { 
     isAboveSiteUser, 
     roles: aboveSiteRoles, 
@@ -264,6 +264,28 @@ export function WorkplaceSelectionHub({
           </div>
         </div>
       </div>
+
+      {/* Demo Mode Banner */}
+      {isDemoMode && (
+        <Card className="flex-shrink-0 mb-4 border-cyan-300 bg-gradient-to-r from-cyan-50 to-blue-50">
+          <CardContent className="py-3 px-4">
+            <div className="flex items-center gap-3">
+              <div className="h-8 w-8 rounded-lg bg-cyan-100 flex items-center justify-center">
+                <Zap className="h-4 w-4 text-cyan-600" />
+              </div>
+              <div className="flex-1">
+                <p className="text-sm font-medium text-cyan-800">Demo Mode Active</p>
+                <p className="text-xs text-cyan-600">
+                  Showing sample facilities for testing. No real patient data.
+                </p>
+              </div>
+              <Badge className="bg-cyan-100 text-cyan-700 border-cyan-200">
+                Test Account
+              </Badge>
+            </div>
+          </CardContent>
+        </Card>
+      )}
 
       {/* Key Alerts Section */}
       <Card className="flex-shrink-0 mb-4 border-amber-200 bg-amber-50/50">

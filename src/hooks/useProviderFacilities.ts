@@ -1,5 +1,6 @@
 // Hook to fetch provider's accessible facilities using get_provider_facilities()
 // Implements the post-login workplace selection requirement
+// Includes Demo Mode for dev/test accounts with no real facility assignments
 
 import { useState, useEffect, useCallback } from 'react';
 import { supabase } from '@/integrations/supabase/client';
@@ -16,6 +17,7 @@ export interface ProviderFacility {
   is_owner: boolean;
   can_access: boolean;
   privileges: string[];
+  is_demo?: boolean; // Flag to indicate demo facility
 }
 
 interface UseProviderFacilitiesReturn {
@@ -23,18 +25,89 @@ interface UseProviderFacilitiesReturn {
   loading: boolean;
   error: string | null;
   refresh: () => Promise<void>;
+  isDemoMode: boolean;
 }
 
+// Demo facilities for testing purposes
+const DEMO_FACILITIES: ProviderFacility[] = [
+  {
+    facility_id: 'demo-tertiary-001',
+    facility_name: 'Parirenyatwa Central Hospital',
+    facility_type: 'Central Hospital',
+    level_of_care: 'tertiary',
+    context_label: 'Clinical Staff',
+    is_primary: true,
+    is_pic: false,
+    is_owner: false,
+    can_access: true,
+    privileges: ['clinical_read', 'clinical_write', 'order_labs', 'prescribe'],
+    is_demo: true,
+  },
+  {
+    facility_id: 'demo-secondary-001',
+    facility_name: 'Chitungwiza Provincial Hospital',
+    facility_type: 'Provincial Hospital',
+    level_of_care: 'secondary',
+    context_label: 'Visiting Consultant',
+    is_primary: false,
+    is_pic: false,
+    is_owner: false,
+    can_access: true,
+    privileges: ['clinical_read', 'clinical_write', 'order_labs'],
+    is_demo: true,
+  },
+  {
+    facility_id: 'demo-primary-001',
+    facility_name: 'Mbare Polyclinic',
+    facility_type: 'Urban Clinic',
+    level_of_care: 'primary',
+    context_label: 'Clinical Staff',
+    is_primary: false,
+    is_pic: false,
+    is_owner: false,
+    can_access: true,
+    privileges: ['clinical_read', 'clinical_write'],
+    is_demo: true,
+  },
+  {
+    facility_id: 'demo-clinic-001',
+    facility_name: 'Greendale Family Practice',
+    facility_type: 'Private Practice',
+    level_of_care: 'clinic',
+    context_label: 'Practice Owner',
+    is_primary: false,
+    is_pic: true,
+    is_owner: true,
+    can_access: true,
+    privileges: ['clinical_read', 'clinical_write', 'admin', 'billing'],
+    is_demo: true,
+  },
+];
+
+// List of dev/tester emails that should see demo mode
+const DEV_TESTER_EMAILS = [
+  'dev@impilo.health',
+  'admin@impilo.health',
+  'rgongora536@gmail.com',
+  'sarah.moyo@impilo.health',
+  'test@impilo.health',
+];
+
 export function useProviderFacilities(): UseProviderFacilitiesReturn {
-  const { user } = useAuth();
+  const { user, profile } = useAuth();
   const [facilities, setFacilities] = useState<ProviderFacility[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [isDemoMode, setIsDemoMode] = useState(false);
+
+  // Check if user is a dev/tester
+  const isDevTester = user?.email && DEV_TESTER_EMAILS.includes(user.email.toLowerCase());
 
   const fetchFacilities = useCallback(async () => {
     if (!user) {
       setFacilities([]);
       setLoading(false);
+      setIsDemoMode(false);
       return;
     }
 
@@ -50,9 +123,15 @@ export function useProviderFacilities(): UseProviderFacilitiesReturn {
 
       if (fetchError) {
         console.error('Error fetching provider facilities:', fetchError);
-        // If function doesn't exist yet, return empty array gracefully
+        // If function doesn't exist yet, check for demo mode
         if (fetchError.code === '42883') {
-          setFacilities([]);
+          if (isDevTester) {
+            console.log('Demo mode activated: RPC function not found, using demo facilities');
+            setFacilities(DEMO_FACILITIES);
+            setIsDemoMode(true);
+          } else {
+            setFacilities([]);
+          }
           return;
         }
         throw fetchError;
@@ -70,17 +149,34 @@ export function useProviderFacilities(): UseProviderFacilitiesReturn {
         is_owner: f.is_owner || false,
         can_access: f.can_access !== false,
         privileges: f.privileges || [],
+        is_demo: false,
       }));
 
-      setFacilities(mappedFacilities);
+      // If no real facilities found and user is dev/tester, use demo mode
+      if (mappedFacilities.length === 0 && isDevTester) {
+        console.log('Demo mode activated: No facilities assigned, using demo facilities');
+        setFacilities(DEMO_FACILITIES);
+        setIsDemoMode(true);
+      } else {
+        setFacilities(mappedFacilities);
+        setIsDemoMode(false);
+      }
     } catch (err) {
       console.error('Error in useProviderFacilities:', err);
       setError(err instanceof Error ? err.message : 'Failed to fetch facilities');
-      setFacilities([]);
+      
+      // Fallback to demo mode for dev/testers on error
+      if (isDevTester) {
+        console.log('Demo mode activated: Error fetching facilities, using demo facilities');
+        setFacilities(DEMO_FACILITIES);
+        setIsDemoMode(true);
+      } else {
+        setFacilities([]);
+      }
     } finally {
       setLoading(false);
     }
-  }, [user]);
+  }, [user, isDevTester]);
 
   useEffect(() => {
     fetchFacilities();
@@ -91,5 +187,6 @@ export function useProviderFacilities(): UseProviderFacilitiesReturn {
     loading,
     error,
     refresh: fetchFacilities,
+    isDemoMode,
   };
 }
