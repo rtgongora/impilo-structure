@@ -26489,6 +26489,7 @@ export type Database = {
         Args: { _user_id: string; _workspace_id: string }
         Returns: boolean
       }
+      can_bypass_restrictions: { Args: { _user_id: string }; Returns: boolean }
       check_provider_eligibility: {
         Args: {
           p_facility_context?: string

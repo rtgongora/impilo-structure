@@ -42,13 +42,6 @@ interface UseSystemRolesReturn {
   refetch: () => Promise<void>;
 }
 
-// Dev/test emails that get unrestricted access
-const DEV_TEST_EMAILS = [
-  'admin@impilo.health',
-  'rgongora536@gmail.com',
-  'sarah.moyo@impilo.health',
-];
-
 export function useSystemRoles(): UseSystemRolesReturn {
   const { user, profile } = useAuth();
   const [systemRoles, setSystemRoles] = useState<SystemRoleAssignment[]>([]);
@@ -64,7 +57,7 @@ export function useSystemRoles(): UseSystemRolesReturn {
     try {
       setLoading(true);
       
-      // Check user_roles table for admin role (which maps to superadmin)
+      // Check user_roles table for admin and dev_tester roles
       const { data: userRoles, error: rolesError } = await supabase
         .from('user_roles')
         .select('role')
@@ -75,9 +68,8 @@ export function useSystemRoles(): UseSystemRolesReturn {
       }
 
       const hasAdminRole = userRoles?.some(r => r.role === 'admin') || profile?.role === 'admin';
-      
-      // Check if user email is in dev/test list
-      const isDevTestUser = user.email && DEV_TEST_EMAILS.includes(user.email.toLowerCase());
+      // Cast to string since dev_tester is a new enum value that types haven't updated for yet
+      const hasDevTesterRole = userRoles?.some(r => (r.role as string) === 'dev_tester');
 
       // Build system roles from available data
       const roles: SystemRoleAssignment[] = [];
@@ -93,7 +85,7 @@ export function useSystemRoles(): UseSystemRolesReturn {
         });
       }
 
-      if (isDevTestUser) {
+      if (hasDevTesterRole) {
         roles.push({
           id: 'dev-tester-role',
           user_id: user.id,
