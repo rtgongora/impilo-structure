@@ -26731,7 +26731,7 @@ export type Database = {
         | "locum"
         | "volunteer"
         | "student"
-      app_role: "admin" | "moderator" | "user"
+      app_role: "admin" | "moderator" | "user" | "dev_tester"
       approval_status: "pending" | "approved" | "suspended" | "rejected"
       arrival_mode: "walk_in" | "appointment" | "referral" | "emergency"
       charge_status:
@@ -27377,7 +27377,7 @@ export const Constants = {
         "volunteer",
         "student",
       ],
-      app_role: ["admin", "moderator", "user"],
+      app_role: ["admin", "moderator", "user", "dev_tester"],
       approval_status: ["pending", "approved", "suspended", "rejected"],
       arrival_mode: ["walk_in", "appointment", "referral", "emergency"],
       charge_status: [
