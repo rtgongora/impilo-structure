@@ -19,6 +19,7 @@ import type {
   TrustLayerIdentity,
   IdentityResolutionRequest,
   IdentityResolutionResult,
+  IdentityStatus,
   OfflineCpid,
   AliasRotation,
   PurposeOfUse,
