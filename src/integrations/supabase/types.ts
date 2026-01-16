@@ -26481,6 +26481,1131 @@ export type Database = {
           },
         ]
       }
+      trust_layer_access_tokens: {
+        Row: {
+          consent_id: string | null
+          created_at: string
+          expires_at: string
+          granted_actions: string[]
+          id: string
+          issued_at: string
+          requester_facility_id: string | null
+          requester_purpose: string | null
+          requester_user_id: string | null
+          revoked_at: string | null
+          scope: string
+          status: string
+          subject_type: string
+          subject_value: string
+          token_hash: string
+          used_at: string | null
+        }
+        Insert: {
+          consent_id?: string | null
+          created_at?: string
+          expires_at: string
+          granted_actions: string[]
+          id?: string
+          issued_at?: string
+          requester_facility_id?: string | null
+          requester_purpose?: string | null
+          requester_user_id?: string | null
+          revoked_at?: string | null
+          scope: string
+          status?: string
+          subject_type: string
+          subject_value: string
+          token_hash: string
+          used_at?: string | null
+        }
+        Update: {
+          consent_id?: string | null
+          created_at?: string
+          expires_at?: string
+          granted_actions?: string[]
+          id?: string
+          issued_at?: string
+          requester_facility_id?: string | null
+          requester_purpose?: string | null
+          requester_user_id?: string | null
+          revoked_at?: string | null
+          scope?: string
+          status?: string
+          subject_type?: string
+          subject_value?: string
+          token_hash?: string
+          used_at?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "trust_layer_access_tokens_consent_id_fkey"
+            columns: ["consent_id"]
+            isOneToOne: false
+            referencedRelation: "trust_layer_consent"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      trust_layer_alias_history: {
+        Row: {
+          alias_type: string
+          expires_at: string | null
+          health_id: string
+          id: string
+          is_revoked: boolean | null
+          new_value: string
+          old_value: string
+          rotated_at: string
+          rotated_by: string | null
+          rotation_reason: string | null
+        }
+        Insert: {
+          alias_type: string
+          expires_at?: string | null
+          health_id: string
+          id?: string
+          is_revoked?: boolean | null
+          new_value: string
+          old_value: string
+          rotated_at?: string
+          rotated_by?: string | null
+          rotation_reason?: string | null
+        }
+        Update: {
+          alias_type?: string
+          expires_at?: string | null
+          health_id?: string
+          id?: string
+          is_revoked?: boolean | null
+          new_value?: string
+          old_value?: string
+          rotated_at?: string
+          rotated_by?: string | null
+          rotation_reason?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "trust_layer_alias_history_health_id_fkey"
+            columns: ["health_id"]
+            isOneToOne: false
+            referencedRelation: "trust_layer_identity_mapping"
+            referencedColumns: ["health_id"]
+          },
+        ]
+      }
+      trust_layer_audit_log: {
+        Row: {
+          action: string
+          assurance_level: string | null
+          consent_id: string | null
+          consent_version: number | null
+          correlation_id: string | null
+          created_at: string
+          device_fingerprint: string | null
+          error_message: string | null
+          event_category: string
+          event_outcome: string
+          event_type: string
+          facility_id: string | null
+          id: string
+          provider_upid: string | null
+          purpose_of_use: string | null
+          request_metadata: Json | null
+          resource_id: string | null
+          resource_type: string | null
+          response_code: string | null
+          source_system: string | null
+          subject_cpid: string | null
+          user_agent: string | null
+          user_email: string | null
+          user_id: string | null
+          user_ip_address: unknown
+          user_role: string | null
+          workspace_id: string | null
+        }
+        Insert: {
+          action: string
+          assurance_level?: string | null
+          consent_id?: string | null
+          consent_version?: number | null
+          correlation_id?: string | null
+          created_at?: string
+          device_fingerprint?: string | null
+          error_message?: string | null
+          event_category: string
+          event_outcome: string
+          event_type: string
+          facility_id?: string | null
+          id?: string
+          provider_upid?: string | null
+          purpose_of_use?: string | null
+          request_metadata?: Json | null
+          resource_id?: string | null
+          resource_type?: string | null
+          response_code?: string | null
+          source_system?: string | null
+          subject_cpid?: string | null
+          user_agent?: string | null
+          user_email?: string | null
+          user_id?: string | null
+          user_ip_address?: unknown
+          user_role?: string | null
+          workspace_id?: string | null
+        }
+        Update: {
+          action?: string
+          assurance_level?: string | null
+          consent_id?: string | null
+          consent_version?: number | null
+          correlation_id?: string | null
+          created_at?: string
+          device_fingerprint?: string | null
+          error_message?: string | null
+          event_category?: string
+          event_outcome?: string
+          event_type?: string
+          facility_id?: string | null
+          id?: string
+          provider_upid?: string | null
+          purpose_of_use?: string | null
+          request_metadata?: Json | null
+          resource_id?: string | null
+          resource_type?: string | null
+          response_code?: string | null
+          source_system?: string | null
+          subject_cpid?: string | null
+          user_agent?: string | null
+          user_email?: string | null
+          user_id?: string | null
+          user_ip_address?: unknown
+          user_role?: string | null
+          workspace_id?: string | null
+        }
+        Relationships: []
+      }
+      trust_layer_break_glass: {
+        Row: {
+          access_ended_at: string | null
+          access_expires_at: string
+          access_scope: string
+          access_started_at: string
+          accessed_data_classes: string[] | null
+          accessed_encounter_ids: string[] | null
+          created_at: string
+          emergency_type: string | null
+          facility_id: string | null
+          follow_up_assigned_to: string | null
+          follow_up_completed_at: string | null
+          id: string
+          justification: string
+          provider_upid: string | null
+          requires_follow_up: boolean | null
+          review_notes: string | null
+          review_outcome: string | null
+          review_status: string
+          reviewed_at: string | null
+          reviewed_by: string | null
+          subject_cpid: string
+          user_id: string
+          workspace_id: string | null
+        }
+        Insert: {
+          access_ended_at?: string | null
+          access_expires_at: string
+          access_scope: string
+          access_started_at?: string
+          accessed_data_classes?: string[] | null
+          accessed_encounter_ids?: string[] | null
+          created_at?: string
+          emergency_type?: string | null
+          facility_id?: string | null
+          follow_up_assigned_to?: string | null
+          follow_up_completed_at?: string | null
+          id?: string
+          justification: string
+          provider_upid?: string | null
+          requires_follow_up?: boolean | null
+          review_notes?: string | null
+          review_outcome?: string | null
+          review_status?: string
+          reviewed_at?: string | null
+          reviewed_by?: string | null
+          subject_cpid: string
+          user_id: string
+          workspace_id?: string | null
+        }
+        Update: {
+          access_ended_at?: string | null
+          access_expires_at?: string
+          access_scope?: string
+          access_started_at?: string
+          accessed_data_classes?: string[] | null
+          accessed_encounter_ids?: string[] | null
+          created_at?: string
+          emergency_type?: string | null
+          facility_id?: string | null
+          follow_up_assigned_to?: string | null
+          follow_up_completed_at?: string | null
+          id?: string
+          justification?: string
+          provider_upid?: string | null
+          requires_follow_up?: boolean | null
+          review_notes?: string | null
+          review_outcome?: string | null
+          review_status?: string
+          reviewed_at?: string | null
+          reviewed_by?: string | null
+          subject_cpid?: string
+          user_id?: string
+          workspace_id?: string | null
+        }
+        Relationships: []
+      }
+      trust_layer_consent: {
+        Row: {
+          consent_id: string
+          consent_type: string
+          created_at: string
+          created_by: string | null
+          data_classes: string[] | null
+          data_sensitivity_tags: string[] | null
+          fhir_resource: Json | null
+          id: string
+          last_modified_by: string | null
+          patient_acknowledged_at: string | null
+          patient_signature_reference: string | null
+          period_end: string | null
+          period_start: string
+          previous_version_id: string | null
+          provision_rules: Json | null
+          provision_type: string | null
+          purpose_of_use: string[]
+          revocation_reason: string | null
+          revoked_at: string | null
+          revoked_by: string | null
+          scope_facility_ids: string[] | null
+          scope_provider_upids: string[] | null
+          scope_roles: string[] | null
+          source_facility_id: string | null
+          status: string
+          subject_cpid: string
+          subject_health_id: string | null
+          updated_at: string
+          verification_method: string | null
+          verification_timestamp: string | null
+          verified_by: string | null
+          version: number
+        }
+        Insert: {
+          consent_id: string
+          consent_type: string
+          created_at?: string
+          created_by?: string | null
+          data_classes?: string[] | null
+          data_sensitivity_tags?: string[] | null
+          fhir_resource?: Json | null
+          id?: string
+          last_modified_by?: string | null
+          patient_acknowledged_at?: string | null
+          patient_signature_reference?: string | null
+          period_end?: string | null
+          period_start?: string
+          previous_version_id?: string | null
+          provision_rules?: Json | null
+          provision_type?: string | null
+          purpose_of_use?: string[]
+          revocation_reason?: string | null
+          revoked_at?: string | null
+          revoked_by?: string | null
+          scope_facility_ids?: string[] | null
+          scope_provider_upids?: string[] | null
+          scope_roles?: string[] | null
+          source_facility_id?: string | null
+          status?: string
+          subject_cpid: string
+          subject_health_id?: string | null
+          updated_at?: string
+          verification_method?: string | null
+          verification_timestamp?: string | null
+          verified_by?: string | null
+          version?: number
+        }
+        Update: {
+          consent_id?: string
+          consent_type?: string
+          created_at?: string
+          created_by?: string | null
+          data_classes?: string[] | null
+          data_sensitivity_tags?: string[] | null
+          fhir_resource?: Json | null
+          id?: string
+          last_modified_by?: string | null
+          patient_acknowledged_at?: string | null
+          patient_signature_reference?: string | null
+          period_end?: string | null
+          period_start?: string
+          previous_version_id?: string | null
+          provision_rules?: Json | null
+          provision_type?: string | null
+          purpose_of_use?: string[]
+          revocation_reason?: string | null
+          revoked_at?: string | null
+          revoked_by?: string | null
+          scope_facility_ids?: string[] | null
+          scope_provider_upids?: string[] | null
+          scope_roles?: string[] | null
+          source_facility_id?: string | null
+          status?: string
+          subject_cpid?: string
+          subject_health_id?: string | null
+          updated_at?: string
+          verification_method?: string | null
+          verification_timestamp?: string | null
+          verified_by?: string | null
+          version?: number
+        }
+        Relationships: [
+          {
+            foreignKeyName: "trust_layer_consent_previous_version_id_fkey"
+            columns: ["previous_version_id"]
+            isOneToOne: false
+            referencedRelation: "trust_layer_consent"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      trust_layer_consent_delegation: {
+        Row: {
+          consent_id: string
+          created_at: string
+          created_by: string | null
+          delegate_cpid: string | null
+          delegate_type: string
+          delegate_upid: string | null
+          delegated_actions: string[]
+          delegation_constraints: Json | null
+          effective_from: string
+          effective_to: string | null
+          id: string
+          legal_document_reference: string | null
+          revocation_reason: string | null
+          revoked_at: string | null
+          revoked_by: string | null
+          status: string
+          verification_method: string | null
+          verified_by: string | null
+        }
+        Insert: {
+          consent_id: string
+          created_at?: string
+          created_by?: string | null
+          delegate_cpid?: string | null
+          delegate_type: string
+          delegate_upid?: string | null
+          delegated_actions?: string[]
+          delegation_constraints?: Json | null
+          effective_from?: string
+          effective_to?: string | null
+          id?: string
+          legal_document_reference?: string | null
+          revocation_reason?: string | null
+          revoked_at?: string | null
+          revoked_by?: string | null
+          status?: string
+          verification_method?: string | null
+          verified_by?: string | null
+        }
+        Update: {
+          consent_id?: string
+          created_at?: string
+          created_by?: string | null
+          delegate_cpid?: string | null
+          delegate_type?: string
+          delegate_upid?: string | null
+          delegated_actions?: string[]
+          delegation_constraints?: Json | null
+          effective_from?: string
+          effective_to?: string | null
+          id?: string
+          legal_document_reference?: string | null
+          revocation_reason?: string | null
+          revoked_at?: string | null
+          revoked_by?: string | null
+          status?: string
+          verification_method?: string | null
+          verified_by?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "trust_layer_consent_delegation_consent_id_fkey"
+            columns: ["consent_id"]
+            isOneToOne: false
+            referencedRelation: "trust_layer_consent"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      trust_layer_devices: {
+        Row: {
+          bound_to_facility_id: string | null
+          bound_to_workspace_id: string | null
+          created_at: string
+          device_fingerprint: string
+          device_name: string | null
+          device_type: string | null
+          id: string
+          is_active: boolean | null
+          is_trusted: boolean | null
+          last_ip_address: unknown
+          last_used_at: string | null
+          mfa_last_verified_at: string | null
+          requires_mfa: boolean | null
+          trust_established_at: string | null
+          trust_established_method: string | null
+          trust_level: string | null
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          bound_to_facility_id?: string | null
+          bound_to_workspace_id?: string | null
+          created_at?: string
+          device_fingerprint: string
+          device_name?: string | null
+          device_type?: string | null
+          id?: string
+          is_active?: boolean | null
+          is_trusted?: boolean | null
+          last_ip_address?: unknown
+          last_used_at?: string | null
+          mfa_last_verified_at?: string | null
+          requires_mfa?: boolean | null
+          trust_established_at?: string | null
+          trust_established_method?: string | null
+          trust_level?: string | null
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          bound_to_facility_id?: string | null
+          bound_to_workspace_id?: string | null
+          created_at?: string
+          device_fingerprint?: string
+          device_name?: string | null
+          device_type?: string | null
+          id?: string
+          is_active?: boolean | null
+          is_trusted?: boolean | null
+          last_ip_address?: unknown
+          last_used_at?: string | null
+          mfa_last_verified_at?: string | null
+          requires_mfa?: boolean | null
+          trust_established_at?: string | null
+          trust_established_method?: string | null
+          trust_level?: string | null
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
+      trust_layer_identity_mapping: {
+        Row: {
+          cpid: string
+          created_at: string
+          crid: string
+          health_id: string
+          id: string
+          impilo_id: string
+          issued_at: string
+          issued_at_facility_id: string | null
+          issued_by: string | null
+          memorable_phid: string | null
+          merged_at: string | null
+          merged_into_health_id: string | null
+          previous_cpid: string | null
+          previous_impilo_id: string | null
+          rotated_at: string | null
+          rotation_reason: string | null
+          status: string
+          updated_at: string
+          version: number
+        }
+        Insert: {
+          cpid: string
+          created_at?: string
+          crid: string
+          health_id: string
+          id?: string
+          impilo_id: string
+          issued_at?: string
+          issued_at_facility_id?: string | null
+          issued_by?: string | null
+          memorable_phid?: string | null
+          merged_at?: string | null
+          merged_into_health_id?: string | null
+          previous_cpid?: string | null
+          previous_impilo_id?: string | null
+          rotated_at?: string | null
+          rotation_reason?: string | null
+          status?: string
+          updated_at?: string
+          version?: number
+        }
+        Update: {
+          cpid?: string
+          created_at?: string
+          crid?: string
+          health_id?: string
+          id?: string
+          impilo_id?: string
+          issued_at?: string
+          issued_at_facility_id?: string | null
+          issued_by?: string | null
+          memorable_phid?: string | null
+          merged_at?: string | null
+          merged_into_health_id?: string | null
+          previous_cpid?: string | null
+          previous_impilo_id?: string | null
+          rotated_at?: string | null
+          rotation_reason?: string | null
+          status?: string
+          updated_at?: string
+          version?: number
+        }
+        Relationships: [
+          {
+            foreignKeyName: "trust_layer_identity_mapping_merged_into_health_id_fkey"
+            columns: ["merged_into_health_id"]
+            isOneToOne: false
+            referencedRelation: "trust_layer_identity_mapping"
+            referencedColumns: ["health_id"]
+          },
+        ]
+      }
+      trust_layer_mosip_links: {
+        Row: {
+          assurance_level: string | null
+          created_at: string
+          crid: string
+          expires_at: string | null
+          id: string
+          identity_assurance_level: string | null
+          linked_at: string
+          mosip_link_status: string
+          mosip_link_token: string
+          revocation_reason: string | null
+          revoked_at: string | null
+          updated_at: string
+          verification_method: string | null
+          verification_timestamp: string | null
+          verifier_facility_id: string | null
+          verifier_user_id: string | null
+        }
+        Insert: {
+          assurance_level?: string | null
+          created_at?: string
+          crid: string
+          expires_at?: string | null
+          id?: string
+          identity_assurance_level?: string | null
+          linked_at?: string
+          mosip_link_status?: string
+          mosip_link_token: string
+          revocation_reason?: string | null
+          revoked_at?: string | null
+          updated_at?: string
+          verification_method?: string | null
+          verification_timestamp?: string | null
+          verifier_facility_id?: string | null
+          verifier_user_id?: string | null
+        }
+        Update: {
+          assurance_level?: string | null
+          created_at?: string
+          crid?: string
+          expires_at?: string | null
+          id?: string
+          identity_assurance_level?: string | null
+          linked_at?: string
+          mosip_link_status?: string
+          mosip_link_token?: string
+          revocation_reason?: string | null
+          revoked_at?: string | null
+          updated_at?: string
+          verification_method?: string | null
+          verification_timestamp?: string | null
+          verifier_facility_id?: string | null
+          verifier_user_id?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "trust_layer_mosip_links_crid_fkey"
+            columns: ["crid"]
+            isOneToOne: true
+            referencedRelation: "trust_layer_identity_mapping"
+            referencedColumns: ["crid"]
+          },
+        ]
+      }
+      trust_layer_offline_cpid: {
+        Row: {
+          created_at: string
+          generated_at: string
+          generating_device_id: string
+          generating_facility_id: string | null
+          generating_user_id: string | null
+          id: string
+          merge_confidence: number | null
+          merge_method: string | null
+          merge_notes: string | null
+          o_cpid: string
+          reconciled_at: string | null
+          reconciled_by: string | null
+          reconciled_to_cpid: string | null
+          reconciled_to_health_id: string | null
+          status: string
+          sync_attempted_at: string | null
+        }
+        Insert: {
+          created_at?: string
+          generated_at?: string
+          generating_device_id: string
+          generating_facility_id?: string | null
+          generating_user_id?: string | null
+          id?: string
+          merge_confidence?: number | null
+          merge_method?: string | null
+          merge_notes?: string | null
+          o_cpid: string
+          reconciled_at?: string | null
+          reconciled_by?: string | null
+          reconciled_to_cpid?: string | null
+          reconciled_to_health_id?: string | null
+          status?: string
+          sync_attempted_at?: string | null
+        }
+        Update: {
+          created_at?: string
+          generated_at?: string
+          generating_device_id?: string
+          generating_facility_id?: string | null
+          generating_user_id?: string | null
+          id?: string
+          merge_confidence?: number | null
+          merge_method?: string | null
+          merge_notes?: string | null
+          o_cpid?: string
+          reconciled_at?: string | null
+          reconciled_by?: string | null
+          reconciled_to_cpid?: string | null
+          reconciled_to_health_id?: string | null
+          status?: string
+          sync_attempted_at?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "trust_layer_offline_cpid_reconciled_to_health_id_fkey"
+            columns: ["reconciled_to_health_id"]
+            isOneToOne: false
+            referencedRelation: "trust_layer_identity_mapping"
+            referencedColumns: ["health_id"]
+          },
+        ]
+      }
+      trust_layer_offline_tokens: {
+        Row: {
+          can_cache_identity_mappings: boolean | null
+          created_at: string
+          device_id: string | null
+          expires_at: string
+          facility_id: string | null
+          granted_privileges: string[] | null
+          granted_roles: string[] | null
+          id: string
+          identity_cache_ttl_hours: number | null
+          issued_at: string
+          last_used_at: string | null
+          max_offline_duration_hours: number | null
+          revocation_reason: string | null
+          revoked_at: string | null
+          status: string
+          token_hash: string
+          user_id: string
+          workspace_id: string | null
+        }
+        Insert: {
+          can_cache_identity_mappings?: boolean | null
+          created_at?: string
+          device_id?: string | null
+          expires_at: string
+          facility_id?: string | null
+          granted_privileges?: string[] | null
+          granted_roles?: string[] | null
+          id?: string
+          identity_cache_ttl_hours?: number | null
+          issued_at?: string
+          last_used_at?: string | null
+          max_offline_duration_hours?: number | null
+          revocation_reason?: string | null
+          revoked_at?: string | null
+          status?: string
+          token_hash: string
+          user_id: string
+          workspace_id?: string | null
+        }
+        Update: {
+          can_cache_identity_mappings?: boolean | null
+          created_at?: string
+          device_id?: string | null
+          expires_at?: string
+          facility_id?: string | null
+          granted_privileges?: string[] | null
+          granted_roles?: string[] | null
+          id?: string
+          identity_cache_ttl_hours?: number | null
+          issued_at?: string
+          last_used_at?: string | null
+          max_offline_duration_hours?: number | null
+          revocation_reason?: string | null
+          revoked_at?: string | null
+          status?: string
+          token_hash?: string
+          user_id?: string
+          workspace_id?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "trust_layer_offline_tokens_device_id_fkey"
+            columns: ["device_id"]
+            isOneToOne: false
+            referencedRelation: "trust_layer_devices"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      trust_layer_patient_access_history: {
+        Row: {
+          access_timestamp: string
+          accessor_department: string | null
+          accessor_facility_name: string | null
+          accessor_name: string | null
+          accessor_role: string
+          audit_log_id: string | null
+          created_at: string
+          data_accessed_summary: string | null
+          id: string
+          purpose_of_use: string
+          show_accessor_name: boolean | null
+          subject_cpid: string
+        }
+        Insert: {
+          access_timestamp: string
+          accessor_department?: string | null
+          accessor_facility_name?: string | null
+          accessor_name?: string | null
+          accessor_role: string
+          audit_log_id?: string | null
+          created_at?: string
+          data_accessed_summary?: string | null
+          id?: string
+          purpose_of_use: string
+          show_accessor_name?: boolean | null
+          subject_cpid: string
+        }
+        Update: {
+          access_timestamp?: string
+          accessor_department?: string | null
+          accessor_facility_name?: string | null
+          accessor_name?: string | null
+          accessor_role?: string
+          audit_log_id?: string | null
+          created_at?: string
+          data_accessed_summary?: string | null
+          id?: string
+          purpose_of_use?: string
+          show_accessor_name?: boolean | null
+          subject_cpid?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "trust_layer_patient_access_history_audit_log_id_fkey"
+            columns: ["audit_log_id"]
+            isOneToOne: false
+            referencedRelation: "trust_layer_audit_log"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      trust_layer_policies: {
+        Row: {
+          actions: string[]
+          applies_to_data_classes: string[] | null
+          applies_to_facilities: string[] | null
+          applies_to_roles: string[] | null
+          approved_at: string | null
+          approved_by: string | null
+          attributes: Json
+          conditions: Json
+          created_at: string
+          created_by: string | null
+          description: string | null
+          effect: string
+          effective_from: string
+          effective_to: string | null
+          id: string
+          is_active: boolean
+          policy_id: string
+          policy_name: string
+          policy_type: string
+          policy_version: string
+          priority: number
+          rationale: string | null
+          regulatory_reference: string | null
+          updated_at: string
+        }
+        Insert: {
+          actions: string[]
+          applies_to_data_classes?: string[] | null
+          applies_to_facilities?: string[] | null
+          applies_to_roles?: string[] | null
+          approved_at?: string | null
+          approved_by?: string | null
+          attributes: Json
+          conditions: Json
+          created_at?: string
+          created_by?: string | null
+          description?: string | null
+          effect?: string
+          effective_from?: string
+          effective_to?: string | null
+          id?: string
+          is_active?: boolean
+          policy_id: string
+          policy_name: string
+          policy_type: string
+          policy_version?: string
+          priority?: number
+          rationale?: string | null
+          regulatory_reference?: string | null
+          updated_at?: string
+        }
+        Update: {
+          actions?: string[]
+          applies_to_data_classes?: string[] | null
+          applies_to_facilities?: string[] | null
+          applies_to_roles?: string[] | null
+          approved_at?: string | null
+          approved_by?: string | null
+          attributes?: Json
+          conditions?: Json
+          created_at?: string
+          created_by?: string | null
+          description?: string | null
+          effect?: string
+          effective_from?: string
+          effective_to?: string | null
+          id?: string
+          is_active?: boolean
+          policy_id?: string
+          policy_name?: string
+          policy_type?: string
+          policy_version?: string
+          priority?: number
+          rationale?: string | null
+          regulatory_reference?: string | null
+          updated_at?: string
+        }
+        Relationships: []
+      }
+      trust_layer_rate_limits: {
+        Row: {
+          created_at: string
+          id: string
+          is_locked_out: boolean | null
+          last_request_at: string | null
+          last_request_ip: unknown
+          limit_key: string
+          limit_type: string
+          lockout_reason: string | null
+          lockout_until: string | null
+          max_requests: number
+          request_count: number
+          updated_at: string
+          window_duration_seconds: number
+          window_start: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          is_locked_out?: boolean | null
+          last_request_at?: string | null
+          last_request_ip?: unknown
+          limit_key: string
+          limit_type: string
+          lockout_reason?: string | null
+          lockout_until?: string | null
+          max_requests: number
+          request_count?: number
+          updated_at?: string
+          window_duration_seconds?: number
+          window_start?: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          is_locked_out?: boolean | null
+          last_request_at?: string | null
+          last_request_ip?: unknown
+          limit_key?: string
+          limit_type?: string
+          lockout_reason?: string | null
+          lockout_until?: string | null
+          max_requests?: number
+          request_count?: number
+          updated_at?: string
+          window_duration_seconds?: number
+          window_start?: string
+        }
+        Relationships: []
+      }
+      trust_layer_signed_artifacts: {
+        Row: {
+          artifact_hash: string
+          artifact_id: string
+          artifact_type: string
+          created_at: string
+          id: string
+          revocation_reason: string | null
+          revoked_at: string | null
+          signature: string
+          signature_timestamp: string
+          signer_facility_id: string | null
+          signer_role: string | null
+          signer_upid: string | null
+          signer_user_id: string | null
+          signing_key_id: string
+          status: string
+          superseded_by_id: string | null
+          verification_qr_data: string | null
+          verification_url: string | null
+        }
+        Insert: {
+          artifact_hash: string
+          artifact_id: string
+          artifact_type: string
+          created_at?: string
+          id?: string
+          revocation_reason?: string | null
+          revoked_at?: string | null
+          signature: string
+          signature_timestamp?: string
+          signer_facility_id?: string | null
+          signer_role?: string | null
+          signer_upid?: string | null
+          signer_user_id?: string | null
+          signing_key_id: string
+          status?: string
+          superseded_by_id?: string | null
+          verification_qr_data?: string | null
+          verification_url?: string | null
+        }
+        Update: {
+          artifact_hash?: string
+          artifact_id?: string
+          artifact_type?: string
+          created_at?: string
+          id?: string
+          revocation_reason?: string | null
+          revoked_at?: string | null
+          signature?: string
+          signature_timestamp?: string
+          signer_facility_id?: string | null
+          signer_role?: string | null
+          signer_upid?: string | null
+          signer_user_id?: string | null
+          signing_key_id?: string
+          status?: string
+          superseded_by_id?: string | null
+          verification_qr_data?: string | null
+          verification_url?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "trust_layer_signed_artifacts_signing_key_id_fkey"
+            columns: ["signing_key_id"]
+            isOneToOne: false
+            referencedRelation: "trust_layer_signing_keys"
+            referencedColumns: ["key_id"]
+          },
+          {
+            foreignKeyName: "trust_layer_signed_artifacts_superseded_by_id_fkey"
+            columns: ["superseded_by_id"]
+            isOneToOne: false
+            referencedRelation: "trust_layer_signed_artifacts"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      trust_layer_signing_keys: {
+        Row: {
+          activated_at: string | null
+          created_at: string
+          created_by: string | null
+          expires_at: string | null
+          hsm_key_id: string | null
+          id: string
+          key_algorithm: string
+          key_id: string
+          key_purpose: string
+          key_thumbprint: string
+          public_key_pem: string
+          retired_at: string | null
+          rotates_to_key_id: string | null
+          rotation_scheduled_at: string | null
+          status: string
+          updated_at: string
+          vault_key_reference: string | null
+        }
+        Insert: {
+          activated_at?: string | null
+          created_at?: string
+          created_by?: string | null
+          expires_at?: string | null
+          hsm_key_id?: string | null
+          id?: string
+          key_algorithm: string
+          key_id: string
+          key_purpose: string
+          key_thumbprint: string
+          public_key_pem: string
+          retired_at?: string | null
+          rotates_to_key_id?: string | null
+          rotation_scheduled_at?: string | null
+          status?: string
+          updated_at?: string
+          vault_key_reference?: string | null
+        }
+        Update: {
+          activated_at?: string | null
+          created_at?: string
+          created_by?: string | null
+          expires_at?: string | null
+          hsm_key_id?: string | null
+          id?: string
+          key_algorithm?: string
+          key_id?: string
+          key_purpose?: string
+          key_thumbprint?: string
+          public_key_pem?: string
+          retired_at?: string | null
+          rotates_to_key_id?: string | null
+          rotation_scheduled_at?: string | null
+          status?: string
+          updated_at?: string
+          vault_key_reference?: string | null
+        }
+        Relationships: []
+      }
       trusted_devices: {
         Row: {
           created_at: string
@@ -29563,6 +30688,55 @@ export type Database = {
           p_workspace_id?: string
         }
         Returns: string
+      }
+      trust_layer_check_consent: {
+        Args: {
+          p_facility_id?: string
+          p_purpose: string
+          p_requester_upid: string
+          p_subject_cpid: string
+        }
+        Returns: {
+          consent_id: string
+          expires_at: string
+          has_consent: boolean
+        }[]
+      }
+      trust_layer_issue_identity: {
+        Args: { p_issuer_facility_id?: string; p_issuer_user_id: string }
+        Returns: {
+          cpid: string
+          crid: string
+          health_id: string
+          impilo_id: string
+          memorable_phid: string
+        }[]
+      }
+      trust_layer_record_break_glass: {
+        Args: {
+          p_emergency_type: string
+          p_expires_in_hours?: number
+          p_facility_id?: string
+          p_justification: string
+          p_subject_cpid: string
+          p_user_id: string
+        }
+        Returns: string
+      }
+      trust_layer_resolve_clinical: {
+        Args: { p_impilo_id: string }
+        Returns: {
+          consent_active: boolean
+          cpid: string
+          status: string
+        }[]
+      }
+      trust_layer_resolve_registry: {
+        Args: { p_impilo_id: string }
+        Returns: {
+          crid: string
+          status: string
+        }[]
       }
       update_account_balances: {
         Args: { p_account_id: string }
