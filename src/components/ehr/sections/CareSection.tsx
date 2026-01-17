@@ -19,9 +19,11 @@ import {
   TrendingUp,
   Plus,
   Heart,
+  RefreshCw,
 } from "lucide-react";
 import { format } from "date-fns";
 import { useEHR } from "@/contexts/EHRContext";
+import { useParams } from "react-router-dom";
 import {
   MOCK_NURSING_TASKS,
   MOCK_CARE_PLAN,
@@ -29,6 +31,7 @@ import {
 } from "@/data/mockClinicalData";
 import { MedicationAdministrationRecord } from "../MedicationAdministrationRecord";
 import { NursingCarePlan } from "../care/NursingCarePlan";
+import { MedicationReconciliationWorkflow } from "@/components/clinical/MedicationReconciliationWorkflow";
 
 
 function FluidBalancePanel() {
@@ -336,6 +339,7 @@ function CarePlanPanel() {
 
 export function CareSection() {
   const { currentEncounter } = useEHR();
+  const { encounterId } = useParams<{ encounterId?: string }>();
   const isInpatient = currentEncounter.type === "inpatient";
 
   return (
@@ -346,6 +350,10 @@ export function CareSection() {
             <TabsTrigger value="mar" className="flex items-center gap-2">
               <Pill className="w-4 h-4" />
               Medication Administration
+            </TabsTrigger>
+            <TabsTrigger value="medrec" className="flex items-center gap-2">
+              <RefreshCw className="w-4 h-4" />
+              Med Reconciliation
             </TabsTrigger>
             <TabsTrigger value="fluids" className="flex items-center gap-2">
               <Droplets className="w-4 h-4" />
@@ -371,6 +379,13 @@ export function CareSection() {
         <>
           <TabsContent value="mar" className="m-0 -mx-6 -mb-6">
             <MedicationAdministrationRecord />
+          </TabsContent>
+          <TabsContent value="medrec">
+            <MedicationReconciliationWorkflow 
+              encounterId={encounterId || currentEncounter.id} 
+              patientId={currentEncounter.patient?.id || ""}
+              performedBy="Current Provider"
+            />
           </TabsContent>
           <TabsContent value="fluids">
             <FluidBalancePanel />

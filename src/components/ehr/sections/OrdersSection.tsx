@@ -54,6 +54,7 @@ import {
   ShieldAlert,
   ShoppingCart,
   ClipboardList,
+  ClipboardCheck,
 } from "lucide-react";
 import { format } from "date-fns";
 import { MOCK_ORDERS, MOCK_LAB_RESULTS } from "@/data/mockClinicalData";
@@ -63,6 +64,7 @@ import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { MedicationOrders } from "@/components/clinical/MedicationOrders";
 import { OrderEntrySystem } from "@/components/orders/OrderEntrySystem";
 import { OrderSetsSystem } from "@/components/ehr/orders/OrderSetsSystem";
+import { ResultsReviewPanel } from "@/components/clinical/ResultsReviewPanel";
 
 const statusIcons: Record<OrderStatus, React.ReactNode> = {
   draft: <FileText className="w-4 h-4 text-muted-foreground" />,
@@ -805,6 +807,10 @@ export function OrdersSection() {
           <TestTube2 className="w-4 h-4" />
           Results
         </TabsTrigger>
+        <TabsTrigger value="results-review" className="flex items-center gap-2">
+          <ClipboardCheck className="w-4 h-4" />
+          Review & Sign
+        </TabsTrigger>
         <TabsTrigger value="procedures" className="flex items-center gap-2">
           <Syringe className="w-4 h-4" />
           Procedures
@@ -845,6 +851,14 @@ export function OrdersSection() {
 
       <TabsContent value="results">
         <ResultsPanel />
+      </TabsContent>
+
+      <TabsContent value="results-review">
+        <ResultsReviewPanel 
+          patientId="current-patient"
+          reviewerId="current-provider"
+          reviewerName="Current Provider"
+        />
       </TabsContent>
 
       <TabsContent value="procedures">

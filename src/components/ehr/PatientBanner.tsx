@@ -23,6 +23,7 @@ import { useState } from "react";
 import { format, differenceInYears } from "date-fns";
 import { VitalsMonitor } from "./VitalsMonitor";
 import { DischargeWorkflow } from "./discharge/DischargeWorkflow";
+import { AllergiesAlert } from "./AllergiesAlert";
 
 interface Alert {
   id: string;
@@ -152,18 +153,8 @@ export function PatientBanner() {
             {/* Quick Vitals with Real-time Monitoring */}
             <VitalsMonitor compact />
 
-            {/* Allergies Alert */}
-            {patient.allergies.length > 0 && (
-              <div className="flex items-center gap-2 px-3 py-1.5 bg-critical/10 border border-critical/30 rounded-lg">
-                <AlertTriangle className="w-4 h-4 text-critical" />
-                <div className="text-sm">
-                  <span className="font-medium text-critical">Allergies:</span>
-                  <span className="ml-1 text-foreground">
-                    {patient.allergies.join(", ")}
-                  </span>
-                </div>
-              </div>
-            )}
+            {/* Allergies Alert - Live from database */}
+            <AllergiesAlert patientId={currentEncounter.patient?.id || ""} compact />
 
             {/* Active Alerts Badge */}
             <div className="flex items-center gap-2">
