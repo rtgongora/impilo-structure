@@ -13,6 +13,7 @@ import {
   Shield,
   Calendar,
   Pill,
+  FileHeart,
   Wallet,
   Users,
   Clock,
@@ -41,7 +42,7 @@ import { PortalRemoteMonitoring } from "./modules/PortalRemoteMonitoring";
 import { PortalSecureMessaging } from "./modules/PortalSecureMessaging";
 import { PortalMarketplace } from "./modules/PortalMarketplace";
 import { PortalWellness } from "./modules/PortalWellness";
-
+import { PortalPHRHub } from "./modules/phr";
 const MOCK_PATIENT = {
   name: "John Doe",
   healthId: "HID-0000000001-AB12-3",
@@ -111,6 +112,10 @@ export function PatientPortal() {
                 Appointments
               </TabsTrigger>
               <TabsTrigger value="records">
+                <FileHeart className="h-4 w-4 mr-1" />
+                My Records
+              </TabsTrigger>
+              <TabsTrigger value="timeline">
                 <Clock className="h-4 w-4 mr-1" />
                 Timeline
               </TabsTrigger>
@@ -279,6 +284,10 @@ export function PatientPortal() {
           </TabsContent>
 
           <TabsContent value="records">
+            <PortalPHRHub />
+          </TabsContent>
+
+          <TabsContent value="timeline">
             <PortalHealthTimeline />
           </TabsContent>
 
