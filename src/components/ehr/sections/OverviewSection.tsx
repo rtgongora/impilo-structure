@@ -33,6 +33,8 @@ import {
   MOCK_TASKS,
   MOCK_DIAGNOSES,
 } from "@/data/mockClinicalData";
+import { LiveVitalsMonitor } from "@/components/ehr/LiveVitalsMonitor";
+import { AllergiesAlert } from "@/components/ehr/AllergiesAlert";
 
 function VitalCard({ 
   icon: Icon, 
@@ -182,69 +184,24 @@ export function OverviewSection() {
         </CardContent>
       </Card>
 
-      {/* Clinical Alerts */}
-      <div className="grid grid-cols-2 gap-3">
-        {MOCK_ALERTS.slice(0, 4).map(alert => (
-          <AlertBadge key={alert.id} alert={alert} />
-        ))}
+      {/* Clinical Alerts & Allergies */}
+      <div className="grid grid-cols-2 gap-4">
+        <div className="space-y-3">
+          <h3 className="text-sm font-medium text-muted-foreground">CLINICAL ALERTS</h3>
+          <div className="space-y-2">
+            {MOCK_ALERTS.slice(0, 3).map(alert => (
+              <AlertBadge key={alert.id} alert={alert} />
+            ))}
+          </div>
+        </div>
+        <div className="space-y-3">
+          <h3 className="text-sm font-medium text-muted-foreground">ALLERGIES</h3>
+          <AllergiesAlert patientId={patient.id || currentEncounter.id} />
+        </div>
       </div>
 
-      {/* Vitals Snapshot */}
-      <Card>
-        <CardHeader className="pb-2">
-          <div className="flex items-center justify-between">
-            <CardTitle className="text-base flex items-center gap-2">
-              <Activity className="w-4 h-4" />
-              Current Vitals
-            </CardTitle>
-            <div className="text-xs text-muted-foreground">
-              Last recorded: {MOCK_VITALS.lastMeasuredTime && formatDistanceToNow(MOCK_VITALS.lastMeasuredTime, { addSuffix: true })}
-            </div>
-          </div>
-        </CardHeader>
-        <CardContent>
-          <div className="grid grid-cols-6 gap-3">
-            <VitalCard 
-              icon={Heart} 
-              label="Heart Rate" 
-              value={MOCK_VITALS.heartRate?.value || "--"} 
-              unit="bpm" 
-              trend={MOCK_VITALS.heartRate?.trend}
-              isAbnormal={MOCK_VITALS.heartRate?.isAbnormal}
-            />
-            <VitalCard 
-              icon={Wind} 
-              label="Resp Rate" 
-              value={MOCK_VITALS.respiratoryRate?.value || "--"} 
-              unit="/min" 
-            />
-            <VitalCard 
-              icon={Activity} 
-              label="Blood Pressure" 
-              value={`${MOCK_VITALS.bloodPressure?.systolic.value || "--"}/${MOCK_VITALS.bloodPressure?.diastolic.value || "--"}`} 
-              unit="mmHg" 
-            />
-            <VitalCard 
-              icon={Thermometer} 
-              label="Temperature" 
-              value={MOCK_VITALS.temperature?.value || "--"} 
-              unit="°C" 
-            />
-            <VitalCard 
-              icon={Droplets} 
-              label="SpO₂" 
-              value={MOCK_VITALS.spo2?.value || "--"} 
-              unit="%" 
-            />
-            <VitalCard 
-              icon={Activity} 
-              label="Pain Score" 
-              value={MOCK_VITALS.painScore?.value || "3"} 
-              unit="/10" 
-            />
-          </div>
-        </CardContent>
-      </Card>
+      {/* Live Vitals Monitor */}
+      <LiveVitalsMonitor encounterId={currentEncounter.id} />
 
       <div className="grid grid-cols-3 gap-6">
         {/* Active Episodes & Pathways */}

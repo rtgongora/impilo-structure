@@ -11,6 +11,7 @@ import {
 import { useState } from "react";
 import { useParams } from "react-router-dom";
 import { SOAPNoteEditor } from "@/components/clinical/SOAPNoteEditor";
+import { LiveSOAPNoteEditor } from "@/components/clinical/LiveSOAPNoteEditor";
 import { ClinicalDocumentScanner, ScannedDocument } from "@/components/documents/ClinicalDocumentScanner";
 import { toast } from "sonner";
 
@@ -217,7 +218,12 @@ export function NotesSection() {
         {/* Live SOAP Note Editor */}
         <TabsContent value="soap-live" className="space-y-4">
           {encounterId ? (
-            <SOAPNoteEditor encounterId={encounterId} />
+            <LiveSOAPNoteEditor 
+              encounterId={encounterId} 
+              authorId="current-user"
+              authorName="Current Provider"
+              authorRole="Clinician"
+            />
           ) : (
             <Card>
               <CardContent className="p-6 text-center text-muted-foreground">

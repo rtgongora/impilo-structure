@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { useParams } from "react-router-dom";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -48,10 +49,12 @@ import {
   ArrowRight,
   History,
   Target,
+  Database,
 } from "lucide-react";
 import { format } from "date-fns";
 import { MOCK_PROBLEMS, MOCK_DIAGNOSES } from "@/data/mockClinicalData";
 import type { ProblemStatus, DiagnosisCertainty } from "@/types/clinical";
+import { LiveProblemsSection } from "./LiveProblemsSection";
 
 const statusColors: Record<ProblemStatus, { badge: string; label: string }> = {
   active: { badge: "default", label: "Active" },
@@ -735,6 +738,8 @@ function EncounterDiagnosesPanel() {
 }
 
 export function ProblemsSection() {
+  const { encounterId } = useParams<{ encounterId?: string }>();
+  
   return (
     <Tabs defaultValue="diagnoses" className="space-y-4">
       <TabsList className="flex-wrap">
@@ -748,7 +753,11 @@ export function ProblemsSection() {
         </TabsTrigger>
         <TabsTrigger value="problems" className="flex items-center gap-2">
           <FileText className="w-4 h-4" />
-          Problem List
+          Problem List (Mock)
+        </TabsTrigger>
+        <TabsTrigger value="live-problems" className="flex items-center gap-2">
+          <Database className="w-4 h-4" />
+          Problem List (Live)
         </TabsTrigger>
       </TabsList>
 
@@ -762,6 +771,10 @@ export function ProblemsSection() {
 
       <TabsContent value="problems">
         <ProblemListPanel />
+      </TabsContent>
+
+      <TabsContent value="live-problems">
+        <LiveProblemsSection encounterId={encounterId} />
       </TabsContent>
     </Tabs>
   );
