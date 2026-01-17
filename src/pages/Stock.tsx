@@ -43,12 +43,14 @@ import {
   BarChart3,
   Warehouse,
   ArrowRightLeft,
-  Filter,
-  Download,
-  MoreHorizontal,
+  ClipboardList,
+  ShoppingCart,
   Loader2
 } from "lucide-react";
 import { toast } from "sonner";
+import { StockAlertsDashboard } from "@/components/stock/StockAlertsDashboard";
+import { PurchaseOrderManager } from "@/components/stock/PurchaseOrderManager";
+import { StockCountWorkflow } from "@/components/stock/StockCountWorkflow";
 
 interface StockItem {
   id: string;
@@ -287,10 +289,22 @@ const Stock = () => {
         {/* Main Content */}
         <Tabs value={activeTab} onValueChange={setActiveTab}>
           <div className="flex items-center justify-between mb-4">
-            <TabsList>
+            <TabsList className="flex-wrap h-auto">
               <TabsTrigger value="items">Stock Items</TabsTrigger>
               <TabsTrigger value="levels">Stock Levels</TabsTrigger>
               <TabsTrigger value="locations">Locations</TabsTrigger>
+              <TabsTrigger value="alerts" className="gap-1">
+                <AlertTriangle className="h-3 w-3" />
+                Alerts
+              </TabsTrigger>
+              <TabsTrigger value="purchase-orders" className="gap-1">
+                <ShoppingCart className="h-3 w-3" />
+                Purchase Orders
+              </TabsTrigger>
+              <TabsTrigger value="stock-counts" className="gap-1">
+                <ClipboardList className="h-3 w-3" />
+                Stock Counts
+              </TabsTrigger>
             </TabsList>
             <div className="flex gap-2">
               <div className="relative">
@@ -476,6 +490,18 @@ const Stock = () => {
                 )}
               </CardContent>
             </Card>
+          </TabsContent>
+
+          <TabsContent value="alerts">
+            <StockAlertsDashboard />
+          </TabsContent>
+
+          <TabsContent value="purchase-orders">
+            <PurchaseOrderManager />
+          </TabsContent>
+
+          <TabsContent value="stock-counts">
+            <StockCountWorkflow />
           </TabsContent>
         </Tabs>
       </main>

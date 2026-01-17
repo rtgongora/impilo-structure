@@ -13,6 +13,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { ScrollArea } from "@/components/ui/scroll-area";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { toast } from "sonner";
 import { 
   ArrowLeft, 
@@ -23,14 +24,19 @@ import {
   Calendar,
   User,
   MapPin,
-  FileText
+  FileText,
+  DollarSign,
+  Settings
 } from "lucide-react";
 import { format } from "date-fns";
+import { ChargeCaptureQueue } from "@/components/charges/ChargeCaptureQueue";
+import { PricingRulesManager } from "@/components/charges/PricingRulesManager";
 
 const Consumables = () => {
   const { user } = useAuth();
   const navigate = useNavigate();
   const queryClient = useQueryClient();
+  const [activeTab, setActiveTab] = useState("usage");
   const [searchTerm, setSearchTerm] = useState("");
   const [isRecordDialogOpen, setIsRecordDialogOpen] = useState(false);
   const [selectedEncounter, setSelectedEncounter] = useState("");
@@ -214,8 +220,8 @@ const Consumables = () => {
             <div className="flex items-center gap-2">
               <Syringe className="h-6 w-6 text-primary" />
               <div>
-                <h1 className="text-xl font-bold">Consumables Management</h1>
-                <p className="text-xs text-muted-foreground">Track consumable usage per encounter</p>
+                <h1 className="text-xl font-bold">Consumables & Charges</h1>
+                <p className="text-xs text-muted-foreground">Track usage, billing, and pricing</p>
               </div>
             </div>
           </div>
@@ -340,122 +346,149 @@ const Consumables = () => {
       </header>
 
       <main className="container mx-auto px-4 py-6">
-        {/* Search */}
-        <Card className="mb-6">
-          <CardContent className="pt-6">
-            <div className="relative">
-              <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-              <Input
-                placeholder="Search by item, encounter, or patient..."
-                value={searchTerm}
-                onChange={(e) => setSearchTerm(e.target.value)}
-                className="pl-10"
-              />
-            </div>
-          </CardContent>
-        </Card>
-
-        {/* Usage Records Table */}
-        <Card>
-          <CardHeader>
-            <CardTitle className="flex items-center gap-2">
-              <Package className="h-5 w-5" />
+        <Tabs value={activeTab} onValueChange={setActiveTab}>
+          <TabsList className="mb-6">
+            <TabsTrigger value="usage" className="gap-1">
+              <Package className="h-3 w-3" />
               Usage Records
-            </CardTitle>
-            <CardDescription>
-              Recent consumable usage across all encounters
-            </CardDescription>
-          </CardHeader>
-          <CardContent>
-            <ScrollArea className="h-[600px]">
-              <Table>
-                <TableHeader>
-                  <TableRow>
-                    <TableHead>Date/Time</TableHead>
-                    <TableHead>Item</TableHead>
-                    <TableHead>Quantity</TableHead>
-                    <TableHead>Patient/Encounter</TableHead>
-                    <TableHead>Location</TableHead>
-                    <TableHead>Cost</TableHead>
-                    <TableHead>Notes</TableHead>
-                  </TableRow>
-                </TableHeader>
-                <TableBody>
-                  {usageLoading ? (
-                    <TableRow>
-                      <TableCell colSpan={7} className="text-center py-8">
-                        Loading usage records...
-                      </TableCell>
-                    </TableRow>
-                  ) : filteredRecords?.length === 0 ? (
-                    <TableRow>
-                      <TableCell colSpan={7} className="text-center py-8 text-muted-foreground">
-                        No usage records found
-                      </TableCell>
-                    </TableRow>
-                  ) : (
-                    filteredRecords?.map((record) => (
-                      <TableRow key={record.id}>
-                        <TableCell>
-                          <div className="flex items-center gap-2">
-                            <Calendar className="h-3 w-3 text-muted-foreground" />
-                            <div>
-                              <p className="text-sm">{format(new Date(record.administered_at), "MMM d, yyyy")}</p>
-                              <p className="text-xs text-muted-foreground">{format(new Date(record.administered_at), "HH:mm")}</p>
-                            </div>
-                          </div>
-                        </TableCell>
-                        <TableCell>
-                          <div>
-                            <p className="font-medium">{(record.stock_items as any)?.name}</p>
-                            <p className="text-xs text-muted-foreground">{(record.stock_items as any)?.sku}</p>
-                          </div>
-                        </TableCell>
-                        <TableCell>
-                          <Badge variant="secondary">
-                            {record.quantity} {(record.stock_items as any)?.unit_of_measure}
-                          </Badge>
-                        </TableCell>
-                        <TableCell>
-                          <div className="flex items-center gap-2">
-                            <User className="h-3 w-3 text-muted-foreground" />
-                            <div>
-                              <p className="text-sm">
-                                {(record.encounters as any)?.patients?.first_name} {(record.encounters as any)?.patients?.last_name}
-                              </p>
-                              <p className="text-xs text-muted-foreground">
-                                {(record.encounters as any)?.encounter_number}
-                              </p>
-                            </div>
-                          </div>
-                        </TableCell>
-                        <TableCell>
-                          <div className="flex items-center gap-2">
-                            <MapPin className="h-3 w-3 text-muted-foreground" />
-                            <span className="text-sm">{(record.stock_locations as any)?.name}</span>
-                          </div>
-                        </TableCell>
-                        <TableCell>
-                          <span className="font-medium">${record.total_cost.toFixed(2)}</span>
-                        </TableCell>
-                        <TableCell>
-                          {record.notes ? (
-                            <div className="flex items-center gap-1">
-                              <FileText className="h-3 w-3 text-muted-foreground" />
-                              <span className="text-sm truncate max-w-[150px]">{record.notes}</span>
-                            </div>
-                          ) : (
-                            <span className="text-muted-foreground">-</span>
-                          )}
-                        </TableCell>
+            </TabsTrigger>
+            <TabsTrigger value="charge-queue" className="gap-1">
+              <DollarSign className="h-3 w-3" />
+              Charge Queue
+            </TabsTrigger>
+            <TabsTrigger value="pricing" className="gap-1">
+              <Settings className="h-3 w-3" />
+              Pricing Rules
+            </TabsTrigger>
+          </TabsList>
+
+          <TabsContent value="usage">
+            {/* Search */}
+            <Card className="mb-6">
+              <CardContent className="pt-6">
+                <div className="relative">
+                  <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+                  <Input
+                    placeholder="Search by item, encounter, or patient..."
+                    value={searchTerm}
+                    onChange={(e) => setSearchTerm(e.target.value)}
+                    className="pl-10"
+                  />
+                </div>
+              </CardContent>
+            </Card>
+
+            {/* Usage Records Table */}
+            <Card>
+              <CardHeader>
+                <CardTitle className="flex items-center gap-2">
+                  <Package className="h-5 w-5" />
+                  Usage Records
+                </CardTitle>
+                <CardDescription>
+                  Recent consumable usage across all encounters
+                </CardDescription>
+              </CardHeader>
+              <CardContent>
+                <ScrollArea className="h-[600px]">
+                  <Table>
+                    <TableHeader>
+                      <TableRow>
+                        <TableHead>Date/Time</TableHead>
+                        <TableHead>Item</TableHead>
+                        <TableHead>Quantity</TableHead>
+                        <TableHead>Patient/Encounter</TableHead>
+                        <TableHead>Location</TableHead>
+                        <TableHead>Cost</TableHead>
+                        <TableHead>Notes</TableHead>
                       </TableRow>
-                    ))
-                  )}
-                </TableBody>
-              </Table>
-            </ScrollArea>
-          </CardContent>
-        </Card>
+                    </TableHeader>
+                    <TableBody>
+                      {usageLoading ? (
+                        <TableRow>
+                          <TableCell colSpan={7} className="text-center py-8">
+                            Loading usage records...
+                          </TableCell>
+                        </TableRow>
+                      ) : filteredRecords?.length === 0 ? (
+                        <TableRow>
+                          <TableCell colSpan={7} className="text-center py-8 text-muted-foreground">
+                            No usage records found
+                          </TableCell>
+                        </TableRow>
+                      ) : (
+                        filteredRecords?.map((record) => (
+                          <TableRow key={record.id}>
+                            <TableCell>
+                              <div className="flex items-center gap-2">
+                                <Calendar className="h-3 w-3 text-muted-foreground" />
+                                <div>
+                                  <p className="text-sm">{format(new Date(record.administered_at), "MMM d, yyyy")}</p>
+                                  <p className="text-xs text-muted-foreground">{format(new Date(record.administered_at), "HH:mm")}</p>
+                                </div>
+                              </div>
+                            </TableCell>
+                            <TableCell>
+                              <div>
+                                <p className="font-medium">{(record.stock_items as any)?.name}</p>
+                                <p className="text-xs text-muted-foreground">{(record.stock_items as any)?.sku}</p>
+                              </div>
+                            </TableCell>
+                            <TableCell>
+                              <Badge variant="secondary">
+                                {record.quantity} {(record.stock_items as any)?.unit_of_measure}
+                              </Badge>
+                            </TableCell>
+                            <TableCell>
+                              <div className="flex items-center gap-2">
+                                <User className="h-3 w-3 text-muted-foreground" />
+                                <div>
+                                  <p className="text-sm">
+                                    {(record.encounters as any)?.patients?.first_name} {(record.encounters as any)?.patients?.last_name}
+                                  </p>
+                                  <p className="text-xs text-muted-foreground">
+                                    {(record.encounters as any)?.encounter_number}
+                                  </p>
+                                </div>
+                              </div>
+                            </TableCell>
+                            <TableCell>
+                              <div className="flex items-center gap-2">
+                                <MapPin className="h-3 w-3 text-muted-foreground" />
+                                <span className="text-sm">{(record.stock_locations as any)?.name}</span>
+                              </div>
+                            </TableCell>
+                            <TableCell>
+                              <span className="font-medium">${record.total_cost.toFixed(2)}</span>
+                            </TableCell>
+                            <TableCell>
+                              {record.notes ? (
+                                <div className="flex items-center gap-1">
+                                  <FileText className="h-3 w-3 text-muted-foreground" />
+                                  <span className="text-sm truncate max-w-[150px]">{record.notes}</span>
+                                </div>
+                              ) : (
+                                <span className="text-muted-foreground">-</span>
+                              )}
+                            </TableCell>
+                          </TableRow>
+                        ))
+                      )}
+                    </TableBody>
+                  </Table>
+                </ScrollArea>
+              </CardContent>
+            </Card>
+          </TabsContent>
+
+          <TabsContent value="charge-queue">
+            <ChargeCaptureQueue />
+          </TabsContent>
+
+          <TabsContent value="pricing">
+            <PricingRulesManager />
+          </TabsContent>
+        </Tabs>
       </main>
     </div>
   );
