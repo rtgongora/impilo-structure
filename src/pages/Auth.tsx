@@ -58,11 +58,18 @@ const Auth = () => {
     return () => window.removeEventListener("keydown", handleKeyDown);
   }, [searchParams]);
 
+  // Redirect authenticated users away from auth page (unless completing workspace selection)
   useEffect(() => {
-    if (user && view !== "workspace" && view !== "above-site-context") {
-      if (isAboveSiteUser && !aboveSiteLoading) {
+    if (user && !aboveSiteLoading) {
+      // Only allow staying on auth page for workspace/above-site completion flows
+      if (view === "workspace" || view === "above-site-context") {
+        return; // Stay on page to complete the flow
+      }
+      
+      // Redirect to appropriate destination
+      if (isAboveSiteUser) {
         setView("above-site-context");
-      } else if (!aboveSiteLoading) {
+      } else {
         navigate("/");
       }
     }
