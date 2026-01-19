@@ -234,6 +234,8 @@ export function useQueueItems(queueId?: string) {
             encounter_type: 'outpatient',
             status: 'active',
             chief_complaint: item.reason_for_visit || 'Queue visit',
+            created_by: user?.id,
+            attending_physician_id: user?.id,
           })
           .select()
           .single();
