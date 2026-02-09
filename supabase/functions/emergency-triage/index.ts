@@ -1,37 +1,23 @@
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
+import { withKernelMiddleware, kernelError, kernelSuccess, KernelContext } from "../_shared/middleware.ts";
 
-const corsHeaders = {
-  'Access-Control-Allow-Origin': '*',
-  'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type',
-};
+serve(withKernelMiddleware(async (req: Request, ctx: KernelContext) => {
+  const { message, emergencyType, history, location } = await req.json();
+  const LOVABLE_API_KEY = Deno.env.get("LOVABLE_API_KEY");
 
-serve(async (req) => {
-  // Handle CORS preflight
-  if (req.method === 'OPTIONS') {
-    return new Response(null, { headers: corsHeaders });
+  if (!LOVABLE_API_KEY) {
+    console.log(`[${ctx.requestId}] LOVABLE_API_KEY not configured, using fallback response`);
+    return kernelSuccess({ 
+      response: getEmergencyFallbackResponse(message, emergencyType) 
+    }, ctx);
   }
 
-  try {
-    const { message, emergencyType, history, location } = await req.json();
-    const LOVABLE_API_KEY = Deno.env.get("LOVABLE_API_KEY");
+  const conversationHistory = history?.map((msg: any) => ({
+    role: msg.sender === 'user' ? 'user' : 'assistant',
+    content: msg.content
+  })) || [];
 
-    if (!LOVABLE_API_KEY) {
-      console.log("LOVABLE_API_KEY not configured, using fallback response");
-      return new Response(
-        JSON.stringify({ 
-          response: getEmergencyFallbackResponse(message, emergencyType) 
-        }),
-        { headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
-      );
-    }
-
-    // Build conversation history for context
-    const conversationHistory = history?.map((msg: any) => ({
-      role: msg.sender === 'user' ? 'user' : 'assistant',
-      content: msg.content
-    })) || [];
-
-    const systemPrompt = `You are an emergency medical triage AI assistant. Your role is to:
+  const systemPrompt = `You are an emergency medical triage AI assistant. Your role is to:
 1. Keep the patient calm and reassured
 2. Gather critical medical information quickly
 3. Provide appropriate first aid guidance
@@ -51,56 +37,38 @@ Patient Location: ${location || 'unknown'}
 
 Respond concisely but thoroughly. Focus on immediate safety and gathering relevant medical information.`;
 
-    const response = await fetch("https://ai.gateway.lovable.dev/v1/chat/completions", {
-      method: "POST",
-      headers: {
-        Authorization: `Bearer ${LOVABLE_API_KEY}`,
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({
-        model: "google/gemini-2.5-flash",
-        messages: [
-          { role: "system", content: systemPrompt },
-          ...conversationHistory,
-          { role: "user", content: message }
-        ],
-      }),
-    });
+  const response = await fetch("https://ai.gateway.lovable.dev/v1/chat/completions", {
+    method: "POST",
+    headers: {
+      Authorization: `Bearer ${LOVABLE_API_KEY}`,
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify({
+      model: "google/gemini-2.5-flash",
+      messages: [
+        { role: "system", content: systemPrompt },
+        ...conversationHistory,
+        { role: "user", content: message }
+      ],
+    }),
+  });
 
-    if (!response.ok) {
-      if (response.status === 429) {
-        return new Response(
-          JSON.stringify({ error: "Service busy, please try again" }),
-          { status: 429, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
-        );
-      }
-      console.error("AI gateway error:", response.status);
-      return new Response(
-        JSON.stringify({ 
-          response: getEmergencyFallbackResponse(message, emergencyType) 
-        }),
-        { headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
-      );
+  if (!response.ok) {
+    if (response.status === 429) {
+      return kernelError("RATE_LIMITED", "Service busy, please try again", 429, ctx);
     }
-
-    const data = await response.json();
-    const aiResponse = data.choices?.[0]?.message?.content || getEmergencyFallbackResponse(message, emergencyType);
-
-    return new Response(
-      JSON.stringify({ response: aiResponse }),
-      { headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
-    );
-
-  } catch (error) {
-    console.error("Emergency triage error:", error);
-    return new Response(
-      JSON.stringify({ 
-        response: "I understand this is an emergency. Emergency services have been notified and are on their way. Please try to stay calm. Can you tell me more about your symptoms?" 
-      }),
-      { headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
-    );
+    console.error(`[${ctx.requestId}] AI gateway error:`, response.status);
+    return kernelSuccess({ 
+      response: getEmergencyFallbackResponse(message, emergencyType) 
+    }, ctx);
   }
-});
+
+  const data = await response.json();
+  const aiResponse = data.choices?.[0]?.message?.content || getEmergencyFallbackResponse(message, emergencyType);
+
+  return kernelSuccess({ response: aiResponse }, ctx);
+
+}, { skipHeaderValidation: true }));
 
 function getEmergencyFallbackResponse(message: string, emergencyType: string): string {
   const lowerMessage = message.toLowerCase();
