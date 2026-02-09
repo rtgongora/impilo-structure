@@ -29,3 +29,6 @@ verify_jwt = true
 
 [functions.odoo-integration]
 verify_jwt = true
+
+[functions.emergency-triage]
+verify_jwt = false
