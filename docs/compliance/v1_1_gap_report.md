@@ -49,9 +49,9 @@ The current prototype implements a rich Trust Layer (identity, consent, policy, 
 | V-02 | `GET /external/v1/patients?identifier=...` query | ❌ MISSING | BLOCKER | No external patient query endpoint. |
 | V-03 | `POST /internal/v1/patients/merge` | ❌ MISSING | BLOCKER | No merge endpoint. |
 | V-04 | Merge restricted to national-authoritative pods | ❌ MISSING | BLOCKER | No federation authority check. |
-| V-05 | `impilo.vito.patient.created.v1` event | ❌ MISSING | MAJOR | No v1.1 events emitted. |
-| V-06 | `impilo.vito.patient.updated.v1` event | ❌ MISSING | MAJOR | No v1.1 events emitted. |
-| V-07 | `impilo.vito.patient.merged.v1` event | ❌ MISSING | MAJOR | No v1.1 events emitted. |
+| V-05 | `impilo.vito.patient.created.v1` event | ✅ DONE | MAJOR | `emitPatientCreated()` emits v1.1 delta event (Wave 1). |
+| V-06 | `impilo.vito.patient.updated.v1` event | ✅ DONE | MAJOR | `emitPatientUpdated()` emits v1.1 delta event (Wave 1). |
+| V-07 | `impilo.vito.patient.merged.v1` event | ✅ DONE | MAJOR | `emitPatientMerged()` emits v1.1 delta event with alias_map (Wave 1). |
 
 ### 2.4 MSIKA — Product & Service Registry (Tech Companion §1.3)
 
@@ -77,12 +77,12 @@ The current prototype implements a rich Trust Layer (identity, consent, policy, 
 
 | # | Requirement | Status | Severity | Notes |
 |---|------------|--------|----------|-------|
-| E-01 | Topic naming: `impilo.{service}.{domain}.{entity}.{action}.v{N}` | ❌ MISSING | BLOCKER | No event topics exist. |
-| E-02 | Mandatory envelope fields (event_id, event_type, schema_version, correlation_id, causation_id, idempotency_key, producer, tenant_id, pod_id, occurred_at, emitted_at, subject_type, subject_id, payload, meta) | ❌ MISSING | BLOCKER | No event envelope. |
-| E-03 | Delta events (op: CREATE/UPDATE/DELETE/MERGE/REVOKE, before, after, changed_fields) | ❌ MISSING | BLOCKER | No delta events. |
-| E-04 | `meta.partition_key` on every event | ❌ MISSING | BLOCKER | No partition keys. |
-| E-05 | Schema validation gate blocks invalid events | ❌ MISSING | BLOCKER | No schema registry or validation. |
-| E-06 | `EMIT_MODE: V1_ONLY | V1_1_ONLY | DUAL` support | ❌ MISSING | MAJOR | No emission modes. |
+| E-01 | Topic naming: `impilo.{service}.{domain}.{entity}.{action}.v{N}` | ✅ DONE | BLOCKER | VITO events use correct topic naming (Wave 1). |
+| E-02 | Mandatory envelope fields (event_id, event_type, schema_version, correlation_id, causation_id, idempotency_key, producer, tenant_id, pod_id, occurred_at, emitted_at, subject_type, subject_id, payload, meta) | ✅ DONE | BLOCKER | `ImpiloEventEnvelopeV11` type + validator enforces all fields (Wave 1). |
+| E-03 | Delta events (op: CREATE/UPDATE/DELETE/MERGE/REVOKE, before, after, changed_fields) | ✅ DONE | BLOCKER | `ImpiloDeltaPayload` implemented for VITO create/update/merge (Wave 1). |
+| E-04 | `meta.partition_key` on every event | ✅ DONE | BLOCKER | Schema gate blocks events without partition_key (Wave 1). |
+| E-05 | Schema validation gate blocks invalid events | ✅ DONE | BLOCKER | `validateEventOrThrow()` blocks on missing/invalid schema_version, envelope fields, partition_key (Wave 1). |
+| E-06 | `EMIT_MODE: V1_ONLY | V1_1_ONLY | DUAL` support | ✅ DONE | MAJOR | `emitWithPolicy()` supports all three modes, defaults to DUAL (Wave 1). |
 
 ### 2.7 Consistency & Safety (Tech Companion §3)
 
@@ -122,11 +122,11 @@ The current prototype implements a rich Trust Layer (identity, consent, policy, 
 
 ## 3. Severity Summary
 
-| Severity | Count |
-|----------|-------|
-| BLOCKER | 35 |
-| MAJOR | 18 |
-| MINOR | 3 |
+| Severity | Count | Resolved |
+|----------|-------|----------|
+| BLOCKER | 35 | 5 (E-01–E-05) |
+| MAJOR | 18 | 4 (E-06, V-05–V-07) |
+| MINOR | 3 | 0 |
 
 ---
 
