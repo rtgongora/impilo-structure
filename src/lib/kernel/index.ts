@@ -7,6 +7,8 @@
 export * from './types';
 export * from './errorFormatter';
 export * from './kernelClient';
+
+// Wave 1 — Eventing
 export { 
   type ImpiloEventEnvelopeV11,
   type ImpiloDeltaPayload,
@@ -28,3 +30,38 @@ export {
   emitPatientMerged,
   type VitoPatientState,
 } from './events';
+
+// Wave 2 — Idempotency
+export {
+  type IdempotencyRecord,
+  requireIdempotencyKey,
+  checkIdempotency,
+  storeIdempotencyResult,
+  clearIdempotencyStore,
+  computeRequestHash,
+  canonicalJson,
+} from './idempotency';
+
+// Wave 2 — Audit
+export {
+  type AuditRecord,
+  type AuditRecordInput,
+  type AuditActor,
+  type AuditDecision,
+  type ChainVerificationResult,
+  appendAuditRecord,
+  verifyChain,
+  listByCorrelationId,
+  getAuditChain,
+  clearAuditLedger,
+  logPolicyDecision,
+} from './audit';
+
+// Wave 2 — VITO Commands
+export {
+  vitoPatientUpsert,
+  vitoPatientMerge,
+  type VitoUpsertRequest,
+  type VitoMergeRequest,
+  type VitoCommandResult,
+} from './vito';
