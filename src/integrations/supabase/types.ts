@@ -30697,6 +30697,300 @@ export type Database = {
           },
         ]
       }
+      vito_audit_log: {
+        Row: {
+          action: string
+          actor_id: string
+          actor_type: string
+          correlation_id: string
+          created_at: string
+          decision: string
+          details: Json | null
+          facility_id: string | null
+          id: string
+          pod_id: string | null
+          purpose_of_use: string | null
+          request_id: string
+          resource_id: string | null
+          resource_type: string | null
+          tenant_id: string
+        }
+        Insert: {
+          action: string
+          actor_id: string
+          actor_type: string
+          correlation_id: string
+          created_at?: string
+          decision?: string
+          details?: Json | null
+          facility_id?: string | null
+          id?: string
+          pod_id?: string | null
+          purpose_of_use?: string | null
+          request_id: string
+          resource_id?: string | null
+          resource_type?: string | null
+          tenant_id: string
+        }
+        Update: {
+          action?: string
+          actor_id?: string
+          actor_type?: string
+          correlation_id?: string
+          created_at?: string
+          decision?: string
+          details?: Json | null
+          facility_id?: string | null
+          id?: string
+          pod_id?: string | null
+          purpose_of_use?: string | null
+          request_id?: string
+          resource_id?: string | null
+          resource_type?: string | null
+          tenant_id?: string
+        }
+        Relationships: []
+      }
+      vito_config: {
+        Row: {
+          config_key: string
+          config_value: string
+          id: string
+          tenant_id: string
+          updated_at: string
+          updated_by: string | null
+        }
+        Insert: {
+          config_key: string
+          config_value: string
+          id?: string
+          tenant_id: string
+          updated_at?: string
+          updated_by?: string | null
+        }
+        Update: {
+          config_key?: string
+          config_value?: string
+          id?: string
+          tenant_id?: string
+          updated_at?: string
+          updated_by?: string | null
+        }
+        Relationships: []
+      }
+      vito_event_envelopes: {
+        Row: {
+          actor_id: string
+          actor_type: string
+          correlation_id: string
+          created_at: string
+          event_id: string
+          event_type: string
+          id: string
+          meta: Json
+          occurred_at: string
+          payload: Json
+          pod_id: string
+          producer: string
+          purpose_of_use: string
+          request_id: string
+          schema_version: number
+          subject_id: string
+          subject_type: string
+          tenant_id: string
+        }
+        Insert: {
+          actor_id: string
+          actor_type: string
+          correlation_id: string
+          created_at?: string
+          event_id?: string
+          event_type: string
+          id?: string
+          meta?: Json
+          occurred_at?: string
+          payload?: Json
+          pod_id: string
+          producer?: string
+          purpose_of_use: string
+          request_id: string
+          schema_version?: number
+          subject_id: string
+          subject_type?: string
+          tenant_id: string
+        }
+        Update: {
+          actor_id?: string
+          actor_type?: string
+          correlation_id?: string
+          created_at?: string
+          event_id?: string
+          event_type?: string
+          id?: string
+          meta?: Json
+          occurred_at?: string
+          payload?: Json
+          pod_id?: string
+          producer?: string
+          purpose_of_use?: string
+          request_id?: string
+          schema_version?: number
+          subject_id?: string
+          subject_type?: string
+          tenant_id?: string
+        }
+        Relationships: []
+      }
+      vito_idempotency_keys: {
+        Row: {
+          actor_id: string
+          created_at: string
+          endpoint: string
+          expires_at: string
+          id: string
+          idempotency_key: string
+          request_hash: string
+          response_body: Json | null
+          response_status: number | null
+          tenant_id: string
+        }
+        Insert: {
+          actor_id: string
+          created_at?: string
+          endpoint: string
+          expires_at?: string
+          id?: string
+          idempotency_key: string
+          request_hash: string
+          response_body?: Json | null
+          response_status?: number | null
+          tenant_id: string
+        }
+        Update: {
+          actor_id?: string
+          created_at?: string
+          endpoint?: string
+          expires_at?: string
+          id?: string
+          idempotency_key?: string
+          request_hash?: string
+          response_body?: Json | null
+          response_status?: number | null
+          tenant_id?: string
+        }
+        Relationships: []
+      }
+      vito_merge_requests: {
+        Row: {
+          created_at: string
+          id: string
+          idempotency_key: string | null
+          merged_health_ids: string[]
+          reason: string
+          requested_by: string
+          review_notes: string | null
+          reviewed_at: string | null
+          reviewed_by: string | null
+          status: string
+          survivor_health_id: string
+          tenant_id: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          idempotency_key?: string | null
+          merged_health_ids?: string[]
+          reason: string
+          requested_by: string
+          review_notes?: string | null
+          reviewed_at?: string | null
+          reviewed_by?: string | null
+          status?: string
+          survivor_health_id: string
+          tenant_id: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          idempotency_key?: string | null
+          merged_health_ids?: string[]
+          reason?: string
+          requested_by?: string
+          review_notes?: string | null
+          reviewed_at?: string | null
+          reviewed_by?: string | null
+          status?: string
+          survivor_health_id?: string
+          tenant_id?: string
+        }
+        Relationships: []
+      }
+      vito_patient_aliases: {
+        Row: {
+          alias_type: string
+          created_at: string
+          from_health_id: string
+          id: string
+          merge_request_id: string | null
+          tenant_id: string
+          to_health_id: string
+        }
+        Insert: {
+          alias_type?: string
+          created_at?: string
+          from_health_id: string
+          id?: string
+          merge_request_id?: string | null
+          tenant_id: string
+          to_health_id: string
+        }
+        Update: {
+          alias_type?: string
+          created_at?: string
+          from_health_id?: string
+          id?: string
+          merge_request_id?: string | null
+          tenant_id?: string
+          to_health_id?: string
+        }
+        Relationships: []
+      }
+      vito_patients: {
+        Row: {
+          cpid: string | null
+          created_at: string
+          created_by: string | null
+          crid: string | null
+          health_id: string
+          id: string
+          status: string
+          tenant_id: string
+          updated_at: string
+        }
+        Insert: {
+          cpid?: string | null
+          created_at?: string
+          created_by?: string | null
+          crid?: string | null
+          health_id: string
+          id?: string
+          status?: string
+          tenant_id: string
+          updated_at?: string
+        }
+        Update: {
+          cpid?: string | null
+          created_at?: string
+          created_by?: string | null
+          crid?: string | null
+          health_id?: string
+          id?: string
+          status?: string
+          tenant_id?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
       voice_calls: {
         Row: {
           answered_at: string | null
