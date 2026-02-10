@@ -96,6 +96,7 @@ import OrosAdmin from "./pages/admin/OrosAdmin";
 import PharmacyAdmin from "./pages/admin/PharmacyAdmin";
 import InventoryAdmin from "./pages/admin/InventoryAdmin";
 import MsikaCoreAdmin from "./pages/admin/MsikaCoreAdmin";
+import MsikaFlowAdmin from "./pages/admin/MsikaFlowAdmin";
 const queryClient = new QueryClient();
 
 const App = () => (
@@ -390,6 +391,8 @@ const App = () => (
             <Route path="/admin/inventory" element={<ProtectedRoute><InventoryAdmin /></ProtectedRoute>} />
             {/* MSIKA Core — Products & Services Registry */}
             <Route path="/admin/msika-core" element={<ProtectedRoute><MsikaCoreAdmin /></ProtectedRoute>} />
+            {/* MSIKA Flow — Commerce & Fulfillment */}
+            <Route path="/admin/msika-flow" element={<ProtectedRoute><MsikaFlowAdmin /></ProtectedRoute>} />
             {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
             <Route path="*" element={<NotFound />} />
           </Routes>
