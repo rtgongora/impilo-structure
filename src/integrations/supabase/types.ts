@@ -1423,6 +1423,266 @@ export type Database = {
         }
         Relationships: []
       }
+      butano_document_references: {
+        Row: {
+          content_type: string | null
+          created_at: string
+          documentreference_fhir_id: string
+          external_url: string
+          hash_sha256: string | null
+          id: string
+          subject_cpid: string
+          tenant_id: string
+        }
+        Insert: {
+          content_type?: string | null
+          created_at?: string
+          documentreference_fhir_id: string
+          external_url: string
+          hash_sha256?: string | null
+          id?: string
+          subject_cpid: string
+          tenant_id: string
+        }
+        Update: {
+          content_type?: string | null
+          created_at?: string
+          documentreference_fhir_id?: string
+          external_url?: string
+          hash_sha256?: string | null
+          id?: string
+          subject_cpid?: string
+          tenant_id?: string
+        }
+        Relationships: []
+      }
+      butano_fhir_resources: {
+        Row: {
+          created_at: string
+          effective_at: string | null
+          encounter_id: string | null
+          fhir_id: string
+          id: string
+          is_provisional: boolean
+          last_updated_at: string
+          meta_json: Json
+          resource_json: Json
+          resource_type: string
+          subject_cpid: string
+          tenant_id: string
+        }
+        Insert: {
+          created_at?: string
+          effective_at?: string | null
+          encounter_id?: string | null
+          fhir_id: string
+          id?: string
+          is_provisional?: boolean
+          last_updated_at?: string
+          meta_json?: Json
+          resource_json?: Json
+          resource_type: string
+          subject_cpid: string
+          tenant_id: string
+        }
+        Update: {
+          created_at?: string
+          effective_at?: string | null
+          encounter_id?: string | null
+          fhir_id?: string
+          id?: string
+          is_provisional?: boolean
+          last_updated_at?: string
+          meta_json?: Json
+          resource_json?: Json
+          resource_type?: string
+          subject_cpid?: string
+          tenant_id?: string
+        }
+        Relationships: []
+      }
+      butano_outbox_events: {
+        Row: {
+          created_at: string
+          event_type: string
+          id: string
+          payload_json: Json
+          published_at: string | null
+          tenant_id: string
+        }
+        Insert: {
+          created_at?: string
+          event_type: string
+          id?: string
+          payload_json?: Json
+          published_at?: string | null
+          tenant_id: string
+        }
+        Update: {
+          created_at?: string
+          event_type?: string
+          id?: string
+          payload_json?: Json
+          published_at?: string | null
+          tenant_id?: string
+        }
+        Relationships: []
+      }
+      butano_pii_violations: {
+        Row: {
+          actor_id: string | null
+          correlation_id: string | null
+          created_at: string
+          fhir_id: string | null
+          id: string
+          resource_type: string | null
+          tenant_id: string
+          violation_paths: string[]
+          violation_type: string
+        }
+        Insert: {
+          actor_id?: string | null
+          correlation_id?: string | null
+          created_at?: string
+          fhir_id?: string | null
+          id?: string
+          resource_type?: string | null
+          tenant_id: string
+          violation_paths?: string[]
+          violation_type: string
+        }
+        Update: {
+          actor_id?: string | null
+          correlation_id?: string | null
+          created_at?: string
+          fhir_id?: string | null
+          id?: string
+          resource_type?: string | null
+          tenant_id?: string
+          violation_paths?: string[]
+          violation_type?: string
+        }
+        Relationships: []
+      }
+      butano_reconciliation_queue: {
+        Row: {
+          created_at: string
+          error: string | null
+          from_ocpid: string
+          job_id: string
+          status: string
+          tenant_id: string
+          to_cpid: string
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          error?: string | null
+          from_ocpid: string
+          job_id?: string
+          status?: string
+          tenant_id: string
+          to_cpid: string
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          error?: string | null
+          from_ocpid?: string
+          job_id?: string
+          status?: string
+          tenant_id?: string
+          to_cpid?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
+      butano_subject_mappings: {
+        Row: {
+          completed_at: string | null
+          from_subject: string
+          id: string
+          requested_at: string
+          requested_by_actor_id: string
+          status: string
+          summary_json: Json | null
+          tenant_id: string
+          to_subject: string
+        }
+        Insert: {
+          completed_at?: string | null
+          from_subject: string
+          id?: string
+          requested_at?: string
+          requested_by_actor_id: string
+          status?: string
+          summary_json?: Json | null
+          tenant_id: string
+          to_subject: string
+        }
+        Update: {
+          completed_at?: string | null
+          from_subject?: string
+          id?: string
+          requested_at?: string
+          requested_by_actor_id?: string
+          status?: string
+          summary_json?: Json | null
+          tenant_id?: string
+          to_subject?: string
+        }
+        Relationships: []
+      }
+      butano_tenant_config: {
+        Row: {
+          created_at: string
+          tenant_id: string
+          updated_at: string
+          zibo_endpoint: string | null
+          zibo_validation_mode: string
+        }
+        Insert: {
+          created_at?: string
+          tenant_id: string
+          updated_at?: string
+          zibo_endpoint?: string | null
+          zibo_validation_mode?: string
+        }
+        Update: {
+          created_at?: string
+          tenant_id?: string
+          updated_at?: string
+          zibo_endpoint?: string | null
+          zibo_validation_mode?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "butano_tenant_config_tenant_id_fkey"
+            columns: ["tenant_id"]
+            isOneToOne: true
+            referencedRelation: "butano_tenants"
+            referencedColumns: ["tenant_id"]
+          },
+        ]
+      }
+      butano_tenants: {
+        Row: {
+          created_at: string
+          name: string
+          tenant_id: string
+        }
+        Insert: {
+          created_at?: string
+          name: string
+          tenant_id: string
+        }
+        Update: {
+          created_at?: string
+          name?: string
+          tenant_id?: string
+        }
+        Relationships: []
+      }
       call_ice_candidates: {
         Row: {
           candidate_data: Json
