@@ -66,11 +66,45 @@ export class InMemoryEntitlementStore implements EntitlementStoreAdapter {
 // Active Store (swappable singleton)
 // ---------------------------------------------------------------------------
 
-let activeStore: EntitlementStoreAdapter = new InMemoryEntitlementStore();
+/**
+ * Determine the default store based on environment.
+ *  - test/vitest → InMemoryEntitlementStore
+ *  - production with Supabase client available → PostgresEntitlementStore
+ *  - otherwise → InMemoryEntitlementStore + warning
+ */
+function resolveDefaultStore(): EntitlementStoreAdapter {
+  const isTest =
+    typeof process !== 'undefined' &&
+    (process.env?.NODE_ENV === 'test' ||
+      process.env?.VITEST === 'true' ||
+      typeof (globalThis as any).__vitest_worker__ !== 'undefined');
+
+  if (isTest) {
+    return new InMemoryEntitlementStore();
+  }
+
+  // In browser/production, Supabase client is always available via import
+  try {
+    const { PostgresEntitlementStore } = require('./postgresStore');
+    return new PostgresEntitlementStore();
+  } catch {
+    // Supabase client not available — fall back with warning
+  }
+
+  if (typeof console !== 'undefined' && console.warn) {
+    console.warn(
+      '[Impilo Kernel] ⚠️  offline entitlements running in MEMORY; not production-safe. ' +
+        'Set up Lovable Cloud or call setEntitlementStore() with a persistent adapter.'
+    );
+  }
+  return new InMemoryEntitlementStore();
+}
+
+let activeStore: EntitlementStoreAdapter = resolveDefaultStore();
 
 /**
  * Swap the active entitlement store adapter.
- * Use this to inject a Postgres-backed store in production.
+ * Kept for overrides in tests or special deployments.
  */
 export function setEntitlementStore(store: EntitlementStoreAdapter): void {
   activeStore = store;
