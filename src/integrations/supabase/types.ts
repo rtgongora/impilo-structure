@@ -1916,6 +1916,42 @@ export type Database = {
           },
         ]
       }
+      cap_tenant_facility_capabilities: {
+        Row: {
+          adapter_preferences: Json | null
+          facility_id: string
+          hybrid_mode_enabled: boolean
+          id: string
+          tenant_id: string
+          updated_at: string
+          uses_external_lims: boolean
+          uses_external_pacs: boolean
+          uses_external_pharmacy: boolean
+        }
+        Insert: {
+          adapter_preferences?: Json | null
+          facility_id: string
+          hybrid_mode_enabled?: boolean
+          id?: string
+          tenant_id: string
+          updated_at?: string
+          uses_external_lims?: boolean
+          uses_external_pacs?: boolean
+          uses_external_pharmacy?: boolean
+        }
+        Update: {
+          adapter_preferences?: Json | null
+          facility_id?: string
+          hybrid_mode_enabled?: boolean
+          id?: string
+          tenant_id?: string
+          updated_at?: string
+          uses_external_lims?: boolean
+          uses_external_pacs?: boolean
+          uses_external_pharmacy?: boolean
+        }
+        Relationships: []
+      }
       care_plan_items: {
         Row: {
           care_plan_id: string
@@ -16221,6 +16257,398 @@ export type Database = {
             referencedColumns: ["id"]
           },
         ]
+      }
+      oros_acknowledgements: {
+        Row: {
+          ack_at: string
+          ack_id: string
+          ack_type: string
+          actor_id: string
+          notes: string | null
+          order_id: string
+        }
+        Insert: {
+          ack_at?: string
+          ack_id?: string
+          ack_type: string
+          actor_id: string
+          notes?: string | null
+          order_id: string
+        }
+        Update: {
+          ack_at?: string
+          ack_id?: string
+          ack_type?: string
+          actor_id?: string
+          notes?: string | null
+          order_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "oros_acknowledgements_order_id_fkey"
+            columns: ["order_id"]
+            isOneToOne: false
+            referencedRelation: "oros_orders"
+            referencedColumns: ["order_id"]
+          },
+        ]
+      }
+      oros_event_log: {
+        Row: {
+          correlation_id: string
+          created_at: string
+          entity_id: string
+          entity_type: string
+          event_type: string
+          id: string
+          payload: Json | null
+          tenant_id: string
+        }
+        Insert: {
+          correlation_id: string
+          created_at?: string
+          entity_id: string
+          entity_type: string
+          event_type: string
+          id?: string
+          payload?: Json | null
+          tenant_id: string
+        }
+        Update: {
+          correlation_id?: string
+          created_at?: string
+          entity_id?: string
+          entity_type?: string
+          event_type?: string
+          id?: string
+          payload?: Json | null
+          tenant_id?: string
+        }
+        Relationships: []
+      }
+      oros_order_items: {
+        Row: {
+          body_site: Json | null
+          code: Json
+          created_at: string
+          instructions: string | null
+          item_id: string
+          metadata: Json | null
+          order_id: string
+          quantity: number
+          specimen_type: Json | null
+        }
+        Insert: {
+          body_site?: Json | null
+          code: Json
+          created_at?: string
+          instructions?: string | null
+          item_id?: string
+          metadata?: Json | null
+          order_id: string
+          quantity?: number
+          specimen_type?: Json | null
+        }
+        Update: {
+          body_site?: Json | null
+          code?: Json
+          created_at?: string
+          instructions?: string | null
+          item_id?: string
+          metadata?: Json | null
+          order_id?: string
+          quantity?: number
+          specimen_type?: Json | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "oros_order_items_order_id_fkey"
+            columns: ["order_id"]
+            isOneToOne: false
+            referencedRelation: "oros_orders"
+            referencedColumns: ["order_id"]
+          },
+        ]
+      }
+      oros_orders: {
+        Row: {
+          butano_refs: Json | null
+          created_at: string
+          external_refs: Json | null
+          facility_id: string
+          order_id: string
+          patient_cpid: string
+          placed_at: string | null
+          placed_by_actor_id: string | null
+          priority: string
+          routing_mode: string | null
+          status: string
+          tenant_id: string
+          type: string
+          zibo_order_code: Json | null
+        }
+        Insert: {
+          butano_refs?: Json | null
+          created_at?: string
+          external_refs?: Json | null
+          facility_id: string
+          order_id: string
+          patient_cpid: string
+          placed_at?: string | null
+          placed_by_actor_id?: string | null
+          priority?: string
+          routing_mode?: string | null
+          status?: string
+          tenant_id: string
+          type: string
+          zibo_order_code?: Json | null
+        }
+        Update: {
+          butano_refs?: Json | null
+          created_at?: string
+          external_refs?: Json | null
+          facility_id?: string
+          order_id?: string
+          patient_cpid?: string
+          placed_at?: string | null
+          placed_by_actor_id?: string | null
+          priority?: string
+          routing_mode?: string | null
+          status?: string
+          tenant_id?: string
+          type?: string
+          zibo_order_code?: Json | null
+        }
+        Relationships: []
+      }
+      oros_reconcile_queue: {
+        Row: {
+          confidence: number
+          created_at: string
+          external_key: string
+          facility_id: string
+          ops_notes: string | null
+          order_id: string | null
+          rec_id: string
+          status: string
+          tenant_id: string
+        }
+        Insert: {
+          confidence?: number
+          created_at?: string
+          external_key: string
+          facility_id: string
+          ops_notes?: string | null
+          order_id?: string | null
+          rec_id?: string
+          status?: string
+          tenant_id: string
+        }
+        Update: {
+          confidence?: number
+          created_at?: string
+          external_key?: string
+          facility_id?: string
+          ops_notes?: string | null
+          order_id?: string | null
+          rec_id?: string
+          status?: string
+          tenant_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "oros_reconcile_queue_order_id_fkey"
+            columns: ["order_id"]
+            isOneToOne: false
+            referencedRelation: "oros_orders"
+            referencedColumns: ["order_id"]
+          },
+        ]
+      }
+      oros_results: {
+        Row: {
+          created_at: string
+          doc_ids: Json | null
+          is_critical: boolean
+          kind: string
+          order_id: string
+          result_id: string
+          summary: Json | null
+          zibo_result_codes: Json | null
+        }
+        Insert: {
+          created_at?: string
+          doc_ids?: Json | null
+          is_critical?: boolean
+          kind: string
+          order_id: string
+          result_id?: string
+          summary?: Json | null
+          zibo_result_codes?: Json | null
+        }
+        Update: {
+          created_at?: string
+          doc_ids?: Json | null
+          is_critical?: boolean
+          kind?: string
+          order_id?: string
+          result_id?: string
+          summary?: Json | null
+          zibo_result_codes?: Json | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "oros_results_order_id_fkey"
+            columns: ["order_id"]
+            isOneToOne: false
+            referencedRelation: "oros_orders"
+            referencedColumns: ["order_id"]
+          },
+        ]
+      }
+      oros_routing: {
+        Row: {
+          adapter_mode: string
+          last_error: string | null
+          order_id: string
+          retry_count: number
+          route_id: string
+          route_target: string
+          status: string
+          updated_at: string
+        }
+        Insert: {
+          adapter_mode?: string
+          last_error?: string | null
+          order_id: string
+          retry_count?: number
+          route_id?: string
+          route_target: string
+          status?: string
+          updated_at?: string
+        }
+        Update: {
+          adapter_mode?: string
+          last_error?: string | null
+          order_id?: string
+          retry_count?: number
+          route_id?: string
+          route_target?: string
+          status?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "oros_routing_order_id_fkey"
+            columns: ["order_id"]
+            isOneToOne: false
+            referencedRelation: "oros_orders"
+            referencedColumns: ["order_id"]
+          },
+        ]
+      }
+      oros_sla_timers: {
+        Row: {
+          breached: boolean
+          id: string
+          order_id: string
+          stage: string
+          started_at: string
+        }
+        Insert: {
+          breached?: boolean
+          id?: string
+          order_id: string
+          stage: string
+          started_at?: string
+        }
+        Update: {
+          breached?: boolean
+          id?: string
+          order_id?: string
+          stage?: string
+          started_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "oros_sla_timers_order_id_fkey"
+            columns: ["order_id"]
+            isOneToOne: false
+            referencedRelation: "oros_orders"
+            referencedColumns: ["order_id"]
+          },
+        ]
+      }
+      oros_worksteps: {
+        Row: {
+          assigned_to_actor_id: string | null
+          completed_at: string | null
+          notes: string | null
+          order_id: string
+          started_at: string | null
+          status: string
+          step_type: string
+          workstep_id: string
+        }
+        Insert: {
+          assigned_to_actor_id?: string | null
+          completed_at?: string | null
+          notes?: string | null
+          order_id: string
+          started_at?: string | null
+          status?: string
+          step_type: string
+          workstep_id?: string
+        }
+        Update: {
+          assigned_to_actor_id?: string | null
+          completed_at?: string | null
+          notes?: string | null
+          order_id?: string
+          started_at?: string | null
+          status?: string
+          step_type?: string
+          workstep_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "oros_worksteps_order_id_fkey"
+            columns: ["order_id"]
+            isOneToOne: false
+            referencedRelation: "oros_orders"
+            referencedColumns: ["order_id"]
+          },
+        ]
+      }
+      oros_writeback_intents: {
+        Row: {
+          created_at: string
+          id: string
+          intent_type: string
+          order_id: string
+          payload: Json | null
+          status: string
+          target: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          intent_type: string
+          order_id: string
+          payload?: Json | null
+          status?: string
+          target: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          intent_type?: string
+          order_id?: string
+          payload?: Json | null
+          status?: string
+          target?: string
+        }
+        Relationships: []
       }
       outreach_session_costs: {
         Row: {
