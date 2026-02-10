@@ -3,50 +3,89 @@
  * 
  * Client-side request interceptor that automatically injects mandatory
  * v1.1 headers on all outbound API calls:
- * - X-Tenant-ID
- * - X-Pod-ID
- * - X-Request-ID (generated per request)
- * - X-Correlation-ID (propagated or generated)
- * 
- * This wraps the Supabase functions invoke and can be used for
- * any kernel service call.
+ * - X-Tenant-ID, X-Pod-ID, X-Request-ID, X-Correlation-ID (base)
+ * - X-Actor-Id, X-Actor-Type, X-Purpose-Of-Use (TSHEPO mandatory)
+ * - X-Device-Fingerprint (generated per install)
+ * - X-Facility-Id, X-Workspace-Id, X-Shift-Id (context)
  */
 
 import { supabase } from '@/integrations/supabase/client';
 import type { KernelRequestContext, V1_1ErrorResponse } from './types';
 
-// Default tenant/pod for prototype — in production these come from auth context
+// Default context — in production these come from auth context
 let currentTenantId = 'default-tenant';
 let currentPodId = 'national';
 let currentCorrelationId: string | null = null;
+let currentActorId = '';
+let currentActorType = 'provider';
+let currentPurposeOfUse = 'treatment';
+let currentFacilityId: string | null = null;
+let currentWorkspaceId: string | null = null;
+let currentShiftId: string | null = null;
+let deviceFingerprint: string | null = null;
 
-/**
- * Generate a UUID v4.
- */
 function generateUUID(): string {
   return crypto.randomUUID();
 }
 
 /**
- * Set the active tenant context (called after auth/workspace selection).
+ * Generate device fingerprint per TSHEPO spec:
+ * Web: hash(UA + platform + localStorage UUID)
+ * Never IMEI/serial.
  */
+function getDeviceFingerprint(): string {
+  if (deviceFingerprint) return deviceFingerprint;
+
+  // Check localStorage for stable UUID
+  let stableUuid = '';
+  try {
+    stableUuid = localStorage.getItem('impilo_device_uuid') || '';
+    if (!stableUuid) {
+      stableUuid = generateUUID();
+      localStorage.setItem('impilo_device_uuid', stableUuid);
+    }
+  } catch {
+    stableUuid = generateUUID();
+  }
+
+  // Hash: UA + platform + stable UUID
+  const raw = `${navigator.userAgent}:${navigator.platform}:${stableUuid}`;
+  // Simple hash for prototype — production uses SHA-256
+  let hash = 0;
+  for (let i = 0; i < raw.length; i++) {
+    const char = raw.charCodeAt(i);
+    hash = ((hash << 5) - hash) + char;
+    hash = hash & hash;
+  }
+  deviceFingerprint = `web-${Math.abs(hash).toString(36)}-${stableUuid.substring(0, 8)}`;
+  return deviceFingerprint;
+}
+
 export function setTenantContext(tenantId: string, podId: string): void {
   currentTenantId = tenantId;
   currentPodId = podId;
 }
 
-/**
- * Set a correlation ID for the current operation chain.
- * Call this at the start of a user-initiated action to trace across calls.
- */
+export function setActorContext(actorId: string, actorType: string = 'provider'): void {
+  currentActorId = actorId;
+  currentActorType = actorType;
+}
+
+export function setPurposeOfUse(purpose: string): void {
+  currentPurposeOfUse = purpose;
+}
+
+export function setFacilityContext(facilityId: string | null, workspaceId: string | null = null, shiftId: string | null = null): void {
+  currentFacilityId = facilityId;
+  currentWorkspaceId = workspaceId;
+  currentShiftId = shiftId;
+}
+
 export function setCorrelationId(correlationId?: string): string {
   currentCorrelationId = correlationId || generateUUID();
   return currentCorrelationId;
 }
 
-/**
- * Get the current request context with all mandatory headers.
- */
 export function getRequestContext(): KernelRequestContext {
   return {
     tenantId: currentTenantId,
@@ -57,24 +96,31 @@ export function getRequestContext(): KernelRequestContext {
 }
 
 /**
- * Build the mandatory v1.1 headers object.
+ * Build ALL mandatory v1.1 headers including TSHEPO expanded set.
  */
 export function getKernelHeaders(ctx?: KernelRequestContext): Record<string, string> {
   const context = ctx || getRequestContext();
-  return {
+  const headers: Record<string, string> = {
     'X-Tenant-ID': context.tenantId,
     'X-Pod-ID': context.podId,
     'X-Request-ID': context.requestId,
     'X-Correlation-ID': context.correlationId,
+    'X-Actor-Id': currentActorId,
+    'X-Actor-Type': currentActorType,
+    'X-Purpose-Of-Use': currentPurposeOfUse,
+    'X-Device-Fingerprint': getDeviceFingerprint(),
   };
+
+  // Context headers — only when set
+  if (currentFacilityId) headers['X-Facility-Id'] = currentFacilityId;
+  if (currentWorkspaceId) headers['X-Workspace-Id'] = currentWorkspaceId;
+  if (currentShiftId) headers['X-Shift-Id'] = currentShiftId;
+
+  return headers;
 }
 
 /**
  * Invoke a kernel edge function with all v1.1 mandatory headers injected.
- * 
- * This is the primary way to call any Ring 0 service from the client.
- * It wraps supabase.functions.invoke with header injection and
- * standard error handling.
  */
 export async function invokeKernelFunction<T = unknown>(
   functionName: string,
@@ -101,7 +147,6 @@ export async function invokeKernelFunction<T = unknown>(
   });
 
   if (error) {
-    // Try to parse as v1.1 error
     const v1_1Error: V1_1ErrorResponse = {
       error: {
         code: 'INTERNAL_ERROR',
@@ -114,7 +159,6 @@ export async function invokeKernelFunction<T = unknown>(
     return { data: null, error: v1_1Error, context: ctx };
   }
 
-  // Check if the response itself contains a v1.1 error
   if (data?.error?.code) {
     return { data: null, error: data as V1_1ErrorResponse, context: ctx };
   }
@@ -122,16 +166,6 @@ export async function invokeKernelFunction<T = unknown>(
   return { data: data as T, error: null, context: ctx };
 }
 
-/**
- * Get current tenant ID (for context display/debugging).
- */
-export function getCurrentTenantId(): string {
-  return currentTenantId;
-}
-
-/**
- * Get current pod ID.
- */
-export function getCurrentPodId(): string {
-  return currentPodId;
-}
+export function getCurrentTenantId(): string { return currentTenantId; }
+export function getCurrentPodId(): string { return currentPodId; }
+export function getCurrentActorId(): string { return currentActorId; }

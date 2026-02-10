@@ -19,7 +19,9 @@ export const corsHeaders: Record<string, string> = {
   "Access-Control-Allow-Headers":
     "authorization, x-client-info, apikey, content-type, " +
     "x-tenant-id, x-pod-id, x-request-id, x-correlation-id, " +
-    "x-facility-id, x-purpose-of-use, x-client-timeout-ms, " +
+    "x-facility-id, x-workspace-id, x-shift-id, " +
+    "x-purpose-of-use, x-actor-id, x-actor-type, " +
+    "x-device-fingerprint, x-client-timeout-ms, " +
     "idempotency-key",
 };
 

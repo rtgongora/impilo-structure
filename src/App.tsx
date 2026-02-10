@@ -62,6 +62,11 @@ import PatientSorting from "./pages/PatientSorting";
 import Discharge from "./pages/Discharge";
 import WorkspaceManagement from "./pages/WorkspaceManagement";
 import Landela from "./pages/Landela";
+import TshepoConsentAdmin from "./pages/admin/TshepoConsentAdmin";
+import TshepoAuditSearch from "./pages/admin/TshepoAuditSearch";
+import TshepoBreakGlass from "./pages/admin/TshepoBreakGlass";
+import TshepoPatientAccessHistory from "./pages/admin/TshepoPatientAccessHistory";
+import TshepoOfflineStatus from "./pages/admin/TshepoOfflineStatus";
 const queryClient = new QueryClient();
 
 const App = () => (
@@ -310,6 +315,12 @@ const App = () => (
             } />
             {/* Shared Summary Routes - publicly accessible with valid token */}
             <Route path="/shared/:type/:token" element={<SharedSummary />} />
+            {/* TSHEPO Trust Layer Admin Surfaces */}
+            <Route path="/admin/tshepo/consents" element={<ProtectedRoute><TshepoConsentAdmin /></ProtectedRoute>} />
+            <Route path="/admin/tshepo/audit" element={<ProtectedRoute><TshepoAuditSearch /></ProtectedRoute>} />
+            <Route path="/admin/tshepo/breakglass" element={<ProtectedRoute><TshepoBreakGlass /></ProtectedRoute>} />
+            <Route path="/admin/tshepo/access-history" element={<ProtectedRoute><TshepoPatientAccessHistory /></ProtectedRoute>} />
+            <Route path="/admin/tshepo/offline" element={<ProtectedRoute><TshepoOfflineStatus /></ProtectedRoute>} />
             {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
             <Route path="*" element={<NotFound />} />
           </Routes>

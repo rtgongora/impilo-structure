@@ -27690,21 +27690,30 @@ export type Database = {
           access_started_at: string
           accessed_data_classes: string[] | null
           accessed_encounter_ids: string[] | null
+          audit_ledger_id: string | null
           created_at: string
+          elevated_token_expires_at: string | null
+          elevated_token_hash: string | null
+          elevated_token_scope: Json | null
           emergency_type: string | null
           facility_id: string | null
           follow_up_assigned_to: string | null
           follow_up_completed_at: string | null
           id: string
           justification: string
+          pod_id: string
           provider_upid: string | null
           requires_follow_up: boolean | null
           review_notes: string | null
           review_outcome: string | null
+          review_queue_status: string
           review_status: string
           reviewed_at: string | null
           reviewed_by: string | null
+          step_up_completed_at: string | null
+          step_up_method: string | null
           subject_cpid: string
+          tenant_id: string
           user_id: string
           workspace_id: string | null
         }
@@ -27715,21 +27724,30 @@ export type Database = {
           access_started_at?: string
           accessed_data_classes?: string[] | null
           accessed_encounter_ids?: string[] | null
+          audit_ledger_id?: string | null
           created_at?: string
+          elevated_token_expires_at?: string | null
+          elevated_token_hash?: string | null
+          elevated_token_scope?: Json | null
           emergency_type?: string | null
           facility_id?: string | null
           follow_up_assigned_to?: string | null
           follow_up_completed_at?: string | null
           id?: string
           justification: string
+          pod_id?: string
           provider_upid?: string | null
           requires_follow_up?: boolean | null
           review_notes?: string | null
           review_outcome?: string | null
+          review_queue_status?: string
           review_status?: string
           reviewed_at?: string | null
           reviewed_by?: string | null
+          step_up_completed_at?: string | null
+          step_up_method?: string | null
           subject_cpid: string
+          tenant_id?: string
           user_id: string
           workspace_id?: string | null
         }
@@ -27740,21 +27758,30 @@ export type Database = {
           access_started_at?: string
           accessed_data_classes?: string[] | null
           accessed_encounter_ids?: string[] | null
+          audit_ledger_id?: string | null
           created_at?: string
+          elevated_token_expires_at?: string | null
+          elevated_token_hash?: string | null
+          elevated_token_scope?: Json | null
           emergency_type?: string | null
           facility_id?: string | null
           follow_up_assigned_to?: string | null
           follow_up_completed_at?: string | null
           id?: string
           justification?: string
+          pod_id?: string
           provider_upid?: string | null
           requires_follow_up?: boolean | null
           review_notes?: string | null
           review_outcome?: string | null
+          review_queue_status?: string
           review_status?: string
           reviewed_at?: string | null
           reviewed_by?: string | null
+          step_up_completed_at?: string | null
+          step_up_method?: string | null
           subject_cpid?: string
+          tenant_id?: string
           user_id?: string
           workspace_id?: string | null
         }
@@ -27952,13 +27979,18 @@ export type Database = {
           device_fingerprint: string
           device_name: string | null
           device_type: string | null
+          fingerprint_method: string
           id: string
           is_active: boolean | null
           is_trusted: boolean | null
           last_ip_address: unknown
+          last_seen_at: string | null
+          last_seen_facility_id: string | null
           last_used_at: string | null
           mfa_last_verified_at: string | null
+          reputation_score: number
           requires_mfa: boolean | null
+          tenant_id: string
           trust_established_at: string | null
           trust_established_method: string | null
           trust_level: string | null
@@ -27972,13 +28004,18 @@ export type Database = {
           device_fingerprint: string
           device_name?: string | null
           device_type?: string | null
+          fingerprint_method?: string
           id?: string
           is_active?: boolean | null
           is_trusted?: boolean | null
           last_ip_address?: unknown
+          last_seen_at?: string | null
+          last_seen_facility_id?: string | null
           last_used_at?: string | null
           mfa_last_verified_at?: string | null
+          reputation_score?: number
           requires_mfa?: boolean | null
+          tenant_id?: string
           trust_established_at?: string | null
           trust_established_method?: string | null
           trust_level?: string | null
@@ -27992,13 +28029,18 @@ export type Database = {
           device_fingerprint?: string
           device_name?: string | null
           device_type?: string | null
+          fingerprint_method?: string
           id?: string
           is_active?: boolean | null
           is_trusted?: boolean | null
           last_ip_address?: unknown
+          last_seen_at?: string | null
+          last_seen_facility_id?: string | null
           last_used_at?: string | null
           mfa_last_verified_at?: string | null
+          reputation_score?: number
           requires_mfa?: boolean | null
+          tenant_id?: string
           trust_established_at?: string | null
           trust_established_method?: string | null
           trust_level?: string | null
@@ -28010,64 +28052,85 @@ export type Database = {
       trust_layer_identity_mapping: {
         Row: {
           cpid: string
+          cpid_algorithm: string | null
+          cpid_deterministic_seed: string | null
           created_at: string
           crid: string
           health_id: string
           id: string
+          identity_status: string
           impilo_id: string
           issued_at: string
           issued_at_facility_id: string | null
           issued_by: string | null
+          last_resolved_at: string | null
           memorable_phid: string | null
           merged_at: string | null
           merged_into_health_id: string | null
+          pod_id: string
           previous_cpid: string | null
           previous_impilo_id: string | null
+          resolution_count: number
           rotated_at: string | null
           rotation_reason: string | null
           status: string
+          tenant_id: string
           updated_at: string
           version: number
         }
         Insert: {
           cpid: string
+          cpid_algorithm?: string | null
+          cpid_deterministic_seed?: string | null
           created_at?: string
           crid: string
           health_id: string
           id?: string
+          identity_status?: string
           impilo_id: string
           issued_at?: string
           issued_at_facility_id?: string | null
           issued_by?: string | null
+          last_resolved_at?: string | null
           memorable_phid?: string | null
           merged_at?: string | null
           merged_into_health_id?: string | null
+          pod_id?: string
           previous_cpid?: string | null
           previous_impilo_id?: string | null
+          resolution_count?: number
           rotated_at?: string | null
           rotation_reason?: string | null
           status?: string
+          tenant_id?: string
           updated_at?: string
           version?: number
         }
         Update: {
           cpid?: string
+          cpid_algorithm?: string | null
+          cpid_deterministic_seed?: string | null
           created_at?: string
           crid?: string
           health_id?: string
           id?: string
+          identity_status?: string
           impilo_id?: string
           issued_at?: string
           issued_at_facility_id?: string | null
           issued_by?: string | null
+          last_resolved_at?: string | null
           memorable_phid?: string | null
           merged_at?: string | null
           merged_into_health_id?: string | null
+          pod_id?: string
           previous_cpid?: string | null
           previous_impilo_id?: string | null
+          resolution_count?: number
           rotated_at?: string | null
           rotation_reason?: string | null
           status?: string
+          tenant_id?: string
           updated_at?: string
           version?: number
         }
@@ -28089,11 +28152,18 @@ export type Database = {
           expires_at: string | null
           id: string
           identity_assurance_level: string | null
+          link_ref_encrypted: string | null
+          link_ref_hash: string | null
           linked_at: string
           mosip_link_status: string
           mosip_link_token: string
+          proofing_assurance_level: string | null
+          proofing_completed_at: string | null
+          proofing_method: string | null
+          proofing_status: string
           revocation_reason: string | null
           revoked_at: string | null
+          tenant_id: string
           updated_at: string
           verification_method: string | null
           verification_timestamp: string | null
@@ -28107,11 +28177,18 @@ export type Database = {
           expires_at?: string | null
           id?: string
           identity_assurance_level?: string | null
+          link_ref_encrypted?: string | null
+          link_ref_hash?: string | null
           linked_at?: string
           mosip_link_status?: string
           mosip_link_token: string
+          proofing_assurance_level?: string | null
+          proofing_completed_at?: string | null
+          proofing_method?: string | null
+          proofing_status?: string
           revocation_reason?: string | null
           revoked_at?: string | null
+          tenant_id?: string
           updated_at?: string
           verification_method?: string | null
           verification_timestamp?: string | null
@@ -28125,11 +28202,18 @@ export type Database = {
           expires_at?: string | null
           id?: string
           identity_assurance_level?: string | null
+          link_ref_encrypted?: string | null
+          link_ref_hash?: string | null
           linked_at?: string
           mosip_link_status?: string
           mosip_link_token?: string
+          proofing_assurance_level?: string | null
+          proofing_completed_at?: string | null
+          proofing_method?: string | null
+          proofing_status?: string
           revocation_reason?: string | null
           revoked_at?: string | null
+          tenant_id?: string
           updated_at?: string
           verification_method?: string | null
           verification_timestamp?: string | null
@@ -28148,6 +28232,7 @@ export type Database = {
       }
       trust_layer_offline_cpid: {
         Row: {
+          conflict_resolution: string | null
           created_at: string
           generated_at: string
           generating_device_id: string
@@ -28158,14 +28243,19 @@ export type Database = {
           merge_method: string | null
           merge_notes: string | null
           o_cpid: string
+          pod_id: string
           reconciled_at: string | null
           reconciled_by: string | null
+          reconciled_cpid: string | null
           reconciled_to_cpid: string | null
           reconciled_to_health_id: string | null
+          reconciliation_notes: string | null
           status: string
           sync_attempted_at: string | null
+          tenant_id: string
         }
         Insert: {
+          conflict_resolution?: string | null
           created_at?: string
           generated_at?: string
           generating_device_id: string
@@ -28176,14 +28266,19 @@ export type Database = {
           merge_method?: string | null
           merge_notes?: string | null
           o_cpid: string
+          pod_id?: string
           reconciled_at?: string | null
           reconciled_by?: string | null
+          reconciled_cpid?: string | null
           reconciled_to_cpid?: string | null
           reconciled_to_health_id?: string | null
+          reconciliation_notes?: string | null
           status?: string
           sync_attempted_at?: string | null
+          tenant_id?: string
         }
         Update: {
+          conflict_resolution?: string | null
           created_at?: string
           generated_at?: string
           generating_device_id?: string
@@ -28194,12 +28289,16 @@ export type Database = {
           merge_method?: string | null
           merge_notes?: string | null
           o_cpid?: string
+          pod_id?: string
           reconciled_at?: string | null
           reconciled_by?: string | null
+          reconciled_cpid?: string | null
           reconciled_to_cpid?: string | null
           reconciled_to_health_id?: string | null
+          reconciliation_notes?: string | null
           status?: string
           sync_attempted_at?: string | null
+          tenant_id?: string
         }
         Relationships: [
           {
@@ -28213,7 +28312,9 @@ export type Database = {
       }
       trust_layer_offline_tokens: {
         Row: {
+          actions_used: number
           can_cache_identity_mappings: boolean | null
+          capability_scope: Json
           created_at: string
           device_id: string | null
           expires_at: string
@@ -28224,16 +28325,23 @@ export type Database = {
           identity_cache_ttl_hours: number | null
           issued_at: string
           last_used_at: string | null
+          max_actions: number
           max_offline_duration_hours: number | null
+          pod_id: string
+          reconciled: boolean
+          reconciled_at: string | null
           revocation_reason: string | null
           revoked_at: string | null
           status: string
+          tenant_id: string
           token_hash: string
           user_id: string
           workspace_id: string | null
         }
         Insert: {
+          actions_used?: number
           can_cache_identity_mappings?: boolean | null
+          capability_scope?: Json
           created_at?: string
           device_id?: string | null
           expires_at: string
@@ -28244,16 +28352,23 @@ export type Database = {
           identity_cache_ttl_hours?: number | null
           issued_at?: string
           last_used_at?: string | null
+          max_actions?: number
           max_offline_duration_hours?: number | null
+          pod_id?: string
+          reconciled?: boolean
+          reconciled_at?: string | null
           revocation_reason?: string | null
           revoked_at?: string | null
           status?: string
+          tenant_id?: string
           token_hash: string
           user_id: string
           workspace_id?: string | null
         }
         Update: {
+          actions_used?: number
           can_cache_identity_mappings?: boolean | null
+          capability_scope?: Json
           created_at?: string
           device_id?: string | null
           expires_at?: string
@@ -28264,10 +28379,15 @@ export type Database = {
           identity_cache_ttl_hours?: number | null
           issued_at?: string
           last_used_at?: string | null
+          max_actions?: number
           max_offline_duration_hours?: number | null
+          pod_id?: string
+          reconciled?: boolean
+          reconciled_at?: string | null
           revocation_reason?: string | null
           revoked_at?: string | null
           status?: string
+          tenant_id?: string
           token_hash?: string
           user_id?: string
           workspace_id?: string | null
@@ -28550,18 +28670,25 @@ export type Database = {
           activated_at: string | null
           created_at: string
           created_by: string | null
+          deactivated_at: string | null
           expires_at: string | null
           hsm_key_id: string | null
           id: string
+          is_active: boolean
+          jwks_kid: string | null
           key_algorithm: string
           key_id: string
           key_purpose: string
           key_thumbprint: string
+          key_usage: string
           public_key_pem: string
           retired_at: string | null
+          rotated_from_key_id: string | null
           rotates_to_key_id: string | null
+          rotation_schedule_hours: number
           rotation_scheduled_at: string | null
           status: string
+          tenant_id: string
           updated_at: string
           vault_key_reference: string | null
         }
@@ -28569,18 +28696,25 @@ export type Database = {
           activated_at?: string | null
           created_at?: string
           created_by?: string | null
+          deactivated_at?: string | null
           expires_at?: string | null
           hsm_key_id?: string | null
           id?: string
+          is_active?: boolean
+          jwks_kid?: string | null
           key_algorithm: string
           key_id: string
           key_purpose: string
           key_thumbprint: string
+          key_usage?: string
           public_key_pem: string
           retired_at?: string | null
+          rotated_from_key_id?: string | null
           rotates_to_key_id?: string | null
+          rotation_schedule_hours?: number
           rotation_scheduled_at?: string | null
           status?: string
+          tenant_id?: string
           updated_at?: string
           vault_key_reference?: string | null
         }
@@ -28588,18 +28722,25 @@ export type Database = {
           activated_at?: string | null
           created_at?: string
           created_by?: string | null
+          deactivated_at?: string | null
           expires_at?: string | null
           hsm_key_id?: string | null
           id?: string
+          is_active?: boolean
+          jwks_kid?: string | null
           key_algorithm?: string
           key_id?: string
           key_purpose?: string
           key_thumbprint?: string
+          key_usage?: string
           public_key_pem?: string
           retired_at?: string | null
+          rotated_from_key_id?: string | null
           rotates_to_key_id?: string | null
+          rotation_schedule_hours?: number
           rotation_scheduled_at?: string | null
           status?: string
+          tenant_id?: string
           updated_at?: string
           vault_key_reference?: string | null
         }
@@ -28641,6 +28782,500 @@ export type Database = {
           last_used_at?: string
           user_agent?: string | null
           user_id?: string
+        }
+        Relationships: []
+      }
+      tshepo_audit_ledger: {
+        Row: {
+          action: string
+          actor_assurance_level: string | null
+          actor_facility_id: string | null
+          actor_id: string
+          actor_roles: string[]
+          actor_type: string
+          audit_id: string
+          chain_sequence: number
+          correlation_id: string
+          created_at: string
+          decision: string
+          id: string
+          occurred_at: string
+          pod_id: string
+          policy_version: string | null
+          prev_hash: string | null
+          reason_codes: string[]
+          record_hash: string
+          request_id: string
+          resource_id: string | null
+          resource_metadata: Json | null
+          resource_type: string | null
+          tenant_id: string
+        }
+        Insert: {
+          action: string
+          actor_assurance_level?: string | null
+          actor_facility_id?: string | null
+          actor_id: string
+          actor_roles?: string[]
+          actor_type?: string
+          audit_id: string
+          chain_sequence: number
+          correlation_id: string
+          created_at?: string
+          decision: string
+          id?: string
+          occurred_at: string
+          pod_id: string
+          policy_version?: string | null
+          prev_hash?: string | null
+          reason_codes?: string[]
+          record_hash: string
+          request_id: string
+          resource_id?: string | null
+          resource_metadata?: Json | null
+          resource_type?: string | null
+          tenant_id: string
+        }
+        Update: {
+          action?: string
+          actor_assurance_level?: string | null
+          actor_facility_id?: string | null
+          actor_id?: string
+          actor_roles?: string[]
+          actor_type?: string
+          audit_id?: string
+          chain_sequence?: number
+          correlation_id?: string
+          created_at?: string
+          decision?: string
+          id?: string
+          occurred_at?: string
+          pod_id?: string
+          policy_version?: string | null
+          prev_hash?: string | null
+          reason_codes?: string[]
+          record_hash?: string
+          request_id?: string
+          resource_id?: string | null
+          resource_metadata?: Json | null
+          resource_type?: string | null
+          tenant_id?: string
+        }
+        Relationships: []
+      }
+      tshepo_authz_decisions: {
+        Row: {
+          action: string
+          actor_id: string
+          actor_roles: string[]
+          actor_type: string
+          assurance_level: string | null
+          consent_decision: string | null
+          consent_evaluated: boolean
+          consent_id: string | null
+          correlation_id: string
+          decided_at: string
+          decision: string
+          device_fingerprint: string | null
+          facility_id: string | null
+          id: string
+          obligations: Json
+          pod_id: string
+          policy_bundle_version: string | null
+          purpose_of_use: string | null
+          reason_codes: string[]
+          request_id: string
+          resource_id: string | null
+          resource_type: string | null
+          shift_id: string | null
+          tenant_id: string
+          ttl_seconds: number
+          workspace_id: string | null
+        }
+        Insert: {
+          action: string
+          actor_id: string
+          actor_roles?: string[]
+          actor_type: string
+          assurance_level?: string | null
+          consent_decision?: string | null
+          consent_evaluated?: boolean
+          consent_id?: string | null
+          correlation_id: string
+          decided_at?: string
+          decision: string
+          device_fingerprint?: string | null
+          facility_id?: string | null
+          id?: string
+          obligations?: Json
+          pod_id: string
+          policy_bundle_version?: string | null
+          purpose_of_use?: string | null
+          reason_codes?: string[]
+          request_id: string
+          resource_id?: string | null
+          resource_type?: string | null
+          shift_id?: string | null
+          tenant_id: string
+          ttl_seconds?: number
+          workspace_id?: string | null
+        }
+        Update: {
+          action?: string
+          actor_id?: string
+          actor_roles?: string[]
+          actor_type?: string
+          assurance_level?: string | null
+          consent_decision?: string | null
+          consent_evaluated?: boolean
+          consent_id?: string | null
+          correlation_id?: string
+          decided_at?: string
+          decision?: string
+          device_fingerprint?: string | null
+          facility_id?: string | null
+          id?: string
+          obligations?: Json
+          pod_id?: string
+          policy_bundle_version?: string | null
+          purpose_of_use?: string | null
+          reason_codes?: string[]
+          request_id?: string
+          resource_id?: string | null
+          resource_type?: string | null
+          shift_id?: string | null
+          tenant_id?: string
+          ttl_seconds?: number
+          workspace_id?: string | null
+        }
+        Relationships: []
+      }
+      tshepo_consents: {
+        Row: {
+          action_codes: string[]
+          created_at: string
+          data_classes: string[]
+          delegated_from_consent_id: string | null
+          delegation_allowed: boolean
+          delegation_depth: number
+          fhir_id: string
+          fhir_resource: Json
+          grantee_ref: string | null
+          grantee_type: string | null
+          grantor_ref: string
+          grantor_type: string
+          id: string
+          patient_cpid: string
+          period_end: string | null
+          period_start: string | null
+          previous_version_id: string | null
+          provision_type: string
+          purpose_of_use: string[]
+          revocation_reason: string | null
+          revoked_at: string | null
+          revoked_by: string | null
+          scope_code: string
+          status: string
+          tenant_id: string
+          updated_at: string
+          version: number
+        }
+        Insert: {
+          action_codes?: string[]
+          created_at?: string
+          data_classes?: string[]
+          delegated_from_consent_id?: string | null
+          delegation_allowed?: boolean
+          delegation_depth?: number
+          fhir_id: string
+          fhir_resource: Json
+          grantee_ref?: string | null
+          grantee_type?: string | null
+          grantor_ref: string
+          grantor_type?: string
+          id?: string
+          patient_cpid: string
+          period_end?: string | null
+          period_start?: string | null
+          previous_version_id?: string | null
+          provision_type?: string
+          purpose_of_use?: string[]
+          revocation_reason?: string | null
+          revoked_at?: string | null
+          revoked_by?: string | null
+          scope_code?: string
+          status?: string
+          tenant_id: string
+          updated_at?: string
+          version?: number
+        }
+        Update: {
+          action_codes?: string[]
+          created_at?: string
+          data_classes?: string[]
+          delegated_from_consent_id?: string | null
+          delegation_allowed?: boolean
+          delegation_depth?: number
+          fhir_id?: string
+          fhir_resource?: Json
+          grantee_ref?: string | null
+          grantee_type?: string | null
+          grantor_ref?: string
+          grantor_type?: string
+          id?: string
+          patient_cpid?: string
+          period_end?: string | null
+          period_start?: string | null
+          previous_version_id?: string | null
+          provision_type?: string
+          purpose_of_use?: string[]
+          revocation_reason?: string | null
+          revoked_at?: string | null
+          revoked_by?: string | null
+          scope_code?: string
+          status?: string
+          tenant_id?: string
+          updated_at?: string
+          version?: number
+        }
+        Relationships: [
+          {
+            foreignKeyName: "tshepo_consents_delegated_from_consent_id_fkey"
+            columns: ["delegated_from_consent_id"]
+            isOneToOne: false
+            referencedRelation: "tshepo_consents"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "tshepo_consents_previous_version_id_fkey"
+            columns: ["previous_version_id"]
+            isOneToOne: false
+            referencedRelation: "tshepo_consents"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      tshepo_jwks_cache: {
+        Row: {
+          expires_at: string
+          generated_at: string
+          id: string
+          jwks_document: Json
+          key_count: number
+          tenant_id: string
+        }
+        Insert: {
+          expires_at: string
+          generated_at?: string
+          id?: string
+          jwks_document: Json
+          key_count?: number
+          tenant_id: string
+        }
+        Update: {
+          expires_at?: string
+          generated_at?: string
+          id?: string
+          jwks_document?: Json
+          key_count?: number
+          tenant_id?: string
+        }
+        Relationships: []
+      }
+      tshepo_patient_access_log: {
+        Row: {
+          accessor_ref: string
+          accessor_role: string | null
+          accessor_type: string
+          action: string
+          audit_ledger_id: string | null
+          decision: string
+          facility_ref: string | null
+          id: string
+          is_break_glass: boolean
+          is_redacted: boolean
+          occurred_at: string
+          patient_cpid: string
+          purpose_of_use: string | null
+          redaction_reason: string | null
+          resource_summary: string | null
+          resource_type: string | null
+          tenant_id: string
+        }
+        Insert: {
+          accessor_ref: string
+          accessor_role?: string | null
+          accessor_type: string
+          action: string
+          audit_ledger_id?: string | null
+          decision: string
+          facility_ref?: string | null
+          id?: string
+          is_break_glass?: boolean
+          is_redacted?: boolean
+          occurred_at?: string
+          patient_cpid: string
+          purpose_of_use?: string | null
+          redaction_reason?: string | null
+          resource_summary?: string | null
+          resource_type?: string | null
+          tenant_id: string
+        }
+        Update: {
+          accessor_ref?: string
+          accessor_role?: string | null
+          accessor_type?: string
+          action?: string
+          audit_ledger_id?: string | null
+          decision?: string
+          facility_ref?: string | null
+          id?: string
+          is_break_glass?: boolean
+          is_redacted?: boolean
+          occurred_at?: string
+          patient_cpid?: string
+          purpose_of_use?: string | null
+          redaction_reason?: string | null
+          resource_summary?: string | null
+          resource_type?: string | null
+          tenant_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "tshepo_patient_access_log_audit_ledger_id_fkey"
+            columns: ["audit_ledger_id"]
+            isOneToOne: false
+            referencedRelation: "tshepo_audit_ledger"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      tshepo_policy_bundles: {
+        Row: {
+          activated_at: string | null
+          activated_by: string | null
+          bundle_version: string
+          created_at: string
+          deactivated_at: string | null
+          id: string
+          is_active: boolean
+          policy_language: string
+          rules: Json
+          tenant_id: string
+        }
+        Insert: {
+          activated_at?: string | null
+          activated_by?: string | null
+          bundle_version: string
+          created_at?: string
+          deactivated_at?: string | null
+          id?: string
+          is_active?: boolean
+          policy_language?: string
+          rules?: Json
+          tenant_id: string
+        }
+        Update: {
+          activated_at?: string | null
+          activated_by?: string | null
+          bundle_version?: string
+          created_at?: string
+          deactivated_at?: string | null
+          id?: string
+          is_active?: boolean
+          policy_language?: string
+          rules?: Json
+          tenant_id?: string
+        }
+        Relationships: []
+      }
+      tshepo_sessions: {
+        Row: {
+          actor_id: string
+          actor_type: string
+          assurance_level: string
+          created_at: string
+          device_fingerprint: string | null
+          device_type: string | null
+          end_reason: string | null
+          ended_at: string | null
+          expires_at: string
+          facility_id: string | null
+          id: string
+          idp_session_id: string | null
+          idp_source: string
+          ip_address: unknown
+          is_offline: boolean
+          last_activity_at: string
+          offline_capability_token_hash: string | null
+          pod_id: string
+          purpose_of_use: string | null
+          roles: string[]
+          session_token_hash: string
+          shift_id: string | null
+          started_at: string
+          step_up_completed_at: string | null
+          step_up_method: string | null
+          tenant_id: string
+          workspace_id: string | null
+        }
+        Insert: {
+          actor_id: string
+          actor_type?: string
+          assurance_level?: string
+          created_at?: string
+          device_fingerprint?: string | null
+          device_type?: string | null
+          end_reason?: string | null
+          ended_at?: string | null
+          expires_at: string
+          facility_id?: string | null
+          id?: string
+          idp_session_id?: string | null
+          idp_source?: string
+          ip_address?: unknown
+          is_offline?: boolean
+          last_activity_at?: string
+          offline_capability_token_hash?: string | null
+          pod_id: string
+          purpose_of_use?: string | null
+          roles?: string[]
+          session_token_hash: string
+          shift_id?: string | null
+          started_at?: string
+          step_up_completed_at?: string | null
+          step_up_method?: string | null
+          tenant_id: string
+          workspace_id?: string | null
+        }
+        Update: {
+          actor_id?: string
+          actor_type?: string
+          assurance_level?: string
+          created_at?: string
+          device_fingerprint?: string | null
+          device_type?: string | null
+          end_reason?: string | null
+          ended_at?: string | null
+          expires_at?: string
+          facility_id?: string | null
+          id?: string
+          idp_session_id?: string | null
+          idp_source?: string
+          ip_address?: unknown
+          is_offline?: boolean
+          last_activity_at?: string
+          offline_capability_token_hash?: string | null
+          pod_id?: string
+          purpose_of_use?: string | null
+          roles?: string[]
+          session_token_hash?: string
+          shift_id?: string | null
+          started_at?: string
+          step_up_completed_at?: string | null
+          step_up_method?: string | null
+          tenant_id?: string
+          workspace_id?: string | null
         }
         Relationships: []
       }
@@ -31737,6 +32372,14 @@ export type Database = {
           crid: string
           status: string
         }[]
+      }
+      tshepo_last_audit_hash: {
+        Args: { p_pod_id: string; p_tenant_id: string }
+        Returns: string
+      }
+      tshepo_next_chain_sequence: {
+        Args: { p_pod_id: string; p_tenant_id: string }
+        Returns: number
       }
       update_account_balances: {
         Args: { p_account_id: string }
