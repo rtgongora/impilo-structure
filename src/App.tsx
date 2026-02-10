@@ -93,6 +93,7 @@ import PctWorkTab from "./pages/admin/PctWorkTab";
 import PctControlTower from "./pages/admin/PctControlTower";
 import ZiboAdmin from "./pages/admin/ZiboAdmin";
 import OrosAdmin from "./pages/admin/OrosAdmin";
+import PharmacyAdmin from "./pages/admin/PharmacyAdmin";
 const queryClient = new QueryClient();
 
 const App = () => (
@@ -381,6 +382,8 @@ const App = () => (
             <Route path="/admin/zibo" element={<ProtectedRoute><ZiboAdmin /></ProtectedRoute>} />
             {/* OROS Orders & Results */}
             <Route path="/admin/oros" element={<ProtectedRoute><OrosAdmin /></ProtectedRoute>} />
+            {/* Pharmacy Service */}
+            <Route path="/admin/pharmacy" element={<ProtectedRoute><PharmacyAdmin /></ProtectedRoute>} />
             {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
             <Route path="*" element={<NotFound />} />
           </Routes>
