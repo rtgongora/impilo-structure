@@ -65,3 +65,37 @@ export {
   type VitoMergeRequest,
   type VitoCommandResult,
 } from './vito';
+
+// Wave 3 — TSHEPO PDP
+export {
+  type PDPSubject,
+  type PDPDecideRequest,
+  type PDPDecideResponse,
+  type PDPDecisionValue,
+  type PDPObligation,
+  evaluatePolicy,
+  pdpDecide,
+} from './tshepo';
+
+// Wave 3 — Consistency
+export {
+  decidePdp,
+  enforceClassAOrThrow,
+  type ClassAEnforcementInput,
+  type ClassAEnforcementResult,
+} from './consistency';
+
+// Wave 3 — MSIKA Commands
+export {
+  msikaTariffUpdate,
+  getTariff,
+  clearTariffStore,
+  type TariffUpdateRequest,
+  type MsikaCommandResult,
+} from './msika';
+
+// Wave 3 — Security / Actor
+export {
+  getActorFromHeaders,
+  type ActorHeaders,
+} from './security';
