@@ -1,22 +1,24 @@
 /**
- * Impilo vNext v1.1 — Offline Entitlement Crypto (KMS Abstraction)
+ * Impilo vNext v1.1 — Offline Entitlement Crypto (Ed25519 KMS Abstraction)
  *
- * Prototype: uses Web Crypto Ed25519-like signing via ECDSA P-256 (Ed25519
- * not universally available in Web Crypto). Production: HSM/KMS-backed Ed25519.
- *
+ * Uses Ed25519 signing via @noble/curves (pure JS, works everywhere).
  * Supports key rotation via kid (key ID).
+ *
+ * Production: HSM/KMS-backed Ed25519 via the same interface.
  */
 
+// @ts-ignore — @noble/curves exports use .js extensions; Vite resolves correctly
+import { ed25519 } from '@noble/curves/ed25519.js';
 import type { EntitlementPayload } from './types';
 
 // ---------------------------------------------------------------------------
-// Key Store (in-memory prototype; production: Vault/KMS)
+// Key Store (in-memory prototype; production: Vault/KMS/DevFileKms)
 // ---------------------------------------------------------------------------
 
 interface KeyPair {
   kid: string;
-  privateKey: CryptoKey;
-  publicKey: CryptoKey;
+  privateKey: Uint8Array;
+  publicKey: Uint8Array;
   createdAt: string;
 }
 
@@ -24,22 +26,19 @@ const keyStore = new Map<string, KeyPair>();
 let activeKid: string | null = null;
 
 /**
- * Generate a new signing key pair.
+ * Generate a new Ed25519 signing key pair.
  * Production: this would call HSM/KMS to generate Ed25519 key.
  */
 export async function generateSigningKey(kid?: string): Promise<string> {
   const keyId = kid || `key-${Date.now()}-${Math.random().toString(36).slice(2, 8)}`;
 
-  const keyPair = await crypto.subtle.generateKey(
-    { name: 'ECDSA', namedCurve: 'P-256' },
-    false,
-    ['sign', 'verify']
-  );
+  const privateKey = ed25519.utils.randomSecretKey();
+  const publicKey = ed25519.getPublicKey(privateKey);
 
   keyStore.set(keyId, {
     kid: keyId,
-    privateKey: keyPair.privateKey,
-    publicKey: keyPair.publicKey,
+    privateKey,
+    publicKey,
     createdAt: new Date().toISOString(),
   });
 
@@ -75,34 +74,37 @@ export function hasKey(kid: string): boolean {
 }
 
 /**
- * Sign an entitlement payload and return a base64-encoded token.
+ * Sign an entitlement payload with Ed25519 and return a base64-encoded token.
  * Format: base64(payload).base64(signature).kid
+ *
+ * The payload MUST contain alg: "Ed25519" and the kid.
  */
 export async function signEntitlement(payload: EntitlementPayload): Promise<string> {
   const kid = payload.kid;
-  const keyPair = keyStore.get(kid);
-  if (!keyPair) {
+  const kp = keyStore.get(kid);
+  if (!kp) {
     throw new Error(`Signing key ${kid} not found.`);
+  }
+
+  if (payload.alg !== 'Ed25519') {
+    throw new Error('Entitlement payload must specify alg: "Ed25519".');
   }
 
   const payloadJson = JSON.stringify(payload);
   const payloadBytes = new TextEncoder().encode(payloadJson);
 
-  const signature = await crypto.subtle.sign(
-    { name: 'ECDSA', hash: 'SHA-256' },
-    keyPair.privateKey,
-    payloadBytes
-  );
+  const signature = ed25519.sign(payloadBytes, kp.privateKey);
 
   const payloadB64 = btoa(payloadJson);
-  const sigB64 = btoa(String.fromCharCode(...new Uint8Array(signature)));
+  const sigB64 = btoa(String.fromCharCode(...signature));
 
   return `${payloadB64}.${sigB64}.${kid}`;
 }
 
 /**
- * Verify an entitlement token and extract payload.
+ * Verify an entitlement token (Ed25519) and extract payload.
  * Returns the payload if valid, null if invalid.
+ * Rejects any non-Ed25519 algorithm.
  */
 export async function verifyEntitlementSignature(
   token: string
@@ -113,8 +115,8 @@ export async function verifyEntitlementSignature(
   }
 
   const [payloadB64, sigB64, kid] = parts;
-  const keyPair = keyStore.get(kid);
-  if (!keyPair) {
+  const kp = keyStore.get(kid);
+  if (!kp) {
     return { valid: false, payload: null, kid };
   }
 
@@ -123,18 +125,19 @@ export async function verifyEntitlementSignature(
     const payloadBytes = new TextEncoder().encode(payloadJson);
     const sigBytes = Uint8Array.from(atob(sigB64), c => c.charCodeAt(0));
 
-    const valid = await crypto.subtle.verify(
-      { name: 'ECDSA', hash: 'SHA-256' },
-      keyPair.publicKey,
-      sigBytes,
-      payloadBytes
-    );
+    const valid = ed25519.verify(sigBytes, payloadBytes, kp.publicKey);
 
     if (!valid) {
       return { valid: false, payload: null, kid };
     }
 
     const payload = JSON.parse(payloadJson) as EntitlementPayload;
+
+    // Reject non-Ed25519 algorithms
+    if (payload.alg !== 'Ed25519') {
+      return { valid: false, payload: null, kid };
+    }
+
     return { valid: true, payload, kid };
   } catch {
     return { valid: false, payload: null, kid };

@@ -1,7 +1,7 @@
 /**
  * Impilo vNext v1.1 — Wave 4 Tests
  *
- * Offline Entitlements + BUTANO Events
+ * Offline Entitlements (Ed25519) + BUTANO Events
  *
  * Run: npx vitest run src/lib/kernel/wave4/__tests__/wave4.test.ts
  */
@@ -12,11 +12,15 @@ import { describe, it, expect, beforeEach } from 'vitest';
 import {
   issueEntitlement,
   verifyEntitlementOffline,
+  revokeEntitlement,
+  consumeEntitlement,
   generateSigningKey,
   clearKeyStore,
   clearEntitlementStore,
   getEntitlement,
   updateEntitlementStatus,
+  setEntitlementStore,
+  InMemoryEntitlementStore,
   ENTITLEMENT_ERRORS,
 } from '../../offlineEntitlements';
 import type { EntitlementIssuanceRequest } from '../../offlineEntitlements';
@@ -63,7 +67,7 @@ function pastDate(hoursAgo: number): string {
 // Wave 4 Tests
 // ---------------------------------------------------------------------------
 
-describe('Wave 4 — Offline Entitlements + BUTANO Events', () => {
+describe('Wave 4 — Offline Entitlements (Ed25519) + BUTANO Events', () => {
   beforeEach(async () => {
     clearEventStore();
     clearAuditLedger();
@@ -73,11 +77,11 @@ describe('Wave 4 — Offline Entitlements + BUTANO Events', () => {
   });
 
   // =========================================================================
-  // Offline Entitlements — Issuance
+  // Offline Entitlements — Issuance (Ed25519)
   // =========================================================================
 
-  describe('Offline Entitlement Issuance', () => {
-    it('should issue entitlement when PDP allows', async () => {
+  describe('Offline Entitlement Issuance (Ed25519)', () => {
+    it('should issue entitlement with Ed25519 algorithm', async () => {
       const ctx = makeCtx();
       const request: EntitlementIssuanceRequest = {
         device_id: 'device-001',
@@ -94,11 +98,33 @@ describe('Wave 4 — Offline Entitlements + BUTANO Events', () => {
       expect(result.entitlement_id).toBeTruthy();
       expect(result.policy_version).toBeTruthy();
 
-      // Stored in store
+      // Verify stored record has alg: Ed25519
       const stored = getEntitlement(result.entitlement_id);
       expect(stored).not.toBeNull();
       expect(stored!.status).toBe('ACTIVE');
+      expect(stored!.alg).toBe('Ed25519');
       expect(stored!.scope).toEqual(['clinical.capture.vitals']);
+    });
+
+    it('should include alg=Ed25519 in signed token payload', async () => {
+      const ctx = makeCtx();
+      const request: EntitlementIssuanceRequest = {
+        device_id: 'device-alg-1',
+        subject_id: 'prid-clinician-alg',
+        scope: ['clinical.capture.vitals'],
+        valid_from: new Date().toISOString(),
+        valid_to: futureDate(2),
+      };
+
+      const result = await issueEntitlement(ctx, request);
+
+      // Parse the token to verify alg field
+      const parts = result.entitlement_jwt.split('.');
+      expect(parts.length).toBe(3);
+      const payloadJson = atob(parts[0]);
+      const payload = JSON.parse(payloadJson);
+      expect(payload.alg).toBe('Ed25519');
+      expect(payload.kid).toBe('test-key-1');
     });
 
     it('should write audit record on issuance', async () => {
@@ -113,12 +139,9 @@ describe('Wave 4 — Offline Entitlements + BUTANO Events', () => {
 
       await issueEntitlement(ctx, request);
 
-      // Check audit chain
       const chain = getAuditChain(ctx.tenantId, ctx.podId);
-      // At least 2 records: 1 from PDP decision + 1 from entitlement issuance
       expect(chain.length).toBeGreaterThanOrEqual(2);
-      
-      // Find the entitlement issuance audit
+
       const issuanceAudit = chain.find(r => r.action === 'offline.entitlement.issued');
       expect(issuanceAudit).toBeDefined();
       expect(issuanceAudit!.decision).toBe('SYSTEM');
@@ -150,7 +173,7 @@ describe('Wave 4 — Offline Entitlements + BUTANO Events', () => {
         subject_id: 'prid-clinician-4',
         scope: ['clinical.capture.vitals'],
         valid_from: new Date().toISOString(),
-        valid_to: futureDate(8), // exceeds 6h
+        valid_to: futureDate(8),
       };
 
       await expect(issueEntitlement(ctx, request)).rejects.toMatchObject({
@@ -161,11 +184,11 @@ describe('Wave 4 — Offline Entitlements + BUTANO Events', () => {
   });
 
   // =========================================================================
-  // Offline Entitlements — Verification
+  // Offline Entitlements — Verification (Ed25519)
   // =========================================================================
 
-  describe('Offline Entitlement Verification', () => {
-    it('should verify valid entitlement', async () => {
+  describe('Offline Entitlement Verification (Ed25519)', () => {
+    it('should verify valid Ed25519 entitlement', async () => {
       const ctx = makeCtx();
       const request: EntitlementIssuanceRequest = {
         device_id: 'device-010',
@@ -186,6 +209,7 @@ describe('Wave 4 — Offline Entitlements + BUTANO Events', () => {
       expect(result.valid).toBe(true);
       expect(result.entitlement_id).toBe(issued.entitlement_id);
       expect(result.payload).toBeDefined();
+      expect(result.payload!.alg).toBe('Ed25519');
     });
 
     it('should reject wrong scope', async () => {
@@ -201,7 +225,7 @@ describe('Wave 4 — Offline Entitlements + BUTANO Events', () => {
       const issued = await issueEntitlement(ctx, request);
       const result = await verifyEntitlementOffline(
         issued.entitlement_jwt,
-        'clinical.capture.notes' // not in scope
+        'clinical.capture.notes'
       );
 
       expect(result.valid).toBe(false);
@@ -215,7 +239,7 @@ describe('Wave 4 — Offline Entitlements + BUTANO Events', () => {
         subject_id: 'prid-clinician-12',
         scope: ['clinical.capture.vitals'],
         valid_from: pastDate(5),
-        valid_to: pastDate(1), // already expired
+        valid_to: pastDate(1),
       };
 
       const issued = await issueEntitlement(ctx, request);
@@ -239,8 +263,6 @@ describe('Wave 4 — Offline Entitlements + BUTANO Events', () => {
       };
 
       const issued = await issueEntitlement(ctx, request);
-
-      // Revoke it
       updateEntitlementStatus(issued.entitlement_id, 'REVOKED', {
         revoked_at: new Date().toISOString(),
       });
@@ -255,7 +277,6 @@ describe('Wave 4 — Offline Entitlements + BUTANO Events', () => {
     });
 
     it('should reject unknown kid', async () => {
-      // Create a token with current key, then clear keys
       const ctx = makeCtx();
       const request: EntitlementIssuanceRequest = {
         device_id: 'device-014',
@@ -266,8 +287,6 @@ describe('Wave 4 — Offline Entitlements + BUTANO Events', () => {
       };
 
       const issued = await issueEntitlement(ctx, request);
-
-      // Clear all keys — simulates kid mismatch
       clearKeyStore();
 
       const result = await verifyEntitlementOffline(
@@ -300,8 +319,6 @@ describe('Wave 4 — Offline Entitlements + BUTANO Events', () => {
       };
 
       const issued = await issueEntitlement(ctx, request);
-
-      // Wrong facility
       const result = await verifyEntitlementOffline(
         issued.entitlement_jwt,
         'clinical.capture.vitals',
@@ -325,24 +342,210 @@ describe('Wave 4 — Offline Entitlements + BUTANO Events', () => {
 
       const issued = await issueEntitlement(ctx, request);
 
-      // Patient not in allowlist
       const result = await verifyEntitlementOffline(
         issued.entitlement_jwt,
         'clinical.capture.vitals',
         { patient_cpid: 'CPID-X' }
       );
-
       expect(result.valid).toBe(false);
       expect(result.reason).toBe(ENTITLEMENT_ERRORS.ENTITLEMENT_CONSTRAINT_VIOLATION);
 
-      // Patient in allowlist
       const result2 = await verifyEntitlementOffline(
         issued.entitlement_jwt,
         'clinical.capture.vitals',
         { patient_cpid: 'CPID-A' }
       );
-
       expect(result2.valid).toBe(true);
+    });
+  });
+
+  // =========================================================================
+  // Entitlement Lifecycle — Revocation + Consumption
+  // =========================================================================
+
+  describe('Entitlement Lifecycle (Revoke + Consume)', () => {
+    it('revokeEntitlement blocks verification', async () => {
+      const ctx = makeCtx();
+      const request: EntitlementIssuanceRequest = {
+        device_id: 'device-revoke-1',
+        subject_id: 'prid-clinician-r1',
+        scope: ['clinical.capture.vitals'],
+        valid_from: new Date().toISOString(),
+        valid_to: futureDate(4),
+      };
+
+      const issued = await issueEntitlement(ctx, request);
+      const revResult = await revokeEntitlement(ctx, issued.entitlement_id, 'ADMIN_REVOKE');
+      expect(revResult.already_revoked).toBe(false);
+
+      // Verify store status
+      const stored = getEntitlement(issued.entitlement_id);
+      expect(stored!.status).toBe('REVOKED');
+
+      // Verification should fail
+      const verResult = await verifyEntitlementOffline(
+        issued.entitlement_jwt,
+        'clinical.capture.vitals'
+      );
+      expect(verResult.valid).toBe(false);
+      expect(verResult.reason).toBe(ENTITLEMENT_ERRORS.ENTITLEMENT_REVOKED);
+    });
+
+    it('revokeEntitlement is idempotent', async () => {
+      const ctx = makeCtx();
+      const request: EntitlementIssuanceRequest = {
+        device_id: 'device-revoke-2',
+        subject_id: 'prid-clinician-r2',
+        scope: ['clinical.capture.vitals'],
+        valid_from: new Date().toISOString(),
+        valid_to: futureDate(4),
+      };
+
+      const issued = await issueEntitlement(ctx, request);
+      await revokeEntitlement(ctx, issued.entitlement_id, 'ADMIN_REVOKE');
+      const second = await revokeEntitlement(ctx, issued.entitlement_id, 'ADMIN_REVOKE');
+      expect(second.already_revoked).toBe(true);
+    });
+
+    it('revokeEntitlement emits audit + event', async () => {
+      const ctx = makeCtx();
+      const request: EntitlementIssuanceRequest = {
+        device_id: 'device-revoke-3',
+        subject_id: 'prid-clinician-r3',
+        scope: ['clinical.capture.vitals'],
+        valid_from: new Date().toISOString(),
+        valid_to: futureDate(4),
+      };
+
+      const issued = await issueEntitlement(ctx, request);
+      clearEventStore(); // clear issuance event
+      clearAuditLedger();
+
+      await revokeEntitlement(ctx, issued.entitlement_id, 'SECURITY_INCIDENT');
+
+      const chain = getAuditChain(ctx.tenantId, ctx.podId);
+      const revokeAudit = chain.find(r => r.action === 'offline.entitlement.revoked');
+      expect(revokeAudit).toBeDefined();
+
+      const events = getStoredEvents();
+      const revokeEvent = events.find(e => e.event_type === 'impilo.offline.entitlement.revoked.v1');
+      expect(revokeEvent).toBeDefined();
+    });
+
+    it('consumeEntitlement transitions to CONSUMED', async () => {
+      const ctx = makeCtx();
+      const request: EntitlementIssuanceRequest = {
+        device_id: 'device-consume-1',
+        subject_id: 'prid-clinician-c1',
+        scope: ['clinical.capture.vitals'],
+        valid_from: new Date().toISOString(),
+        valid_to: futureDate(4),
+      };
+
+      const issued = await issueEntitlement(ctx, request);
+      const result = await consumeEntitlement(ctx, issued.entitlement_id, { action: 'vitals_capture' });
+      expect(result.already_consumed).toBe(false);
+
+      const stored = getEntitlement(issued.entitlement_id);
+      expect(stored!.status).toBe('CONSUMED');
+    });
+
+    it('consumeEntitlement is idempotent', async () => {
+      const ctx = makeCtx();
+      const request: EntitlementIssuanceRequest = {
+        device_id: 'device-consume-2',
+        subject_id: 'prid-clinician-c2',
+        scope: ['clinical.capture.vitals'],
+        valid_from: new Date().toISOString(),
+        valid_to: futureDate(4),
+      };
+
+      const issued = await issueEntitlement(ctx, request);
+      await consumeEntitlement(ctx, issued.entitlement_id);
+      const second = await consumeEntitlement(ctx, issued.entitlement_id);
+      expect(second.already_consumed).toBe(true);
+    });
+
+    it('consumeEntitlement rejects revoked entitlement', async () => {
+      const ctx = makeCtx();
+      const request: EntitlementIssuanceRequest = {
+        device_id: 'device-consume-3',
+        subject_id: 'prid-clinician-c3',
+        scope: ['clinical.capture.vitals'],
+        valid_from: new Date().toISOString(),
+        valid_to: futureDate(4),
+      };
+
+      const issued = await issueEntitlement(ctx, request);
+      await revokeEntitlement(ctx, issued.entitlement_id, 'ADMIN_REVOKE');
+
+      await expect(consumeEntitlement(ctx, issued.entitlement_id)).rejects.toMatchObject({
+        code: ENTITLEMENT_ERRORS.ENTITLEMENT_REVOKED,
+        status: 403,
+      });
+    });
+
+    it('consumeEntitlement emits audit + event', async () => {
+      const ctx = makeCtx();
+      const request: EntitlementIssuanceRequest = {
+        device_id: 'device-consume-4',
+        subject_id: 'prid-clinician-c4',
+        scope: ['clinical.capture.vitals'],
+        valid_from: new Date().toISOString(),
+        valid_to: futureDate(4),
+      };
+
+      const issued = await issueEntitlement(ctx, request);
+      clearEventStore();
+      clearAuditLedger();
+
+      await consumeEntitlement(ctx, issued.entitlement_id, { action: 'offline_vitals' });
+
+      const chain = getAuditChain(ctx.tenantId, ctx.podId);
+      const consumeAudit = chain.find(r => r.action === 'offline.entitlement.consumed');
+      expect(consumeAudit).toBeDefined();
+
+      const events = getStoredEvents();
+      const consumeEvent = events.find(e => e.event_type === 'impilo.offline.entitlement.consumed.v1');
+      expect(consumeEvent).toBeDefined();
+    });
+  });
+
+  // =========================================================================
+  // Store Adapter Persistence Semantics
+  // =========================================================================
+
+  describe('Store Adapter Persistence', () => {
+    it('should persist across store adapter swap (simulates process restart)', async () => {
+      const ctx = makeCtx();
+      const request: EntitlementIssuanceRequest = {
+        device_id: 'device-persist-1',
+        subject_id: 'prid-persist',
+        scope: ['clinical.capture.vitals'],
+        valid_from: new Date().toISOString(),
+        valid_to: futureDate(4),
+      };
+
+      // Use a shared store instance
+      const sharedStore = new InMemoryEntitlementStore();
+      setEntitlementStore(sharedStore);
+
+      const issued = await issueEntitlement(ctx, request);
+
+      // Simulate "process restart" by setting a new default store
+      // but then re-attach the same persistent store
+      const tempStore = new InMemoryEntitlementStore();
+      setEntitlementStore(tempStore);
+
+      // Data lost with temp store
+      expect(getEntitlement(issued.entitlement_id)).toBeNull();
+
+      // Re-attach persistent store — data recovered
+      setEntitlementStore(sharedStore);
+      const recovered = getEntitlement(issued.entitlement_id);
+      expect(recovered).not.toBeNull();
+      expect(recovered!.entitlement_id).toBe(issued.entitlement_id);
+      expect(recovered!.status).toBe('ACTIVE');
     });
   });
 
@@ -376,7 +579,6 @@ describe('Wave 4 — Offline Entitlements + BUTANO Events', () => {
       expect(event!.tenant_id).toBe(ctx.tenantId);
       expect(event!.correlation_id).toBe(ctx.correlationId);
 
-      // Verify delta payload
       const payload = event!.payload as any;
       expect(payload.op).toBe('CREATE');
       expect(payload.before).toBeNull();
@@ -437,7 +639,6 @@ describe('Wave 4 — Offline Entitlements + BUTANO Events', () => {
     it('should pass schema gate validation for all BUTANO events', async () => {
       const ctx = makeCtx();
 
-      // All three should pass without throwing
       await emitButanoResourceCreated(ctx, {
         resource_type: 'Condition',
         fhir_id: 'cond-001',
@@ -523,7 +724,7 @@ describe('Wave 4 — Offline Entitlements + BUTANO Events', () => {
 
     it('Wave 3 — PDP engine still evaluates', () => {
       const { evaluatePolicy } = require('../../tshepo/pdpEngine');
-      
+
       const result = evaluatePolicy({
         subject: {
           user_id: 'prid-1',

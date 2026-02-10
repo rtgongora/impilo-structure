@@ -39,6 +39,7 @@ export interface EntitlementIssuanceRequest {
 
 /**
  * Internal entitlement payload (signed content).
+ * alg MUST be "Ed25519" per v1.1 spec.
  */
 export interface EntitlementPayload {
   entitlement_id: string;
@@ -52,12 +53,13 @@ export interface EntitlementPayload {
   constraints: EntitlementConstraints;
   policy_version: string;
   kid: string; // signing key ID
+  alg: 'Ed25519'; // signing algorithm — MUST be Ed25519
   issued_at: string;
 }
 
 /**
- * Signed entitlement token (prototype: base64-encoded JSON + signature).
- * Production: JWT signed by HSM/KMS.
+ * Signed entitlement token.
+ * Production: JWT signed by HSM/KMS using Ed25519.
  */
 export interface SignedEntitlement {
   entitlement_jwt: string;
@@ -80,6 +82,7 @@ export interface EntitlementRecord {
   constraints: EntitlementConstraints;
   policy_version: string;
   kid: string;
+  alg: 'Ed25519';
   status: 'ACTIVE' | 'CONSUMED' | 'REVOKED' | 'EXPIRED';
   issued_at: string;
   consumed_at?: string;
@@ -108,6 +111,25 @@ export const ENTITLEMENT_ERRORS = {
   ENTITLEMENT_SIGNATURE_INVALID: 'ENTITLEMENT_SIGNATURE_INVALID',
   ENTITLEMENT_KID_UNKNOWN: 'ENTITLEMENT_KID_UNKNOWN',
   ENTITLEMENT_CONSTRAINT_VIOLATION: 'ENTITLEMENT_CONSTRAINT_VIOLATION',
+  ENTITLEMENT_NOT_FOUND: 'ENTITLEMENT_NOT_FOUND',
 } as const;
 
 export type EntitlementErrorCode = typeof ENTITLEMENT_ERRORS[keyof typeof ENTITLEMENT_ERRORS];
+
+/**
+ * Entitlement store adapter interface.
+ * Implementations: InMemoryEntitlementStore (test/prototype),
+ * PostgresEntitlementStore (production via Supabase).
+ */
+export interface EntitlementStoreAdapter {
+  put(record: EntitlementRecord): void;
+  get(id: string): EntitlementRecord | null;
+  updateStatus(
+    id: string,
+    status: EntitlementRecord['status'],
+    meta?: { consumed_at?: string; revoked_at?: string }
+  ): boolean;
+  listBySubject(tenantId: string, subjectId: string): EntitlementRecord[];
+  listByDevice(tenantId: string, deviceId: string): EntitlementRecord[];
+  clear(): void;
+}
