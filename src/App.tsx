@@ -91,6 +91,7 @@ import SuiteDocsConsole from "./pages/admin/SuiteDocsConsole";
 import SuiteSelfService from "./pages/admin/SuiteSelfService";
 import PctWorkTab from "./pages/admin/PctWorkTab";
 import PctControlTower from "./pages/admin/PctControlTower";
+import ZiboAdmin from "./pages/admin/ZiboAdmin";
 const queryClient = new QueryClient();
 
 const App = () => (
@@ -375,6 +376,8 @@ const App = () => (
             {/* PCT v1.1 Surfaces */}
             <Route path="/admin/pct/work" element={<ProtectedRoute><PctWorkTab /></ProtectedRoute>} />
             <Route path="/admin/pct/control-tower" element={<ProtectedRoute><PctControlTower /></ProtectedRoute>} />
+            {/* ZIBO Terminology Service */}
+            <Route path="/admin/zibo" element={<ProtectedRoute><ZiboAdmin /></ProtectedRoute>} />
             {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
             <Route path="*" element={<NotFound />} />
           </Routes>
