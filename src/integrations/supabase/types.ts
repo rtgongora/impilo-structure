@@ -17650,6 +17650,703 @@ export type Database = {
           },
         ]
       }
+      pct_admissions: {
+        Row: {
+          admission_id: string
+          admitted_at: string | null
+          approved_by_actor_id: string | null
+          bed_id: string | null
+          created_at: string
+          discharged_at: string | null
+          journey_id: string
+          requested_by_actor_id: string
+          status: string
+          tenant_id: string
+          ward_id: string
+        }
+        Insert: {
+          admission_id?: string
+          admitted_at?: string | null
+          approved_by_actor_id?: string | null
+          bed_id?: string | null
+          created_at?: string
+          discharged_at?: string | null
+          journey_id: string
+          requested_by_actor_id: string
+          status?: string
+          tenant_id: string
+          ward_id: string
+        }
+        Update: {
+          admission_id?: string
+          admitted_at?: string | null
+          approved_by_actor_id?: string | null
+          bed_id?: string | null
+          created_at?: string
+          discharged_at?: string | null
+          journey_id?: string
+          requested_by_actor_id?: string
+          status?: string
+          tenant_id?: string
+          ward_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "pct_admissions_journey_id_fkey"
+            columns: ["journey_id"]
+            isOneToOne: false
+            referencedRelation: "pct_journeys"
+            referencedColumns: ["journey_id"]
+          },
+        ]
+      }
+      pct_alerts: {
+        Row: {
+          alert_id: string
+          created_at: string
+          facility_id: string
+          payload_json: Json | null
+          resolved_at: string | null
+          rule_code: string
+          severity: string
+          status: string
+          tenant_id: string
+        }
+        Insert: {
+          alert_id?: string
+          created_at?: string
+          facility_id: string
+          payload_json?: Json | null
+          resolved_at?: string | null
+          rule_code: string
+          severity?: string
+          status?: string
+          tenant_id: string
+        }
+        Update: {
+          alert_id?: string
+          created_at?: string
+          facility_id?: string
+          payload_json?: Json | null
+          resolved_at?: string | null
+          rule_code?: string
+          severity?: string
+          status?: string
+          tenant_id?: string
+        }
+        Relationships: []
+      }
+      pct_death_cases: {
+        Row: {
+          case_id: string
+          cert_doc_id: string | null
+          closed_at: string | null
+          created_at: string
+          journey_id: string
+          status: string
+          tenant_id: string
+          ubomi_status: string | null
+        }
+        Insert: {
+          case_id?: string
+          cert_doc_id?: string | null
+          closed_at?: string | null
+          created_at?: string
+          journey_id: string
+          status?: string
+          tenant_id: string
+          ubomi_status?: string | null
+        }
+        Update: {
+          case_id?: string
+          cert_doc_id?: string | null
+          closed_at?: string | null
+          created_at?: string
+          journey_id?: string
+          status?: string
+          tenant_id?: string
+          ubomi_status?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "pct_death_cases_journey_id_fkey"
+            columns: ["journey_id"]
+            isOneToOne: false
+            referencedRelation: "pct_journeys"
+            referencedColumns: ["journey_id"]
+          },
+        ]
+      }
+      pct_discharge_cases: {
+        Row: {
+          blockers_json: Json | null
+          case_id: string
+          closed_at: string | null
+          created_at: string
+          discharge_type: string
+          journey_id: string
+          status: string
+          tenant_id: string
+        }
+        Insert: {
+          blockers_json?: Json | null
+          case_id?: string
+          closed_at?: string | null
+          created_at?: string
+          discharge_type?: string
+          journey_id: string
+          status?: string
+          tenant_id: string
+        }
+        Update: {
+          blockers_json?: Json | null
+          case_id?: string
+          closed_at?: string | null
+          created_at?: string
+          discharge_type?: string
+          journey_id?: string
+          status?: string
+          tenant_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "pct_discharge_cases_journey_id_fkey"
+            columns: ["journey_id"]
+            isOneToOne: false
+            referencedRelation: "pct_journeys"
+            referencedColumns: ["journey_id"]
+          },
+        ]
+      }
+      pct_encounters: {
+        Row: {
+          assigned_provider_public_id: string | null
+          butano_encounter_ref: string | null
+          ended_at: string | null
+          journey_id: string
+          meta_json: Json | null
+          pct_encounter_id: string
+          started_at: string
+          status: string
+          tenant_id: string
+          workspace_id: string
+        }
+        Insert: {
+          assigned_provider_public_id?: string | null
+          butano_encounter_ref?: string | null
+          ended_at?: string | null
+          journey_id: string
+          meta_json?: Json | null
+          pct_encounter_id?: string
+          started_at?: string
+          status?: string
+          tenant_id: string
+          workspace_id: string
+        }
+        Update: {
+          assigned_provider_public_id?: string | null
+          butano_encounter_ref?: string | null
+          ended_at?: string | null
+          journey_id?: string
+          meta_json?: Json | null
+          pct_encounter_id?: string
+          started_at?: string
+          status?: string
+          tenant_id?: string
+          workspace_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "pct_encounters_journey_id_fkey"
+            columns: ["journey_id"]
+            isOneToOne: false
+            referencedRelation: "pct_journeys"
+            referencedColumns: ["journey_id"]
+          },
+        ]
+      }
+      pct_integration_idempotency: {
+        Row: {
+          correlation_id: string
+          event_type: string
+          processed_at: string
+          tenant_id: string
+        }
+        Insert: {
+          correlation_id: string
+          event_type: string
+          processed_at?: string
+          tenant_id: string
+        }
+        Update: {
+          correlation_id?: string
+          event_type?: string
+          processed_at?: string
+          tenant_id?: string
+        }
+        Relationships: []
+      }
+      pct_journeys: {
+        Row: {
+          created_at: string
+          current_queue_id: string | null
+          current_workspace_id: string | null
+          facility_id: string
+          journey_id: string
+          patient_cpid: string
+          referral_source: string | null
+          state: string
+          tenant_id: string
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          current_queue_id?: string | null
+          current_workspace_id?: string | null
+          facility_id: string
+          journey_id: string
+          patient_cpid: string
+          referral_source?: string | null
+          state?: string
+          tenant_id: string
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          current_queue_id?: string | null
+          current_workspace_id?: string | null
+          facility_id?: string
+          journey_id?: string
+          patient_cpid?: string
+          referral_source?: string | null
+          state?: string
+          tenant_id?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
+      pct_mushex_payment_status: {
+        Row: {
+          amount_due: number | null
+          amount_paid: number | null
+          correlation_id: string | null
+          id: string
+          journey_id: string
+          status: string
+          tenant_id: string
+          updated_at: string
+        }
+        Insert: {
+          amount_due?: number | null
+          amount_paid?: number | null
+          correlation_id?: string | null
+          id?: string
+          journey_id: string
+          status?: string
+          tenant_id: string
+          updated_at?: string
+        }
+        Update: {
+          amount_due?: number | null
+          amount_paid?: number | null
+          correlation_id?: string | null
+          id?: string
+          journey_id?: string
+          status?: string
+          tenant_id?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "pct_mushex_payment_status_journey_id_fkey"
+            columns: ["journey_id"]
+            isOneToOne: false
+            referencedRelation: "pct_journeys"
+            referencedColumns: ["journey_id"]
+          },
+        ]
+      }
+      pct_outbox_events: {
+        Row: {
+          aggregate_id: string
+          aggregate_type: string
+          correlation_id: string
+          created_at: string
+          event_type: string
+          id: string
+          payload_json: Json | null
+          published_at: string | null
+          tenant_id: string
+        }
+        Insert: {
+          aggregate_id: string
+          aggregate_type: string
+          correlation_id: string
+          created_at?: string
+          event_type: string
+          id?: string
+          payload_json?: Json | null
+          published_at?: string | null
+          tenant_id: string
+        }
+        Update: {
+          aggregate_id?: string
+          aggregate_type?: string
+          correlation_id?: string
+          created_at?: string
+          event_type?: string
+          id?: string
+          payload_json?: Json | null
+          published_at?: string | null
+          tenant_id?: string
+        }
+        Relationships: []
+      }
+      pct_queue_items: {
+        Row: {
+          called_at: string | null
+          called_by_actor_id: string | null
+          ended_at: string | null
+          enqueued_at: string
+          item_id: string
+          journey_id: string
+          last_status_by_actor_id: string | null
+          notes: string | null
+          priority: number
+          queue_id: string
+          started_at: string | null
+          status: string
+          tenant_id: string
+          ticket_number: string | null
+        }
+        Insert: {
+          called_at?: string | null
+          called_by_actor_id?: string | null
+          ended_at?: string | null
+          enqueued_at?: string
+          item_id?: string
+          journey_id: string
+          last_status_by_actor_id?: string | null
+          notes?: string | null
+          priority?: number
+          queue_id: string
+          started_at?: string | null
+          status?: string
+          tenant_id: string
+          ticket_number?: string | null
+        }
+        Update: {
+          called_at?: string | null
+          called_by_actor_id?: string | null
+          ended_at?: string | null
+          enqueued_at?: string
+          item_id?: string
+          journey_id?: string
+          last_status_by_actor_id?: string | null
+          notes?: string | null
+          priority?: number
+          queue_id?: string
+          started_at?: string | null
+          status?: string
+          tenant_id?: string
+          ticket_number?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "pct_queue_items_journey_id_fkey"
+            columns: ["journey_id"]
+            isOneToOne: false
+            referencedRelation: "pct_journeys"
+            referencedColumns: ["journey_id"]
+          },
+          {
+            foreignKeyName: "pct_queue_items_queue_id_fkey"
+            columns: ["queue_id"]
+            isOneToOne: false
+            referencedRelation: "pct_queues"
+            referencedColumns: ["queue_id"]
+          },
+        ]
+      }
+      pct_queues: {
+        Row: {
+          created_at: string
+          facility_id: string
+          is_active: boolean
+          name: string
+          queue_id: string
+          rules_json: Json | null
+          tenant_id: string
+          type: string
+          updated_at: string
+          workspace_id: string
+        }
+        Insert: {
+          created_at?: string
+          facility_id: string
+          is_active?: boolean
+          name: string
+          queue_id?: string
+          rules_json?: Json | null
+          tenant_id: string
+          type?: string
+          updated_at?: string
+          workspace_id: string
+        }
+        Update: {
+          created_at?: string
+          facility_id?: string
+          is_active?: boolean
+          name?: string
+          queue_id?: string
+          rules_json?: Json | null
+          tenant_id?: string
+          type?: string
+          updated_at?: string
+          workspace_id?: string
+        }
+        Relationships: []
+      }
+      pct_tasks: {
+        Row: {
+          assignee_ref: string
+          assignee_type: string
+          created_at: string
+          created_by_actor_id: string
+          due_at: string | null
+          handoff_notes: string | null
+          journey_id: string
+          status: string
+          task_id: string
+          tenant_id: string
+          type: string
+          updated_at: string
+        }
+        Insert: {
+          assignee_ref: string
+          assignee_type?: string
+          created_at?: string
+          created_by_actor_id: string
+          due_at?: string | null
+          handoff_notes?: string | null
+          journey_id: string
+          status?: string
+          task_id?: string
+          tenant_id: string
+          type?: string
+          updated_at?: string
+        }
+        Update: {
+          assignee_ref?: string
+          assignee_type?: string
+          created_at?: string
+          created_by_actor_id?: string
+          due_at?: string | null
+          handoff_notes?: string | null
+          journey_id?: string
+          status?: string
+          task_id?: string
+          tenant_id?: string
+          type?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "pct_tasks_journey_id_fkey"
+            columns: ["journey_id"]
+            isOneToOne: false
+            referencedRelation: "pct_journeys"
+            referencedColumns: ["journey_id"]
+          },
+        ]
+      }
+      pct_telemetry_events: {
+        Row: {
+          correlation_id: string
+          event_ts: string
+          event_type: string
+          facility_id: string
+          id: string
+          payload_json: Json | null
+          tenant_id: string
+          workspace_id: string | null
+        }
+        Insert: {
+          correlation_id: string
+          event_ts?: string
+          event_type: string
+          facility_id: string
+          id?: string
+          payload_json?: Json | null
+          tenant_id: string
+          workspace_id?: string | null
+        }
+        Update: {
+          correlation_id?: string
+          event_ts?: string
+          event_type?: string
+          facility_id?: string
+          id?: string
+          payload_json?: Json | null
+          tenant_id?: string
+          workspace_id?: string | null
+        }
+        Relationships: []
+      }
+      pct_ticket_counters: {
+        Row: {
+          counter_date: string
+          last_number: number
+          tenant_id: string
+          workspace_id: string
+        }
+        Insert: {
+          counter_date?: string
+          last_number?: number
+          tenant_id: string
+          workspace_id: string
+        }
+        Update: {
+          counter_date?: string
+          last_number?: number
+          tenant_id?: string
+          workspace_id?: string
+        }
+        Relationships: []
+      }
+      pct_transfers: {
+        Row: {
+          approvals_json: Json | null
+          created_at: string
+          from_json: Json
+          journey_id: string
+          status: string
+          tenant_id: string
+          to_json: Json
+          transfer_id: string
+          updated_at: string
+        }
+        Insert: {
+          approvals_json?: Json | null
+          created_at?: string
+          from_json?: Json
+          journey_id: string
+          status?: string
+          tenant_id: string
+          to_json?: Json
+          transfer_id?: string
+          updated_at?: string
+        }
+        Update: {
+          approvals_json?: Json | null
+          created_at?: string
+          from_json?: Json
+          journey_id?: string
+          status?: string
+          tenant_id?: string
+          to_json?: Json
+          transfer_id?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "pct_transfers_journey_id_fkey"
+            columns: ["journey_id"]
+            isOneToOne: false
+            referencedRelation: "pct_journeys"
+            referencedColumns: ["journey_id"]
+          },
+        ]
+      }
+      pct_triage_records: {
+        Row: {
+          acuity: string
+          journey_id: string
+          notes: string | null
+          tenant_id: string
+          triage_id: string
+          triaged_at: string
+          triaged_by_actor_id: string
+          vitals_json: Json | null
+        }
+        Insert: {
+          acuity: string
+          journey_id: string
+          notes?: string | null
+          tenant_id: string
+          triage_id?: string
+          triaged_at?: string
+          triaged_by_actor_id: string
+          vitals_json?: Json | null
+        }
+        Update: {
+          acuity?: string
+          journey_id?: string
+          notes?: string | null
+          tenant_id?: string
+          triage_id?: string
+          triaged_at?: string
+          triaged_by_actor_id?: string
+          vitals_json?: Json | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "pct_triage_records_journey_id_fkey"
+            columns: ["journey_id"]
+            isOneToOne: false
+            referencedRelation: "pct_journeys"
+            referencedColumns: ["journey_id"]
+          },
+        ]
+      }
+      pct_workspace_sessions: {
+        Row: {
+          actor_id: string
+          actor_type: string
+          context_json: Json | null
+          created_at: string
+          duty_mode: string
+          ended_at: string | null
+          facility_id: string
+          session_id: string
+          shift_id: string | null
+          started_at: string
+          status: string
+          tenant_id: string
+          workspace_id: string
+        }
+        Insert: {
+          actor_id: string
+          actor_type: string
+          context_json?: Json | null
+          created_at?: string
+          duty_mode?: string
+          ended_at?: string | null
+          facility_id: string
+          session_id?: string
+          shift_id?: string | null
+          started_at?: string
+          status?: string
+          tenant_id: string
+          workspace_id: string
+        }
+        Update: {
+          actor_id?: string
+          actor_type?: string
+          context_json?: Json | null
+          created_at?: string
+          duty_mode?: string
+          ended_at?: string | null
+          facility_id?: string
+          session_id?: string
+          shift_id?: string | null
+          started_at?: string
+          status?: string
+          tenant_id?: string
+          workspace_id?: string
+        }
+        Relationships: []
+      }
       platform_roles: {
         Row: {
           can_create_test_data: boolean | null
