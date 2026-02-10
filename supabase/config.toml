@@ -35,3 +35,6 @@ verify_jwt = false
 
 [functions.costa-v1]
 verify_jwt = false
+
+[functions.mushex-v1]
+verify_jwt = false
