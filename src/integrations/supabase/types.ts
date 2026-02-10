@@ -25643,6 +25643,580 @@ export type Database = {
           },
         ]
       }
+      suite_audit_events: {
+        Row: {
+          actor_id: string
+          actor_type: string | null
+          break_glass: boolean
+          correlation_id: string | null
+          created_at: string
+          decision_id: string | null
+          details_json: Json | null
+          device_fingerprint: string | null
+          event_type: string
+          facility_id: string | null
+          id: string
+          purpose_of_use: string | null
+          resource_id: string | null
+          resource_type: string | null
+          shift_id: string | null
+          subject_id: string | null
+          subject_type: string | null
+          tenant_id: string
+          workspace_id: string | null
+        }
+        Insert: {
+          actor_id: string
+          actor_type?: string | null
+          break_glass?: boolean
+          correlation_id?: string | null
+          created_at?: string
+          decision_id?: string | null
+          details_json?: Json | null
+          device_fingerprint?: string | null
+          event_type: string
+          facility_id?: string | null
+          id?: string
+          purpose_of_use?: string | null
+          resource_id?: string | null
+          resource_type?: string | null
+          shift_id?: string | null
+          subject_id?: string | null
+          subject_type?: string | null
+          tenant_id: string
+          workspace_id?: string | null
+        }
+        Update: {
+          actor_id?: string
+          actor_type?: string | null
+          break_glass?: boolean
+          correlation_id?: string | null
+          created_at?: string
+          decision_id?: string | null
+          details_json?: Json | null
+          device_fingerprint?: string | null
+          event_type?: string
+          facility_id?: string | null
+          id?: string
+          purpose_of_use?: string | null
+          resource_id?: string | null
+          resource_type?: string | null
+          shift_id?: string | null
+          subject_id?: string | null
+          subject_type?: string | null
+          tenant_id?: string
+          workspace_id?: string | null
+        }
+        Relationships: []
+      }
+      suite_credential_documents: {
+        Row: {
+          credential_id: string
+          id: string
+          kind: string
+          landela_document_id: string
+        }
+        Insert: {
+          credential_id: string
+          id?: string
+          kind?: string
+          landela_document_id: string
+        }
+        Update: {
+          credential_id?: string
+          id?: string
+          kind?: string
+          landela_document_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "suite_credential_documents_credential_id_fkey"
+            columns: ["credential_id"]
+            isOneToOne: false
+            referencedRelation: "suite_credentials"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "suite_credential_documents_landela_document_id_fkey"
+            columns: ["landela_document_id"]
+            isOneToOne: false
+            referencedRelation: "suite_documents"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      suite_credentials: {
+        Row: {
+          created_at: string
+          created_by_actor_id: string
+          credential_type: string
+          expires_at: string | null
+          id: string
+          issued_at: string
+          issuer: string
+          payload_json: Json | null
+          qr_ref_token: string
+          signing_kid: string | null
+          status: string
+          subject_id: string
+          subject_type: string
+          tenant_id: string
+        }
+        Insert: {
+          created_at?: string
+          created_by_actor_id: string
+          credential_type: string
+          expires_at?: string | null
+          id?: string
+          issued_at?: string
+          issuer?: string
+          payload_json?: Json | null
+          qr_ref_token?: string
+          signing_kid?: string | null
+          status?: string
+          subject_id: string
+          subject_type: string
+          tenant_id: string
+        }
+        Update: {
+          created_at?: string
+          created_by_actor_id?: string
+          credential_type?: string
+          expires_at?: string | null
+          id?: string
+          issued_at?: string
+          issuer?: string
+          payload_json?: Json | null
+          qr_ref_token?: string
+          signing_kid?: string | null
+          status?: string
+          subject_id?: string
+          subject_type?: string
+          tenant_id?: string
+        }
+        Relationships: []
+      }
+      suite_document_versions: {
+        Row: {
+          created_at: string
+          document_id: string
+          id: string
+          notes: string | null
+          supersedes_version_id: string | null
+          version_number: number
+        }
+        Insert: {
+          created_at?: string
+          document_id: string
+          id?: string
+          notes?: string | null
+          supersedes_version_id?: string | null
+          version_number?: number
+        }
+        Update: {
+          created_at?: string
+          document_id?: string
+          id?: string
+          notes?: string | null
+          supersedes_version_id?: string | null
+          version_number?: number
+        }
+        Relationships: [
+          {
+            foreignKeyName: "suite_document_versions_document_id_fkey"
+            columns: ["document_id"]
+            isOneToOne: false
+            referencedRelation: "suite_documents"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "suite_document_versions_supersedes_version_id_fkey"
+            columns: ["supersedes_version_id"]
+            isOneToOne: false
+            referencedRelation: "suite_document_versions"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      suite_documents: {
+        Row: {
+          confidentiality: string
+          created_at: string
+          created_by_actor_id: string
+          document_type_code: string
+          external_ref: string | null
+          hash_sha256: string | null
+          id: string
+          issuer: string | null
+          lifecycle_state: string
+          mime_type: string
+          retention_policy_id: string | null
+          source: string
+          storage_object_key: string | null
+          storage_provider: string
+          subject_id: string
+          subject_type: string
+          tags: Json | null
+          tenant_id: string
+          updated_at: string
+        }
+        Insert: {
+          confidentiality?: string
+          created_at?: string
+          created_by_actor_id: string
+          document_type_code: string
+          external_ref?: string | null
+          hash_sha256?: string | null
+          id?: string
+          issuer?: string | null
+          lifecycle_state?: string
+          mime_type?: string
+          retention_policy_id?: string | null
+          source: string
+          storage_object_key?: string | null
+          storage_provider?: string
+          subject_id: string
+          subject_type: string
+          tags?: Json | null
+          tenant_id: string
+          updated_at?: string
+        }
+        Update: {
+          confidentiality?: string
+          created_at?: string
+          created_by_actor_id?: string
+          document_type_code?: string
+          external_ref?: string | null
+          hash_sha256?: string | null
+          id?: string
+          issuer?: string | null
+          lifecycle_state?: string
+          mime_type?: string
+          retention_policy_id?: string | null
+          source?: string
+          storage_object_key?: string | null
+          storage_provider?: string
+          subject_id?: string
+          subject_type?: string
+          tags?: Json | null
+          tenant_id?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
+      suite_high_risk_queue: {
+        Row: {
+          action_type: string
+          created_at: string
+          credential_id: string | null
+          decided_at: string | null
+          decided_by_actor_id: string | null
+          document_id: string | null
+          id: string
+          print_job_id: string | null
+          reason: string
+          requested_by_actor_id: string
+          status: string
+          tenant_id: string
+        }
+        Insert: {
+          action_type: string
+          created_at?: string
+          credential_id?: string | null
+          decided_at?: string | null
+          decided_by_actor_id?: string | null
+          document_id?: string | null
+          id?: string
+          print_job_id?: string | null
+          reason: string
+          requested_by_actor_id: string
+          status?: string
+          tenant_id: string
+        }
+        Update: {
+          action_type?: string
+          created_at?: string
+          credential_id?: string | null
+          decided_at?: string | null
+          decided_by_actor_id?: string | null
+          document_id?: string | null
+          id?: string
+          print_job_id?: string | null
+          reason?: string
+          requested_by_actor_id?: string
+          status?: string
+          tenant_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "suite_high_risk_queue_document_id_fkey"
+            columns: ["document_id"]
+            isOneToOne: false
+            referencedRelation: "suite_documents"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      suite_print_jobs: {
+        Row: {
+          created_at: string
+          facility_id: string | null
+          id: string
+          output_landela_document_id: string | null
+          payload_json: Json | null
+          requested_by_actor_id: string
+          status: string
+          subject_id: string
+          subject_type: string
+          template_type: string
+          tenant_id: string
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          facility_id?: string | null
+          id?: string
+          output_landela_document_id?: string | null
+          payload_json?: Json | null
+          requested_by_actor_id: string
+          status?: string
+          subject_id: string
+          subject_type: string
+          template_type: string
+          tenant_id: string
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          facility_id?: string | null
+          id?: string
+          output_landela_document_id?: string | null
+          payload_json?: Json | null
+          requested_by_actor_id?: string
+          status?: string
+          subject_id?: string
+          subject_type?: string
+          template_type?: string
+          tenant_id?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "suite_print_jobs_output_landela_document_id_fkey"
+            columns: ["output_landela_document_id"]
+            isOneToOne: false
+            referencedRelation: "suite_documents"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      suite_printers: {
+        Row: {
+          config_json: Json | null
+          driver_type: string
+          id: string
+          is_active: boolean
+          name: string
+          tenant_id: string
+        }
+        Insert: {
+          config_json?: Json | null
+          driver_type?: string
+          id?: string
+          is_active?: boolean
+          name: string
+          tenant_id: string
+        }
+        Update: {
+          config_json?: Json | null
+          driver_type?: string
+          id?: string
+          is_active?: boolean
+          name?: string
+          tenant_id?: string
+        }
+        Relationships: []
+      }
+      suite_revocations: {
+        Row: {
+          credential_id: string
+          id: string
+          reason: string
+          revoked_at: string
+          revoked_by_actor_id: string
+        }
+        Insert: {
+          credential_id: string
+          id?: string
+          reason: string
+          revoked_at?: string
+          revoked_by_actor_id: string
+        }
+        Update: {
+          credential_id?: string
+          id?: string
+          reason?: string
+          revoked_at?: string
+          revoked_by_actor_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "suite_revocations_credential_id_fkey"
+            columns: ["credential_id"]
+            isOneToOne: false
+            referencedRelation: "suite_credentials"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      suite_share_events: {
+        Row: {
+          actor_id: string | null
+          correlation_id: string | null
+          created_at: string
+          event_type: string
+          id: string
+          meta_json: Json | null
+          share_link_id: string
+        }
+        Insert: {
+          actor_id?: string | null
+          correlation_id?: string | null
+          created_at?: string
+          event_type: string
+          id?: string
+          meta_json?: Json | null
+          share_link_id: string
+        }
+        Update: {
+          actor_id?: string | null
+          correlation_id?: string | null
+          created_at?: string
+          event_type?: string
+          id?: string
+          meta_json?: Json | null
+          share_link_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "suite_share_events_share_link_id_fkey"
+            columns: ["share_link_id"]
+            isOneToOne: false
+            referencedRelation: "suite_share_links"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      suite_share_links: {
+        Row: {
+          claimed_at: string | null
+          claimed_by_actor_id: string | null
+          created_at: string
+          created_by_actor_id: string
+          expires_at: string
+          id: string
+          otp_hash: string | null
+          proof_method: string
+          status: string
+          target_ref: string
+          target_type: string
+          tenant_id: string
+          token: string
+        }
+        Insert: {
+          claimed_at?: string | null
+          claimed_by_actor_id?: string | null
+          created_at?: string
+          created_by_actor_id: string
+          expires_at?: string
+          id?: string
+          otp_hash?: string | null
+          proof_method?: string
+          status?: string
+          target_ref: string
+          target_type: string
+          tenant_id: string
+          token?: string
+        }
+        Update: {
+          claimed_at?: string | null
+          claimed_by_actor_id?: string | null
+          created_at?: string
+          created_by_actor_id?: string
+          expires_at?: string
+          id?: string
+          otp_hash?: string | null
+          proof_method?: string
+          status?: string
+          target_ref?: string
+          target_type?: string
+          tenant_id?: string
+          token?: string
+        }
+        Relationships: []
+      }
+      suite_signed_links: {
+        Row: {
+          consumed_at: string | null
+          created_at: string
+          created_by_actor_id: string
+          document_id: string
+          expires_at: string
+          id: string
+          scope: string
+          token: string
+        }
+        Insert: {
+          consumed_at?: string | null
+          created_at?: string
+          created_by_actor_id: string
+          document_id: string
+          expires_at: string
+          id?: string
+          scope?: string
+          token: string
+        }
+        Update: {
+          consumed_at?: string | null
+          created_at?: string
+          created_by_actor_id?: string
+          document_id?: string
+          expires_at?: string
+          id?: string
+          scope?: string
+          token?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "suite_signed_links_document_id_fkey"
+            columns: ["document_id"]
+            isOneToOne: false
+            referencedRelation: "suite_documents"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      suite_tenant_config: {
+        Row: {
+          created_at: string
+          document_mode: string
+          tenant_id: string
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          document_mode?: string
+          tenant_id: string
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          document_mode?: string
+          tenant_id?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
       summary_access_log: {
         Row: {
           access_type: string

@@ -87,6 +87,8 @@ import ButanoIPS from "./pages/admin/ButanoIPS";
 import ButanoVisitSummary from "./pages/admin/ButanoVisitSummary";
 import ButanoReconciliation from "./pages/admin/ButanoReconciliation";
 import ButanoStats from "./pages/admin/ButanoStats";
+import SuiteDocsConsole from "./pages/admin/SuiteDocsConsole";
+import SuiteSelfService from "./pages/admin/SuiteSelfService";
 const queryClient = new QueryClient();
 
 const App = () => (
@@ -365,6 +367,9 @@ const App = () => (
             <Route path="/admin/butano/visit-summary" element={<ProtectedRoute><ButanoVisitSummary /></ProtectedRoute>} />
             <Route path="/admin/butano/reconciliation" element={<ProtectedRoute><ButanoReconciliation /></ProtectedRoute>} />
             <Route path="/admin/butano/stats" element={<ProtectedRoute><ButanoStats /></ProtectedRoute>} />
+            {/* Landela + Credentials Suite Surfaces */}
+            <Route path="/admin/suite/docs" element={<ProtectedRoute><SuiteDocsConsole /></ProtectedRoute>} />
+            <Route path="/admin/suite/portal" element={<ProtectedRoute><SuiteSelfService /></ProtectedRoute>} />
             {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
             <Route path="*" element={<NotFound />} />
           </Routes>
