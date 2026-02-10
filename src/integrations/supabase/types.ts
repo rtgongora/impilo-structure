@@ -15821,6 +15821,81 @@ export type Database = {
         }
         Relationships: []
       }
+      offline_entitlements: {
+        Row: {
+          alg: string
+          audit_ref: string | null
+          constraints_json: Json
+          consumed_at: string | null
+          consumed_meta_json: Json | null
+          created_at: string
+          device_id: string
+          entitlement_id: string
+          issued_at: string
+          kid: string
+          pod_id: string
+          policy_version: string | null
+          revoke_reason: string | null
+          revoked_at: string | null
+          scope: Json
+          status: string
+          subject_id: string
+          tenant_id: string
+          token_hash: string | null
+          updated_at: string
+          valid_from: string
+          valid_to: string
+        }
+        Insert: {
+          alg?: string
+          audit_ref?: string | null
+          constraints_json?: Json
+          consumed_at?: string | null
+          consumed_meta_json?: Json | null
+          created_at?: string
+          device_id: string
+          entitlement_id?: string
+          issued_at?: string
+          kid: string
+          pod_id: string
+          policy_version?: string | null
+          revoke_reason?: string | null
+          revoked_at?: string | null
+          scope?: Json
+          status?: string
+          subject_id: string
+          tenant_id: string
+          token_hash?: string | null
+          updated_at?: string
+          valid_from: string
+          valid_to: string
+        }
+        Update: {
+          alg?: string
+          audit_ref?: string | null
+          constraints_json?: Json
+          consumed_at?: string | null
+          consumed_meta_json?: Json | null
+          created_at?: string
+          device_id?: string
+          entitlement_id?: string
+          issued_at?: string
+          kid?: string
+          pod_id?: string
+          policy_version?: string | null
+          revoke_reason?: string | null
+          revoked_at?: string | null
+          scope?: Json
+          status?: string
+          subject_id?: string
+          tenant_id?: string
+          token_hash?: string | null
+          updated_at?: string
+          valid_from?: string
+          valid_to?: string
+        }
+        Relationships: []
+      }
       on_call_schedules: {
         Row: {
           backup_staff_id: string | null

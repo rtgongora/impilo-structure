@@ -7,6 +7,11 @@
  * The Postgres schema is defined in the migration:
  *   CREATE TABLE public.offline_entitlements (...)
  * See supabase/migrations/ for the full DDL.
+ *
+ * Production default: PostgresEntitlementStore (when Supabase client available).
+ * Test default: InMemoryEntitlementStore (fast, no DB needed).
+ *
+ * Use setEntitlementStore() to override at runtime.
  */
 
 import type { EntitlementRecord, EntitlementStoreAdapter } from './types';
