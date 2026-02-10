@@ -99,3 +99,37 @@ export {
   getActorFromHeaders,
   type ActorHeaders,
 } from './security';
+
+// Wave 4 — Offline Entitlements
+export {
+  issueEntitlement,
+  verifyEntitlementOffline,
+  generateSigningKey,
+  getActiveKid,
+  setActiveKid,
+  clearKeyStore,
+  clearEntitlementStore,
+  putEntitlement,
+  getEntitlement,
+  updateEntitlementStatus,
+  ENTITLEMENT_ERRORS,
+  emitEntitlementIssued,
+  emitEntitlementRevoked,
+  emitEntitlementConsumed,
+  type OfflineScope,
+  type EntitlementConstraints,
+  type EntitlementIssuanceRequest,
+  type EntitlementPayload,
+  type SignedEntitlement,
+  type EntitlementRecord,
+  type EntitlementVerificationResult,
+} from './offlineEntitlements';
+
+// Wave 4 — BUTANO Events
+export {
+  emitButanoResourceCreated,
+  emitButanoResourceUpdated,
+  emitButanoReconcileCompleted,
+  type ButanoResourceMeta,
+  type ButanoReconcileMeta,
+} from './butano';

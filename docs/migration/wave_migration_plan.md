@@ -1,31 +1,9 @@
 # Impilo vNext v1.1 — Wave Migration Plan
 
-**Version:** 2.0  
+**Version:** 3.0  
 **Updated:** 2026-02-10  
-**Status:** ⏸️ PAUSED — Syncing to updated platform contracts  
-**Spec Reference:** vNext Manifest v1.1 + Technical Companion Spec v1.1  
-
----
-
-## Architecture Evolution Notice
-
-> **As of 2026-02-10**, the execution workstream has moved to Claude-based implementation.
-> The Lovable prototype is being re-aligned to the updated platform direction.
-> Wave work (1–4) is **paused** until this sync is complete.
-
-### What Changed
-
-The platform introduced a **shared enforcement kernel** that defines mandatory rules for:
-- Service-to-service data/event exchange
-- Federation/offline authority scenarios
-- Idempotent command semantics
-- Standard error envelopes
-
-This impacts Lovable because:
-1. **UI flows** must assume mandatory headers/identity context exist in requests
-2. **Protected actions** (patient merge, tariff update) are federation-authority guarded and may be blocked when the national spine is offline
-3. **Write operations** (POST/PUT/PATCH) must support idempotency keys to prevent duplicate submissions
-4. **Error rendering** must consume the standard error envelope format consistently
+**Status:** 🟢 Wave 4 COMPLETE  
+**Spec Reference:** vNext Manifest v1.1 + Technical Companion Spec v1.1.0-canonical  
 
 ---
 
@@ -36,11 +14,6 @@ This impacts Lovable because:
 2. **Edge function middleware** (`supabase/functions/_shared/middleware.ts`) — Server-side header validation + standard error responses
 3. **Error formatter** (`src/lib/kernel/errorFormatter.ts`) — Standard `{error: {code, message, details, request_id, correlation_id}}`
 4. **Type system** (`src/lib/kernel/types.ts`) — All v1.1 error codes, context types, event envelopes
-
-### What Lovable Reflects
-- All API calls go through `invokeKernelFunction()` which injects mandatory headers
-- Tenant/Pod context is set via `setTenantContext()`
-- Errors follow standard envelope format
 
 ---
 
@@ -73,83 +46,57 @@ This impacts Lovable because:
 
 ---
 
-## ⏸️ Current Focus: Contract Sync (Wave 0–1 Updates)
+## Wave 4 — Offline Entitlements + BUTANO Events ✅ COMPLETE
 
-### Objective
-Align the Lovable prototype's UI flows and assumptions with the updated v1.1 platform contracts, without implementing backend service internals.
+### Deliverables (Implemented)
 
-### What Lovable Must Reflect
-
-#### A. Request Context (Headers)
-All UI flows assume these headers are injected on every request:
-| Header | Source | UI Representation |
-|--------|--------|-------------------|
-| `X-Tenant-ID` | Active workspace/org selection | Shown in workspace context bar |
-| `X-Pod-ID` | Facility/site node | Shown in facility context |
-| `X-Request-ID` | Auto-generated per request | Available in error details |
-| `X-Correlation-ID` | Propagated across call chains | Available in error details |
-
-#### B. Idempotency for Write Operations
-- All POST/PUT/PATCH actions use `Idempotency-Key` header
-- UI prevents double-submit via `useIdempotentMutation` hook
-- "Already processed" responses shown gracefully (not as errors)
-- Retry behavior is safe by default
-
-#### C. Federation Authority Guard
-Protected actions requiring National Spine authority:
-| Action | Service | Authority Required |
-|--------|---------|-------------------|
-| Patient merge | VITO | National spine must be online |
-| Tariff update | MSIKA | National spine must be online |
-
-UI must show:
-- Spine connectivity status indicator
-- Clear blocking message when authority unavailable
-- Disabled controls for guarded actions when offline
-
-#### D. Event Envelope Contract
-Services emit events following v1.1 envelope:
-- `schema_version ≥ 1`
-- `tenant_id`, `pod_id` from context
-- Producer naming: `{service}-service` (e.g., `vito-service`)
-- Event types: `impilo.{service}.{entity}.{action}.v{N}`
-
-#### E. Standard Error Envelope
-All errors map to:
-```json
-{
-  "error": {
-    "code": "STRING_ENUM",
-    "message": "Human readable message",
-    "details": {},
-    "request_id": "uuid",
-    "correlation_id": "uuid"
-  }
-}
-```
-
-React hooks: `useKernelError` provides consistent error rendering.
-
-### UI Hooks Added
-| Hook | Purpose |
+#### A. Offline Entitlements (`src/lib/kernel/offlineEntitlements/`)
+| File | Purpose |
 |------|---------|
-| `useKernelRequest` | Wraps API calls with context headers + correlation |
-| `useIdempotentMutation` | Write operations with idempotency key + safe retry |
-| `useFederationGuard` | Checks spine authority before protected actions |
-| `useKernelError` | Parses standard error envelope for UI rendering |
+| `types.ts` | EntitlementPayload, SignedEntitlement, scopes, constraints, error codes |
+| `crypto.ts` | KMS abstraction — ECDSA P-256 signing/verification, key rotation via kid |
+| `store.ts` | In-memory entitlement record store (production: Postgres) |
+| `issuer.ts` | `issueEntitlement()` — PDP check → sign → audit → emit → store |
+| `verifier.ts` | `verifyEntitlementOffline()` — signature + expiry + scope + constraints |
+| `events.ts` | Event emitters: issued/revoked/consumed |
+| `index.ts` | Module exports |
 
-### Screens Updated
-| Screen | Changes |
-|--------|---------|
-| Client Registry | Merge actions guarded by federation authority check |
-| Product Catalogue | Write operations use idempotent mutations |
-| All error states | Consume standard error envelope fields |
+**Key Design Decisions:**
+- Ed25519 signing simulated via ECDSA P-256 (Web Crypto limitation)
+- Key rotation via `kid` (key ID) — verifiers accept any known kid
+- Max validity window: 6 hours
+- PDP ALLOW required before issuance
+- Audit record written before response (mandatory)
+- Entitlement scope is strict subset of online PDP allowance
 
----
+#### B. BUTANO Events (`src/lib/kernel/butano/events.ts`)
+| Event | Partition Key |
+|-------|---------------|
+| `impilo.butano.fhir.resource.created.v1` | patient_cpid |
+| `impilo.butano.fhir.resource.updated.v1` | patient_cpid |
+| `impilo.butano.reconcile.completed.v1` | to_cpid |
 
-## Wave 4 — Offline Entitlements + BUTANO Events (PAUSED)
+**Payload rules:**
+- PII-free — no names, contact info, or national IDs
+- Delta-first payloads (op, before, after, changed_fields)
+- All emits go through schema gate + dual-emit policy
 
-Deferred until contract sync is complete and Claude-based implementation stabilizes.
+#### C. Updated Kernel Exports
+- `src/lib/kernel/index.ts` — exports offline entitlements + BUTANO events
+- `src/lib/kernel/types.ts` — added entitlement error codes
+
+#### D. Documentation
+- `docs/migration/manifest_diff.md` — Full diff of Manifest v1.0 → v1.1
+- `docs/offline_entitlements.md` — Issuance, verification, revocation, security
+- `docs/butano_events.md` — Topic contracts, payloads, partitioning
+
+#### E. Tests (`src/lib/kernel/wave4/__tests__/wave4.test.ts`)
+- Entitlement issuance blocked if PDP denies
+- Entitlement issuance requires audit write before response
+- Offline verification passes for valid signature + expiry
+- Offline verification fails for wrong scope/expired/kid mismatch
+- BUTANO event emitters publish correct v1.1 envelope and partition_key
+- Wave 1–3 backward compatibility maintained
 
 ---
 
@@ -161,3 +108,5 @@ Deferred until contract sync is complete and Claude-based implementation stabili
 | BUTANO/MSIKA/TSHEPO internals | Backend implemented externally |
 | Java service code | Not applicable to Lovable |
 | Full federation pod registration | Infrastructure concern |
+| HSM/KMS integration | Uses Web Crypto abstraction |
+| Schema Registry infrastructure | Prototype uses in-memory validation |
