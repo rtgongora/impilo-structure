@@ -10,3 +10,25 @@ export type {
 } from './types';
 export { evaluatePolicy } from './pdpEngine';
 export { pdpDecide } from './pdpService';
+export {
+  tshepoAuthzDecide,
+  tshepoListConsents,
+  tshepoCreateConsent,
+  tshepoBreakGlassRequest,
+  tshepoBreakGlassReview,
+  tshepoAuditQuery,
+  tshepoAccessHistory,
+  tshepoIssueOfflineToken,
+  tshepoResolveIdentity,
+  tshepoGetJWKS,
+} from './tshepoClient';
+export type {
+  AuthzDecideRequest,
+  AuthzDecideResponse,
+  ConsentRecord,
+  AuditEntry,
+  BreakGlassRequest,
+  BreakGlassResponse,
+  PatientAccessEntry,
+  OfflineTokenResponse,
+} from './tshepoClient';
