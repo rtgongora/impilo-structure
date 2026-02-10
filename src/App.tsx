@@ -77,6 +77,11 @@ import TusoStartShift from "./pages/admin/TusoStartShift";
 import TusoResources from "./pages/admin/TusoResources";
 import TusoConfig from "./pages/admin/TusoConfig";
 import TusoControlTower from "./pages/admin/TusoControlTower";
+import VarapiProviders from "./pages/admin/VarapiProviders";
+import VarapiPrivileges from "./pages/admin/VarapiPrivileges";
+import VarapiCouncils from "./pages/admin/VarapiCouncils";
+import VarapiTokens from "./pages/admin/VarapiTokens";
+import VarapiPortal from "./pages/admin/VarapiPortal";
 const queryClient = new QueryClient();
 
 const App = () => (
@@ -343,6 +348,12 @@ const App = () => (
             <Route path="/admin/tuso/resources" element={<ProtectedRoute><TusoResources /></ProtectedRoute>} />
             <Route path="/admin/tuso/config" element={<ProtectedRoute><TusoConfig /></ProtectedRoute>} />
             <Route path="/admin/tuso/control-tower" element={<ProtectedRoute><TusoControlTower /></ProtectedRoute>} />
+            {/* VARAPI Admin Surfaces */}
+            <Route path="/admin/varapi/providers" element={<ProtectedRoute><VarapiProviders /></ProtectedRoute>} />
+            <Route path="/admin/varapi/privileges" element={<ProtectedRoute><VarapiPrivileges /></ProtectedRoute>} />
+            <Route path="/admin/varapi/councils" element={<ProtectedRoute><VarapiCouncils /></ProtectedRoute>} />
+            <Route path="/admin/varapi/tokens" element={<ProtectedRoute><VarapiTokens /></ProtectedRoute>} />
+            <Route path="/admin/varapi/portal" element={<ProtectedRoute><VarapiPortal /></ProtectedRoute>} />
             {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
             <Route path="*" element={<NotFound />} />
           </Routes>

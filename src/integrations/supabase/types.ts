@@ -30549,6 +30549,900 @@ export type Database = {
         }
         Relationships: []
       }
+      varapi_biometric_bindings: {
+        Row: {
+          biometric_ref: string
+          bound_at: string | null
+          created_at: string
+          id: string
+          provider_public_id: string
+          status: string
+          tenant_id: string
+        }
+        Insert: {
+          biometric_ref: string
+          bound_at?: string | null
+          created_at?: string
+          id?: string
+          provider_public_id: string
+          status?: string
+          tenant_id: string
+        }
+        Update: {
+          biometric_ref?: string
+          bound_at?: string | null
+          created_at?: string
+          id?: string
+          provider_public_id?: string
+          status?: string
+          tenant_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "varapi_biometric_bindings_provider_public_id_fkey"
+            columns: ["provider_public_id"]
+            isOneToOne: false
+            referencedRelation: "varapi_providers"
+            referencedColumns: ["provider_public_id"]
+          },
+        ]
+      }
+      varapi_code_sets: {
+        Row: {
+          active: boolean
+          code: string
+          code_system: string
+          display: string
+          id: string
+        }
+        Insert: {
+          active?: boolean
+          code: string
+          code_system: string
+          display: string
+          id?: string
+        }
+        Update: {
+          active?: boolean
+          code?: string
+          code_system?: string
+          display?: string
+          id?: string
+        }
+        Relationships: []
+      }
+      varapi_council_users: {
+        Row: {
+          actor_id: string
+          council_id: string
+          created_at: string
+          id: string
+          role: string
+          tenant_id: string
+        }
+        Insert: {
+          actor_id: string
+          council_id: string
+          created_at?: string
+          id?: string
+          role?: string
+          tenant_id: string
+        }
+        Update: {
+          actor_id?: string
+          council_id?: string
+          created_at?: string
+          id?: string
+          role?: string
+          tenant_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "varapi_council_users_council_id_fkey"
+            columns: ["council_id"]
+            isOneToOne: false
+            referencedRelation: "varapi_councils"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      varapi_councils: {
+        Row: {
+          council_type_code: string | null
+          created_at: string
+          external_system_ref: string | null
+          id: string
+          mode: string
+          name: string
+          tenant_id: string
+          updated_at: string
+        }
+        Insert: {
+          council_type_code?: string | null
+          created_at?: string
+          external_system_ref?: string | null
+          id?: string
+          mode?: string
+          name: string
+          tenant_id: string
+          updated_at?: string
+        }
+        Update: {
+          council_type_code?: string | null
+          created_at?: string
+          external_system_ref?: string | null
+          id?: string
+          mode?: string
+          name?: string
+          tenant_id?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
+      varapi_cpd_cycles: {
+        Row: {
+          achieved_points: number
+          created_at: string
+          cycle_year: number
+          id: string
+          provider_public_id: string
+          required_points: number
+          status: string
+          tenant_id: string
+        }
+        Insert: {
+          achieved_points?: number
+          created_at?: string
+          cycle_year: number
+          id?: string
+          provider_public_id: string
+          required_points?: number
+          status?: string
+          tenant_id: string
+        }
+        Update: {
+          achieved_points?: number
+          created_at?: string
+          cycle_year?: number
+          id?: string
+          provider_public_id?: string
+          required_points?: number
+          status?: string
+          tenant_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "varapi_cpd_cycles_provider_public_id_fkey"
+            columns: ["provider_public_id"]
+            isOneToOne: false
+            referencedRelation: "varapi_providers"
+            referencedColumns: ["provider_public_id"]
+          },
+        ]
+      }
+      varapi_cpd_events: {
+        Row: {
+          created_at: string
+          event_type: string
+          evidence_required: boolean
+          id: string
+          occurred_at: string
+          points: number
+          provider_public_id: string
+          source: string
+          tenant_id: string
+        }
+        Insert: {
+          created_at?: string
+          event_type: string
+          evidence_required?: boolean
+          id?: string
+          occurred_at?: string
+          points?: number
+          provider_public_id: string
+          source?: string
+          tenant_id: string
+        }
+        Update: {
+          created_at?: string
+          event_type?: string
+          evidence_required?: boolean
+          id?: string
+          occurred_at?: string
+          points?: number
+          provider_public_id?: string
+          source?: string
+          tenant_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "varapi_cpd_events_provider_public_id_fkey"
+            columns: ["provider_public_id"]
+            isOneToOne: false
+            referencedRelation: "varapi_providers"
+            referencedColumns: ["provider_public_id"]
+          },
+        ]
+      }
+      varapi_cpd_evidence: {
+        Row: {
+          cpd_event_id: string
+          created_at: string
+          document_id: string | null
+          id: string
+          review_notes: string | null
+          status: string
+          tenant_id: string
+        }
+        Insert: {
+          cpd_event_id: string
+          created_at?: string
+          document_id?: string | null
+          id?: string
+          review_notes?: string | null
+          status?: string
+          tenant_id: string
+        }
+        Update: {
+          cpd_event_id?: string
+          created_at?: string
+          document_id?: string | null
+          id?: string
+          review_notes?: string | null
+          status?: string
+          tenant_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "varapi_cpd_evidence_cpd_event_id_fkey"
+            columns: ["cpd_event_id"]
+            isOneToOne: false
+            referencedRelation: "varapi_cpd_events"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "varapi_cpd_evidence_document_id_fkey"
+            columns: ["document_id"]
+            isOneToOne: false
+            referencedRelation: "varapi_documents"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      varapi_documents: {
+        Row: {
+          created_at: string
+          doc_type: string
+          id: string
+          owner_id: string
+          owner_type: string
+          storage_pointer: string | null
+          tenant_id: string
+        }
+        Insert: {
+          created_at?: string
+          doc_type: string
+          id?: string
+          owner_id: string
+          owner_type: string
+          storage_pointer?: string | null
+          tenant_id: string
+        }
+        Update: {
+          created_at?: string
+          doc_type?: string
+          id?: string
+          owner_id?: string
+          owner_type?: string
+          storage_pointer?: string | null
+          tenant_id?: string
+        }
+        Relationships: []
+      }
+      varapi_import_runs: {
+        Row: {
+          council_id: string
+          created_at: string
+          ended_at: string | null
+          id: string
+          source_type: string
+          started_at: string | null
+          status: string
+          summary_json: Json | null
+          tenant_id: string
+        }
+        Insert: {
+          council_id: string
+          created_at?: string
+          ended_at?: string | null
+          id?: string
+          source_type: string
+          started_at?: string | null
+          status?: string
+          summary_json?: Json | null
+          tenant_id: string
+        }
+        Update: {
+          council_id?: string
+          created_at?: string
+          ended_at?: string | null
+          id?: string
+          source_type?: string
+          started_at?: string | null
+          status?: string
+          summary_json?: Json | null
+          tenant_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "varapi_import_runs_council_id_fkey"
+            columns: ["council_id"]
+            isOneToOne: false
+            referencedRelation: "varapi_councils"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      varapi_license_events: {
+        Row: {
+          actor_id: string
+          actor_type: string
+          event_at: string
+          event_type: string
+          id: string
+          license_id: string
+          payload_json: Json | null
+          tenant_id: string
+        }
+        Insert: {
+          actor_id: string
+          actor_type: string
+          event_at?: string
+          event_type: string
+          id?: string
+          license_id: string
+          payload_json?: Json | null
+          tenant_id: string
+        }
+        Update: {
+          actor_id?: string
+          actor_type?: string
+          event_at?: string
+          event_type?: string
+          id?: string
+          license_id?: string
+          payload_json?: Json | null
+          tenant_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "varapi_license_events_license_id_fkey"
+            columns: ["license_id"]
+            isOneToOne: false
+            referencedRelation: "varapi_licenses"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      varapi_licenses: {
+        Row: {
+          council_id: string | null
+          created_at: string
+          id: string
+          license_status: string
+          notes: string | null
+          provider_public_id: string
+          status_reason_code: string | null
+          tenant_id: string
+          updated_at: string
+          valid_from: string | null
+          valid_to: string | null
+        }
+        Insert: {
+          council_id?: string | null
+          created_at?: string
+          id?: string
+          license_status?: string
+          notes?: string | null
+          provider_public_id: string
+          status_reason_code?: string | null
+          tenant_id: string
+          updated_at?: string
+          valid_from?: string | null
+          valid_to?: string | null
+        }
+        Update: {
+          council_id?: string | null
+          created_at?: string
+          id?: string
+          license_status?: string
+          notes?: string | null
+          provider_public_id?: string
+          status_reason_code?: string | null
+          tenant_id?: string
+          updated_at?: string
+          valid_from?: string | null
+          valid_to?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "varapi_licenses_council_id_fkey"
+            columns: ["council_id"]
+            isOneToOne: false
+            referencedRelation: "varapi_councils"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "varapi_licenses_provider_public_id_fkey"
+            columns: ["provider_public_id"]
+            isOneToOne: false
+            referencedRelation: "varapi_providers"
+            referencedColumns: ["provider_public_id"]
+          },
+        ]
+      }
+      varapi_outbox_events: {
+        Row: {
+          created_at: string
+          event_type: string
+          id: string
+          payload_json: Json | null
+          tenant_id: string
+        }
+        Insert: {
+          created_at?: string
+          event_type: string
+          id?: string
+          payload_json?: Json | null
+          tenant_id: string
+        }
+        Update: {
+          created_at?: string
+          event_type?: string
+          id?: string
+          payload_json?: Json | null
+          tenant_id?: string
+        }
+        Relationships: []
+      }
+      varapi_privilege_approvals: {
+        Row: {
+          decided_at: string
+          decided_by_actor_id: string
+          decision: string
+          decision_reason: string
+          id: string
+          privilege_id: string
+          tenant_id: string
+        }
+        Insert: {
+          decided_at?: string
+          decided_by_actor_id: string
+          decision: string
+          decision_reason: string
+          id?: string
+          privilege_id: string
+          tenant_id: string
+        }
+        Update: {
+          decided_at?: string
+          decided_by_actor_id?: string
+          decision?: string
+          decision_reason?: string
+          id?: string
+          privilege_id?: string
+          tenant_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "varapi_privilege_approvals_privilege_id_fkey"
+            columns: ["privilege_id"]
+            isOneToOne: false
+            referencedRelation: "varapi_privileges"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      varapi_privileges: {
+        Row: {
+          created_at: string
+          end_at: string | null
+          facility_id: string | null
+          id: string
+          provider_public_id: string
+          scope_json: Json | null
+          start_at: string
+          status: string
+          supervising_authority_json: Json | null
+          tenant_id: string
+          updated_at: string
+          workspace_id: string | null
+        }
+        Insert: {
+          created_at?: string
+          end_at?: string | null
+          facility_id?: string | null
+          id?: string
+          provider_public_id: string
+          scope_json?: Json | null
+          start_at?: string
+          status?: string
+          supervising_authority_json?: Json | null
+          tenant_id: string
+          updated_at?: string
+          workspace_id?: string | null
+        }
+        Update: {
+          created_at?: string
+          end_at?: string | null
+          facility_id?: string | null
+          id?: string
+          provider_public_id?: string
+          scope_json?: Json | null
+          start_at?: string
+          status?: string
+          supervising_authority_json?: Json | null
+          tenant_id?: string
+          updated_at?: string
+          workspace_id?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "varapi_privileges_provider_public_id_fkey"
+            columns: ["provider_public_id"]
+            isOneToOne: false
+            referencedRelation: "varapi_providers"
+            referencedColumns: ["provider_public_id"]
+          },
+        ]
+      }
+      varapi_provider_contacts: {
+        Row: {
+          created_at: string
+          id: string
+          is_primary: boolean | null
+          provider_public_id: string
+          tenant_id: string
+          type: string
+          value: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          is_primary?: boolean | null
+          provider_public_id: string
+          tenant_id: string
+          type: string
+          value: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          is_primary?: boolean | null
+          provider_public_id?: string
+          tenant_id?: string
+          type?: string
+          value?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "varapi_provider_contacts_provider_public_id_fkey"
+            columns: ["provider_public_id"]
+            isOneToOne: false
+            referencedRelation: "varapi_providers"
+            referencedColumns: ["provider_public_id"]
+          },
+        ]
+      }
+      varapi_provider_council_affiliations: {
+        Row: {
+          council_id: string
+          created_at: string
+          end_at: string | null
+          id: string
+          membership_status: string
+          provider_public_id: string
+          start_at: string
+          tenant_id: string
+        }
+        Insert: {
+          council_id: string
+          created_at?: string
+          end_at?: string | null
+          id?: string
+          membership_status?: string
+          provider_public_id: string
+          start_at?: string
+          tenant_id: string
+        }
+        Update: {
+          council_id?: string
+          created_at?: string
+          end_at?: string | null
+          id?: string
+          membership_status?: string
+          provider_public_id?: string
+          start_at?: string
+          tenant_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "varapi_provider_council_affiliations_council_id_fkey"
+            columns: ["council_id"]
+            isOneToOne: false
+            referencedRelation: "varapi_councils"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "varapi_provider_council_affiliations_provider_public_id_fkey"
+            columns: ["provider_public_id"]
+            isOneToOne: false
+            referencedRelation: "varapi_providers"
+            referencedColumns: ["provider_public_id"]
+          },
+        ]
+      }
+      varapi_provider_identifiers: {
+        Row: {
+          created_at: string
+          id: string
+          id_type: string
+          id_value: string
+          provider_public_id: string
+          tenant_id: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          id_type: string
+          id_value: string
+          provider_public_id: string
+          tenant_id: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          id_type?: string
+          id_value?: string
+          provider_public_id?: string
+          tenant_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "varapi_provider_identifiers_provider_public_id_fkey"
+            columns: ["provider_public_id"]
+            isOneToOne: false
+            referencedRelation: "varapi_providers"
+            referencedColumns: ["provider_public_id"]
+          },
+        ]
+      }
+      varapi_provider_specialties: {
+        Row: {
+          created_at: string
+          id: string
+          provider_public_id: string
+          specialty_code: string
+          subspecialty_code: string | null
+          tenant_id: string
+          validation_status: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          provider_public_id: string
+          specialty_code: string
+          subspecialty_code?: string | null
+          tenant_id: string
+          validation_status?: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          provider_public_id?: string
+          specialty_code?: string
+          subspecialty_code?: string | null
+          tenant_id?: string
+          validation_status?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "varapi_provider_specialties_provider_public_id_fkey"
+            columns: ["provider_public_id"]
+            isOneToOne: false
+            referencedRelation: "varapi_providers"
+            referencedColumns: ["provider_public_id"]
+          },
+        ]
+      }
+      varapi_provider_tokens: {
+        Row: {
+          argon2_verifier: string
+          id: string
+          issued_at: string
+          last_used_at: string | null
+          lookup_hash: string
+          provider_public_id: string
+          rotated_at: string | null
+          status: string
+          tenant_id: string
+        }
+        Insert: {
+          argon2_verifier: string
+          id?: string
+          issued_at?: string
+          last_used_at?: string | null
+          lookup_hash: string
+          provider_public_id: string
+          rotated_at?: string | null
+          status?: string
+          tenant_id: string
+        }
+        Update: {
+          argon2_verifier?: string
+          id?: string
+          issued_at?: string
+          last_used_at?: string | null
+          lookup_hash?: string
+          provider_public_id?: string
+          rotated_at?: string | null
+          status?: string
+          tenant_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "varapi_provider_tokens_provider_public_id_fkey"
+            columns: ["provider_public_id"]
+            isOneToOne: false
+            referencedRelation: "varapi_providers"
+            referencedColumns: ["provider_public_id"]
+          },
+        ]
+      }
+      varapi_providers: {
+        Row: {
+          cadre_code: string | null
+          created_at: string
+          primary_council_id: string | null
+          profile_json: Json | null
+          provider_public_id: string
+          status: string
+          tenant_id: string
+          updated_at: string
+        }
+        Insert: {
+          cadre_code?: string | null
+          created_at?: string
+          primary_council_id?: string | null
+          profile_json?: Json | null
+          provider_public_id: string
+          status?: string
+          tenant_id: string
+          updated_at?: string
+        }
+        Update: {
+          cadre_code?: string | null
+          created_at?: string
+          primary_council_id?: string | null
+          profile_json?: Json | null
+          provider_public_id?: string
+          status?: string
+          tenant_id?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "varapi_providers_primary_council_id_fkey"
+            columns: ["primary_council_id"]
+            isOneToOne: false
+            referencedRelation: "varapi_councils"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      varapi_reconciliation_actions: {
+        Row: {
+          case_id: string
+          decided_at: string
+          decided_by: string
+          decision: string
+          decision_reason: string
+          id: string
+          tenant_id: string
+        }
+        Insert: {
+          case_id: string
+          decided_at?: string
+          decided_by: string
+          decision: string
+          decision_reason: string
+          id?: string
+          tenant_id: string
+        }
+        Update: {
+          case_id?: string
+          decided_at?: string
+          decided_by?: string
+          decision?: string
+          decision_reason?: string
+          id?: string
+          tenant_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "varapi_reconciliation_actions_case_id_fkey"
+            columns: ["case_id"]
+            isOneToOne: false
+            referencedRelation: "varapi_reconciliation_cases"
+            referencedColumns: ["case_id"]
+          },
+        ]
+      }
+      varapi_reconciliation_cases: {
+        Row: {
+          case_id: string
+          case_type: string
+          council_id: string | null
+          created_at: string
+          payload_json: Json | null
+          status: string
+          tenant_id: string
+        }
+        Insert: {
+          case_id?: string
+          case_type: string
+          council_id?: string | null
+          created_at?: string
+          payload_json?: Json | null
+          status?: string
+          tenant_id: string
+        }
+        Update: {
+          case_id?: string
+          case_type?: string
+          council_id?: string | null
+          created_at?: string
+          payload_json?: Json | null
+          status?: string
+          tenant_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "varapi_reconciliation_cases_council_id_fkey"
+            columns: ["council_id"]
+            isOneToOne: false
+            referencedRelation: "varapi_councils"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      varapi_tenant_config: {
+        Row: {
+          created_at: string
+          id: string
+          registry_mode: string
+          tenant_id: string
+          updated_at: string
+          zibo_validation_mode: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          registry_mode?: string
+          tenant_id: string
+          updated_at?: string
+          zibo_validation_mode?: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          registry_mode?: string
+          tenant_id?: string
+          updated_at?: string
+          zibo_validation_mode?: string
+        }
+        Relationships: []
+      }
       vendor_bids: {
         Row: {
           can_fulfill_all: boolean | null
