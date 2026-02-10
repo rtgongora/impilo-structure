@@ -35816,6 +35816,251 @@ export type Database = {
           },
         ]
       }
+      zibo_artifacts: {
+        Row: {
+          canonical_url: string
+          content_json: Json
+          created_at: string
+          created_by_actor_id: string
+          fhir_type: string
+          hash: string | null
+          id: string
+          status: string
+          tenant_id: string
+          version: string
+        }
+        Insert: {
+          canonical_url: string
+          content_json?: Json
+          created_at?: string
+          created_by_actor_id?: string
+          fhir_type: string
+          hash?: string | null
+          id?: string
+          status?: string
+          tenant_id?: string
+          version: string
+        }
+        Update: {
+          canonical_url?: string
+          content_json?: Json
+          created_at?: string
+          created_by_actor_id?: string
+          fhir_type?: string
+          hash?: string | null
+          id?: string
+          status?: string
+          tenant_id?: string
+          version?: string
+        }
+        Relationships: []
+      }
+      zibo_assignments: {
+        Row: {
+          created_at: string
+          id: string
+          pack_id: string
+          pack_tenant_id: string
+          pack_version: string
+          policy_mode: string
+          scope_id: string
+          scope_type: string
+          tenant_id: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          pack_id: string
+          pack_tenant_id?: string
+          pack_version: string
+          policy_mode?: string
+          scope_id: string
+          scope_type: string
+          tenant_id: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          pack_id?: string
+          pack_tenant_id?: string
+          pack_version?: string
+          policy_mode?: string
+          scope_id?: string
+          scope_type?: string
+          tenant_id?: string
+        }
+        Relationships: []
+      }
+      zibo_mappings_index: {
+        Row: {
+          conceptmap_ref: Json | null
+          confidence: number
+          created_at: string
+          id: string
+          source_code: string
+          source_system: string
+          target_code: string
+          target_system: string
+          tenant_id: string
+        }
+        Insert: {
+          conceptmap_ref?: Json | null
+          confidence?: number
+          created_at?: string
+          id?: string
+          source_code: string
+          source_system: string
+          target_code: string
+          target_system: string
+          tenant_id?: string
+        }
+        Update: {
+          conceptmap_ref?: Json | null
+          confidence?: number
+          created_at?: string
+          id?: string
+          source_code?: string
+          source_system?: string
+          target_code?: string
+          target_system?: string
+          tenant_id?: string
+        }
+        Relationships: []
+      }
+      zibo_pack_artifacts: {
+        Row: {
+          artifact_id: string
+          pack_id: string
+          pack_version: string
+          tenant_id: string
+        }
+        Insert: {
+          artifact_id: string
+          pack_id: string
+          pack_version: string
+          tenant_id?: string
+        }
+        Update: {
+          artifact_id?: string
+          pack_id?: string
+          pack_version?: string
+          tenant_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "zibo_pack_artifacts_artifact_id_fkey"
+            columns: ["artifact_id"]
+            isOneToOne: false
+            referencedRelation: "zibo_artifacts"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      zibo_packs: {
+        Row: {
+          created_at: string
+          manifest_json: Json
+          name: string
+          pack_id: string
+          status: string
+          tenant_id: string
+          version: string
+        }
+        Insert: {
+          created_at?: string
+          manifest_json?: Json
+          name: string
+          pack_id: string
+          status?: string
+          tenant_id?: string
+          version: string
+        }
+        Update: {
+          created_at?: string
+          manifest_json?: Json
+          name?: string
+          pack_id?: string
+          status?: string
+          tenant_id?: string
+          version?: string
+        }
+        Relationships: []
+      }
+      zibo_validation_jobs: {
+        Row: {
+          completed_at: string | null
+          created_at: string
+          facility_id: string | null
+          job_id: string
+          payload_json: Json
+          requested_policy_mode: string | null
+          result_json: Json | null
+          status: string
+          tenant_id: string
+        }
+        Insert: {
+          completed_at?: string | null
+          created_at?: string
+          facility_id?: string | null
+          job_id?: string
+          payload_json?: Json
+          requested_policy_mode?: string | null
+          result_json?: Json | null
+          status?: string
+          tenant_id: string
+        }
+        Update: {
+          completed_at?: string | null
+          created_at?: string
+          facility_id?: string | null
+          job_id?: string
+          payload_json?: Json
+          requested_policy_mode?: string | null
+          result_json?: Json | null
+          status?: string
+          tenant_id?: string
+        }
+        Relationships: []
+      }
+      zibo_validation_logs: {
+        Row: {
+          canonical_url: string | null
+          created_at: string
+          details_json: Json | null
+          facility_id: string | null
+          id: string
+          issue_code: string
+          service_name: string
+          severity: string
+          tenant_id: string
+          version: string | null
+        }
+        Insert: {
+          canonical_url?: string | null
+          created_at?: string
+          details_json?: Json | null
+          facility_id?: string | null
+          id?: string
+          issue_code: string
+          service_name?: string
+          severity?: string
+          tenant_id: string
+          version?: string | null
+        }
+        Update: {
+          canonical_url?: string | null
+          created_at?: string
+          details_json?: Json | null
+          facility_id?: string | null
+          id?: string
+          issue_code?: string
+          service_name?: string
+          severity?: string
+          tenant_id?: string
+          version?: string | null
+        }
+        Relationships: []
+      }
     }
     Views: {
       facility_capabilities: {
