@@ -89,6 +89,8 @@ import ButanoReconciliation from "./pages/admin/ButanoReconciliation";
 import ButanoStats from "./pages/admin/ButanoStats";
 import SuiteDocsConsole from "./pages/admin/SuiteDocsConsole";
 import SuiteSelfService from "./pages/admin/SuiteSelfService";
+import PctWorkTab from "./pages/admin/PctWorkTab";
+import PctControlTower from "./pages/admin/PctControlTower";
 const queryClient = new QueryClient();
 
 const App = () => (
@@ -370,6 +372,9 @@ const App = () => (
             {/* Landela + Credentials Suite Surfaces */}
             <Route path="/admin/suite/docs" element={<ProtectedRoute><SuiteDocsConsole /></ProtectedRoute>} />
             <Route path="/admin/suite/portal" element={<ProtectedRoute><SuiteSelfService /></ProtectedRoute>} />
+            {/* PCT v1.1 Surfaces */}
+            <Route path="/admin/pct/work" element={<ProtectedRoute><PctWorkTab /></ProtectedRoute>} />
+            <Route path="/admin/pct/control-tower" element={<ProtectedRoute><PctControlTower /></ProtectedRoute>} />
             {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
             <Route path="*" element={<NotFound />} />
           </Routes>
