@@ -29279,6 +29279,1135 @@ export type Database = {
         }
         Relationships: []
       }
+      tuso_alert_rules: {
+        Row: {
+          created_at: string
+          enabled: boolean
+          id: string
+          rule_json: Json
+          tenant_id: string
+        }
+        Insert: {
+          created_at?: string
+          enabled?: boolean
+          id?: string
+          rule_json?: Json
+          tenant_id: string
+        }
+        Update: {
+          created_at?: string
+          enabled?: boolean
+          id?: string
+          rule_json?: Json
+          tenant_id?: string
+        }
+        Relationships: []
+      }
+      tuso_bookings: {
+        Row: {
+          booked_by_actor_id: string
+          created_at: string
+          end_at: string
+          id: string
+          reason: string | null
+          resource_id: string
+          start_at: string
+          status: string
+          tenant_id: string
+        }
+        Insert: {
+          booked_by_actor_id: string
+          created_at?: string
+          end_at: string
+          id?: string
+          reason?: string | null
+          resource_id: string
+          start_at: string
+          status?: string
+          tenant_id: string
+        }
+        Update: {
+          booked_by_actor_id?: string
+          created_at?: string
+          end_at?: string
+          id?: string
+          reason?: string | null
+          resource_id?: string
+          start_at?: string
+          status?: string
+          tenant_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "tuso_bookings_resource_id_fkey"
+            columns: ["resource_id"]
+            isOneToOne: false
+            referencedRelation: "tuso_resources"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      tuso_code_sets: {
+        Row: {
+          active: boolean
+          code: string
+          code_system: string
+          created_at: string
+          display: string
+          id: string
+        }
+        Insert: {
+          active?: boolean
+          code: string
+          code_system: string
+          created_at?: string
+          display: string
+          id?: string
+        }
+        Update: {
+          active?: boolean
+          code?: string
+          code_system?: string
+          created_at?: string
+          display?: string
+          id?: string
+        }
+        Relationships: []
+      }
+      tuso_config: {
+        Row: {
+          created_at: string
+          emit_mode: string
+          gofr_enabled: boolean
+          gofr_last_sync_at: string | null
+          gofr_sync_frequency: string | null
+          id: string
+          spine_status: string
+          tenant_id: string
+          updated_at: string
+          zibo_mode: string
+        }
+        Insert: {
+          created_at?: string
+          emit_mode?: string
+          gofr_enabled?: boolean
+          gofr_last_sync_at?: string | null
+          gofr_sync_frequency?: string | null
+          id?: string
+          spine_status?: string
+          tenant_id: string
+          updated_at?: string
+          zibo_mode?: string
+        }
+        Update: {
+          created_at?: string
+          emit_mode?: string
+          gofr_enabled?: boolean
+          gofr_last_sync_at?: string | null
+          gofr_sync_frequency?: string | null
+          id?: string
+          spine_status?: string
+          tenant_id?: string
+          updated_at?: string
+          zibo_mode?: string
+        }
+        Relationships: []
+      }
+      tuso_config_facility_versions: {
+        Row: {
+          config_json: Json
+          created_at: string
+          created_by: string | null
+          facility_id: string
+          id: string
+          tenant_id: string
+          version: number
+        }
+        Insert: {
+          config_json?: Json
+          created_at?: string
+          created_by?: string | null
+          facility_id: string
+          id?: string
+          tenant_id: string
+          version?: number
+        }
+        Update: {
+          config_json?: Json
+          created_at?: string
+          created_by?: string | null
+          facility_id?: string
+          id?: string
+          tenant_id?: string
+          version?: number
+        }
+        Relationships: [
+          {
+            foreignKeyName: "tuso_config_facility_versions_facility_id_fkey"
+            columns: ["facility_id"]
+            isOneToOne: false
+            referencedRelation: "tuso_facilities"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      tuso_config_tenant_defaults: {
+        Row: {
+          config_json: Json
+          created_at: string
+          id: string
+          tenant_id: string
+          version: number
+        }
+        Insert: {
+          config_json?: Json
+          created_at?: string
+          id?: string
+          tenant_id: string
+          version?: number
+        }
+        Update: {
+          config_json?: Json
+          created_at?: string
+          id?: string
+          tenant_id?: string
+          version?: number
+        }
+        Relationships: []
+      }
+      tuso_config_workspace_overrides: {
+        Row: {
+          config_json: Json
+          created_at: string
+          created_by: string | null
+          id: string
+          tenant_id: string
+          workspace_id: string
+        }
+        Insert: {
+          config_json?: Json
+          created_at?: string
+          created_by?: string | null
+          id?: string
+          tenant_id: string
+          workspace_id: string
+        }
+        Update: {
+          config_json?: Json
+          created_at?: string
+          created_by?: string | null
+          id?: string
+          tenant_id?: string
+          workspace_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "tuso_config_workspace_overrides_workspace_id_fkey"
+            columns: ["workspace_id"]
+            isOneToOne: false
+            referencedRelation: "tuso_workspaces"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      tuso_control_tower_alerts: {
+        Row: {
+          alert_type: string
+          created_at: string
+          facility_id: string | null
+          id: string
+          message: string
+          resolved_at: string | null
+          severity: string
+          status: string
+          tenant_id: string
+        }
+        Insert: {
+          alert_type: string
+          created_at?: string
+          facility_id?: string | null
+          id?: string
+          message: string
+          resolved_at?: string | null
+          severity?: string
+          status?: string
+          tenant_id: string
+        }
+        Update: {
+          alert_type?: string
+          created_at?: string
+          facility_id?: string | null
+          id?: string
+          message?: string
+          resolved_at?: string | null
+          severity?: string
+          status?: string
+          tenant_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "tuso_control_tower_alerts_facility_id_fkey"
+            columns: ["facility_id"]
+            isOneToOne: false
+            referencedRelation: "tuso_facilities"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      tuso_facilities: {
+        Row: {
+          created_at: string
+          id: string
+          level: string
+          name: string
+          ownership: string
+          parent_facility_id: string | null
+          status: string
+          tenant_id: string
+          type_code: string | null
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          level?: string
+          name: string
+          ownership?: string
+          parent_facility_id?: string | null
+          status?: string
+          tenant_id: string
+          type_code?: string | null
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          level?: string
+          name?: string
+          ownership?: string
+          parent_facility_id?: string | null
+          status?: string
+          tenant_id?: string
+          type_code?: string | null
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "tuso_facilities_parent_facility_id_fkey"
+            columns: ["parent_facility_id"]
+            isOneToOne: false
+            referencedRelation: "tuso_facilities"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      tuso_facility_capabilities: {
+        Row: {
+          capability_code: string
+          created_at: string
+          department_code: string | null
+          facility_id: string
+          id: string
+          operating_hours_json: Json | null
+          tenant_id: string
+          validated_at: string | null
+          validation_status: string
+        }
+        Insert: {
+          capability_code: string
+          created_at?: string
+          department_code?: string | null
+          facility_id: string
+          id?: string
+          operating_hours_json?: Json | null
+          tenant_id: string
+          validated_at?: string | null
+          validation_status?: string
+        }
+        Update: {
+          capability_code?: string
+          created_at?: string
+          department_code?: string | null
+          facility_id?: string
+          id?: string
+          operating_hours_json?: Json | null
+          tenant_id?: string
+          validated_at?: string | null
+          validation_status?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "tuso_facility_capabilities_facility_id_fkey"
+            columns: ["facility_id"]
+            isOneToOne: false
+            referencedRelation: "tuso_facilities"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      tuso_facility_closures: {
+        Row: {
+          closed_at: string
+          closed_by: string
+          facility_id: string
+          id: string
+          reason: string
+          tenant_id: string
+        }
+        Insert: {
+          closed_at?: string
+          closed_by: string
+          facility_id: string
+          id?: string
+          reason: string
+          tenant_id: string
+        }
+        Update: {
+          closed_at?: string
+          closed_by?: string
+          facility_id?: string
+          id?: string
+          reason?: string
+          tenant_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "tuso_facility_closures_facility_id_fkey"
+            columns: ["facility_id"]
+            isOneToOne: false
+            referencedRelation: "tuso_facilities"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      tuso_facility_contacts: {
+        Row: {
+          created_at: string
+          email: string | null
+          facility_id: string
+          id: string
+          phone: string | null
+          primary_contact_name: string | null
+          primary_contact_role: string | null
+          tenant_id: string
+        }
+        Insert: {
+          created_at?: string
+          email?: string | null
+          facility_id: string
+          id?: string
+          phone?: string | null
+          primary_contact_name?: string | null
+          primary_contact_role?: string | null
+          tenant_id: string
+        }
+        Update: {
+          created_at?: string
+          email?: string | null
+          facility_id?: string
+          id?: string
+          phone?: string | null
+          primary_contact_name?: string | null
+          primary_contact_role?: string | null
+          tenant_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "tuso_facility_contacts_facility_id_fkey"
+            columns: ["facility_id"]
+            isOneToOne: false
+            referencedRelation: "tuso_facilities"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      tuso_facility_geo: {
+        Row: {
+          address_line1: string | null
+          address_line2: string | null
+          city: string | null
+          country: string | null
+          created_at: string
+          district: string | null
+          facility_id: string
+          id: string
+          lat: number | null
+          lng: number | null
+          postal_code: string | null
+          province: string | null
+          tenant_id: string
+          updated_at: string
+        }
+        Insert: {
+          address_line1?: string | null
+          address_line2?: string | null
+          city?: string | null
+          country?: string | null
+          created_at?: string
+          district?: string | null
+          facility_id: string
+          id?: string
+          lat?: number | null
+          lng?: number | null
+          postal_code?: string | null
+          province?: string | null
+          tenant_id: string
+          updated_at?: string
+        }
+        Update: {
+          address_line1?: string | null
+          address_line2?: string | null
+          city?: string | null
+          country?: string | null
+          created_at?: string
+          district?: string | null
+          facility_id?: string
+          id?: string
+          lat?: number | null
+          lng?: number | null
+          postal_code?: string | null
+          province?: string | null
+          tenant_id?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "tuso_facility_geo_facility_id_fkey"
+            columns: ["facility_id"]
+            isOneToOne: false
+            referencedRelation: "tuso_facilities"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      tuso_facility_identifiers: {
+        Row: {
+          created_at: string
+          facility_id: string
+          id: string
+          id_type: string
+          id_value: string
+          tenant_id: string
+        }
+        Insert: {
+          created_at?: string
+          facility_id: string
+          id?: string
+          id_type: string
+          id_value: string
+          tenant_id: string
+        }
+        Update: {
+          created_at?: string
+          facility_id?: string
+          id?: string
+          id_type?: string
+          id_value?: string
+          tenant_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "tuso_facility_identifiers_facility_id_fkey"
+            columns: ["facility_id"]
+            isOneToOne: false
+            referencedRelation: "tuso_facilities"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      tuso_facility_merges: {
+        Row: {
+          approved_at: string | null
+          approved_by: string | null
+          created_at: string
+          from_facility_id: string
+          id: string
+          reason: string
+          status: string
+          tenant_id: string
+          to_facility_id: string
+        }
+        Insert: {
+          approved_at?: string | null
+          approved_by?: string | null
+          created_at?: string
+          from_facility_id: string
+          id?: string
+          reason: string
+          status?: string
+          tenant_id: string
+          to_facility_id: string
+        }
+        Update: {
+          approved_at?: string | null
+          approved_by?: string | null
+          created_at?: string
+          from_facility_id?: string
+          id?: string
+          reason?: string
+          status?: string
+          tenant_id?: string
+          to_facility_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "tuso_facility_merges_from_facility_id_fkey"
+            columns: ["from_facility_id"]
+            isOneToOne: false
+            referencedRelation: "tuso_facilities"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "tuso_facility_merges_to_facility_id_fkey"
+            columns: ["to_facility_id"]
+            isOneToOne: false
+            referencedRelation: "tuso_facilities"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      tuso_facility_readiness: {
+        Row: {
+          compliance_flags: Json | null
+          connectivity: Json | null
+          created_at: string
+          devices: Json | null
+          ehr_readiness: Json | null
+          facility_id: string
+          id: string
+          power: Json | null
+          tenant_id: string
+          updated_at: string
+          validated_at: string | null
+          validation_status: string
+        }
+        Insert: {
+          compliance_flags?: Json | null
+          connectivity?: Json | null
+          created_at?: string
+          devices?: Json | null
+          ehr_readiness?: Json | null
+          facility_id: string
+          id?: string
+          power?: Json | null
+          tenant_id: string
+          updated_at?: string
+          validated_at?: string | null
+          validation_status?: string
+        }
+        Update: {
+          compliance_flags?: Json | null
+          connectivity?: Json | null
+          created_at?: string
+          devices?: Json | null
+          ehr_readiness?: Json | null
+          facility_id?: string
+          id?: string
+          power?: Json | null
+          tenant_id?: string
+          updated_at?: string
+          validated_at?: string | null
+          validation_status?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "tuso_facility_readiness_facility_id_fkey"
+            columns: ["facility_id"]
+            isOneToOne: false
+            referencedRelation: "tuso_facilities"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      tuso_facility_versions: {
+        Row: {
+          after: Json | null
+          before: Json | null
+          changed_at: string
+          changed_by_actor_id: string | null
+          changed_fields: string[] | null
+          facility_id: string
+          id: string
+          tenant_id: string
+          version_no: number
+        }
+        Insert: {
+          after?: Json | null
+          before?: Json | null
+          changed_at?: string
+          changed_by_actor_id?: string | null
+          changed_fields?: string[] | null
+          facility_id: string
+          id?: string
+          tenant_id: string
+          version_no?: number
+        }
+        Update: {
+          after?: Json | null
+          before?: Json | null
+          changed_at?: string
+          changed_by_actor_id?: string | null
+          changed_fields?: string[] | null
+          facility_id?: string
+          id?: string
+          tenant_id?: string
+          version_no?: number
+        }
+        Relationships: [
+          {
+            foreignKeyName: "tuso_facility_versions_facility_id_fkey"
+            columns: ["facility_id"]
+            isOneToOne: false
+            referencedRelation: "tuso_facilities"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      tuso_gofr_sync_log: {
+        Row: {
+          completed_at: string | null
+          created_at: string
+          direction: string
+          error_details: Json | null
+          id: string
+          records_failed: number | null
+          records_processed: number | null
+          started_at: string | null
+          status: string
+          tenant_id: string
+        }
+        Insert: {
+          completed_at?: string | null
+          created_at?: string
+          direction: string
+          error_details?: Json | null
+          id?: string
+          records_failed?: number | null
+          records_processed?: number | null
+          started_at?: string | null
+          status?: string
+          tenant_id: string
+        }
+        Update: {
+          completed_at?: string | null
+          created_at?: string
+          direction?: string
+          error_details?: Json | null
+          id?: string
+          records_failed?: number | null
+          records_processed?: number | null
+          started_at?: string | null
+          status?: string
+          tenant_id?: string
+        }
+        Relationships: []
+      }
+      tuso_occupancy_snapshots: {
+        Row: {
+          captured_at: string
+          facility_id: string
+          id: string
+          occupied_beds: number
+          source: string
+          tenant_id: string
+          total_beds: number
+        }
+        Insert: {
+          captured_at?: string
+          facility_id: string
+          id?: string
+          occupied_beds?: number
+          source?: string
+          tenant_id: string
+          total_beds?: number
+        }
+        Update: {
+          captured_at?: string
+          facility_id?: string
+          id?: string
+          occupied_beds?: number
+          source?: string
+          tenant_id?: string
+          total_beds?: number
+        }
+        Relationships: [
+          {
+            foreignKeyName: "tuso_occupancy_snapshots_facility_id_fkey"
+            columns: ["facility_id"]
+            isOneToOne: false
+            referencedRelation: "tuso_facilities"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      tuso_provider_workspace_eligibility: {
+        Row: {
+          created_at: string
+          eligible: boolean
+          id: string
+          provider_id: string
+          reason: string | null
+          tenant_id: string
+          workspace_id: string
+        }
+        Insert: {
+          created_at?: string
+          eligible?: boolean
+          id?: string
+          provider_id: string
+          reason?: string | null
+          tenant_id: string
+          workspace_id: string
+        }
+        Update: {
+          created_at?: string
+          eligible?: boolean
+          id?: string
+          provider_id?: string
+          reason?: string | null
+          tenant_id?: string
+          workspace_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "tuso_provider_workspace_eligibility_workspace_id_fkey"
+            columns: ["workspace_id"]
+            isOneToOne: false
+            referencedRelation: "tuso_workspaces"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      tuso_resource_calendars: {
+        Row: {
+          created_at: string
+          id: string
+          recurring_rules_json: Json | null
+          resource_id: string
+          tenant_id: string
+          timezone: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          recurring_rules_json?: Json | null
+          resource_id: string
+          tenant_id: string
+          timezone?: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          recurring_rules_json?: Json | null
+          resource_id?: string
+          tenant_id?: string
+          timezone?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "tuso_resource_calendars_resource_id_fkey"
+            columns: ["resource_id"]
+            isOneToOne: false
+            referencedRelation: "tuso_resources"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      tuso_resources: {
+        Row: {
+          capacity: number | null
+          created_at: string
+          facility_id: string
+          id: string
+          maintenance_flag: boolean
+          name: string
+          status: string
+          tenant_id: string
+          type_code: string
+          updated_at: string
+        }
+        Insert: {
+          capacity?: number | null
+          created_at?: string
+          facility_id: string
+          id?: string
+          maintenance_flag?: boolean
+          name: string
+          status?: string
+          tenant_id: string
+          type_code: string
+          updated_at?: string
+        }
+        Update: {
+          capacity?: number | null
+          created_at?: string
+          facility_id?: string
+          id?: string
+          maintenance_flag?: boolean
+          name?: string
+          status?: string
+          tenant_id?: string
+          type_code?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "tuso_resources_facility_id_fkey"
+            columns: ["facility_id"]
+            isOneToOne: false
+            referencedRelation: "tuso_facilities"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      tuso_shift_workspace_assignments: {
+        Row: {
+          created_at: string
+          id: string
+          shift_id: string
+          workspace_id: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          shift_id: string
+          workspace_id: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          shift_id?: string
+          workspace_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "tuso_shift_workspace_assignments_shift_id_fkey"
+            columns: ["shift_id"]
+            isOneToOne: false
+            referencedRelation: "tuso_shifts"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "tuso_shift_workspace_assignments_workspace_id_fkey"
+            columns: ["workspace_id"]
+            isOneToOne: false
+            referencedRelation: "tuso_workspaces"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      tuso_shifts: {
+        Row: {
+          actor_id: string
+          created_at: string
+          ended_at: string | null
+          facility_id: string
+          id: string
+          started_at: string
+          status: string
+          tenant_id: string
+        }
+        Insert: {
+          actor_id: string
+          created_at?: string
+          ended_at?: string | null
+          facility_id: string
+          id?: string
+          started_at?: string
+          status?: string
+          tenant_id: string
+        }
+        Update: {
+          actor_id?: string
+          created_at?: string
+          ended_at?: string | null
+          facility_id?: string
+          id?: string
+          started_at?: string
+          status?: string
+          tenant_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "tuso_shifts_facility_id_fkey"
+            columns: ["facility_id"]
+            isOneToOne: false
+            referencedRelation: "tuso_facilities"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      tuso_telemetry_events: {
+        Row: {
+          facility_id: string | null
+          id: string
+          payload_json: Json
+          received_at: string
+          source: string
+          tenant_id: string
+        }
+        Insert: {
+          facility_id?: string | null
+          id?: string
+          payload_json?: Json
+          received_at?: string
+          source: string
+          tenant_id: string
+        }
+        Update: {
+          facility_id?: string | null
+          id?: string
+          payload_json?: Json
+          received_at?: string
+          source?: string
+          tenant_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "tuso_telemetry_events_facility_id_fkey"
+            columns: ["facility_id"]
+            isOneToOne: false
+            referencedRelation: "tuso_facilities"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      tuso_workspace_overrides: {
+        Row: {
+          actor_id: string
+          actor_type: string
+          created_at: string
+          facility_id: string | null
+          id: string
+          override_payload: Json
+          override_reason: string
+          tenant_id: string
+          workspace_id: string
+        }
+        Insert: {
+          actor_id: string
+          actor_type: string
+          created_at?: string
+          facility_id?: string | null
+          id?: string
+          override_payload?: Json
+          override_reason: string
+          tenant_id: string
+          workspace_id: string
+        }
+        Update: {
+          actor_id?: string
+          actor_type?: string
+          created_at?: string
+          facility_id?: string | null
+          id?: string
+          override_payload?: Json
+          override_reason?: string
+          tenant_id?: string
+          workspace_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "tuso_workspace_overrides_facility_id_fkey"
+            columns: ["facility_id"]
+            isOneToOne: false
+            referencedRelation: "tuso_facilities"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "tuso_workspace_overrides_workspace_id_fkey"
+            columns: ["workspace_id"]
+            isOneToOne: false
+            referencedRelation: "tuso_workspaces"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      tuso_workspace_rules: {
+        Row: {
+          created_at: string
+          eligible_cadres_json: Json | null
+          id: string
+          required_privileges_json: Json | null
+          requires_override_for_assignment: boolean
+          tenant_id: string
+          workspace_id: string
+        }
+        Insert: {
+          created_at?: string
+          eligible_cadres_json?: Json | null
+          id?: string
+          required_privileges_json?: Json | null
+          requires_override_for_assignment?: boolean
+          tenant_id: string
+          workspace_id: string
+        }
+        Update: {
+          created_at?: string
+          eligible_cadres_json?: Json | null
+          id?: string
+          required_privileges_json?: Json | null
+          requires_override_for_assignment?: boolean
+          tenant_id?: string
+          workspace_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "tuso_workspace_rules_workspace_id_fkey"
+            columns: ["workspace_id"]
+            isOneToOne: false
+            referencedRelation: "tuso_workspaces"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      tuso_workspaces: {
+        Row: {
+          active: boolean
+          created_at: string
+          default_panels_json: Json | null
+          facility_id: string
+          id: string
+          name: string
+          queues_supported_json: Json | null
+          tenant_id: string
+          updated_at: string
+          workspace_type_code: string
+        }
+        Insert: {
+          active?: boolean
+          created_at?: string
+          default_panels_json?: Json | null
+          facility_id: string
+          id?: string
+          name: string
+          queues_supported_json?: Json | null
+          tenant_id: string
+          updated_at?: string
+          workspace_type_code: string
+        }
+        Update: {
+          active?: boolean
+          created_at?: string
+          default_panels_json?: Json | null
+          facility_id?: string
+          id?: string
+          name?: string
+          queues_supported_json?: Json | null
+          tenant_id?: string
+          updated_at?: string
+          workspace_type_code?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "tuso_workspaces_facility_id_fkey"
+            columns: ["facility_id"]
+            isOneToOne: false
+            referencedRelation: "tuso_facilities"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       unmatched_transactions: {
         Row: {
           amount: number

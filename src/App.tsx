@@ -71,6 +71,12 @@ import VitoPatients from "./pages/admin/VitoPatients";
 import VitoMergeQueue from "./pages/admin/VitoMergeQueue";
 import VitoEventsViewer from "./pages/admin/VitoEventsViewer";
 import VitoAuditViewer from "./pages/admin/VitoAuditViewer";
+import TusoFacilities from "./pages/admin/TusoFacilities";
+import TusoWorkspaces from "./pages/admin/TusoWorkspaces";
+import TusoStartShift from "./pages/admin/TusoStartShift";
+import TusoResources from "./pages/admin/TusoResources";
+import TusoConfig from "./pages/admin/TusoConfig";
+import TusoControlTower from "./pages/admin/TusoControlTower";
 const queryClient = new QueryClient();
 
 const App = () => (
@@ -330,6 +336,13 @@ const App = () => (
             <Route path="/admin/vito/merges" element={<ProtectedRoute><VitoMergeQueue /></ProtectedRoute>} />
             <Route path="/admin/vito/events" element={<ProtectedRoute><VitoEventsViewer /></ProtectedRoute>} />
             <Route path="/admin/vito/audit" element={<ProtectedRoute><VitoAuditViewer /></ProtectedRoute>} />
+            {/* TUSO Admin Surfaces */}
+            <Route path="/admin/tuso/facilities" element={<ProtectedRoute><TusoFacilities /></ProtectedRoute>} />
+            <Route path="/admin/tuso/workspaces" element={<ProtectedRoute><TusoWorkspaces /></ProtectedRoute>} />
+            <Route path="/admin/tuso/start-shift" element={<ProtectedRoute><TusoStartShift /></ProtectedRoute>} />
+            <Route path="/admin/tuso/resources" element={<ProtectedRoute><TusoResources /></ProtectedRoute>} />
+            <Route path="/admin/tuso/config" element={<ProtectedRoute><TusoConfig /></ProtectedRoute>} />
+            <Route path="/admin/tuso/control-tower" element={<ProtectedRoute><TusoControlTower /></ProtectedRoute>} />
             {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
             <Route path="*" element={<NotFound />} />
           </Routes>
