@@ -82,6 +82,11 @@ import VarapiPrivileges from "./pages/admin/VarapiPrivileges";
 import VarapiCouncils from "./pages/admin/VarapiCouncils";
 import VarapiTokens from "./pages/admin/VarapiTokens";
 import VarapiPortal from "./pages/admin/VarapiPortal";
+import ButanoTimeline from "./pages/admin/ButanoTimeline";
+import ButanoIPS from "./pages/admin/ButanoIPS";
+import ButanoVisitSummary from "./pages/admin/ButanoVisitSummary";
+import ButanoReconciliation from "./pages/admin/ButanoReconciliation";
+import ButanoStats from "./pages/admin/ButanoStats";
 const queryClient = new QueryClient();
 
 const App = () => (
@@ -354,6 +359,12 @@ const App = () => (
             <Route path="/admin/varapi/councils" element={<ProtectedRoute><VarapiCouncils /></ProtectedRoute>} />
             <Route path="/admin/varapi/tokens" element={<ProtectedRoute><VarapiTokens /></ProtectedRoute>} />
             <Route path="/admin/varapi/portal" element={<ProtectedRoute><VarapiPortal /></ProtectedRoute>} />
+            {/* BUTANO SHR Surfaces */}
+            <Route path="/admin/butano/timeline" element={<ProtectedRoute><ButanoTimeline /></ProtectedRoute>} />
+            <Route path="/admin/butano/ips" element={<ProtectedRoute><ButanoIPS /></ProtectedRoute>} />
+            <Route path="/admin/butano/visit-summary" element={<ProtectedRoute><ButanoVisitSummary /></ProtectedRoute>} />
+            <Route path="/admin/butano/reconciliation" element={<ProtectedRoute><ButanoReconciliation /></ProtectedRoute>} />
+            <Route path="/admin/butano/stats" element={<ProtectedRoute><ButanoStats /></ProtectedRoute>} />
             {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
             <Route path="*" element={<NotFound />} />
           </Routes>
