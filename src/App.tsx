@@ -67,6 +67,10 @@ import TshepoAuditSearch from "./pages/admin/TshepoAuditSearch";
 import TshepoBreakGlass from "./pages/admin/TshepoBreakGlass";
 import TshepoPatientAccessHistory from "./pages/admin/TshepoPatientAccessHistory";
 import TshepoOfflineStatus from "./pages/admin/TshepoOfflineStatus";
+import VitoPatients from "./pages/admin/VitoPatients";
+import VitoMergeQueue from "./pages/admin/VitoMergeQueue";
+import VitoEventsViewer from "./pages/admin/VitoEventsViewer";
+import VitoAuditViewer from "./pages/admin/VitoAuditViewer";
 const queryClient = new QueryClient();
 
 const App = () => (
@@ -321,6 +325,11 @@ const App = () => (
             <Route path="/admin/tshepo/breakglass" element={<ProtectedRoute><TshepoBreakGlass /></ProtectedRoute>} />
             <Route path="/admin/tshepo/access-history" element={<ProtectedRoute><TshepoPatientAccessHistory /></ProtectedRoute>} />
             <Route path="/admin/tshepo/offline" element={<ProtectedRoute><TshepoOfflineStatus /></ProtectedRoute>} />
+            {/* VITO v1.1 Admin Surfaces */}
+            <Route path="/admin/vito/patients" element={<ProtectedRoute><VitoPatients /></ProtectedRoute>} />
+            <Route path="/admin/vito/merges" element={<ProtectedRoute><VitoMergeQueue /></ProtectedRoute>} />
+            <Route path="/admin/vito/events" element={<ProtectedRoute><VitoEventsViewer /></ProtectedRoute>} />
+            <Route path="/admin/vito/audit" element={<ProtectedRoute><VitoAuditViewer /></ProtectedRoute>} />
             {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
             <Route path="*" element={<NotFound />} />
           </Routes>

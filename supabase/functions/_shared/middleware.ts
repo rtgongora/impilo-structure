@@ -30,6 +30,13 @@ export interface KernelContext {
   podId: string;
   requestId: string;
   correlationId: string;
+  actorId?: string;
+  actorType?: string;
+  purposeOfUse?: string;
+  deviceFingerprint?: string;
+  facilityId?: string;
+  workspaceId?: string;
+  shiftId?: string;
 }
 
 interface V1_1Error {
@@ -139,6 +146,13 @@ function extractContext(req: Request): { ctx: KernelContext | null; errorRespons
       podId: podId!,
       requestId,
       correlationId,
+      actorId: req.headers.get("x-actor-id") || undefined,
+      actorType: req.headers.get("x-actor-type") || undefined,
+      purposeOfUse: req.headers.get("x-purpose-of-use") || undefined,
+      deviceFingerprint: req.headers.get("x-device-fingerprint") || undefined,
+      facilityId: req.headers.get("x-facility-id") || undefined,
+      workspaceId: req.headers.get("x-workspace-id") || undefined,
+      shiftId: req.headers.get("x-shift-id") || undefined,
     },
     errorResponse: null,
   };
