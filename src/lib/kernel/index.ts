@@ -104,11 +104,16 @@ export {
 export {
   issueEntitlement,
   verifyEntitlementOffline,
+  revokeEntitlement,
+  consumeEntitlement,
   generateSigningKey,
   getActiveKid,
   setActiveKid,
   clearKeyStore,
   clearEntitlementStore,
+  setEntitlementStore,
+  getEntitlementStoreAdapter,
+  InMemoryEntitlementStore,
   putEntitlement,
   getEntitlement,
   updateEntitlementStatus,
@@ -123,6 +128,7 @@ export {
   type SignedEntitlement,
   type EntitlementRecord,
   type EntitlementVerificationResult,
+  type EntitlementStoreAdapter,
 } from './offlineEntitlements';
 
 // Wave 4 — BUTANO Events

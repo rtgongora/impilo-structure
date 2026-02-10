@@ -4,7 +4,7 @@
  * Issues offline entitlements after PDP ALLOW decision.
  * Every issuance:
  *  1. Validates PDP allows the requested scope
- *  2. Signs the entitlement with Ed25519 (prototype: ECDSA P-256)
+ *  2. Signs the entitlement with Ed25519
  *  3. Writes audit record (SYSTEM decision)
  *  4. Emits impilo.offline.entitlement.issued.v1 event
  *  5. Stores the entitlement record
@@ -103,10 +103,11 @@ export async function issueEntitlement(
     constraints: request.constraints || {},
     policy_version: pdpResponse.policy_version,
     kid,
+    alg: 'Ed25519',
     issued_at: now,
   };
 
-  // 4. Sign
+  // 4. Sign with Ed25519
   const entitlementJwt = await signEntitlement(payload);
 
   // 5. Audit record (mandatory — must succeed before response)
@@ -139,7 +140,7 @@ export async function issueEntitlement(
     };
   }
 
-  // 6. Store record
+  // 6. Store record (must persist before returning)
   putEntitlement({
     entitlement_id: entitlementId,
     tenant_id: ctx.tenantId,
@@ -152,6 +153,7 @@ export async function issueEntitlement(
     constraints: request.constraints || {},
     policy_version: pdpResponse.policy_version,
     kid,
+    alg: 'Ed25519',
     status: 'ACTIVE',
     issued_at: now,
   });

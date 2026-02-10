@@ -1,66 +1,114 @@
 /**
  * Impilo vNext v1.1 — Offline Entitlement Store
  *
- * In-memory store for prototype. Production: Postgres-backed.
- * Stores entitlement records keyed by entitlement_id.
+ * Adapter-based store. The default is InMemoryEntitlementStore (for prototype/tests).
+ * Production: swap to PostgresEntitlementStore via setEntitlementStore().
+ *
+ * The Postgres schema is defined in the migration:
+ *   CREATE TABLE public.offline_entitlements (...)
+ * See supabase/migrations/ for the full DDL.
  */
 
-import type { EntitlementRecord } from './types';
+import type { EntitlementRecord, EntitlementStoreAdapter } from './types';
 
-const store = new Map<string, EntitlementRecord>();
+// ---------------------------------------------------------------------------
+// In-Memory Implementation (prototype / tests)
+// ---------------------------------------------------------------------------
+
+export class InMemoryEntitlementStore implements EntitlementStoreAdapter {
+  private store = new Map<string, EntitlementRecord>();
+
+  put(record: EntitlementRecord): void {
+    this.store.set(record.entitlement_id, { ...record });
+  }
+
+  get(id: string): EntitlementRecord | null {
+    return this.store.get(id) ?? null;
+  }
+
+  updateStatus(
+    id: string,
+    status: EntitlementRecord['status'],
+    meta?: { consumed_at?: string; revoked_at?: string }
+  ): boolean {
+    const record = this.store.get(id);
+    if (!record) return false;
+
+    record.status = status;
+    if (meta?.consumed_at) record.consumed_at = meta.consumed_at;
+    if (meta?.revoked_at) record.revoked_at = meta.revoked_at;
+    return true;
+  }
+
+  listBySubject(tenantId: string, subjectId: string): EntitlementRecord[] {
+    return Array.from(this.store.values()).filter(
+      r => r.tenant_id === tenantId && r.subject_id === subjectId
+    );
+  }
+
+  listByDevice(tenantId: string, deviceId: string): EntitlementRecord[] {
+    return Array.from(this.store.values()).filter(
+      r => r.tenant_id === tenantId && r.device_id === deviceId
+    );
+  }
+
+  clear(): void {
+    this.store.clear();
+  }
+}
+
+// ---------------------------------------------------------------------------
+// Active Store (swappable singleton)
+// ---------------------------------------------------------------------------
+
+let activeStore: EntitlementStoreAdapter = new InMemoryEntitlementStore();
 
 /**
- * Store an entitlement record.
+ * Swap the active entitlement store adapter.
+ * Use this to inject a Postgres-backed store in production.
  */
+export function setEntitlementStore(store: EntitlementStoreAdapter): void {
+  activeStore = store;
+}
+
+/**
+ * Get the current active store adapter (for testing/introspection).
+ */
+export function getEntitlementStoreAdapter(): EntitlementStoreAdapter {
+  return activeStore;
+}
+
+// ---------------------------------------------------------------------------
+// Delegating API (backward-compatible with existing callers)
+// ---------------------------------------------------------------------------
+
 export function putEntitlement(record: EntitlementRecord): void {
-  store.set(record.entitlement_id, { ...record });
+  activeStore.put(record);
 }
 
-/**
- * Get an entitlement by ID.
- */
 export function getEntitlement(entitlementId: string): EntitlementRecord | null {
-  return store.get(entitlementId) ?? null;
+  return activeStore.get(entitlementId);
 }
 
-/**
- * Update entitlement status.
- */
 export function updateEntitlementStatus(
   entitlementId: string,
   status: EntitlementRecord['status'],
   meta?: { consumed_at?: string; revoked_at?: string }
 ): boolean {
-  const record = store.get(entitlementId);
-  if (!record) return false;
-
-  record.status = status;
-  if (meta?.consumed_at) record.consumed_at = meta.consumed_at;
-  if (meta?.revoked_at) record.revoked_at = meta.revoked_at;
-  return true;
+  return activeStore.updateStatus(entitlementId, status, meta);
 }
 
-/**
- * List entitlements by subject.
- */
 export function listBySubject(tenantId: string, subjectId: string): EntitlementRecord[] {
-  return Array.from(store.values()).filter(
-    r => r.tenant_id === tenantId && r.subject_id === subjectId
-  );
+  return activeStore.listBySubject(tenantId, subjectId);
 }
 
-/**
- * List entitlements by device.
- */
 export function listByDevice(tenantId: string, deviceId: string): EntitlementRecord[] {
-  return Array.from(store.values()).filter(
-    r => r.tenant_id === tenantId && r.device_id === deviceId
-  );
+  return activeStore.listByDevice(tenantId, deviceId);
 }
 
 /**
  * Clear all entitlements. For testing only.
  */
 export function clearEntitlementStore(): void {
-  store.clear();
+  activeStore.clear();
 }

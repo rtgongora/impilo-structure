@@ -10,10 +10,12 @@ export type {
   EntitlementRecord,
   EntitlementVerificationResult,
   EntitlementErrorCode,
+  EntitlementStoreAdapter,
 } from './types';
 export { ENTITLEMENT_ERRORS } from './types';
 export { issueEntitlement } from './issuer';
 export { verifyEntitlementOffline } from './verifier';
+export { revokeEntitlement, consumeEntitlement } from './lifecycle';
 export {
   putEntitlement,
   getEntitlement,
@@ -21,6 +23,9 @@ export {
   listBySubject,
   listByDevice,
   clearEntitlementStore,
+  setEntitlementStore,
+  getEntitlementStoreAdapter,
+  InMemoryEntitlementStore,
 } from './store';
 export {
   generateSigningKey,
