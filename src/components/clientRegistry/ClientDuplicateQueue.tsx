@@ -1,6 +1,9 @@
 /**
  * Client Duplicate Queue
  * Review and resolve suspected duplicate client records
+ * 
+ * v1.1 Contract: Patient merge is a federation-guarded action
+ * requiring National Spine authority.
  */
 
 import { useState } from 'react';
@@ -9,15 +12,18 @@ import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Skeleton } from '@/components/ui/skeleton';
 import { Textarea } from '@/components/ui/textarea';
+import { Alert, AlertDescription } from '@/components/ui/alert';
 import { 
   GitMerge, 
   User,
   CheckCircle,
   XCircle,
   AlertTriangle,
-  ArrowRight,
+  ShieldAlert,
 } from 'lucide-react';
 import { useClientDuplicates } from '@/hooks/useClientRegistryData';
+import { useFederationGuard } from '@/hooks/useFederationGuard';
+import { SpineStatusIndicator } from '@/components/kernel/SpineStatusIndicator';
 import {
   Dialog,
   DialogContent,
@@ -32,6 +38,11 @@ export function ClientDuplicateQueue() {
   const [selectedDuplicate, setSelectedDuplicate] = useState<string | null>(null);
   const [showResolveDialog, setShowResolveDialog] = useState(false);
   const [resolveNotes, setResolveNotes] = useState('');
+  
+  // v1.1: Federation authority guard for merge operations
+  const { spineStatus, canPerformAction, getBlockReason } = useFederationGuard();
+  const mergeAllowed = canPerformAction('vito.patient.merge');
+  const mergeBlockReason = getBlockReason('vito.patient.merge');
 
   const handleResolveNotDuplicate = async () => {
     if (selectedDuplicate) {
@@ -83,16 +94,31 @@ export function ClientDuplicateQueue() {
   return (
     <Card>
       <CardHeader>
-        <CardTitle className="flex items-center gap-2">
-          <GitMerge className="h-5 w-5" />
-          Duplicate Review Queue
-          <Badge variant="destructive">{duplicates.length}</Badge>
-        </CardTitle>
-        <CardDescription>
-          Review suspected duplicates and decide whether to merge or keep separate
-        </CardDescription>
+        <div className="flex items-center justify-between">
+          <div>
+            <CardTitle className="flex items-center gap-2">
+              <GitMerge className="h-5 w-5" />
+              Duplicate Review Queue
+              <Badge variant="destructive">{duplicates.length}</Badge>
+            </CardTitle>
+            <CardDescription>
+              Review suspected duplicates and decide whether to merge or keep separate
+            </CardDescription>
+          </div>
+          <SpineStatusIndicator status={spineStatus} />
+        </div>
       </CardHeader>
       <CardContent>
+        {/* v1.1: Federation authority warning */}
+        {!mergeAllowed && mergeBlockReason && (
+          <Alert variant="destructive" className="mb-4">
+            <ShieldAlert className="h-4 w-4" />
+            <AlertDescription>
+              {mergeBlockReason} Merge actions are temporarily disabled.
+            </AlertDescription>
+          </Alert>
+        )}
+
         <div className="space-y-4">
           {duplicates.map((dup) => (
             <div key={dup.id} className="border rounded-lg p-4">
@@ -153,12 +179,14 @@ export function ClientDuplicateQueue() {
                 </div>
               )}
 
-              {/* Actions */}
+              {/* Actions — merge buttons disabled when spine offline */}
               <div className="flex gap-2 mt-4">
                 <Button 
                   size="sm" 
                   onClick={() => resolveAsDuplicate(dup.id, dup.client_a_id)}
                   className="gap-1"
+                  disabled={!mergeAllowed}
+                  title={!mergeAllowed ? 'Merge requires National Spine authority' : undefined}
                 >
                   <GitMerge className="h-4 w-4" />
                   Merge (Keep A)
@@ -168,6 +196,8 @@ export function ClientDuplicateQueue() {
                   variant="outline"
                   onClick={() => resolveAsDuplicate(dup.id, dup.client_b_id)}
                   className="gap-1"
+                  disabled={!mergeAllowed}
+                  title={!mergeAllowed ? 'Merge requires National Spine authority' : undefined}
                 >
                   <GitMerge className="h-4 w-4" />
                   Merge (Keep B)

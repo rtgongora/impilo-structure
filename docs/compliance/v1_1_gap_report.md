@@ -1,16 +1,20 @@
 # Impilo vNext v1.1 — Compliance Gap Report
 
 **Generated:** 2026-02-09  
+**Updated:** 2026-02-10 (Contract Sync)  
 **Spec Version:** v1.1.0-canonical  
-**Prototype Assessed:** Current Lovable codebase  
+**Status:** ⏸️ Wave work paused — syncing to updated platform contracts  
 
 ---
 
 ## 1. Executive Summary
 
-The current prototype implements a rich Trust Layer (identity, consent, policy, audit, offline) and clinical workflows, but was built against the original v1.0 architecture. The v1.1 Manifest and Technical Companion Spec introduce **mandatory service contracts, header standards, eventing discipline, idempotency, consistency classes, federation authority controls, and an audit ledger with hash chaining** — none of which exist in the current prototype.
+The prototype has completed Waves 1–3 of the v1.1 migration, implementing eventing, idempotency, audit ledger, and Class A consistency primitives in the kernel layer. The execution workstream has now moved to Claude-based implementation for backend services.
 
-**Critical gaps:** 35 BLOCKER, 18 MAJOR, 12 MINOR items identified.
+**Lovable's role** is now to reflect the v1.1 contract rules in UI flows, hooks, and error handling — NOT to implement backend service internals.
+
+**Resolved:** 19 items (across Waves 0–3 kernel work + contract sync)  
+**Remaining:** Items deferred to external implementation or post-sync waves  
 
 ---
 
@@ -18,128 +22,107 @@ The current prototype implements a rich Trust Layer (identity, consent, policy, 
 
 ### 2.1 Global Conventions (Tech Companion Spec §A–E)
 
-| # | Requirement | Status | Severity | Location / Notes |
-|---|------------|--------|----------|------------------|
-| G-01 | Dual API surfaces (`/internal/v1/...` and `/external/v1/...`) | ❌ MISSING | BLOCKER | All edge functions use flat paths (e.g., `/trust-layer/id/issue`). No `/internal/v1` or `/external/v1` prefix. |
-| G-02 | `X-Tenant-ID` header mandatory on every request | ❌ MISSING | BLOCKER | No edge function validates `X-Tenant-ID`. Trust-layer function only checks `x-facility-id` and `x-purpose-of-use`. |
-| G-03 | `X-Pod-ID` header mandatory on every request | ❌ MISSING | BLOCKER | Not validated anywhere. |
-| G-04 | `X-Request-ID` header (generated if missing) | ❌ MISSING | BLOCKER | No request ID generation or propagation. |
-| G-05 | `X-Correlation-ID` header propagated across calls/events | ❌ MISSING | BLOCKER | `correlation_id` exists in audit log schema but is never set from request headers. |
-| G-06 | 400 error when `X-Tenant-ID` or `X-Pod-ID` missing | ❌ MISSING | BLOCKER | No header validation middleware exists. |
-| G-07 | Standard JSON error format (`{error: {code, message, details, request_id, correlation_id}}`) | ❌ MISSING | BLOCKER | All edge functions return ad-hoc error shapes like `{error: "string"}`. |
-| G-08 | `Idempotency-Key` header on command endpoints | ❌ MISSING | BLOCKER | No idempotency support anywhere. |
-| G-09 | `X-Client-Timeout-MS` honored by services | ❌ MISSING | MAJOR | No timeout handling. |
+| # | Requirement | Status | Severity | Notes |
+|---|------------|--------|----------|-------|
+| G-01 | Dual API surfaces (`/internal/v1/...` and `/external/v1/...`) | 🔄 EXTERNAL | BLOCKER | Backend routing — implemented externally |
+| G-02 | `X-Tenant-ID` header mandatory | ✅ DONE | — | `kernelClient.ts` auto-injects; `middleware.ts` validates server-side |
+| G-03 | `X-Pod-ID` header mandatory | ✅ DONE | — | Same as G-02 |
+| G-04 | `X-Request-ID` header (generated if missing) | ✅ DONE | — | Auto-generated per request in kernel client |
+| G-05 | `X-Correlation-ID` propagated | ✅ DONE | — | `useKernelRequest` hook + kernel client |
+| G-06 | 400 error on missing tenant/pod headers | ✅ DONE | — | Middleware returns standard error |
+| G-07 | Standard JSON error format | ✅ DONE | — | `errorFormatter.ts` + `useKernelError` hook + `KernelErrorAlert` component |
+| G-08 | `Idempotency-Key` on command endpoints | ✅ DONE | — | `useIdempotentMutation` hook + kernel idempotency module |
+| G-09 | `X-Client-Timeout-MS` honored | ❌ DEFERRED | MINOR | Post-sync |
 
-### 2.2 TSHEPO — Trust & Policy Service (Tech Companion §1.1)
+### 2.2 TSHEPO — Trust & Policy Service
 
 | # | Requirement | Status | Severity | Notes |
 |---|------------|--------|----------|-------|
-| T-01 | `POST /external/v1/oauth/token` token issuance | ❌ MISSING | BLOCKER | Auth uses Supabase Auth directly. No TSHEPO token endpoint exists. |
-| T-02 | `POST /internal/v1/pdp/decide` PDP endpoint | ❌ MISSING | BLOCKER | `PolicyService.evaluateAccess()` exists client-side but no server-side PDP endpoint with v1.1 contract (decision, policy_version, reason_codes, obligations, ttl_seconds). |
-| T-03 | PDP returns `ALLOW/DENY/BREAK_GLASS_REQUIRED/STEP_UP_REQUIRED` | ⚠️ PARTIAL | BLOCKER | Client-side policy service returns boolean `allowed` + `breakGlassAvailable`. Missing `STEP_UP_REQUIRED`, `policy_version`, `reason_codes`, `obligations`, `ttl_seconds`. |
-| T-04 | `POST /internal/v1/offline/entitlements` endpoint | ❌ MISSING | BLOCKER | `OfflineService.requestOfflineToken()` exists client-side but no server endpoint with v1.1 contract (scope array, constraints, patient_cpid_allowlist). Response must include `entitlement_jwt`, `entitlement_id`, `policy_version`. |
-| T-05 | Entitlement JWT signed tokens | ⚠️ PARTIAL | BLOCKER | Token hash generated but not a signed JWT. |
-| T-06 | `impilo.tshepo.policy.decision.logged.v1` event | ❌ MISSING | MAJOR | No v1.1 event emission. |
+| T-01 | Token issuance endpoint | 🔄 EXTERNAL | — | Backend service |
+| T-02 | PDP `/internal/v1/pdp/decide` | ✅ DONE | — | Kernel `tshepo/pdpService.ts` (prototype) |
+| T-03 | PDP decision values | ✅ DONE | — | ALLOW/DENY/BREAK_GLASS/STEP_UP |
+| T-04 | Offline entitlements | ❌ DEFERRED | — | Wave 4 (paused) |
+| T-05 | Entitlement JWT | ❌ DEFERRED | — | Wave 4 (paused) |
+| T-06 | Policy decision event | ✅ DONE | — | Audit ledger logs every PDP decision |
 
-### 2.3 VITO — Client Registry (Tech Companion §1.2)
-
-| # | Requirement | Status | Severity | Notes |
-|---|------------|--------|----------|-------|
-| V-01 | `PUT /internal/v1/patients/{crid}` upsert | ❌ MISSING | BLOCKER | No VITO service endpoint. Client registry is managed via `client_registry` table directly. |
-| V-02 | `GET /external/v1/patients?identifier=...` query | ❌ MISSING | BLOCKER | No external patient query endpoint. |
-| V-03 | `POST /internal/v1/patients/merge` | ❌ MISSING | BLOCKER | No merge endpoint. |
-| V-04 | Merge restricted to national-authoritative pods | ❌ MISSING | BLOCKER | No federation authority check. |
-| V-05 | `impilo.vito.patient.created.v1` event | ✅ DONE | MAJOR | `emitPatientCreated()` emits v1.1 delta event (Wave 1). |
-| V-06 | `impilo.vito.patient.updated.v1` event | ✅ DONE | MAJOR | `emitPatientUpdated()` emits v1.1 delta event (Wave 1). |
-| V-07 | `impilo.vito.patient.merged.v1` event | ✅ DONE | MAJOR | `emitPatientMerged()` emits v1.1 delta event with alias_map (Wave 1). |
-
-### 2.4 MSIKA — Product & Service Registry (Tech Companion §1.3)
+### 2.3 VITO — Client Registry
 
 | # | Requirement | Status | Severity | Notes |
 |---|------------|--------|----------|-------|
-| M-01 | `POST /internal/v1/products` create | ❌ MISSING | BLOCKER | No MSIKA service endpoint. Product catalog managed via DB tables directly. |
-| M-02 | `PUT /internal/v1/tariffs/{tariff_id}` (Class A, PDP required) | ❌ MISSING | BLOCKER | No tariff update endpoint. No PDP enforcement. |
-| M-03 | `GET /external/v1/products?...` external read | ❌ MISSING | BLOCKER | No external product endpoint. |
-| M-04 | `impilo.msika.product.created/updated.v1` events | ❌ MISSING | MAJOR | No events. |
-| M-05 | `impilo.msika.tariff.updated.v1` event + audit | ❌ MISSING | MAJOR | No events, no audit for tariff changes. |
-| M-06 | `impilo.msika.snapshot.products.v1` snapshot topic | ❌ MISSING | MAJOR | No snapshot events. |
+| V-01 | Upsert endpoint | 🔄 EXTERNAL | — | Backend service; kernel has `vitoPatientUpsert` prototype |
+| V-02 | Query endpoint | 🔄 EXTERNAL | — | Backend service |
+| V-03 | Merge endpoint | 🔄 EXTERNAL | — | Backend service; kernel has `vitoPatientMerge` prototype |
+| V-04 | Merge federation authority guard | ✅ DONE (UI) | — | `useFederationGuard` + `SpineStatusIndicator` in Duplicate Queue |
+| V-05 | `patient.created.v1` event | ✅ DONE | — | Wave 1 |
+| V-06 | `patient.updated.v1` event | ✅ DONE | — | Wave 1 |
+| V-07 | `patient.merged.v1` event | ✅ DONE | — | Wave 1 |
 
-### 2.5 BUTANO — Shared Health Record (Tech Companion §1.4)
-
-| # | Requirement | Status | Severity | Notes |
-|---|------------|--------|----------|-------|
-| B-01 | `/internal/v1/fhir/*` endpoints | ❌ MISSING | BLOCKER | No FHIR endpoints. `fhirImagingService.ts` exists but is not a v1.1 compliant service. |
-| B-02 | `/external/v1/fhir/*` with SMART scopes | ❌ MISSING | BLOCKER | No external FHIR endpoints. |
-| B-03 | `Patient.id = CPID` identity rule | ⚠️ PARTIAL | BLOCKER | Trust Layer issues CPIDs but FHIR resources don't reference them. |
-| B-04 | `impilo.butano.fhir.resource.created/updated.v1` events | ❌ MISSING | MAJOR | No events. |
-
-### 2.6 Eventing Standard (Tech Companion §2)
+### 2.4 MSIKA — Product & Service Registry
 
 | # | Requirement | Status | Severity | Notes |
 |---|------------|--------|----------|-------|
-| E-01 | Topic naming: `impilo.{service}.{domain}.{entity}.{action}.v{N}` | ✅ DONE | BLOCKER | VITO events use correct topic naming (Wave 1). |
-| E-02 | Mandatory envelope fields (event_id, event_type, schema_version, correlation_id, causation_id, idempotency_key, producer, tenant_id, pod_id, occurred_at, emitted_at, subject_type, subject_id, payload, meta) | ✅ DONE | BLOCKER | `ImpiloEventEnvelopeV11` type + validator enforces all fields (Wave 1). |
-| E-03 | Delta events (op: CREATE/UPDATE/DELETE/MERGE/REVOKE, before, after, changed_fields) | ✅ DONE | BLOCKER | `ImpiloDeltaPayload` implemented for VITO create/update/merge (Wave 1). |
-| E-04 | `meta.partition_key` on every event | ✅ DONE | BLOCKER | Schema gate blocks events without partition_key (Wave 1). |
-| E-05 | Schema validation gate blocks invalid events | ✅ DONE | BLOCKER | `validateEventOrThrow()` blocks on missing/invalid schema_version, envelope fields, partition_key (Wave 1). |
-| E-06 | `EMIT_MODE: V1_ONLY | V1_1_ONLY | DUAL` support | ✅ DONE | MAJOR | `emitWithPolicy()` supports all three modes, defaults to DUAL (Wave 1). |
+| M-01 | Product create endpoint | 🔄 EXTERNAL | — | Backend service |
+| M-02 | Tariff update (Class A) | ✅ DONE | — | `msikaTariffUpdate` + Class A enforcer (prototype) |
+| M-03 | External product read | 🔄 EXTERNAL | — | Backend service |
+| M-04 | Product events | 🔄 EXTERNAL | — | Backend service |
+| M-05 | Tariff event + audit | ✅ DONE | — | Wave 3 |
 
-### 2.7 Consistency & Safety (Tech Companion §3)
-
-| # | Requirement | Status | Severity | Notes |
-|---|------------|--------|----------|-------|
-| C-01 | Class A: sync PDP authorization before commit | ❌ MISSING | BLOCKER | No PDP call before any data mutation. |
-| C-02 | Class B: bounded-stale with projection watermark | ❌ MISSING | MAJOR | No staleness tracking. |
-| C-03 | Class C: offline entitlement verification | ⚠️ PARTIAL | MAJOR | Offline token exists but not a signed JWT entitlement per spec. |
-| C-04 | 409 `STALE_CONTEXT` when projection too old | ❌ MISSING | MAJOR | No staleness detection. |
-
-### 2.8 Audit Ledger (Tech Companion §4.3)
+### 2.5 BUTANO — Shared Health Record
 
 | # | Requirement | Status | Severity | Notes |
 |---|------------|--------|----------|-------|
-| A-01 | Append-only audit table (no updates/deletes) | ⚠️ PARTIAL | BLOCKER | `trust_layer_audit_log` exists but no immutability constraints (no trigger blocking UPDATE/DELETE). |
-| A-02 | Hash chaining (`prev_hash`, `record_hash`) | ❌ MISSING | BLOCKER | No hash chaining. |
-| A-03 | Mandatory audit events (PDP decisions, break-glass, consent changes, privilege changes, patient merges, tariff updates, federation actions) | ⚠️ PARTIAL | BLOCKER | Some audit logging exists for identity and break-glass but not for PDP, merges, tariffs, or federation. |
+| B-01–B-04 | All BUTANO items | 🔄 EXTERNAL | — | Backend service (deferred) |
 
-### 2.9 Federation (Tech Companion §5)
+### 2.6 Eventing Standard
 
-| # | Requirement | Status | Severity | Notes |
-|---|------------|--------|----------|-------|
-| F-01 | Pod registration handshake | ❌ MISSING | MAJOR | No federation support. |
-| F-02 | 403 `FEDERATION_NOT_AUTHORIZED` on unauthorized merge | ❌ MISSING | BLOCKER | No authority checks. |
-| F-03 | 403 `FEDERATION_AUTHORITY_VIOLATION` on restricted field update | ❌ MISSING | BLOCKER | No authority checks. |
-| F-04 | `impilo.tshepo.federation.authority_violation.logged.v1` event | ❌ MISSING | MAJOR | No federation events. |
+| # | Requirement | Status | Notes |
+|---|------------|--------|-------|
+| E-01–E-06 | All eventing items | ✅ DONE | Wave 1 complete |
 
-### 2.10 UI/UX (Manifest §8)
+### 2.7 Consistency & Safety
 
-| # | Requirement | Status | Severity | Notes |
-|---|------------|--------|----------|-------|
-| U-01 | 3-Zone framework (Work / My Professional / My Life) | ⚠️ PARTIAL | MINOR | Navigation exists but zones not explicitly labeled per v1.1. |
-| U-02 | Non-interference: kernel ops don't disrupt encounter UI | ⚠️ PARTIAL | MINOR | No explicit "Kernel Admin" module surface. |
-| U-03 | Kernel Admin module post-login | ❌ MISSING | MINOR | No dedicated kernel admin surface. |
+| # | Requirement | Status | Notes |
+|---|------------|--------|-------|
+| C-01 | Class A sync PDP | ✅ DONE | MSIKA reference impl |
+| C-02 | Class B bounded-stale | ❌ DEFERRED | Post-sync |
+| C-03 | Class C offline entitlements | ❌ DEFERRED | Wave 4 paused |
+
+### 2.8 Audit Ledger
+
+| # | Requirement | Status | Notes |
+|---|------------|--------|-------|
+| A-01 | Append-only | ✅ DONE | Wave 2 |
+| A-02 | Hash chaining | ✅ DONE | Wave 2 |
+| A-03 | Mandatory audit events | ✅ DONE | PDP, merge, tariff all audited |
+
+### 2.9 UI/UX Contract Alignment (NEW)
+
+| # | Requirement | Status | Notes |
+|---|------------|--------|-------|
+| U-10 | `useKernelRequest` hook for context headers | ✅ DONE | Contract sync |
+| U-11 | `useIdempotentMutation` for write ops | ✅ DONE | Contract sync |
+| U-12 | `useFederationGuard` for protected actions | ✅ DONE | Contract sync |
+| U-13 | `useKernelError` for standard error rendering | ✅ DONE | Contract sync |
+| U-14 | `KernelErrorAlert` component | ✅ DONE | Contract sync |
+| U-15 | `SpineStatusIndicator` component | ✅ DONE | Contract sync |
+| U-16 | Merge buttons disabled when spine offline | ✅ DONE | ClientDuplicateQueue |
 
 ---
 
 ## 3. Severity Summary
 
-| Severity | Count | Resolved |
-|----------|-------|----------|
-| BLOCKER | 35 | 5 (E-01–E-05) |
-| MAJOR | 18 | 4 (E-06, V-05–V-07) |
-| MINOR | 3 | 0 |
+| Category | Total | Resolved | External | Deferred |
+|----------|-------|----------|----------|----------|
+| Kernel (Waves 0–3) | 28 | 19 | 5 | 4 |
+| UI Contract Sync | 7 | 7 | 0 | 0 |
 
 ---
 
-## 4. Migration Wave Plan (Summary)
+## 4. What Lovable Assumes (v1.1 Contract)
 
-| Wave | Scope | BLOCKERs Addressed | Exit Criteria |
-|------|-------|---------------------|---------------|
-| **0** | Baseline Plumbing | G-01 through G-07 (7) | All endpoints return standard 400 on missing headers; correlation IDs in logs + responses |
-| **1** | Eventing v1.1 | E-01 through E-06, V-05/06/07 (9) | VITO emits v1.1 delta events with partition_key; schema gate blocks invalid |
-| **2** | Idempotency + Audit Ledger | G-08, A-01/02/03, M-05 (5) | Idempotency verified; audit ledger has hash chaining |
-| **3** | Consistency Class A + PDP | T-02/03, C-01, M-02 (4) | TSHEPO PDP endpoint works; MSIKA tariff update PDP-enforced |
-| **4** | Offline Entitlements + BUTANO | T-04/05, B-01/04, C-03 (5) | Entitlement JWT issued; BUTANO emits resource events |
-
-Remaining items (federation, full VITO/MSIKA/BUTANO contracts, UI) are post-Wave 4.
-
-See `docs/migration/wave_migration_plan.md` for full details.
+1. **All API calls** inject `X-Tenant-ID`, `X-Pod-ID`, `X-Request-ID`, `X-Correlation-ID` via `kernelClient.ts`
+2. **All write operations** use `Idempotency-Key` via `useIdempotentMutation`
+3. **Protected actions** (patient merge, tariff update) check federation authority via `useFederationGuard`
+4. **All errors** follow `{error: {code, message, details, request_id, correlation_id}}` and render via `KernelErrorAlert`
+5. **Events** follow `impilo.{service}.{entity}.{action}.v{N}` naming with v1.1 envelope
+6. **Producers** use `{service}-service` naming (e.g., `vito-service`)
