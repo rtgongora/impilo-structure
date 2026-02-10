@@ -27,6 +27,7 @@ export {
   getEntitlementStoreAdapter,
   InMemoryEntitlementStore,
 } from './store';
+export { PostgresEntitlementStore } from './postgresStore';
 export {
   generateSigningKey,
   getActiveKid,

@@ -114,6 +114,7 @@ export {
   setEntitlementStore,
   getEntitlementStoreAdapter,
   InMemoryEntitlementStore,
+  PostgresEntitlementStore,
   putEntitlement,
   getEntitlement,
   updateEntitlementStatus,
