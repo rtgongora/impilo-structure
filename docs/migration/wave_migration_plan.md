@@ -100,6 +100,27 @@
 
 ---
 
+## How to Run Tests
+
+### Quick Start
+
+```bash
+# All kernel tests
+bash scripts/test-all.sh
+
+# Wave 3 (TSHEPO PDP, Class A, MSIKA)
+bash scripts/test-wave3.sh
+
+# Wave 4 (Offline Entitlements, BUTANO Events)
+bash scripts/test-wave4.sh
+```
+
+Windows (PowerShell): replace `bash scripts/test-*.sh` with `pwsh scripts/test-*.ps1`.
+
+See `docs/ci_notes.md` for CI pipeline integration details.
+
+---
+
 ## Out of Scope for Lovable
 
 | Item | Reason |
