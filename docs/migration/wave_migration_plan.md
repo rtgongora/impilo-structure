@@ -119,6 +119,19 @@ Windows (PowerShell): replace `bash scripts/test-*.sh` with `pwsh scripts/test-*
 
 See `docs/ci_notes.md` for CI pipeline integration details.
 
+### Maven Integration Harness
+
+For cross-service integration testing against running services:
+
+```bash
+cd tools/maven-harness
+mvn test                    # all waves
+mvn test -Dgroups=wave3     # single wave
+mvn test -Pci               # CI profile (uses env vars)
+```
+
+See `tools/maven-harness/README.md` for full documentation.
+
 ---
 
 ## Out of Scope for Lovable
