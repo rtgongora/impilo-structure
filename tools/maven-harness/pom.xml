@@ -1,0 +1,151 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+
+    <groupId>health.impilo.vnext</groupId>
+    <artifactId>integration-harness</artifactId>
+    <version>1.0.0-SNAPSHOT</version>
+    <packaging>jar</packaging>
+
+    <name>Impilo vNext Integration Harness</name>
+    <description>
+        Maven-driven integration test harness for validating Wave 1–8 kernel
+        contracts against running services (local docker-compose or CI).
+    </description>
+
+    <properties>
+        <maven.compiler.source>17</maven.compiler.source>
+        <maven.compiler.target>17</maven.compiler.target>
+        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+
+        <!-- JUnit / Testing -->
+        <junit.version>5.10.2</junit.version>
+        <assertj.version>3.25.3</assertj.version>
+
+        <!-- HTTP + JSON -->
+        <jackson.version>2.17.0</jackson.version>
+        <okhttp.version>4.12.0</okhttp.version>
+
+        <!-- Parameterised defaults (override via -D or profile) -->
+        <tenantId>tenant-integration-01</tenantId>
+        <podId>pod-local-01</podId>
+        <facilityId>fac-integration-01</facilityId>
+        <workspaceId>ws-integration-01</workspaceId>
+        <baseUrlTshepo>http://localhost:54321/functions/v1</baseUrlTshepo>
+        <baseUrlButano>http://localhost:54321/functions/v1</baseUrlButano>
+        <baseUrlMsika>http://localhost:54321/functions/v1</baseUrlMsika>
+        <baseUrlKernel>http://localhost:54321/functions/v1</baseUrlKernel>
+        <supabaseAnonKey></supabaseAnonKey>
+    </properties>
+
+    <!-- ================================================================= -->
+    <!-- Profiles                                                          -->
+    <!-- ================================================================= -->
+    <profiles>
+        <profile>
+            <id>local</id>
+            <activation>
+                <activeByDefault>true</activeByDefault>
+            </activation>
+            <properties>
+                <baseUrlTshepo>http://localhost:54321/functions/v1</baseUrlTshepo>
+                <baseUrlButano>http://localhost:54321/functions/v1</baseUrlButano>
+                <baseUrlMsika>http://localhost:54321/functions/v1</baseUrlMsika>
+                <baseUrlKernel>http://localhost:54321/functions/v1</baseUrlKernel>
+            </properties>
+        </profile>
+        <profile>
+            <id>ci</id>
+            <properties>
+                <baseUrlTshepo>${env.BASE_URL_TSHEPO}</baseUrlTshepo>
+                <baseUrlButano>${env.BASE_URL_BUTANO}</baseUrlButano>
+                <baseUrlMsika>${env.BASE_URL_MSIKA}</baseUrlMsika>
+                <baseUrlKernel>${env.BASE_URL_KERNEL}</baseUrlKernel>
+                <supabaseAnonKey>${env.SUPABASE_ANON_KEY}</supabaseAnonKey>
+            </properties>
+        </profile>
+    </profiles>
+
+    <!-- ================================================================= -->
+    <!-- Dependencies                                                      -->
+    <!-- ================================================================= -->
+    <dependencies>
+        <!-- JUnit 5 -->
+        <dependency>
+            <groupId>org.junit.jupiter</groupId>
+            <artifactId>junit-jupiter</artifactId>
+            <version>${junit.version}</version>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.junit.jupiter</groupId>
+            <artifactId>junit-jupiter-params</artifactId>
+            <version>${junit.version}</version>
+            <scope>test</scope>
+        </dependency>
+
+        <!-- Assertions -->
+        <dependency>
+            <groupId>org.assertj</groupId>
+            <artifactId>assertj-core</artifactId>
+            <version>${assertj.version}</version>
+            <scope>test</scope>
+        </dependency>
+
+        <!-- HTTP client -->
+        <dependency>
+            <groupId>com.squareup.okhttp3</groupId>
+            <artifactId>okhttp</artifactId>
+            <version>${okhttp.version}</version>
+            <scope>test</scope>
+        </dependency>
+
+        <!-- JSON -->
+        <dependency>
+            <groupId>com.fasterxml.jackson.core</groupId>
+            <artifactId>jackson-databind</artifactId>
+            <version>${jackson.version}</version>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>com.fasterxml.jackson.datatype</groupId>
+            <artifactId>jackson-datatype-jsr310</artifactId>
+            <version>${jackson.version}</version>
+            <scope>test</scope>
+        </dependency>
+    </dependencies>
+
+    <!-- ================================================================= -->
+    <!-- Build                                                             -->
+    <!-- ================================================================= -->
+    <build>
+        <testResources>
+            <testResource>
+                <directory>src/test/resources</directory>
+                <filtering>true</filtering>
+            </testResource>
+        </testResources>
+        <plugins>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-surefire-plugin</artifactId>
+                <version>3.2.5</version>
+                <configuration>
+                    <systemPropertyVariables>
+                        <tenantId>${tenantId}</tenantId>
+                        <podId>${podId}</podId>
+                        <facilityId>${facilityId}</facilityId>
+                        <workspaceId>${workspaceId}</workspaceId>
+                        <baseUrlTshepo>${baseUrlTshepo}</baseUrlTshepo>
+                        <baseUrlButano>${baseUrlButano}</baseUrlButano>
+                        <baseUrlMsika>${baseUrlMsika}</baseUrlMsika>
+                        <baseUrlKernel>${baseUrlKernel}</baseUrlKernel>
+                        <supabaseAnonKey>${supabaseAnonKey}</supabaseAnonKey>
+                    </systemPropertyVariables>
+                </configuration>
+            </plugin>
+        </plugins>
+    </build>
+</project>

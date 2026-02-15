@@ -1,0 +1,16 @@
+[
+  {
+    "tenant_id": "tenant-integration-01",
+    "name": "Integration Test Tenant Alpha",
+    "pod_id": "pod-local-01",
+    "region": "za-jhb-1",
+    "tier": "standard"
+  },
+  {
+    "tenant_id": "tenant-integration-02",
+    "name": "Integration Test Tenant Beta",
+    "pod_id": "pod-local-01",
+    "region": "za-cpt-1",
+    "tier": "premium"
+  }
+]

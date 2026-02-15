@@ -1,0 +1,32 @@
+[
+  {
+    "tariff_id": "tariff-int-001",
+    "product_id": "prod-int-paracetamol-500",
+    "name": "Paracetamol 500 mg Tablet",
+    "currency": "ZAR",
+    "amount": 12.50,
+    "effective_from": "2027-01-01",
+    "kind": "PRODUCT",
+    "regulated": false
+  },
+  {
+    "tariff_id": "tariff-int-002",
+    "product_id": "prod-int-amoxicillin-250",
+    "name": "Amoxicillin 250 mg Capsule",
+    "currency": "ZAR",
+    "amount": 45.00,
+    "effective_from": "2027-01-01",
+    "kind": "PRODUCT",
+    "regulated": true
+  },
+  {
+    "tariff_id": "tariff-int-003",
+    "product_id": "svc-int-consultation-general",
+    "name": "General Consultation",
+    "currency": "ZAR",
+    "amount": 350.00,
+    "effective_from": "2027-01-01",
+    "kind": "SERVICE",
+    "regulated": false
+  }
+]

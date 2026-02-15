@@ -1,0 +1,18 @@
+[
+  {
+    "facility_id": "fac-integration-01",
+    "tenant_id": "tenant-integration-01",
+    "name": "Greenfield Community Health Centre",
+    "type": "CHC",
+    "province": "Gauteng",
+    "district": "City of Johannesburg"
+  },
+  {
+    "facility_id": "fac-integration-02",
+    "tenant_id": "tenant-integration-01",
+    "name": "Riverside District Hospital",
+    "type": "DH",
+    "province": "Western Cape",
+    "district": "Cape Town Metro"
+  }
+]

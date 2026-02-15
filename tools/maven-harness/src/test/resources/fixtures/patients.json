@@ -1,0 +1,20 @@
+[
+  {
+    "cpid": "cpid-int-001",
+    "type": "CPID",
+    "tenant_id": "tenant-integration-01",
+    "notes": "Canonical patient — used for all standard flows"
+  },
+  {
+    "cpid": "ocpid-int-001",
+    "type": "O-CPID",
+    "tenant_id": "tenant-integration-01",
+    "notes": "Provisional (offline-created) — pending reconciliation to cpid-int-001"
+  },
+  {
+    "cpid": "cpid-int-002",
+    "type": "CPID",
+    "tenant_id": "tenant-integration-01",
+    "notes": "Secondary patient — used for merge/reconciliation tests"
+  }
+]

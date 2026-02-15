@@ -1,0 +1,9 @@
+[
+  {
+    "workspace_id": "ws-integration-01",
+    "tenant_id": "tenant-integration-01",
+    "facility_id": "fac-integration-01",
+    "name": "OPD Workspace Alpha",
+    "type": "OUTPATIENT"
+  }
+]
