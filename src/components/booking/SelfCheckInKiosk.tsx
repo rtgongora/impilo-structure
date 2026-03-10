@@ -58,6 +58,7 @@ interface SelfCheckInKioskProps {
 }
 
 export function SelfCheckInKiosk({ onCheckIn, facilityName = "Impilo Health" }: SelfCheckInKioskProps) {
+  const navigate = useNavigate();
   const [mode, setMode] = useState<"qr" | "reference" | "search">("qr");
   const [referenceNumber, setReferenceNumber] = useState("");
   const [searchTerm, setSearchTerm] = useState("");
