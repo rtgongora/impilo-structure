@@ -26,7 +26,7 @@ export type Database = {
           metadata: Json | null
           patient_access_approved_by: string | null
           patient_access_purpose: string | null
-          patient_access_time_limit: unknown
+          patient_access_time_limit: string | null
           patient_id: string | null
           session_id: string | null
           target_id: string | null
@@ -46,7 +46,7 @@ export type Database = {
           metadata?: Json | null
           patient_access_approved_by?: string | null
           patient_access_purpose?: string | null
-          patient_access_time_limit?: unknown
+          patient_access_time_limit?: string | null
           patient_id?: string | null
           session_id?: string | null
           target_id?: string | null
@@ -66,7 +66,7 @@ export type Database = {
           metadata?: Json | null
           patient_access_approved_by?: string | null
           patient_access_purpose?: string | null
-          patient_access_time_limit?: unknown
+          patient_access_time_limit?: string | null
           patient_id?: string | null
           session_id?: string | null
           target_id?: string | null
