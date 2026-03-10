@@ -99,6 +99,11 @@ import MsikaCoreAdmin from "./pages/admin/MsikaCoreAdmin";
 import MsikaFlowAdmin from "./pages/admin/MsikaFlowAdmin";
 import CostaAdmin from "./pages/admin/CostaAdmin";
 import MushexAdmin from "./pages/admin/MushexAdmin";
+import IndawoAdmin from "./pages/admin/IndawoAdmin";
+import UbomiAdmin from "./pages/admin/UbomiAdmin";
+import PublicHealthOps from "./pages/PublicHealthOps";
+import CoverageOperations from "./pages/CoverageOperations";
+import AIGovernance from "./pages/AIGovernance";
 const queryClient = new QueryClient();
 
 const App = () => (
