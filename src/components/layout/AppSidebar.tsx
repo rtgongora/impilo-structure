@@ -346,6 +346,14 @@ export function AppSidebar() {
         return <NavSection title="Scheduling" items={schedulingNavItems} collapsed={collapsed} userRole={userRole} />;
       case "portal":
         return <NavSection title="Portal" items={portalNavItems} collapsed={collapsed} userRole={userRole} />;
+      case "public-health":
+        return <NavSection title="Public Health" items={publicHealthNavItems} collapsed={collapsed} userRole={userRole} />;
+      case "coverage":
+        return <NavSection title="Coverage & Financing" items={coverageNavItems} collapsed={collapsed} userRole={userRole} />;
+      case "ai":
+        return <NavSection title="AI & Intelligence" items={aiNavItems} collapsed={collapsed} userRole={userRole} />;
+      case "omnichannel":
+        return <NavSection title="Omnichannel Access" items={omnichannelNavItems} collapsed={collapsed} userRole={userRole} />;
       case "admin":
         return <NavSection title="Admin" items={adminNavItems} collapsed={collapsed} userRole={userRole} />;
       case "home":
