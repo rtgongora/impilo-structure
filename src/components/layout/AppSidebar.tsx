@@ -405,6 +405,10 @@ export function AppSidebar() {
             {pageContext === "scheduling" && "Scheduling"}
             {pageContext === "portal" && "Portal"}
             {pageContext === "admin" && "Admin"}
+            {pageContext === "public-health" && "Public Health"}
+            {pageContext === "coverage" && "Coverage & Financing"}
+            {pageContext === "ai" && "AI & Intelligence"}
+            {pageContext === "omnichannel" && "Omnichannel"}
           </div>
         </div>
       )}
