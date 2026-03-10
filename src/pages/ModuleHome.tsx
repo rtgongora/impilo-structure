@@ -85,6 +85,10 @@ import {
   RefreshCw,
   MapPin,
   Settings,
+  Radio,
+  PhoneCall,
+  Headphones,
+  Bot,
 } from "lucide-react";
 import { Dialog, DialogContent, DialogTrigger } from "@/components/ui/dialog";
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible";
@@ -110,6 +114,7 @@ const categoryIcons: Record<string, React.ComponentType<{ className?: string }>>
   "coverage": Shield,
   "ai-intelligence": BarChart3,
   "kernel": Database,
+  "experience": Radio,
 };
 
 // Category colors mapping
@@ -130,6 +135,7 @@ const categoryColors: Record<string, string> = {
   "coverage": "bg-violet-600",
   "ai-intelligence": "bg-cyan-600",
   "kernel": "bg-slate-700",
+  "experience": "bg-teal-600",
 };
 
 interface ModuleItem {
@@ -321,6 +327,20 @@ const workModuleCategories: ModuleCategory[] = [
       { id: "ai-governance", label: "AI Governance Hub", description: "Model registry, drift monitoring, overrides", icon: BarChart3, path: "/ai-governance", color: "bg-cyan-600" },
       { id: "ai-insights", label: "AI Insight Panels", description: "Summarization, anomaly detection, trends", icon: TrendingUp, path: "/ai-governance?tab=insights", color: "bg-blue-600" },
       { id: "ai-models", label: "Model Registry", description: "Approved models, versions, audit", icon: Settings, path: "/ai-governance?tab=models", color: "bg-purple-600", roles: ["admin", "hie_admin"] },
+    ],
+  },
+  {
+    id: "experience",
+    title: "Experience, Omnichannel & Access",
+    description: "SMS, USSD, IVR, WhatsApp, call-centre, community-worker, and facility-desk access — no citizen left behind",
+    modules: [
+      { id: "omnichannel-hub", label: "Omnichannel Hub", description: "All access channels in one view", icon: Radio, path: "/omnichannel", color: "bg-teal-600" },
+      { id: "sms-journeys", label: "SMS Journeys", description: "Text-based health interactions", icon: MessageSquare, path: "/omnichannel?tab=sms", color: "bg-amber-500" },
+      { id: "ussd-menus", label: "USSD Menus", description: "Feature-phone access — no data needed", icon: Phone, path: "/omnichannel?tab=ussd", color: "bg-amber-600" },
+      { id: "ivr-voice", label: "IVR / Voice", description: "Voice-guided access & callbacks", icon: PhoneCall, path: "/omnichannel?tab=ivr", color: "bg-purple-500" },
+      { id: "callbacks", label: "Callbacks & Escalation", description: "Human handoff & callback queue", icon: Headphones, path: "/omnichannel?tab=callbacks", color: "bg-rose-500" },
+      { id: "disclosure-rules", label: "Trust & Disclosure Rules", description: "Channel-aware data disclosure config", icon: Shield, path: "/omnichannel?tab=disclosure", color: "bg-indigo-600", roles: ["admin", "hie_admin"] },
+      { id: "ai-agent", label: "AI Interaction Agent", description: "Governed AI across channels", icon: Bot, path: "/omnichannel?tab=ai-agent", color: "bg-cyan-600" },
     ],
   },
   {

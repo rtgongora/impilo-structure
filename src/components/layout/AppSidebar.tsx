@@ -34,6 +34,17 @@ import {
   UserCheck,
   Heart,
   Store,
+  Activity,
+  Target,
+  AlertTriangle,
+  MapPin,
+  Radio,
+  Phone,
+  PhoneCall,
+  Headphones,
+  Bot,
+  TrendingUp,
+  Briefcase,
 } from "lucide-react";
 import { NavLink } from "@/components/NavLink";
 import { useLocation } from "react-router-dom";
@@ -77,6 +88,18 @@ function getPageContextFromPath(pathname: string): PageContext {
       pathname.startsWith('/appointments') ||
       pathname.startsWith('/theatre')) {
     return "scheduling";
+  }
+  if (pathname.startsWith('/public-health')) {
+    return "public-health";
+  }
+  if (pathname.startsWith('/coverage')) {
+    return "coverage";
+  }
+  if (pathname.startsWith('/ai-governance')) {
+    return "ai";
+  }
+  if (pathname.startsWith('/omnichannel')) {
+    return "omnichannel";
   }
   if (pathname.startsWith('/admin')) {
     return "admin";
@@ -152,6 +175,43 @@ const portalNavItems: NavItem[] = [
   { label: "Social Hub", icon: Users, path: "/social" },
   { label: "Marketplace", icon: Store, path: "/marketplace" },
   { label: "Communication", icon: MessageSquare, path: "/communication" },
+];
+
+const publicHealthNavItems: NavItem[] = [
+  { label: "Dashboard", icon: Home, path: "/" },
+  { label: "Operations Hub", icon: Activity, path: "/public-health" },
+  { label: "Surveillance", icon: Target, path: "/public-health?tab=surveillance" },
+  { label: "Outbreaks", icon: AlertTriangle, path: "/public-health?tab=outbreaks" },
+  { label: "Inspections", icon: FileCheck, path: "/public-health?tab=inspections" },
+  { label: "Campaigns", icon: Megaphone, path: "/public-health?tab=campaigns" },
+  { label: "INDAWO Sites", icon: MapPin, path: "/admin/indawo" },
+];
+
+const coverageNavItems: NavItem[] = [
+  { label: "Dashboard", icon: Home, path: "/" },
+  { label: "Coverage Hub", icon: Shield, path: "/coverage" },
+  { label: "Eligibility", icon: UserCheck, path: "/coverage?tab=eligibility" },
+  { label: "Claims", icon: FileText, path: "/coverage?tab=claims" },
+  { label: "Settlement", icon: DollarSign, path: "/coverage?tab=settlement" },
+  { label: "Schemes", icon: Briefcase, path: "/coverage?tab=schemes" },
+];
+
+const aiNavItems: NavItem[] = [
+  { label: "Dashboard", icon: Home, path: "/" },
+  { label: "AI Governance", icon: BarChart3, path: "/ai-governance" },
+  { label: "Insights", icon: TrendingUp, path: "/ai-governance?tab=insights" },
+  { label: "Model Registry", icon: Settings, path: "/ai-governance?tab=models" },
+];
+
+const omnichannelNavItems: NavItem[] = [
+  { label: "Dashboard", icon: Home, path: "/" },
+  { label: "Channel Overview", icon: Radio, path: "/omnichannel" },
+  { label: "SMS Journeys", icon: MessageSquare, path: "/omnichannel?tab=sms" },
+  { label: "USSD Menus", icon: Phone, path: "/omnichannel?tab=ussd" },
+  { label: "IVR / Voice", icon: PhoneCall, path: "/omnichannel?tab=ivr" },
+  { label: "Callbacks", icon: Headphones, path: "/omnichannel?tab=callbacks" },
+  { label: "Trust Rules", icon: Shield, path: "/omnichannel?tab=disclosure" },
+  { label: "AI Agent", icon: Bot, path: "/omnichannel?tab=ai-agent" },
 ];
 
 const adminNavItems: NavItem[] = [
@@ -286,6 +346,14 @@ export function AppSidebar() {
         return <NavSection title="Scheduling" items={schedulingNavItems} collapsed={collapsed} userRole={userRole} />;
       case "portal":
         return <NavSection title="Portal" items={portalNavItems} collapsed={collapsed} userRole={userRole} />;
+      case "public-health":
+        return <NavSection title="Public Health" items={publicHealthNavItems} collapsed={collapsed} userRole={userRole} />;
+      case "coverage":
+        return <NavSection title="Coverage & Financing" items={coverageNavItems} collapsed={collapsed} userRole={userRole} />;
+      case "ai":
+        return <NavSection title="AI & Intelligence" items={aiNavItems} collapsed={collapsed} userRole={userRole} />;
+      case "omnichannel":
+        return <NavSection title="Omnichannel Access" items={omnichannelNavItems} collapsed={collapsed} userRole={userRole} />;
       case "admin":
         return <NavSection title="Admin" items={adminNavItems} collapsed={collapsed} userRole={userRole} />;
       case "home":
@@ -337,6 +405,10 @@ export function AppSidebar() {
             {pageContext === "scheduling" && "Scheduling"}
             {pageContext === "portal" && "Portal"}
             {pageContext === "admin" && "Admin"}
+            {pageContext === "public-health" && "Public Health"}
+            {pageContext === "coverage" && "Coverage & Financing"}
+            {pageContext === "ai" && "AI & Intelligence"}
+            {pageContext === "omnichannel" && "Omnichannel"}
           </div>
         </div>
       )}

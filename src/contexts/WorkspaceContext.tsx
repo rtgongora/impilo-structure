@@ -5,13 +5,17 @@ export type CareSetting = "inpatient" | "outpatient" | "emergency" | "all";
 
 // Page context determines what sidebar navigation to show
 export type PageContext = 
-  | "clinical"      // Clinical EHR, patient encounters
-  | "operations"    // Stock, consumables, billing
-  | "scheduling"    // Appointments, theatre scheduling
-  | "registry"      // HIE registries (HPR, Facility, Client)
-  | "admin"         // System administration
-  | "portal"        // Patient portal, social hub
-  | "home";         // Dashboard, module home
+  | "clinical"        // Clinical EHR, patient encounters
+  | "operations"      // Stock, consumables, billing
+  | "scheduling"      // Appointments, theatre scheduling
+  | "registry"        // HIE registries (HPR, Facility, Client)
+  | "admin"           // System administration
+  | "portal"          // Patient portal, social hub
+  | "public-health"   // Public health & local authority ops
+  | "coverage"        // Coverage, financing & payer ops
+  | "ai"              // Intelligence, automation & AI
+  | "omnichannel"     // Experience, omnichannel access
+  | "home";           // Dashboard, module home
 
 // Department to care setting mapping
 const DEPARTMENT_CARE_SETTINGS: Record<string, CareSetting> = {
