@@ -324,6 +324,20 @@ const workModuleCategories: ModuleCategory[] = [
     ],
   },
   {
+    id: "experience",
+    title: "Experience, Omnichannel & Access",
+    description: "SMS, USSD, IVR, WhatsApp, call-centre, community-worker, and facility-desk access — no citizen left behind",
+    modules: [
+      { id: "omnichannel-hub", label: "Omnichannel Hub", description: "All access channels in one view", icon: Radio, path: "/omnichannel", color: "bg-teal-600" },
+      { id: "sms-journeys", label: "SMS Journeys", description: "Text-based health interactions", icon: MessageSquare, path: "/omnichannel?tab=sms", color: "bg-amber-500" },
+      { id: "ussd-menus", label: "USSD Menus", description: "Feature-phone access — no data needed", icon: Phone, path: "/omnichannel?tab=ussd", color: "bg-amber-600" },
+      { id: "ivr-voice", label: "IVR / Voice", description: "Voice-guided access & callbacks", icon: PhoneCall, path: "/omnichannel?tab=ivr", color: "bg-purple-500" },
+      { id: "callbacks", label: "Callbacks & Escalation", description: "Human handoff & callback queue", icon: Headphones, path: "/omnichannel?tab=callbacks", color: "bg-rose-500" },
+      { id: "disclosure-rules", label: "Trust & Disclosure Rules", description: "Channel-aware data disclosure config", icon: Shield, path: "/omnichannel?tab=disclosure", color: "bg-indigo-600", roles: ["admin", "hie_admin"] },
+      { id: "ai-agent", label: "AI Interaction Agent", description: "Governed AI across channels", icon: Bot, path: "/omnichannel?tab=ai-agent", color: "bg-cyan-600" },
+    ],
+  },
+  {
     id: "admin",
     title: "Governance & Configuration",
     description: "System settings, audit, jurisdiction packs, and platform administration",
