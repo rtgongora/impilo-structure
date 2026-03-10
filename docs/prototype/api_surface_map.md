@@ -93,9 +93,14 @@
 ## Dashboard Data
 
 ### Fetch Dashboard Data
-- **Hook**: `useDashboardData()`
+- **Hook**: `useDashboardData()` (`src/hooks/useDashboardData.ts`)
 - **Returns**: patients, tasks, orders, referrals, results, stats, loading
-- **Queries**: UNKNOWN/NOT OBSERVED — likely multiple Supabase queries
+- **Queries** (all run in single `useEffect` on mount when `user` is set):
+  1. `supabase.from("encounters").select("id, status, ward, bed, triage_category, updated_at, patient:patients(id, first_name, last_name, mrn)").eq("status", "active").order("updated_at", { ascending: false }).limit(20)`
+  2. `supabase.from("clinical_orders").select("id, order_name, order_type, priority, status, created_at, patient_id, encounter_id, patient:patients(first_name, last_name, mrn)").in("status", ["pending", "in_progress"]).order("created_at", { ascending: false }).limit(50)`
+  3. `supabase.from("referrals").select("id, referral_type, to_department, from_department, urgency, status, created_at, patient:patients(first_name, last_name, mrn)").in("status", ["pending", "accepted", "in_progress"]).order("created_at", { ascending: false }).limit(20)`
+  4. `supabase.from("lab_results").select("id, test_name, status, is_critical, released_at, performed_at, lab_order:lab_orders(patient:patients(first_name, last_name, mrn))").in("status", ["pending", "preliminary", "final"]).order("created_at", { ascending: false }).limit(20)`
+  5. Count queries for stats: `encounters` (active), `clinical_orders` (pending/in_progress), `clinical_alerts` (critical+unresolved), `clinical_orders` (completed today), `lab_results` (pending/preliminary), `referrals` (pending/accepted/in_progress)
 
 ---
 
