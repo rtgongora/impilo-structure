@@ -114,6 +114,7 @@ const categoryIcons: Record<string, React.ComponentType<{ className?: string }>>
   "coverage": Shield,
   "ai-intelligence": BarChart3,
   "kernel": Database,
+  "experience": Radio,
 };
 
 // Category colors mapping
