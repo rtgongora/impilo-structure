@@ -85,6 +85,10 @@ import {
   RefreshCw,
   MapPin,
   Settings,
+  Radio,
+  PhoneCall,
+  Headphones,
+  Bot,
 } from "lucide-react";
 import { Dialog, DialogContent, DialogTrigger } from "@/components/ui/dialog";
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible";
