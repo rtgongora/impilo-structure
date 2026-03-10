@@ -25,7 +25,9 @@ import {
   RefreshCw,
   ArrowRight,
   Printer,
+  Home,
 } from "lucide-react";
+import { useNavigate } from "react-router-dom";
 import { format } from "date-fns";
 import { toast } from "sonner";
 
@@ -56,6 +58,7 @@ interface SelfCheckInKioskProps {
 }
 
 export function SelfCheckInKiosk({ onCheckIn, facilityName = "Impilo Health" }: SelfCheckInKioskProps) {
+  const navigate = useNavigate();
   const [mode, setMode] = useState<"qr" | "reference" | "search">("qr");
   const [referenceNumber, setReferenceNumber] = useState("");
   const [searchTerm, setSearchTerm] = useState("");
@@ -288,7 +291,13 @@ export function SelfCheckInKiosk({ onCheckIn, facilityName = "Impilo Health" }: 
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-b from-primary/5 to-background flex items-center justify-center p-4">
+    <div className="min-h-screen bg-gradient-to-b from-primary/5 to-background flex flex-col items-center justify-center p-4">
+      <div className="w-full max-w-lg mb-4 flex justify-start">
+        <Button variant="ghost" size="sm" onClick={() => navigate("/auth")}>
+          <Home className="h-4 w-4 mr-1" />
+          Back to Login
+        </Button>
+      </div>
       <Card className="max-w-lg w-full">
         <CardHeader className="text-center">
           <div className="mx-auto mb-4">
