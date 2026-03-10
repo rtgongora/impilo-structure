@@ -127,7 +127,17 @@ QueryClientProvider
 - **Department → CareSetting mapping**: Hardcoded (e.g., "Medical Ward" → inpatient, "Emergency" → emergency)
 
 ### ShiftContext (`src/contexts/ShiftContext.tsx`)
-- UNKNOWN/NOT OBSERVED in detail — manages active shift state
+- **State**:
+  - `activeShift: ActiveShift | null` — from `useWorkspaceData()` hook
+  - `isOnShift: boolean` — derived (`!!activeShift`)
+  - `shiftDuration: number` — minutes since shift start, updated every 60s via `setInterval`
+  - `loading: boolean` — data loading state
+  - `actionLoading: boolean` — shift action in progress
+- **Methods** (all delegate to `useWorkspaceData()`):
+  - `startShift(facilityId: string, workspaceId: string): Promise<boolean>`
+  - `endShift(handoverNotes?: string, summary?: string): Promise<boolean>`
+  - `transferWorkspace(workspaceId: string, reason: WorkspaceTransferReason, notes?: string): Promise<boolean>`
+  - `refreshShift(): Promise<void>` — calls `fetchActiveShift()`
 
 ### EHRContext (`src/contexts/EHRContext.tsx`)
 - **Only active on `/encounter` routes** (provided by `<EHRProvider>`)
