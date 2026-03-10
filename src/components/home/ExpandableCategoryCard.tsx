@@ -64,7 +64,7 @@ export function ExpandableCategoryCard({
 
       {/* Expanded Dialog with Modules */}
       <Dialog open={isOpen} onOpenChange={setIsOpen}>
-        <DialogContent className="max-w-4xl max-h-[85vh] overflow-y-auto">
+        <DialogContent className="max-w-[90vw] w-full max-h-[90vh] overflow-y-auto">
           <DialogHeader>
             <div className="flex items-center gap-3">
               <div className={cn("w-10 h-10 shrink-0 rounded-lg flex items-center justify-center", color)}>
@@ -77,7 +77,7 @@ export function ExpandableCategoryCard({
             </div>
           </DialogHeader>
           
-          <div className="grid grid-cols-2 sm:grid-cols-3 gap-2 mt-4">
+          <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-3 mt-4">
             {modules.map((module) => (
               <Card
                 key={module.id}
