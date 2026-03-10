@@ -127,7 +127,17 @@ QueryClientProvider
 - **Department → CareSetting mapping**: Hardcoded (e.g., "Medical Ward" → inpatient, "Emergency" → emergency)
 
 ### ShiftContext (`src/contexts/ShiftContext.tsx`)
-- UNKNOWN/NOT OBSERVED in detail — manages active shift state
+- **State**:
+  - `activeShift: ActiveShift | null` — from `useWorkspaceData()` hook
+  - `isOnShift: boolean` — derived (`!!activeShift`)
+  - `shiftDuration: number` — minutes since shift start, updated every 60s via `setInterval`
+  - `loading: boolean` — data loading state
+  - `actionLoading: boolean` — shift action in progress
+- **Methods** (all delegate to `useWorkspaceData()`):
+  - `startShift(facilityId: string, workspaceId: string): Promise<boolean>`
+  - `endShift(handoverNotes?: string, summary?: string): Promise<boolean>`
+  - `transferWorkspace(workspaceId: string, reason: WorkspaceTransferReason, notes?: string): Promise<boolean>`
+  - `refreshShift(): Promise<void>` — calls `fetchActiveShift()`
 
 ### EHRContext (`src/contexts/EHRContext.tsx`)
 - **Only active on `/encounter` routes** (provided by `<EHRProvider>`)
@@ -141,8 +151,13 @@ QueryClientProvider
   - `isConsumablesOpen, isChargesOpen`
 
 ### ProviderContext (`src/contexts/ProviderContext.tsx`)
-- **Only active on `/encounter` routes** (provided by `<ProviderContextProvider>`)
-- UNKNOWN/NOT OBSERVED in detail
+- **Only active on `/encounter` routes** (wrapped by `<ProviderContextProvider>` in `src/pages/Encounter.tsx`)
+- **State** (currently mock data):
+  - `provider: ProviderProfile` — mock: Dr. James Mwangi, physician, general-medicine, Parirenyatwa Group of Hospitals (tertiary)
+  - `worklist: WorklistItem[]` — mock: 4 referral items with types referral-sent/received/pending-response/pending-completion
+  - `stats: DashboardStats` — 8 fields: pendingIncoming, pendingOutgoing, inSession, awaitingResponse, awaitingCompletion, completedToday, avgResponseTime, urgentCount
+- **Types exported**: `ProviderRole` (10 roles: physician, nurse, specialist, registrar, consultant, midwife, chw, pharmacist, radiologist, pathologist), `Department` (16 departments), `ReferralStage` (8 stages), `ReferralStatus` (10 statuses), `WorklistItem`, `DashboardStats`
+- **Helper functions exported**: `getDepartmentLabel()`, `getStageLabel()`, `getStageNumber()`
 
 ---
 
@@ -266,5 +281,5 @@ Auto-configured (not editable):
 
 - `vite-plugin-pwa` is installed as a dependency
 - `/install` page exists for PWA installation
-- Full offline data sync strategy UNKNOWN/NOT OBSERVED in UI
-- `src/components/sync/` directory exists (conflict resolution & sync status)
+- No full offline data sync engine implemented — only a conflict resolution UI component exists at `src/components/sync/OfflineConflictResolver.tsx`
+- No service worker data caching or background sync logic observed in the codebase

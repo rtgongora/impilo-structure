@@ -619,9 +619,9 @@ Data: `useQueueManagement()` hook → Supabase `queue_definitions` table
 
 #### Content
 
-- Search bar with filter
-- Tabs: "all" (default), others UNKNOWN/NOT OBSERVED
-- Patient table from Supabase `patients` table
+- Search bar (client-side filter on first_name, last_name, mrn, phone_primary)
+- Tabs: "all" (default), "active" (filters `is_active === true`), "inactive" (filters `is_active === false`) — all client-side filtering on pre-fetched data (`src/pages/Patients.tsx:62-72`)
+- Patient table from Supabase `patients` table (fetched via `supabase.from("patients").select("*").order("created_at", { ascending: false })`)
   - Columns: MRN, Name (first+last), DOB, Gender, Phone, Email, City, Status
   - Row click → opens `<PatientProfile>` in Dialog
 - Register button → opens `<PatientRegistrationForm>` in Dialog

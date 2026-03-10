@@ -64,8 +64,12 @@
 - **Columns**: id, mrn, first_name, middle_name, last_name, date_of_birth, gender, phone_primary, email, city, allergies, is_active
 
 ### Patient Search
-- **Component**: PatientSearch
-- **Call**: UNKNOWN/NOT OBSERVED — likely client-side filter or Supabase query with ilike
+- **Component**: `PatientSearch` (`src/components/search/PatientSearch.tsx`)
+- **Trigger**: Dialog opened via button or ⌘K / Ctrl+K keyboard shortcut
+- **Call**: `supabase.from("patients").select("id, mrn, first_name, last_name, date_of_birth, gender, allergies, phone_primary").or("first_name.ilike.%${query}%,last_name.ilike.%${query}%,mrn.ilike.%${query}%,phone_primary.ilike.%${query}%").limit(10)`
+- **Debounce**: 300ms (`setTimeout` in `useEffect`)
+- **On select**: Checks for active encounter via `supabase.from("encounters").select(...).eq("patient_id", id).in("status", ["active","in-progress","waiting"]).limit(1)` — if found, navigates to `/encounter/{id}`; otherwise navigates to `/patients?selected={id}`
+- **Recent patients**: Stored/retrieved from `localStorage` key `"recentPatients"` (max 5)
 
 ---
 
@@ -89,9 +93,14 @@
 ## Dashboard Data
 
 ### Fetch Dashboard Data
-- **Hook**: `useDashboardData()`
+- **Hook**: `useDashboardData()` (`src/hooks/useDashboardData.ts`)
 - **Returns**: patients, tasks, orders, referrals, results, stats, loading
-- **Queries**: UNKNOWN/NOT OBSERVED — likely multiple Supabase queries
+- **Queries** (all run in single `useEffect` on mount when `user` is set):
+  1. `supabase.from("encounters").select("id, status, ward, bed, triage_category, updated_at, patient:patients(id, first_name, last_name, mrn)").eq("status", "active").order("updated_at", { ascending: false }).limit(20)`
+  2. `supabase.from("clinical_orders").select("id, order_name, order_type, priority, status, created_at, patient_id, encounter_id, patient:patients(first_name, last_name, mrn)").in("status", ["pending", "in_progress"]).order("created_at", { ascending: false }).limit(50)`
+  3. `supabase.from("referrals").select("id, referral_type, to_department, from_department, urgency, status, created_at, patient:patients(first_name, last_name, mrn)").in("status", ["pending", "accepted", "in_progress"]).order("created_at", { ascending: false }).limit(20)`
+  4. `supabase.from("lab_results").select("id, test_name, status, is_critical, released_at, performed_at, lab_order:lab_orders(patient:patients(first_name, last_name, mrn))").in("status", ["pending", "preliminary", "final"]).order("created_at", { ascending: false }).limit(20)`
+  5. Count queries for stats: `encounters` (active), `clinical_orders` (pending/in_progress), `clinical_alerts` (critical+unresolved), `clinical_orders` (completed today), `lab_results` (pending/preliminary), `referrals` (pending/accepted/in_progress)
 
 ---
 
@@ -183,10 +192,33 @@ Key database functions called via `supabase.rpc()`:
 
 ## Realtime Subscriptions
 
-UNKNOWN/NOT OBSERVED from code reviewed. Tables with realtime potentially enabled:
-- `queue_items` (queue status changes)
-- `message_channels` / messages (communication)
-- `call_sessions` (telemedicine)
+Tables with realtime enabled (confirmed from migration ALTER PUBLICATION statements):
+
+| Table | Purpose | Migration |
+|-------|---------|-----------|
+| `beds` | Bed status changes | `20251221130528` |
+| `shift_handoffs` | Shift handoff notifications | `20251221174212` |
+| `clinical_messages` | Clinical messaging | `20251222082004` |
+| `clinical_pages` | Clinical paging | `20251222082004` |
+| `voice_calls` | Voice call signaling | `20251222082004` |
+| `teleconsult_signals` | Teleconsult WebRTC signaling | `20251221083700` |
+| `call_sessions` | Call session state | `20260110075031` |
+| `call_ice_candidates` | WebRTC ICE candidates | `20260110075031` |
+| `medication_schedule_times` | Medication schedule updates | `20251221182716` |
+| `posts` | Social feed posts | `20251222085616` |
+| `post_comments` | Post comments | `20251222085616` |
+| `campaign_donations` | Crowdfunding donations | `20251222085616` |
+| `idp_revocation_events` | Identity revocation events | `20260109163328` |
+| `client_registry` | Client registry changes | `20260109202530` |
+| `client_duplicate_queue` | Duplicate detection queue | `20260109202530` |
+| `sorting_sessions` | Patient sorting sessions | `20260110184104` |
+| `lab_critical_alerts` | Critical lab result alerts | `20260110083041` |
+| `client_queue_notifications` | Client queue notifications | `20260110135149` |
+| `client_queue_requests` | Client queue requests | `20260110135149` |
+| `teleconsult_responses` | Teleconsult responses | `20260111030548` |
+| `landela_notifications` | Document notifications | `20260115055342` |
+| `trust_layer_consent` | Consent changes | `20260116134259` |
+| `trust_layer_break_glass` | Break-glass events | `20260116134259` |
 
 ---
 
