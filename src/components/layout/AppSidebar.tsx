@@ -89,6 +89,18 @@ function getPageContextFromPath(pathname: string): PageContext {
       pathname.startsWith('/theatre')) {
     return "scheduling";
   }
+  if (pathname.startsWith('/public-health')) {
+    return "public-health";
+  }
+  if (pathname.startsWith('/coverage')) {
+    return "coverage";
+  }
+  if (pathname.startsWith('/ai-governance')) {
+    return "ai";
+  }
+  if (pathname.startsWith('/omnichannel')) {
+    return "omnichannel";
+  }
   if (pathname.startsWith('/admin')) {
     return "admin";
   }
