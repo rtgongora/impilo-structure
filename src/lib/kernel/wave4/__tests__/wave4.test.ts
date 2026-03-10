@@ -564,7 +564,7 @@ describe('Wave 4 — Offline Entitlements (Ed25519) + BUTANO Events', () => {
     it('should warn when running in-memory in non-test without DB', async () => {
       // Spy on resolveDefaultStore behavior by checking the exported adapter
       // Since we're in vitest, the default is InMemory — this validates the test branch
-      const { getEntitlementStoreAdapter } = require('../../offlineEntitlements/store');
+      const { getEntitlementStoreAdapter } = await import('../../offlineEntitlements/store');
       const adapter = getEntitlementStoreAdapter();
       // InMemoryEntitlementStore has a .clear() and store is a Map
       expect(typeof adapter.put).toBe('function');
