@@ -64,8 +64,12 @@
 - **Columns**: id, mrn, first_name, middle_name, last_name, date_of_birth, gender, phone_primary, email, city, allergies, is_active
 
 ### Patient Search
-- **Component**: PatientSearch
-- **Call**: UNKNOWN/NOT OBSERVED — likely client-side filter or Supabase query with ilike
+- **Component**: `PatientSearch` (`src/components/search/PatientSearch.tsx`)
+- **Trigger**: Dialog opened via button or ⌘K / Ctrl+K keyboard shortcut
+- **Call**: `supabase.from("patients").select("id, mrn, first_name, last_name, date_of_birth, gender, allergies, phone_primary").or("first_name.ilike.%${query}%,last_name.ilike.%${query}%,mrn.ilike.%${query}%,phone_primary.ilike.%${query}%").limit(10)`
+- **Debounce**: 300ms (`setTimeout` in `useEffect`)
+- **On select**: Checks for active encounter via `supabase.from("encounters").select(...).eq("patient_id", id).in("status", ["active","in-progress","waiting"]).limit(1)` — if found, navigates to `/encounter/{id}`; otherwise navigates to `/patients?selected={id}`
+- **Recent patients**: Stored/retrieved from `localStorage` key `"recentPatients"` (max 5)
 
 ---
 
