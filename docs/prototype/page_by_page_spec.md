@@ -1000,28 +1000,453 @@ Success toasts:
 
 ## Kernel Service Admin Surfaces
 
-All kernel admin pages are wrapped in `<ProtectedRoute>`. The detailed content of each kernel admin surface is primarily composed of specialized components under `src/components/` subdirectories.
+All kernel admin pages are wrapped in `<ProtectedRoute>`. Access: Authenticated (no additional role gate in code; routing is the only guard). Each page is a self-contained component in `src/pages/admin/`.
 
-### TSHEPO Trust Layer (5 pages)
+---
 
-| Route | Component | Purpose |
-|-------|-----------|---------|
-| `/admin/tshepo/consents` | TshepoConsentAdmin | Manage patient consents |
-| `/admin/tshepo/audit` | TshepoAuditSearch | Search audit ledger entries |
-| `/admin/tshepo/breakglass` | TshepoBreakGlass | Break-glass emergency access requests |
-| `/admin/tshepo/access-history` | TshepoPatientAccessHistory | Patient data access history |
-| `/admin/tshepo/offline` | TshepoOfflineStatus | Offline entitlement status & management |
+### Page: TSHEPO Consent Management
 
-### VITO Patient Registry (4 pages)
+- **Route**: `/admin/tshepo/consents`
+- **Component**: `TshepoConsentAdmin` (`src/pages/admin/TshepoConsentAdmin.tsx`)
+- **Layout**: No AppLayout — bare `div.space-y-6.p-6`
+- **Header**: Shield icon + "TSHEPO Consent Management" (h1 text-2xl font-bold) + "New Consent" button (opens Dialog)
 
-| Route | Component | Purpose |
-|-------|-----------|---------|
-| `/admin/vito/patients` | VitoPatients | Master patient index search |
-| `/admin/vito/merges` | VitoMergeQueue | Duplicate merge queue |
-| `/admin/vito/events` | VitoEventsViewer | Client registry event log |
-| `/admin/vito/audit` | VitoAuditViewer | VITO audit trail viewer |
+#### Filters
+- Search input: placeholder "Search by Patient CPID..." (pl-9 with Search icon)
+- Status Select: options "Active" (value `active`), "Revoked" (value `rejected`), "All" (value `all`). Default: `active`
 
-### TUSO Facility Registry (6 pages)
+#### Table
+Columns (exact header text): FHIR ID | Patient CPID | Provision | Purpose | Status | Created | Actions
+
+- FHIR ID: `font-mono text-xs`, truncated to 20 chars + "..."
+- Patient CPID: `font-mono text-xs`
+- Provision: Badge — `default` variant for "permit", `destructive` for "deny"
+- Purpose: Joins `purpose_of_use[]` with ", "
+- Status: Badge — `default` for "active", `secondary` otherwise
+- Created: `toLocaleDateString()`
+- Actions: "Revoke" button (destructive, with XCircle icon) — only shown when `status === 'active'`
+
+**Loading state**: "Loading..." in center cell (colSpan 7)
+**Empty state**: "No consents found" in center cell (colSpan 7)
+
+#### Create Consent Dialog
+- Title: "Create FHIR R4 Consent"
+- Fields (in order):
+  1. **Patient CPID** — Input, placeholder "CPID-..."
+  2. **Grantor Reference** — Input
+  3. **Grantee Reference** — Input
+  4. **Purpose of Use** — Select: Treatment (default), Payment, Operations, Research, Public Health
+  5. **Provision Type** — Select: Permit (default), Deny
+  6. **Scope Code** — hardcoded to `patient-privacy` (not editable in UI)
+- Submit button: "Create Consent" — disabled when `!patient_cpid || !grantor_ref`
+
+#### API Calls
+- **Fetch**: `supabase.from('tshepo_consents').select('*', { count: 'exact' }).order('created_at', { ascending: false }).limit(50)` + optional `.eq('patient_cpid', searchCpid)` + optional `.eq('status', statusFilter)`
+- **Revoke**: `supabase.from('tshepo_consents').update({ status: 'rejected', revoked_at: now, revocation_reason: 'Admin revocation' }).eq('id', consentId)`
+- **Create**: `supabase.from('tshepo_consents').insert({ tenant_id: 'default-tenant', fhir_id: 'Consent/{uuid}', fhir_resource: { resourceType: 'Consent', id, status: 'active' }, patient_cpid, grantor_ref, grantee_ref, purpose_of_use: [value], provision_type, scope_code, action_codes: [], data_classes: [] })`
+
+#### Toasts
+- Revoke success: "Consent revoked"
+- Revoke error: "Revocation failed"
+- Create success: "Consent created"
+- Create error: "Creation failed"
+
+---
+
+### Page: TSHEPO Audit Ledger
+
+- **Route**: `/admin/tshepo/audit`
+- **Component**: `TshepoAuditSearch` (`src/pages/admin/TshepoAuditSearch.tsx`)
+- **Header**: BookOpen icon + "TSHEPO Audit Ledger" (h1) + Badge "Hash-Chained" (with Link2 icon, variant outline)
+
+#### Filters (flex row, wrapping)
+1. **Actor ID** — Input, placeholder "Filter by Actor ID..." (with Search icon)
+2. **Action** — Input, placeholder "Filter by action..." (w-48)
+3. **Decision** — Select (w-36): All Decisions (default `all`), Allow (`ALLOW`), Deny (`DENY`), Break Glass (`BREAK_GLASS`), System (`SYSTEM`)
+
+#### Table (inside ScrollArea h-[600px])
+Columns: # | Time | Actor | Action | Decision | Reason | Resource | Hash
+
+- #: `chain_sequence` (font-mono text-xs)
+- Time: `occurred_at` via `toLocaleString()` (text-xs whitespace-nowrap)
+- Actor: `actor_id` truncated to 12 chars + "..." (font-mono text-xs, max-w-24 truncate)
+- Action: `action` (font-mono text-xs)
+- Decision: Badge color-coded — ALLOW → green (`bg-green-600`), DENY → destructive, BREAK_GLASS → amber (`bg-amber-600`), other → secondary
+- Reason: `reason_codes[]` joined with ", " (text-xs, max-w-32 truncate)
+- Resource: `resource_type:resource_id` (first 8 chars of ID)
+- Hash: `record_hash` first 8 chars + "..." (title attribute shows full hash)
+
+#### Pagination
+- Page size: 50
+- Footer: "{total} records" text + Previous/Next buttons
+- Previous disabled when `page <= 1`
+
+#### API Calls
+- **Fetch**: `supabase.from('tshepo_audit_ledger').select('*', { count: 'exact' }).order('chain_sequence', { ascending: false }).range((page-1)*50, page*50-1)` + optional `.eq('actor_id', actorFilter)` + optional `.ilike('action', '%{actionFilter}%')` + optional `.eq('decision', decisionFilter)`
+
+**Loading**: "Loading audit chain..."
+**Empty**: "No audit records found"
+
+---
+
+### Page: Break-Glass Access
+
+- **Route**: `/admin/tshepo/breakglass`
+- **Component**: `TshepoBreakGlass` (`src/pages/admin/TshepoBreakGlass.tsx`)
+- **Header**: Zap icon (amber) + "Break-Glass Access" (h1) + Badge (destructive) showing pending count when > 0
+
+#### Tabs
+1. **Review Queue** — label includes count: "Review Queue ({count})"
+2. **History**
+
+#### Review Queue Tab
+Each pending item rendered as a Card with `border-amber-500/30`:
+- **Header row**: AlertTriangle icon + "Emergency Access — {emergency_type}" + status Badge
+- **Details grid** (2 cols): Patient CPID (font-mono), Actor (truncated), Time, Expires, Justification (col-span-2)
+- **Review controls**: Textarea (placeholder "Review notes...", h-16) + 3 buttons:
+  - "Approve" (green bg-green-600)
+  - "Flag for Review" (outline, orange border)
+  - "Violation" (destructive)
+
+**Loading**: "Loading..."
+**Empty**: "No pending reviews"
+
+#### History Tab — Table
+Columns: Time | Actor | Patient CPID | Emergency Type | Justification | Status | Outcome
+
+- Status badges: pending_review → amber "Pending Review" (with Clock), approved → green (CheckCircle), flagged → orange (AlertTriangle), violation → destructive (XCircle)
+
+#### API Calls
+- **Pending**: `supabase.from('trust_layer_break_glass').select('*').eq('review_queue_status', 'pending_review').order('access_started_at', { ascending: false })`
+- **All events**: `supabase.from('trust_layer_break_glass').select('*').order('access_started_at', { ascending: false }).limit(100)`
+- **Review**: `supabase.from('trust_layer_break_glass').update({ review_queue_status: 'reviewed', review_outcome: outcome, reviewed_at: now, review_notes }).eq('id', id)`
+
+#### Toasts
+- Review success: "Review submitted"
+
+---
+
+### Page: My Access History
+
+- **Route**: `/admin/tshepo/access-history`
+- **Component**: `TshepoPatientAccessHistory` (`src/pages/admin/TshepoPatientAccessHistory.tsx`)
+- **Header**: Eye icon + "My Access History" (h1)
+- **Description text**: "View a transparent record of who accessed your health information, when, and why. Accessor identities are redacted for privacy."
+
+#### Input
+- Patient CPID input, placeholder "Enter your Patient CPID..." (max-w-md)
+- Query only enabled when `patientCpid` is truthy
+
+#### Table
+Columns: Date | Accessor Role | Facility | Action | Purpose | Decision | Notes
+
+- Date: `occurred_at` via `toLocaleString()` (text-xs whitespace-nowrap)
+- Accessor Role: `accessor_role || accessor_type`
+- Facility: "Facility {first 8 chars}..." or "—"
+- Decision: Badge — `default` for ALLOW, `destructive` otherwise
+- Notes: Break-glass → amber Badge "Emergency" (AlertTriangle icon); Redacted → secondary Badge "Redacted" (Shield icon)
+- Rows with `is_break_glass` get class `bg-amber-500/5`
+
+#### Pagination
+- Page size: 20
+- Footer: "{total} total records" + Previous/Next (Next disabled when `page * limit >= total`)
+
+#### API Calls
+- **Fetch**: `supabase.from('tshepo_patient_access_log').select('occurred_at, accessor_type, accessor_role, facility_ref, action, purpose_of_use, resource_type, decision, is_break_glass, is_redacted', { count: 'exact' }).eq('patient_cpid', patientCpid).order('occurred_at', { ascending: false }).range(...)`
+
+**Pre-search**: "Enter your CPID to view access history"
+**Loading**: "Loading..."
+**Empty**: "No access records found"
+
+---
+
+### Page: Offline Trust & Reconciliation
+
+- **Route**: `/admin/tshepo/offline`
+- **Component**: `TshepoOfflineStatus` (`src/pages/admin/TshepoOfflineStatus.tsx`)
+- **Header**: WifiOff icon (amber) + "Offline Trust & Reconciliation" (h1) + 2 Badges in top-right: "{n} Active Tokens" (Key icon), "{n} Provisional O-CPIDs" (Fingerprint icon)
+
+#### Stats Cards (3 columns)
+1. **Active Offline Tokens** — count (text-3xl font-bold)
+2. **Awaiting Reconciliation** — count (amber text)
+3. **Reconciled O-CPIDs** — count (green text)
+
+#### Tabs
+1. **O-CPIDs** — count in label
+2. **Offline Tokens** — count in label
+
+#### O-CPIDs Table
+Columns: O-CPID | Status | Facility | Created | Reconciled CPID | Actions
+
+- Status badges: reconciled → green, provisional → amber, pending_reconciliation → outline, other → secondary
+- Actions: "Reconcile" button (outline, RefreshCw icon) only for `status === 'provisional'`
+
+#### Tokens Table
+Columns: Token | Status | Facility | Scope | Actions Used | Issued | Expires
+
+- Token: `token_hash` first 12 chars + "..."
+- Status: revoked → destructive, expired (computed from `expires_at`) → secondary, else → green "Active"
+- Actions Used: `{actions_used}/{max_actions}`
+
+#### API Calls
+- **Tokens**: `supabase.from('trust_layer_offline_tokens').select('*').order('issued_at', { ascending: false }).limit(50)`
+- **O-CPIDs**: `supabase.from('trust_layer_offline_cpid').select('*').order('created_at', { ascending: false }).limit(100)`
+- **Reconcile**: `supabase.from('trust_layer_offline_cpid').update({ status: 'pending_reconciliation', sync_attempted_at: now }).eq('o_cpid', oCpid)`
+
+#### Toasts
+- Reconcile success: "Reconciliation queued"
+
+---
+
+### Page: VITO Patients
+
+- **Route**: `/admin/vito/patients`
+- **Component**: `VitoPatients` (`src/pages/admin/VitoPatients.tsx`)
+- **Header**: Back button (→ `/admin`) + "VITO Patients" (h1) + subtitle "Identity refs only — no PII stored"
+
+#### Search
+- Input with Search icon, placeholder "Search by health_id, crid, cpid..."
+- Query: `.or('health_id.ilike.%q%, crid.ilike.%q%, cpid.ilike.%q%')`
+
+#### Table
+Columns: Health ID | CRID | CPID | Status | Created
+
+- All ID columns: `font-mono text-xs`
+- Status: Badge `default` for active, `secondary` otherwise
+- "—" for null CRID/CPID
+
+#### Create Dialog
+- Title: "Create Patient Identity Ref"
+- Fields: Health ID (opaque, placeholder "e.g. HID-000123"), CRID (optional), CPID (optional)
+- Submit: "Create" — disabled when `!newHealthId || isPending`
+- API: `supabase.from('vito_patients').insert({ tenant_id: 'default-tenant', health_id, crid, cpid, created_by: 'admin' })`
+
+**Loading**: "Loading..." | **Empty**: "No patients found"
+**Toast**: success "Patient identity ref created"
+
+---
+
+### Page: VITO Merge Queue
+
+- **Route**: `/admin/vito/merges`
+- **Component**: `VitoMergeQueue` (`src/pages/admin/VitoMergeQueue.tsx`)
+- **Header**: Back button + "VITO Merge Queue" + subtitle "Federation-guarded patient merge requests"
+
+#### Spine Status Banner
+- Card with conditional `border-destructive` class when spine offline
+- Shows: "Spine Status:" + Badge (default/destructive) + "Emit Mode:" + Badge (outline)
+- When offline: AlertTriangle icon + "Merges blocked — federation authority unavailable"
+- Status from: `supabase.from('vito_config').select('*').eq('tenant_id', 'default-tenant')` parsed as key-value map
+
+#### Merge Table
+Columns: Survivor | Merged IDs | Status | Reason | Requested By | Created
+
+#### Create Merge Dialog
+- Title: "Create Merge Request"
+- Fields: Survivor Health ID (Input), Merged Health IDs (Input, comma-separated, placeholder "HID-002, HID-003"), Reason (Textarea)
+- Submit disabled when `!survivorId || !mergedIds || !reason || isPending` or `!spineOnline`
+- **Federation Guard**: If `!spineOnline`, throws Error with message including spine_status
+- API: `supabase.from('vito_merge_requests').insert({ tenant_id: 'default-tenant', survivor_health_id, merged_health_ids: ids[], requested_by: 'admin', reason, status: 'approved', reviewed_by: 'admin', reviewed_at: now })`
+
+---
+
+### Page: VITO Events
+
+- **Route**: `/admin/vito/events`
+- **Component**: `VitoEventsViewer` (`src/pages/admin/VitoEventsViewer.tsx`)
+- **Header**: "VITO Events" + subtitle "v1.1 event envelope viewer"
+- **Filter**: Input placeholder "Filter by correlation_id, request_id, or event_type..."
+- **Query**: `.or('correlation_id.eq.{f}, request_id.eq.{f}, event_type.ilike.%{f}%')`
+
+#### Table
+Columns: Event Type | Subject | Producer | Schema V | Actor | Occurred | (eye icon)
+
+- Event Type: Badge outline font-mono
+- Detail dialog: JSON.stringify with pretty-print in `<pre>` inside max-w-2xl max-h-[80vh] Dialog
+
+**API**: `supabase.from('vito_event_envelopes').select('*').order('occurred_at', { ascending: false }).limit(100)`
+
+---
+
+### Page: VITO Audit Log
+
+- **Route**: `/admin/vito/audit`
+- **Component**: `VitoAuditViewer` (`src/pages/admin/VitoAuditViewer.tsx`)
+- **Header**: "VITO Audit Log" + subtitle "Opaque audit entries — no PII"
+- **Filter**: Input placeholder "Filter by correlation_id, request_id, actor_id, or action..."
+
+#### Table
+Columns: Action | Decision | Actor | Resource | Purpose | Created
+
+- Decision: Badge destructive for DENY, default otherwise
+- Resource: `{resource_type}/{resource_id}` or "—"
+
+**API**: `supabase.from('vito_audit_log').select('*').order('created_at', { ascending: false }).limit(100)` + optional `.or('correlation_id.eq.{f}, request_id.eq.{f}, actor_id.ilike.%{f}%, action.ilike.%{f}%')`
+
+---
+
+### Page: BUTANO — CPID Timeline
+
+- **Route**: `/admin/butano/timeline`
+- **Component**: `ButanoTimeline` (`src/pages/admin/ButanoTimeline.tsx`)
+- **Header**: "BUTANO — CPID Timeline" + subtitle "PII-free longitudinal clinical record viewer"
+
+#### Search Controls
+- CPID input (placeholder "Enter CPID (e.g. CPID-12345)")
+- Resource type Select: "All Types" + 9 FHIR types (Encounter, Condition, AllergyIntolerance, MedicationRequest, Observation, DiagnosticReport, Procedure, Immunization, CarePlan)
+- Search button
+
+#### Results
+- Summary: "Showing {n} of {total} records for {CPID}" (Badge outline)
+- Cards for each resource: FileText icon + resource_type (font-medium) + Provisional badge (yellow, AlertTriangle) if `is_provisional` + fhir_id + encounter_id + Clock icon with `last_updated_at`
+- Provisional cards have `border-yellow-500/50`
+
+**API**: `supabase.from('butano_fhir_resources').select('id, resource_type, fhir_id, encounter_id, effective_at, last_updated_at, is_provisional, meta_json', { count: 'exact' }).eq('tenant_id', 'default-tenant').eq('subject_cpid', cpid).order('last_updated_at', { ascending: false }).limit(100)` + optional `.eq('resource_type', typeFilter)`
+
+---
+
+### Page: BUTANO — IPS Viewer
+
+- **Route**: `/admin/butano/ips`
+- **Component**: `ButanoIPS` (`src/pages/admin/ButanoIPS.tsx`)
+- **Header**: "BUTANO — IPS Viewer" + subtitle "International Patient Summary (PII-free)"
+- **Input**: CPID input + "Generate IPS" button
+
+#### IPS Sections (Tabs)
+8 sections, each with icon + label + count Badge:
+1. Allergies (Bug icon) — AllergyIntolerance
+2. Problems (Stethoscope) — Condition
+3. Medications (Pill) — MedicationRequest + MedicationStatement
+4. Immunizations (Syringe) — Immunization
+5. Vitals (Activity) — Observation where `category[0].coding[0].code === 'vital-signs'`
+6. Labs (FlaskConical) — Observation where `category[0].coding[0].code === 'laboratory'`
+7. Procedures (Shield) — Procedure
+8. Care Plans (ClipboardList) — CarePlan
+
+Each section: renders FHIR JSON in `<pre>` blocks. Empty: "No records in this section."
+
+**API**: `supabase.from('butano_fhir_resources').select('resource_type, resource_json, last_updated_at').eq('tenant_id', 'default-tenant').eq('subject_cpid', cpid).in('resource_type', [...]).order('last_updated_at', { ascending: false })`
+
+---
+
+### Page: BUTANO — Visit Summary
+
+- **Route**: `/admin/butano/visit-summary`
+- **Component**: `ButanoVisitSummary` (`src/pages/admin/ButanoVisitSummary.tsx`)
+- **Input**: Encounter ID + "Fetch Summary" button
+- Shows: Encounter card (`<pre>` JSON) + linked resources list with resource_type Badge + JSON
+
+**API**: `supabase.from('butano_fhir_resources').select('resource_type, resource_json, last_updated_at').eq('tenant_id', 'default-tenant').eq('encounter_id', encounterId).order('last_updated_at', { ascending: false })`
+
+---
+
+### Page: BUTANO — Reconciliation Queue
+
+- **Route**: `/admin/butano/reconciliation`
+- **Component**: `ButanoReconciliation` (`src/pages/admin/ButanoReconciliation.tsx`)
+- **Header**: "BUTANO — Reconciliation Queue" + subtitle "O-CPID → CPID subject reconciliation"
+
+#### New Reconciliation Card
+- Two inputs: O-CPID (placeholder "O-CPID (e.g. O-CPID-ABC123)") → CPID (placeholder "CPID (e.g. CPID-12345)")
+- "Start Reconciliation" button (GitMerge icon)
+- Process: (1) insert job with status RUNNING, (2) fetch all FHIR resources matching O-CPID, (3) update each record's `subject_cpid` to CPID + set `is_provisional: false` + add `reconciled_from:` meta tag, (4) update job to COMPLETED
+
+#### Jobs List
+- Card per job: StatusIcon (CheckCircle green / XCircle destructive / Clock yellow) + "from → to" + timestamp + status Badge
+
+**API**: Insert to `butano_reconciliation_queue`, select/update `butano_fhir_resources`
+**Toast**: "Reconciled {n} records from {O-CPID} → {CPID}"
+
+---
+
+### Page: BUTANO — SHR Stats
+
+- **Route**: `/admin/butano/stats`
+- **Component**: `ButanoStats` (`src/pages/admin/ButanoStats.tsx`)
+- **Header**: "BUTANO — SHR Stats" + subtitle "Resource counts and PII violation log" + Refresh button
+
+#### Stats Cards (3 columns)
+1. Total Resources (Database icon, primary)
+2. Resource Types count (Clock icon, primary)
+3. PII Violations count (ShieldAlert icon, destructive)
+
+#### Resources by Type
+- Sorted by count descending. Each row: type name + "Last: {date}" + count Badge
+
+#### PII Violation Log
+- Shown only when violations exist. Title in destructive color.
+- Each row: `violation_type — resource_type` + "Paths: {paths.join(', ')}" + timestamp
+
+**API**:
+- Resources: `supabase.from('butano_fhir_resources').select('resource_type, last_updated_at').eq('tenant_id', 'default-tenant')`
+- Violations: `supabase.from('butano_pii_violations').select('*').eq('tenant_id', 'default-tenant').order('created_at', { ascending: false }).limit(20)`
+
+---
+
+### Page: ZIBO Terminology Governance
+
+- **Route**: `/admin/zibo`
+- **Component**: `ZiboAdmin` (`src/pages/admin/ZiboAdmin.tsx`)
+- **Header**: "ZIBO — Terminology Governance" + subtitle "Artifact lifecycle, packs, assignments, validation observability"
+
+#### 6 Tabs (grid-cols-6)
+1. **Artifacts** — CRUD for FHIR terminology artifacts (CodeSystem, ValueSet, ConceptMap, etc.). Lifecycle: DRAFT → PUBLISHED → DEPRECATED → RETIRED. Status-colored badges. Edit DRAFT with JSON textarea. Actions: Publish (DRAFT→PUBLISHED), Deprecate (PUBLISHED→DEPRECATED), Retire (DEPRECATED→RETIRED).
+2. **Import** — FHIR Bundle JSON import + CSV codelist import (name, system URL, version, codes as `code,display` per line, optional ValueSet creation)
+3. **Packs** — Create/list terminology packs (pack_id, name, version). Publish DRAFT packs.
+4. **Assignments** — Assign packs to scopes (TENANT/FACILITY/WORKSPACE) with policy mode (STRICT/LENIENT). Effective assignment lookup by facility+workspace.
+5. **Logs** — Validation logs with facility_id and service_name filters, limit 50.
+6. **Dev** — Validate coding (system + code) and map codes (source system/code → target system).
+
+**API**: All via `ziboClient` functions calling `supabase.functions.invoke('zibo-v1', ...)` edge function.
+
+---
+
+### Page: MSIKA Core Products & Tariff Registry
+
+- **Route**: `/admin/msika-core`
+- **Component**: `MsikaCoreAdmin` (`src/pages/admin/MsikaCoreAdmin.tsx`)
+- **Header**: "MSIKA Core" + subtitle "Products & Services Registry"
+
+#### 7 Tabs (grid-cols-7)
+1. **Catalogs** — CRUD with lifecycle: DRAFT → REVIEW → APPROVED → PUBLISHED. Actions: Submit (DRAFT), Approve (REVIEW), Publish (APPROVED). Columns: ID, Name, Scope (NATIONAL/TENANT), Version, Status.
+2. **Items** — Select catalog, then CRUD items. Item kinds: PRODUCT, SERVICE, ORDERABLE, CHARGEABLE, CAPABILITY_FACILITY, CAPABILITY_PROVIDER. Each has icon. Fields: Kind, Code, Name, Description, Tags.
+3. **Search** — Full-text search with kind filter. Columns: Kind, Code, Name, Tags.
+4. **Import** — CSV import with headers row. Shows job stats (total, invalid, deduped, pending_review).
+5. **Mappings** — Pending external-to-internal mapping queue. Approve/Reject actions.
+6. **Packs** — Benefit/formulary packs.
+7. **Intents** — Procurement intents.
+
+**API**: All via `msikaCoreCient` SDK calling `supabase.functions.invoke('msika-core-v1', ...)` edge function.
+
+---
+
+### Page: MUSHEX Payment Switch Console
+
+- **Route**: `/admin/mushex`
+- **Component**: `MushexAdmin` (`src/pages/admin/MushexAdmin.tsx`)
+- **Header**: DollarSign icon + "MUSHEX v1.1 Console" (text-3xl) + subtitle "National Payment Switch & Claims Switching" + Step-Up Mode toggle button
+
+#### Step-Up Mode
+- Toggle button in header: "Disabled" (outline) / "✅ Enabled" (default)
+- STEP_UP_REQUIRED errors show: "⚠️ STEP_UP_REQUIRED — Enable step-up mode and retry."
+
+#### 6 Tabs (grid-cols-6)
+1. **Payments** — Create Payment Intent (source type: COSTA_BILL/MSIKA_ORDER/ADHOC, amount in ZAR, adapter: SANDBOX/MOBILE_MONEY/BANK_TRANSFER/CARD) + Lookup Intent by ID.
+2. **Remittance** — Issue Remittance Slip (by intent ID) + Claim Remittance (intent_id + token + OTP).
+3. **Claims** — Create Claim (bill_id, hardcoded insurer/facility/totals/lines) + Lookup/Submit Claim.
+4. **Settlements** — Run Settlement (period start/end date pickers) + Lookup/Release Settlement (step-up required for release).
+5. **Ops/Fraud** — Load Pending Reviews + Load Fraud Flags buttons.
+6. **Ledger** — Load Balances button.
+
+#### Response Display
+- JSON result shown in `<pre>` block (max-h-96 overflow-auto)
+- Error Alert (destructive) with AlertTriangle icon
+
+**API**: All via `mushexClient` calling `supabase.functions.invoke('mushex-v1', ...)` with TSHEPO-compliant headers (tenantId, actorId, actorType, facilityId, deviceFingerprint, purposeOfUse).
+
+---
+
+### Other Kernel Service Admin Pages
 
 | Route | Component | Purpose |
 |-------|-----------|---------|
@@ -1031,53 +1456,20 @@ All kernel admin pages are wrapped in `<ProtectedRoute>`. The detailed content o
 | `/admin/tuso/resources` | TusoResources | Physical resource management |
 | `/admin/tuso/config` | TusoConfig | TUSO configuration |
 | `/admin/tuso/control-tower` | TusoControlTower | Real-time facility operations |
-
-### VARAPI Provider Registry (5 pages)
-
-| Route | Component | Purpose |
-|-------|-----------|---------|
 | `/admin/varapi/providers` | VarapiProviders | Provider search & management |
 | `/admin/varapi/privileges` | VarapiPrivileges | Privilege matrix management |
 | `/admin/varapi/councils` | VarapiCouncils | Professional council integration |
 | `/admin/varapi/tokens` | VarapiTokens | API token management |
 | `/admin/varapi/portal` | VarapiPortal | Provider self-service portal |
-
-### BUTANO Shared Health Record (5 pages)
-
-| Route | Component | Purpose |
-|-------|-----------|---------|
-| `/admin/butano/timeline` | ButanoTimeline | FHIR longitudinal timeline |
-| `/admin/butano/ips` | ButanoIPS | International Patient Summary |
-| `/admin/butano/visit-summary` | ButanoVisitSummary | Visit summary viewer |
-| `/admin/butano/reconciliation` | ButanoReconciliation | CPID reconciliation queue |
-| `/admin/butano/stats` | ButanoStats | SHR statistics dashboard |
-
-### Landela + Credentials Suite (2 pages)
-
-| Route | Component | Purpose |
-|-------|-----------|---------|
 | `/admin/suite/docs` | SuiteDocsConsole | Document management console |
 | `/admin/suite/portal` | SuiteSelfService | Credential self-service portal |
-
-### PCT Patient Care Tracker (2 pages)
-
-| Route | Component | Purpose |
-|-------|-----------|---------|
 | `/admin/pct/work` | PctWorkTab | PCT work management |
 | `/admin/pct/control-tower` | PctControlTower | PCT control tower |
-
-### Other Kernel Services (10 pages)
-
-| Route | Component | Purpose |
-|-------|-----------|---------|
-| `/admin/zibo` | ZiboAdmin | ZIBO Terminology Service (ICD-11, SNOMED-CT, LOINC) |
 | `/admin/oros` | OrosAdmin | OROS Orders & Results service |
 | `/admin/pharmacy` | PharmacyAdmin | Pharmacy service administration |
 | `/admin/inventory` | InventoryAdmin | Inventory & supply chain service |
-| `/admin/msika-core` | MsikaCoreAdmin | MSIKA Core Products & Tariff Registry |
 | `/admin/msika-flow` | MsikaFlowAdmin | MSIKA Flow Commerce & Fulfillment |
 | `/admin/costa` | CostaAdmin | COSTA Costing Engine |
-| `/admin/mushex` | MushexAdmin | MUSHEX Payment Switch & Claims |
 | `/admin/indawo` | IndawoAdmin | INDAWO Site & Premises Registry |
 | `/admin/ubomi` | UbomiAdmin | UBOMI CRVS Interface (birth/death) |
 
