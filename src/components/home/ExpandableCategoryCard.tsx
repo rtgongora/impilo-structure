@@ -77,7 +77,7 @@ export function ExpandableCategoryCard({
             </div>
           </DialogHeader>
           
-          <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-3 mt-4">
+          <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4 mt-4">
             {modules.map((module) => (
               <Card
                 key={module.id}
@@ -87,17 +87,17 @@ export function ExpandableCategoryCard({
                   setIsOpen(false);
                 }}
               >
-                <CardContent className="p-3">
-                  <div className="flex items-center gap-2">
-                    <div className={cn("w-8 h-8 shrink-0 rounded-lg flex items-center justify-center", module.color)}>
-                      <module.icon className="h-4 w-4 text-white" />
+                <CardContent className="p-4">
+                  <div className="flex flex-col items-center gap-3 text-center">
+                    <div className={cn("w-12 h-12 shrink-0 rounded-xl flex items-center justify-center", module.color)}>
+                      <module.icon className="h-6 w-6 text-white" />
                     </div>
-                    <div className="min-w-0 flex-1">
-                      <p className="text-sm font-medium truncate">{module.label}</p>
-                      <p className="text-xs text-muted-foreground truncate">{module.description}</p>
+                    <div className="min-w-0 w-full">
+                      <p className="text-base font-semibold truncate">{module.label}</p>
+                      <p className="text-sm text-muted-foreground line-clamp-2">{module.description}</p>
                     </div>
                     {module.roles && module.roles.length > 0 && (
-                      <Lock className="h-3 w-3 text-muted-foreground/50 shrink-0" />
+                      <Lock className="h-4 w-4 text-muted-foreground/50 shrink-0" />
                     )}
                   </div>
                 </CardContent>
