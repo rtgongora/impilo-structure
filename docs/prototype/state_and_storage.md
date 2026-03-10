@@ -151,8 +151,13 @@ QueryClientProvider
   - `isConsumablesOpen, isChargesOpen`
 
 ### ProviderContext (`src/contexts/ProviderContext.tsx`)
-- **Only active on `/encounter` routes** (provided by `<ProviderContextProvider>`)
-- UNKNOWN/NOT OBSERVED in detail
+- **Only active on `/encounter` routes** (wrapped by `<ProviderContextProvider>` in `src/pages/Encounter.tsx`)
+- **State** (currently mock data):
+  - `provider: ProviderProfile` — mock: Dr. James Mwangi, physician, general-medicine, Parirenyatwa Group of Hospitals (tertiary)
+  - `worklist: WorklistItem[]` — mock: 4 referral items with types referral-sent/received/pending-response/pending-completion
+  - `stats: DashboardStats` — 8 fields: pendingIncoming, pendingOutgoing, inSession, awaitingResponse, awaitingCompletion, completedToday, avgResponseTime, urgentCount
+- **Types exported**: `ProviderRole` (10 roles: physician, nurse, specialist, registrar, consultant, midwife, chw, pharmacist, radiologist, pathologist), `Department` (16 departments), `ReferralStage` (8 stages), `ReferralStatus` (10 statuses), `WorklistItem`, `DashboardStats`
+- **Helper functions exported**: `getDepartmentLabel()`, `getStageLabel()`, `getStageNumber()`
 
 ---
 
