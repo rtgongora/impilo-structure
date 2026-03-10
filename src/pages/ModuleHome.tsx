@@ -38,7 +38,7 @@ import {
   Package,
   BarChart3,
   UserPlus,
-  Settings,
+  UserCheck,
   FlaskConical,
   Receipt,
   ClipboardList,
