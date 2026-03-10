@@ -747,7 +747,7 @@ describe('Wave 4 — Offline Entitlements (Ed25519) + BUTANO Events', () => {
     });
 
     it('Wave 3 — PDP engine still evaluates', () => {
-      const { evaluatePolicy } = require('../../tshepo/pdpEngine');
+      const { evaluatePolicy } = await import('../../tshepo/pdpEngine');
 
       const result = evaluatePolicy({
         subject: {

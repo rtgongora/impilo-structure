@@ -50,7 +50,7 @@ export function useVoiceCalling() {
   const sessionChannelRef = useRef<RealtimeChannel | null>(null);
   const iceChannelRef = useRef<RealtimeChannel | null>(null);
   const pendingCandidatesRef = useRef<RTCIceCandidate[]>([]);
-  const durationIntervalRef = useRef<NodeJS.Timeout | null>(null);
+  const durationIntervalRef = useRef<ReturnType<typeof setInterval> | null>(null);
 
   // Clean up on unmount
   useEffect(() => {

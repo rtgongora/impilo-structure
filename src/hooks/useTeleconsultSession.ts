@@ -66,7 +66,7 @@ export function useTeleconsultSession(options: UseTeleconsultSessionOptions = {}
   const [isRinging, setIsRinging] = useState(false);
   const [ringingTimeLeft, setRingingTimeLeft] = useState(0);
   
-  const ringingTimerRef = useRef<NodeJS.Timeout | null>(null);
+  const ringingTimerRef = useRef<ReturnType<typeof setInterval> | null>(null);
   const subscriptionRef = useRef<any>(null);
   
   const RINGING_TIMEOUT = 60; // seconds

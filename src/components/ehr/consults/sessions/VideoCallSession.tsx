@@ -87,7 +87,7 @@ export function VideoCallSession({
   const [newMessage, setNewMessage] = useState("");
   const [handRaised, setHandRaised] = useState(false);
   
-  const timerRef = useRef<NodeJS.Timeout | null>(null);
+  const timerRef = useRef<ReturnType<typeof setInterval> | null>(null);
   const containerRef = useRef<HTMLDivElement>(null);
 
   // Recording hook
