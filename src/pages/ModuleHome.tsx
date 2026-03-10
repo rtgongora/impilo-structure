@@ -105,6 +105,10 @@ const categoryIcons: Record<string, React.ComponentType<{ className?: string }>>
   "admin": Settings,
   "clinical-tools": Activity,
   "support": HelpCircle,
+  "public-health": Activity,
+  "coverage": Shield,
+  "ai-intelligence": BarChart3,
+  "kernel": Database,
 };
 
 // Category colors mapping
@@ -121,6 +125,10 @@ const categoryColors: Record<string, string> = {
   "admin": "bg-slate-600",
   "clinical-tools": "bg-pink-500",
   "support": "bg-teal-500",
+  "public-health": "bg-amber-600",
+  "coverage": "bg-violet-600",
+  "ai-intelligence": "bg-cyan-600",
+  "kernel": "bg-slate-700",
 };
 
 interface ModuleItem {
