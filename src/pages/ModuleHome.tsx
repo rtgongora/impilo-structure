@@ -84,6 +84,7 @@ import {
   DoorOpen,
   RefreshCw,
   MapPin,
+  Settings,
 } from "lucide-react";
 import { Dialog, DialogContent, DialogTrigger } from "@/components/ui/dialog";
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible";
