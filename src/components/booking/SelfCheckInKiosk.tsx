@@ -433,7 +433,7 @@ export function SelfCheckInKiosk({ onCheckIn, facilityName = "Impilo Health" }: 
             <p className="text-sm text-muted-foreground mb-2">
               Don't have a booking?
             </p>
-            <Button variant="outline">
+            <Button variant="outline" onClick={() => navigate("/registration")}>
               Walk-in Registration
               <ArrowRight className="h-4 w-4 ml-2" />
             </Button>
