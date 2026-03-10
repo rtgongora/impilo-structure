@@ -554,7 +554,7 @@ describe('Wave 4 — Offline Entitlements (Ed25519) + BUTANO Events', () => {
   // =========================================================================
 
   describe('Store Auto-Selection', () => {
-    it('should default to InMemoryEntitlementStore in test environment', () => {
+    it('should default to InMemoryEntitlementStore in test environment', async () => {
       // We ARE in a test environment (vitest), so the resolved default must be InMemory
       const { getEntitlementStoreAdapter } = await import('../../offlineEntitlements/store');
       const adapter = getEntitlementStoreAdapter();
