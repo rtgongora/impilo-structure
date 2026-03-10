@@ -135,6 +135,7 @@ const categoryColors: Record<string, string> = {
   "coverage": "bg-violet-600",
   "ai-intelligence": "bg-cyan-600",
   "kernel": "bg-slate-700",
+  "experience": "bg-teal-600",
 };
 
 interface ModuleItem {

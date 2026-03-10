@@ -415,6 +415,8 @@ const App = () => (
             <Route path="/coverage" element={<ProtectedRoute><CoverageOperations /></ProtectedRoute>} />
             {/* AI Governance & Insights */}
             <Route path="/ai-governance" element={<ProtectedRoute><AIGovernance /></ProtectedRoute>} />
+            {/* Omnichannel & Experience Hub */}
+            <Route path="/omnichannel" element={<ProtectedRoute><OmnichannelHub /></ProtectedRoute>} />
             {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
             <Route path="*" element={<NotFound />} />
           </Routes>
