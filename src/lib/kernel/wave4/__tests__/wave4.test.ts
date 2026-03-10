@@ -746,7 +746,7 @@ describe('Wave 4 — Offline Entitlements (Ed25519) + BUTANO Events', () => {
       expect(result.ok).toBe(true);
     });
 
-    it('Wave 3 — PDP engine still evaluates', () => {
+    it('Wave 3 — PDP engine still evaluates', async () => {
       const { evaluatePolicy } = await import('../../tshepo/pdpEngine');
 
       const result = evaluatePolicy({
