@@ -192,7 +192,7 @@ export function CaseReviewBoardSession({
 
   // Duration timer
   useEffect(() => {
-    let timer: NodeJS.Timeout;
+    let timer: ReturnType<typeof setInterval>;
     if (isSessionStarted && !isPaused) {
       timer = setInterval(() => setDuration((d) => d + 1), 1000);
     }

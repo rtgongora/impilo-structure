@@ -73,7 +73,7 @@ export function ResuscitationWorkspace() {
 
   // CPR Timer
   useEffect(() => {
-    let interval: NodeJS.Timeout;
+    let interval: ReturnType<typeof setInterval>;
     if (cprActive) {
       interval = setInterval(() => {
         setCprTimer(prev => prev + 1);

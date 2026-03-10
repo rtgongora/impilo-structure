@@ -90,7 +90,7 @@ export function maskHealthId(healthId: string, level: PIIMaskLevel): string {
 export function usePIIProtection() {
   const { user } = useAuth();
   const [settings, setSettings] = useState<PIISettings>(DEFAULT_SETTINGS);
-  const [revealTimeouts, setRevealTimeouts] = useState<Map<string, NodeJS.Timeout>>(new Map());
+  const [revealTimeouts, setRevealTimeouts] = useState<Map<string, ReturnType<typeof setTimeout>>>(new Map());
 
   // Check if user has elevated access (e.g., attending physician, assigned nurse)
   const hasElevatedAccess = useMemo(() => {

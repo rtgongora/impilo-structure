@@ -82,7 +82,7 @@ export function DialysisWorkspace() {
   const currentWeight = sessionParams.preWeight - ufRemoved;
 
   useEffect(() => {
-    let interval: NodeJS.Timeout;
+    let interval: ReturnType<typeof setInterval>;
     if (isRunning && elapsedMinutes < sessionParams.duration) {
       interval = setInterval(() => {
         setElapsedMinutes(prev => prev + 1);

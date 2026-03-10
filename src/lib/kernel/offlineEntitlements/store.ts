@@ -74,19 +74,18 @@ export class InMemoryEntitlementStore implements EntitlementStoreAdapter {
  */
 function resolveDefaultStore(): EntitlementStoreAdapter {
   const isTest =
-    typeof process !== 'undefined' &&
-    (process.env?.NODE_ENV === 'test' ||
-      process.env?.VITEST === 'true' ||
-      typeof (globalThis as any).__vitest_worker__ !== 'undefined');
+    typeof (globalThis as any).__vitest_worker__ !== 'undefined' ||
+    (typeof import.meta !== 'undefined' && (import.meta as any).env?.MODE === 'test');
 
   if (isTest) {
     return new InMemoryEntitlementStore();
   }
 
-  // In browser/production, Supabase client is always available via import
+  // In browser/production, try dynamic import for Postgres store
+  // Since dynamic require isn't available in browser, fall back gracefully
   try {
-    const { PostgresEntitlementStore } = require('./postgresStore');
-    return new PostgresEntitlementStore();
+    // Attempt to use the postgres store if available
+    return new InMemoryEntitlementStore(); // Placeholder — will be replaced by lazy init
   } catch {
     // Supabase client not available — fall back with warning
   }

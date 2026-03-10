@@ -89,7 +89,7 @@ export function LiveSessionWorkspace({
   const [isMuted, setIsMuted] = useState(false);
   const [isVideoOff, setIsVideoOff] = useState(false);
   const [callDuration, setCallDuration] = useState(0);
-  const callTimerRef = useRef<NodeJS.Timeout | null>(null);
+  const callTimerRef = useRef<ReturnType<typeof setInterval> | null>(null);
 
   // Response draft state
   const [responseDraft, setResponseDraft] = useState({

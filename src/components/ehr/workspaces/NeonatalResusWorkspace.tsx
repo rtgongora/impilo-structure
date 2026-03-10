@@ -88,7 +88,7 @@ export function NeonatalResusWorkspace() {
   const [resusStarted, setResusStarted] = useState(false);
 
   useEffect(() => {
-    let interval: NodeJS.Timeout;
+    let interval: ReturnType<typeof setInterval>;
     if (resusStarted && startTime) {
       interval = setInterval(() => {
         setElapsedSeconds(Math.floor((Date.now() - startTime.getTime()) / 1000));

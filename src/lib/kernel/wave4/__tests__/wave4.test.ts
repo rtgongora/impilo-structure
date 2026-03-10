@@ -554,9 +554,9 @@ describe('Wave 4 — Offline Entitlements (Ed25519) + BUTANO Events', () => {
   // =========================================================================
 
   describe('Store Auto-Selection', () => {
-    it('should default to InMemoryEntitlementStore in test environment', () => {
+    it('should default to InMemoryEntitlementStore in test environment', async () => {
       // We ARE in a test environment (vitest), so the resolved default must be InMemory
-      const { getEntitlementStoreAdapter } = require('../../offlineEntitlements/store');
+      const { getEntitlementStoreAdapter } = await import('../../offlineEntitlements/store');
       const adapter = getEntitlementStoreAdapter();
       expect(adapter).toBeInstanceOf(InMemoryEntitlementStore);
     });
@@ -564,7 +564,7 @@ describe('Wave 4 — Offline Entitlements (Ed25519) + BUTANO Events', () => {
     it('should warn when running in-memory in non-test without DB', async () => {
       // Spy on resolveDefaultStore behavior by checking the exported adapter
       // Since we're in vitest, the default is InMemory — this validates the test branch
-      const { getEntitlementStoreAdapter } = require('../../offlineEntitlements/store');
+      const { getEntitlementStoreAdapter } = await import('../../offlineEntitlements/store');
       const adapter = getEntitlementStoreAdapter();
       // InMemoryEntitlementStore has a .clear() and store is a Map
       expect(typeof adapter.put).toBe('function');
@@ -746,8 +746,8 @@ describe('Wave 4 — Offline Entitlements (Ed25519) + BUTANO Events', () => {
       expect(result.ok).toBe(true);
     });
 
-    it('Wave 3 — PDP engine still evaluates', () => {
-      const { evaluatePolicy } = require('../../tshepo/pdpEngine');
+    it('Wave 3 — PDP engine still evaluates', async () => {
+      const { evaluatePolicy } = await import('../../tshepo/pdpEngine');
 
       const result = evaluatePolicy({
         subject: {

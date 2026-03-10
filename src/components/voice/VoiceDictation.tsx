@@ -48,7 +48,7 @@ export function VoiceDictation() {
   const [isProcessing, setIsProcessing] = useState(false);
   const [audioLevel, setAudioLevel] = useState(0);
   const animationRef = useRef<number>();
-  const durationRef = useRef<NodeJS.Timeout>();
+  const durationRef = useRef<ReturnType<typeof setInterval>>();
 
   // Simulate audio level animation
   useEffect(() => {

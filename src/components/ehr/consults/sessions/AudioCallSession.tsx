@@ -63,8 +63,8 @@ export function AudioCallSession({
   const [showReferralBuilder, setShowReferralBuilder] = useState(false);
   const [showParticipants, setShowParticipants] = useState(false);
   
-  const timerRef = useRef<NodeJS.Timeout | null>(null);
-  const audioLevelRef = useRef<NodeJS.Timeout | null>(null);
+  const timerRef = useRef<ReturnType<typeof setInterval> | null>(null);
+  const audioLevelRef = useRef<ReturnType<typeof setInterval> | null>(null);
 
   // Recording hook
   const recording = useTelemedicineRecording({

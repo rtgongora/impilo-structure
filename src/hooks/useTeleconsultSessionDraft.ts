@@ -135,7 +135,7 @@ export function useTeleconsultSessionDraft({
   const [lastSavedAt, setLastSavedAt] = useState<Date | null>(null);
   const [isDirty, setIsDirty] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
-  const autoSaveTimerRef = useRef<NodeJS.Timeout | null>(null);
+  const autoSaveTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const draftDataRef = useRef<SessionDraftData | null>(null);
 
   // Initialize or load existing draft

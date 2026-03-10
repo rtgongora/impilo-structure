@@ -51,7 +51,7 @@ export function useTelemedicineRecording({
   });
   
   const [metadata, setMetadata] = useState<RecordingMetadata | null>(null);
-  const timerRef = useRef<NodeJS.Timeout | null>(null);
+  const timerRef = useRef<ReturnType<typeof setInterval> | null>(null);
   const mediaRecorderRef = useRef<MediaRecorder | null>(null);
   const chunksRef = useRef<Blob[]>([]);
 

@@ -47,7 +47,7 @@ export function PatientSearch() {
   const [loading, setLoading] = useState(false);
   const [recentPatients, setRecentPatients] = useState<PatientResult[]>([]);
   const navigate = useNavigate();
-  const debounceRef = useRef<NodeJS.Timeout>();
+  const debounceRef = useRef<ReturnType<typeof setTimeout>>();
 
   useEffect(() => {
     // Load recent patients from localStorage
