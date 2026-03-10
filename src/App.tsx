@@ -404,6 +404,16 @@ const App = () => (
             <Route path="/admin/costa" element={<ProtectedRoute><CostaAdmin /></ProtectedRoute>} />
             {/* MUSHEX — Payment Switch & Claims */}
             <Route path="/admin/mushex" element={<ProtectedRoute><MushexAdmin /></ProtectedRoute>} />
+            {/* INDAWO — Site & Premises Registry */}
+            <Route path="/admin/indawo" element={<ProtectedRoute><IndawoAdmin /></ProtectedRoute>} />
+            {/* UBOMI — CRVS Interface */}
+            <Route path="/admin/ubomi" element={<ProtectedRoute><UbomiAdmin /></ProtectedRoute>} />
+            {/* Public Health & Local Authority Operations */}
+            <Route path="/public-health" element={<ProtectedRoute><PublicHealthOps /></ProtectedRoute>} />
+            {/* Coverage, Financing & Payer Operations */}
+            <Route path="/coverage" element={<ProtectedRoute><CoverageOperations /></ProtectedRoute>} />
+            {/* AI Governance & Insights */}
+            <Route path="/ai-governance" element={<ProtectedRoute><AIGovernance /></ProtectedRoute>} />
             {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
             <Route path="*" element={<NotFound />} />
           </Routes>
