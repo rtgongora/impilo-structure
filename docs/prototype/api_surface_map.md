@@ -192,10 +192,33 @@ Key database functions called via `supabase.rpc()`:
 
 ## Realtime Subscriptions
 
-UNKNOWN/NOT OBSERVED from code reviewed. Tables with realtime potentially enabled:
-- `queue_items` (queue status changes)
-- `message_channels` / messages (communication)
-- `call_sessions` (telemedicine)
+Tables with realtime enabled (confirmed from migration ALTER PUBLICATION statements):
+
+| Table | Purpose | Migration |
+|-------|---------|-----------|
+| `beds` | Bed status changes | `20251221130528` |
+| `shift_handoffs` | Shift handoff notifications | `20251221174212` |
+| `clinical_messages` | Clinical messaging | `20251222082004` |
+| `clinical_pages` | Clinical paging | `20251222082004` |
+| `voice_calls` | Voice call signaling | `20251222082004` |
+| `teleconsult_signals` | Teleconsult WebRTC signaling | `20251221083700` |
+| `call_sessions` | Call session state | `20260110075031` |
+| `call_ice_candidates` | WebRTC ICE candidates | `20260110075031` |
+| `medication_schedule_times` | Medication schedule updates | `20251221182716` |
+| `posts` | Social feed posts | `20251222085616` |
+| `post_comments` | Post comments | `20251222085616` |
+| `campaign_donations` | Crowdfunding donations | `20251222085616` |
+| `idp_revocation_events` | Identity revocation events | `20260109163328` |
+| `client_registry` | Client registry changes | `20260109202530` |
+| `client_duplicate_queue` | Duplicate detection queue | `20260109202530` |
+| `sorting_sessions` | Patient sorting sessions | `20260110184104` |
+| `lab_critical_alerts` | Critical lab result alerts | `20260110083041` |
+| `client_queue_notifications` | Client queue notifications | `20260110135149` |
+| `client_queue_requests` | Client queue requests | `20260110135149` |
+| `teleconsult_responses` | Teleconsult responses | `20260111030548` |
+| `landela_notifications` | Document notifications | `20260115055342` |
+| `trust_layer_consent` | Consent changes | `20260116134259` |
+| `trust_layer_break_glass` | Break-glass events | `20260116134259` |
 
 ---
 

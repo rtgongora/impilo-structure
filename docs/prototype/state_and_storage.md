@@ -281,5 +281,5 @@ Auto-configured (not editable):
 
 - `vite-plugin-pwa` is installed as a dependency
 - `/install` page exists for PWA installation
-- Full offline data sync strategy UNKNOWN/NOT OBSERVED in UI
-- `src/components/sync/` directory exists (conflict resolution & sync status)
+- No full offline data sync engine implemented — only a conflict resolution UI component exists at `src/components/sync/OfflineConflictResolver.tsx`
+- No service worker data caching or background sync logic observed in the codebase
