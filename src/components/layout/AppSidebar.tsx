@@ -34,6 +34,17 @@ import {
   UserCheck,
   Heart,
   Store,
+  Activity,
+  Target,
+  AlertTriangle,
+  MapPin,
+  Radio,
+  Phone,
+  PhoneCall,
+  Headphones,
+  Bot,
+  TrendingUp,
+  Briefcase,
 } from "lucide-react";
 import { NavLink } from "@/components/NavLink";
 import { useLocation } from "react-router-dom";
