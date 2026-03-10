@@ -177,6 +177,43 @@ const portalNavItems: NavItem[] = [
   { label: "Communication", icon: MessageSquare, path: "/communication" },
 ];
 
+const publicHealthNavItems: NavItem[] = [
+  { label: "Dashboard", icon: Home, path: "/" },
+  { label: "Operations Hub", icon: Activity, path: "/public-health" },
+  { label: "Surveillance", icon: Target, path: "/public-health?tab=surveillance" },
+  { label: "Outbreaks", icon: AlertTriangle, path: "/public-health?tab=outbreaks" },
+  { label: "Inspections", icon: FileCheck, path: "/public-health?tab=inspections" },
+  { label: "Campaigns", icon: Megaphone, path: "/public-health?tab=campaigns" },
+  { label: "INDAWO Sites", icon: MapPin, path: "/admin/indawo" },
+];
+
+const coverageNavItems: NavItem[] = [
+  { label: "Dashboard", icon: Home, path: "/" },
+  { label: "Coverage Hub", icon: Shield, path: "/coverage" },
+  { label: "Eligibility", icon: UserCheck, path: "/coverage?tab=eligibility" },
+  { label: "Claims", icon: FileText, path: "/coverage?tab=claims" },
+  { label: "Settlement", icon: DollarSign, path: "/coverage?tab=settlement" },
+  { label: "Schemes", icon: Briefcase, path: "/coverage?tab=schemes" },
+];
+
+const aiNavItems: NavItem[] = [
+  { label: "Dashboard", icon: Home, path: "/" },
+  { label: "AI Governance", icon: BarChart3, path: "/ai-governance" },
+  { label: "Insights", icon: TrendingUp, path: "/ai-governance?tab=insights" },
+  { label: "Model Registry", icon: Settings, path: "/ai-governance?tab=models" },
+];
+
+const omnichannelNavItems: NavItem[] = [
+  { label: "Dashboard", icon: Home, path: "/" },
+  { label: "Channel Overview", icon: Radio, path: "/omnichannel" },
+  { label: "SMS Journeys", icon: MessageSquare, path: "/omnichannel?tab=sms" },
+  { label: "USSD Menus", icon: Phone, path: "/omnichannel?tab=ussd" },
+  { label: "IVR / Voice", icon: PhoneCall, path: "/omnichannel?tab=ivr" },
+  { label: "Callbacks", icon: Headphones, path: "/omnichannel?tab=callbacks" },
+  { label: "Trust Rules", icon: Shield, path: "/omnichannel?tab=disclosure" },
+  { label: "AI Agent", icon: Bot, path: "/omnichannel?tab=ai-agent" },
+];
+
 const adminNavItems: NavItem[] = [
   { label: "Dashboard", icon: Home, path: "/" },
   { label: "System Settings", icon: Settings, path: "/admin" },
