@@ -64,7 +64,7 @@ export function ExpandableCategoryCard({
 
       {/* Expanded Dialog with Modules */}
       <Dialog open={isOpen} onOpenChange={setIsOpen}>
-        <DialogContent className="max-w-4xl max-h-[85vh] overflow-y-auto">
+        <DialogContent className="max-w-[90vw] w-full max-h-[90vh] overflow-y-auto">
           <DialogHeader>
             <div className="flex items-center gap-3">
               <div className={cn("w-10 h-10 shrink-0 rounded-lg flex items-center justify-center", color)}>
