@@ -1,286 +1,150 @@
-# Impilo vNext — Site Map
+# Impilo vNext — Complete Site Map (v2)
 
-> Auto-generated from prototype codebase. All routes extracted from `src/App.tsx`.
-
----
-
-## Route Summary
-
-| # | Route | Page Component | Access | Zone |
-|---|-------|---------------|--------|------|
-| 1 | `/auth` | Auth | Public (unauth) | Public |
-| 2 | `/reset-password` | ResetPassword | Public | Public |
-| 3 | `/forgot-password` | ForgotPassword | Public | Public |
-| 4 | `/portal` | Portal | Public (no ProtectedRoute) | Public / My Life |
-| 5 | `/install` | Install | Public | Public |
-| 6 | `/kiosk` | Kiosk | Public (no ProtectedRoute) | Public |
-| 7 | `/catalogue` | ProductCatalogue | Public (no ProtectedRoute) | Public / Marketplace |
-| 8 | `/marketplace` | HealthMarketplace | Public (no ProtectedRoute) | Public / Marketplace |
-| 9 | `/shared/:type/:token` | SharedSummary | Public (token-gated) | Public |
-| 10 | `/` | ModuleHome | Authenticated | Home (Work / My Professional / My Life tabs) |
-| 11 | `/dashboard` | Dashboard | Authenticated | Work |
-| 12 | `/encounter` | Encounter | Authenticated | Work / Clinical |
-| 13 | `/encounter/:encounterId` | Encounter | Authenticated | Work / Clinical |
-| 14 | `/queue` | Queue | Authenticated | Work / Clinical |
-| 15 | `/beds` | Beds | Authenticated | Work / Clinical |
-| 16 | `/appointments` | Appointments | Authenticated | Work / Scheduling |
-| 17 | `/patients` | Patients | Authenticated | Work / Clinical |
-| 18 | `/stock` | Stock | Authenticated | Work / Operations |
-| 19 | `/consumables` | Consumables | Authenticated | Work / Operations |
-| 20 | `/charges` | Charges | Authenticated | Work / Operations |
-| 21 | `/registration` | Registration | Authenticated | Work / Scheduling |
-| 22 | `/profile` | ProfileSettings | Authenticated | Support |
-| 23 | `/admin` | AdminDashboard | Authenticated | Ops/Admin |
-| 24 | `/pharmacy` | Pharmacy | Authenticated | Work / Orders |
-| 25 | `/theatre` | Theatre | Authenticated | Work / Scheduling |
-| 26 | `/payments` | Payments | Authenticated | Work / Finance |
-| 27 | `/pacs` | PACS | Authenticated | Work / Orders |
-| 28 | `/lims` | LIMS | Authenticated | Work / Orders |
-| 29 | `/odoo` | Odoo | Authenticated | Ops/Admin |
-| 30 | `/reports` | Reports | Authenticated | Ops/Admin |
-| 31 | `/orders` | Orders | Authenticated | Work / Orders |
-| 32 | `/handoff` | Handoff | Authenticated | Work / Clinical |
-| 33 | `/help` | HelpDesk | Authenticated | Support |
-| 34 | `/admin/product-registry` | ProductManagement | Authenticated | Ops/Admin |
-| 35 | `/fulfillment` | PrescriptionFulfillment | Authenticated | Work / Marketplace |
-| 36 | `/vendor-portal` | VendorPortal | Authenticated | Work / Marketplace |
-| 37 | `/scheduling` | AppointmentScheduling | Authenticated | Work / Scheduling |
-| 38 | `/scheduling/theatre` | TheatreScheduling | Authenticated | Work / Scheduling |
-| 39 | `/scheduling/noticeboard` | ProviderNoticeboard | Authenticated | Work / Scheduling |
-| 40 | `/scheduling/resources` | ResourceCalendar | Authenticated | Work / Scheduling |
-| 41 | `/id-services` | IdServices | Authenticated | Work / Identity |
-| 42 | `/communication` | Communication | Authenticated | Work / Clinical |
-| 43 | `/social` | Social | Authenticated | My Life |
-| 44 | `/registry-management` | RegistryManagement | Authenticated | Ops/Admin |
-| 45 | `/hpr` | HealthProviderRegistry | Authenticated | Registries |
-| 46 | `/facility-registry` | FacilityRegistry | Authenticated | Registries |
-| 47 | `/client-registry` | ClientRegistry | Authenticated | Registries |
-| 48 | `/operations` | Operations | Authenticated | Work / Operations |
-| 49 | `/above-site` | AboveSiteDashboard | Authenticated | Ops/Admin |
-| 50 | `/telemedicine` | Telemedicine | Authenticated | Work / Consults |
-| 51 | `/sorting` | PatientSorting | Authenticated | Work / Clinical |
-| 52 | `/discharge` | Discharge | Authenticated | Work / Clinical |
-| 53 | `/workspace-management` | WorkspaceManagement | Authenticated | Ops/Admin |
-| 54 | `/landela` | Landela | Authenticated | Ops/Admin |
-| 55 | `/public-health` | PublicHealthOps | Authenticated | Public Health |
-| 56 | `/coverage` | CoverageOperations | Authenticated | Coverage & Financing |
-| 57 | `/ai-governance` | AIGovernance | Authenticated | Intelligence & AI |
-| 58 | `/omnichannel` | OmnichannelHub | Authenticated | Experience |
-
-### TSHEPO Trust Layer Admin Surfaces
-
-| # | Route | Page Component | Access | Zone |
-|---|-------|---------------|--------|------|
-| 59 | `/admin/tshepo/consents` | TshepoConsentAdmin | Authenticated | Kernel / TSHEPO |
-| 60 | `/admin/tshepo/audit` | TshepoAuditSearch | Authenticated | Kernel / TSHEPO |
-| 61 | `/admin/tshepo/breakglass` | TshepoBreakGlass | Authenticated | Kernel / TSHEPO |
-| 62 | `/admin/tshepo/access-history` | TshepoPatientAccessHistory | Authenticated | Kernel / TSHEPO |
-| 63 | `/admin/tshepo/offline` | TshepoOfflineStatus | Authenticated | Kernel / TSHEPO |
-
-### VITO v1.1 Admin Surfaces (Patient Registry)
-
-| # | Route | Page Component | Access | Zone |
-|---|-------|---------------|--------|------|
-| 64 | `/admin/vito/patients` | VitoPatients | Authenticated | Kernel / VITO |
-| 65 | `/admin/vito/merges` | VitoMergeQueue | Authenticated | Kernel / VITO |
-| 66 | `/admin/vito/events` | VitoEventsViewer | Authenticated | Kernel / VITO |
-| 67 | `/admin/vito/audit` | VitoAuditViewer | Authenticated | Kernel / VITO |
-
-### TUSO Admin Surfaces (Facility Registry)
-
-| # | Route | Page Component | Access | Zone |
-|---|-------|---------------|--------|------|
-| 68 | `/admin/tuso/facilities` | TusoFacilities | Authenticated | Kernel / TUSO |
-| 69 | `/admin/tuso/workspaces` | TusoWorkspaces | Authenticated | Kernel / TUSO |
-| 70 | `/admin/tuso/start-shift` | TusoStartShift | Authenticated | Kernel / TUSO |
-| 71 | `/admin/tuso/resources` | TusoResources | Authenticated | Kernel / TUSO |
-| 72 | `/admin/tuso/config` | TusoConfig | Authenticated | Kernel / TUSO |
-| 73 | `/admin/tuso/control-tower` | TusoControlTower | Authenticated | Kernel / TUSO |
-
-### VARAPI Admin Surfaces (Provider Registry)
-
-| # | Route | Page Component | Access | Zone |
-|---|-------|---------------|--------|------|
-| 74 | `/admin/varapi/providers` | VarapiProviders | Authenticated | Kernel / VARAPI |
-| 75 | `/admin/varapi/privileges` | VarapiPrivileges | Authenticated | Kernel / VARAPI |
-| 76 | `/admin/varapi/councils` | VarapiCouncils | Authenticated | Kernel / VARAPI |
-| 77 | `/admin/varapi/tokens` | VarapiTokens | Authenticated | Kernel / VARAPI |
-| 78 | `/admin/varapi/portal` | VarapiPortal | Authenticated | Kernel / VARAPI |
-
-### BUTANO SHR Surfaces (Shared Health Record)
-
-| # | Route | Page Component | Access | Zone |
-|---|-------|---------------|--------|------|
-| 79 | `/admin/butano/timeline` | ButanoTimeline | Authenticated | Kernel / BUTANO |
-| 80 | `/admin/butano/ips` | ButanoIPS | Authenticated | Kernel / BUTANO |
-| 81 | `/admin/butano/visit-summary` | ButanoVisitSummary | Authenticated | Kernel / BUTANO |
-| 82 | `/admin/butano/reconciliation` | ButanoReconciliation | Authenticated | Kernel / BUTANO |
-| 83 | `/admin/butano/stats` | ButanoStats | Authenticated | Kernel / BUTANO |
-
-### Landela + Credentials Suite
-
-| # | Route | Page Component | Access | Zone |
-|---|-------|---------------|--------|------|
-| 84 | `/admin/suite/docs` | SuiteDocsConsole | Authenticated | Kernel / Landela |
-| 85 | `/admin/suite/portal` | SuiteSelfService | Authenticated | Kernel / Landela |
-
-### PCT v1.1 (Patient Care Tracker)
-
-| # | Route | Page Component | Access | Zone |
-|---|-------|---------------|--------|------|
-| 86 | `/admin/pct/work` | PctWorkTab | Authenticated | Kernel / PCT |
-| 87 | `/admin/pct/control-tower` | PctControlTower | Authenticated | Kernel / PCT |
-
-### Additional Kernel Service Surfaces
-
-| # | Route | Page Component | Access | Zone |
-|---|-------|---------------|--------|------|
-| 88 | `/admin/zibo` | ZiboAdmin | Authenticated | Kernel / ZIBO |
-| 89 | `/admin/oros` | OrosAdmin | Authenticated | Kernel / OROS |
-| 90 | `/admin/pharmacy` | PharmacyAdmin | Authenticated | Kernel / Pharmacy |
-| 91 | `/admin/inventory` | InventoryAdmin | Authenticated | Kernel / Inventory |
-| 92 | `/admin/msika-core` | MsikaCoreAdmin | Authenticated | Kernel / MSIKA Core |
-| 93 | `/admin/msika-flow` | MsikaFlowAdmin | Authenticated | Kernel / MSIKA Flow |
-| 94 | `/admin/costa` | CostaAdmin | Authenticated | Kernel / COSTA |
-| 95 | `/admin/mushex` | MushexAdmin | Authenticated | Kernel / MUSHEX |
-| 96 | `/admin/indawo` | IndawoAdmin | Authenticated | Kernel / INDAWO |
-| 97 | `/admin/ubomi` | UbomiAdmin | Authenticated | Kernel / UBOMI |
-
-### Catch-All
-
-| # | Route | Page Component | Access | Zone |
-|---|-------|---------------|--------|------|
-| 98 | `*` | NotFound | Public | Error |
+> Exhaustive route table extracted from `src/App.tsx`. Every route in the prototype.
+>
+> **DO NOT CHANGE** route paths, component names, or guard rules.
 
 ---
 
-## Zone Grouping
+## Route Table
 
-### Public (No authentication required)
-- `/auth` — Login page with 4 auth pathways
-- `/reset-password` — Password reset form
-- `/forgot-password` — Forgot password email request
-- `/portal` — Patient portal (self-service health hub)
-- `/install` — PWA installation page
-- `/kiosk` — Self-service patient check-in terminal
-- `/catalogue` — Health products catalogue (read-only browsing)
-- `/marketplace` — Health marketplace (vendor comparison)
-- `/shared/:type/:token` — Publicly shared clinical summary (token-gated)
-- `*` — 404 Not Found
+| # | Route | Zone | Auth | Layout | Sidebar Context | Page Component | Purpose |
+|---|-------|------|------|--------|----------------|----------------|---------|
+| 1 | `/auth` | Public | No | None (standalone) | N/A | `Auth` | Login method selection + all auth flows |
+| 2 | `/reset-password` | Public | No | None (standalone) | N/A | `ResetPassword` | Set new password after reset email |
+| 3 | `/forgot-password` | Public | No | None (standalone) | N/A | `ForgotPassword` | Request password reset email |
+| 4 | `/` | Work | Yes | ModuleHome (custom) | `home` | `ModuleHome` | 3-tab hub: Work / My Professional / My Life |
+| 5 | `/dashboard` | Work | Yes | AppLayout | `home` | `Dashboard` | Provider worklist, tasks, alerts |
+| 6 | `/encounter` | Clinical | Yes | EHRLayout | `clinical` | `Encounter` | EHR — no patient selected state |
+| 7 | `/encounter/:encounterId` | Clinical | Yes | EHRLayout | `clinical` | `Encounter` | EHR — active patient encounter |
+| 8 | `/queue` | Clinical | Yes | AppLayout | `clinical` | `Queue` | Patient queue & triage |
+| 9 | `/beds` | Clinical | Yes | AppLayout | `clinical` | `Beds` | Bed/ward management |
+| 10 | `/appointments` | Scheduling | Yes | AppLayout | `scheduling` | `Appointments` | Appointment list & management |
+| 11 | `/patients` | Clinical | Yes | AppLayout | `clinical` | `Patients` | Patient search & registry |
+| 12 | `/stock` | Operations | Yes | AppLayout | `operations` | `Stock` | Inventory & reordering |
+| 13 | `/consumables` | Operations | Yes | AppLayout | `operations` | `Consumables` | Usage & administration |
+| 14 | `/charges` | Operations | Yes | AppLayout | `operations` | `Charges` | Service & item charges |
+| 15 | `/registration` | Work | Yes | AppLayout | `home` | `Registration` | New patient intake & ID |
+| 16 | `/profile` | Work | Yes | AppLayout | `home` | `ProfileSettings` | User account & preferences |
+| 17 | `/admin` | Admin | Yes | AppLayout | `admin` | `AdminDashboard` | System settings, users, security, audit |
+| 18 | `/pharmacy` | Clinical | Yes | AppLayout | `clinical` | `Pharmacy` | Medication dispensing |
+| 19 | `/theatre` | Scheduling | Yes | AppLayout | `scheduling` | `Theatre` | Surgical scheduling |
+| 20 | `/payments` | Operations | Yes | AppLayout | `operations` | `Payments` | Patient billing & collections |
+| 21 | `/pacs` | Clinical | Yes | AppLayout | `clinical` | `PACS` | Radiology & diagnostic imaging |
+| 22 | `/lims` | Clinical | Yes | AppLayout | `clinical` | `LIMS` | Lab orders & results |
+| 23 | `/portal` | Portal | No | None (standalone) | `portal` | `Portal` | Patient portal (public) |
+| 24 | `/install` | Public | No | None (standalone) | N/A | `Install` | PWA installation page |
+| 25 | `/odoo` | Admin | Yes | AppLayout | `admin` | `Odoo` | ERP integration |
+| 26 | `/reports` | Work | Yes | AppLayout | `home` | `Reports` | Dashboards & analytics |
+| 27 | `/orders` | Clinical | Yes | AppLayout | `clinical` | `Orders` | Clinical order entry |
+| 28 | `/handoff` | Clinical | Yes | AppLayout | `clinical` | `Handoff` | Shift handoff reports |
+| 29 | `/help` | Work | Yes | AppLayout | `home` | `HelpDesk` | FAQs, guides, documentation |
+| 30 | `/catalogue` | Marketplace | No | None (standalone) | N/A | `ProductCatalogue` | Public health products catalogue |
+| 31 | `/marketplace` | Marketplace | No | None (standalone) | N/A | `HealthMarketplace` | Public marketplace |
+| 32 | `/admin/product-registry` | Admin | Yes | AppLayout | `admin` | `ProductManagement` | Product registry admin |
+| 33 | `/fulfillment` | Marketplace | Yes | AppLayout | `home` | `PrescriptionFulfillment` | Rx bidding & vendor selection |
+| 34 | `/vendor-portal` | Marketplace | Yes | AppLayout | `home` | `VendorPortal` | Vendor request/bid portal |
+| 35 | `/scheduling` | Scheduling | Yes | AppLayout | `scheduling` | `AppointmentScheduling` | Advanced scheduling tools |
+| 36 | `/scheduling/theatre` | Scheduling | Yes | AppLayout | `scheduling` | `TheatreScheduling` | Surgical suite calendar |
+| 37 | `/scheduling/noticeboard` | Scheduling | Yes | AppLayout | `scheduling` | `ProviderNoticeboard` | Announcements & updates |
+| 38 | `/scheduling/resources` | Scheduling | Yes | AppLayout | `scheduling` | `ResourceCalendar` | Rooms, equipment calendar |
+| 39 | `/id-services` | Work | Yes | AppLayout | `home` | `IdServices` | Generate, validate, recover IDs |
+| 40 | `/communication` | Work | Yes | AppLayout | `home` | `Communication` | Messages, pages & calls |
+| 41 | `/social` | Portal | Yes | AppLayout | `portal` | `Social` | Social hub |
+| 42 | `/kiosk` | Public | No | None (standalone) | N/A | `Kiosk` | Self-service check-in terminal |
+| 43 | `/registry-management` | Registry | Yes | AppLayout | `registry` | `RegistryManagement` | HIE registry management |
+| 44 | `/hpr` | Registry | Yes | AppLayout | `registry` | `HealthProviderRegistry` | Health Provider Registry |
+| 45 | `/facility-registry` | Registry | Yes | AppLayout | `registry` | `FacilityRegistry` | Master Facility List |
+| 46 | `/client-registry` | Registry | Yes | AppLayout | `registry` | `ClientRegistry` | National Health ID Registry |
+| 47 | `/operations` | Operations | Yes | AppLayout | `operations` | `Operations` | Shifts, roster & workforce |
+| 48 | `/above-site` | Admin | Yes | AppLayout | `admin` | `AboveSiteDashboard` | District/provincial/national oversight |
+| 49 | `/telemedicine` | Clinical | Yes | AppLayout | `clinical` | `Telemedicine` | Teleconsultation hub |
+| 50 | `/sorting` | Clinical | Yes | AppLayout | `clinical` | `PatientSorting` | Front desk arrival & triage |
+| 51 | `/discharge` | Clinical | Yes | AppLayout | `clinical` | `Discharge` | Discharges, deaths & exits |
+| 52 | `/workspace-management` | Admin | Yes | AppLayout | `admin` | `WorkspaceManagement` | Workspace configuration |
+| 53 | `/landela` | Admin | Yes | AppLayout | `admin` | `Landela` | Document management & scanning |
+| 54 | `/shared/:type/:token` | Public | No | None (standalone) | N/A | `SharedSummary` | Public shared summary (token-gated) |
+| 55 | `/admin/tshepo/consents` | Kernel | Yes | AppLayout | `admin` | `TshepoConsentAdmin` | TSHEPO consent management |
+| 56 | `/admin/tshepo/audit` | Kernel | Yes | AppLayout | `admin` | `TshepoAuditSearch` | TSHEPO audit ledger search |
+| 57 | `/admin/tshepo/breakglass` | Kernel | Yes | AppLayout | `admin` | `TshepoBreakGlass` | TSHEPO break-glass review |
+| 58 | `/admin/tshepo/access-history` | Kernel | Yes | AppLayout | `admin` | `TshepoPatientAccessHistory` | Patient data access history |
+| 59 | `/admin/tshepo/offline` | Kernel | Yes | AppLayout | `admin` | `TshepoOfflineStatus` | Offline entitlements status |
+| 60 | `/admin/vito/patients` | Kernel | Yes | AppLayout | `admin` | `VitoPatients` | VITO client registry browser |
+| 61 | `/admin/vito/merges` | Kernel | Yes | AppLayout | `admin` | `VitoMergeQueue` | VITO identity merge queue |
+| 62 | `/admin/vito/events` | Kernel | Yes | AppLayout | `admin` | `VitoEventsViewer` | VITO event stream viewer |
+| 63 | `/admin/vito/audit` | Kernel | Yes | AppLayout | `admin` | `VitoAuditViewer` | VITO audit trail |
+| 64 | `/admin/tuso/facilities` | Kernel | Yes | AppLayout | `admin` | `TusoFacilities` | TUSO facility management |
+| 65 | `/admin/tuso/workspaces` | Kernel | Yes | AppLayout | `admin` | `TusoWorkspaces` | TUSO workspace management |
+| 66 | `/admin/tuso/start-shift` | Kernel | Yes | AppLayout | `admin` | `TusoStartShift` | TUSO shift start flow |
+| 67 | `/admin/tuso/resources` | Kernel | Yes | AppLayout | `admin` | `TusoResources` | TUSO resource management |
+| 68 | `/admin/tuso/config` | Kernel | Yes | AppLayout | `admin` | `TusoConfig` | TUSO configuration |
+| 69 | `/admin/tuso/control-tower` | Kernel | Yes | AppLayout | `admin` | `TusoControlTower` | TUSO control tower |
+| 70 | `/admin/varapi/providers` | Kernel | Yes | AppLayout | `admin` | `VarapiProviders` | VARAPI provider management |
+| 71 | `/admin/varapi/privileges` | Kernel | Yes | AppLayout | `admin` | `VarapiPrivileges` | VARAPI privilege management |
+| 72 | `/admin/varapi/councils` | Kernel | Yes | AppLayout | `admin` | `VarapiCouncils` | VARAPI council management |
+| 73 | `/admin/varapi/tokens` | Kernel | Yes | AppLayout | `admin` | `VarapiTokens` | VARAPI token management |
+| 74 | `/admin/varapi/portal` | Kernel | Yes | AppLayout | `admin` | `VarapiPortal` | VARAPI provider self-service |
+| 75 | `/admin/butano/timeline` | Kernel | Yes | AppLayout | `admin` | `ButanoTimeline` | BUTANO SHR clinical timeline |
+| 76 | `/admin/butano/ips` | Kernel | Yes | AppLayout | `admin` | `ButanoIPS` | BUTANO International Patient Summary |
+| 77 | `/admin/butano/visit-summary` | Kernel | Yes | AppLayout | `admin` | `ButanoVisitSummary` | BUTANO visit summary viewer |
+| 78 | `/admin/butano/reconciliation` | Kernel | Yes | AppLayout | `admin` | `ButanoReconciliation` | BUTANO data reconciliation |
+| 79 | `/admin/butano/stats` | Kernel | Yes | AppLayout | `admin` | `ButanoStats` | BUTANO statistics dashboard |
+| 80 | `/admin/suite/docs` | Kernel | Yes | AppLayout | `admin` | `SuiteDocsConsole` | Landela docs console |
+| 81 | `/admin/suite/portal` | Kernel | Yes | AppLayout | `admin` | `SuiteSelfService` | Credentials self-service |
+| 82 | `/admin/pct/work` | Kernel | Yes | AppLayout | `admin` | `PctWorkTab` | PCT work queue |
+| 83 | `/admin/pct/control-tower` | Kernel | Yes | AppLayout | `admin` | `PctControlTower` | PCT control tower |
+| 84 | `/admin/zibo` | Kernel | Yes | AppLayout | `admin` | `ZiboAdmin` | ZIBO terminology service |
+| 85 | `/admin/oros` | Kernel | Yes | AppLayout | `admin` | `OrosAdmin` | OROS orders & results |
+| 86 | `/admin/pharmacy` | Kernel | Yes | AppLayout | `admin` | `PharmacyAdmin` | Pharmacy service admin |
+| 87 | `/admin/inventory` | Kernel | Yes | AppLayout | `admin` | `InventoryAdmin` | Inventory & supply chain |
+| 88 | `/admin/msika-core` | Kernel | Yes | AppLayout | `admin` | `MsikaCoreAdmin` | MSIKA products & services |
+| 89 | `/admin/msika-flow` | Kernel | Yes | AppLayout | `admin` | `MsikaFlowAdmin` | MSIKA commerce & fulfillment |
+| 90 | `/admin/costa` | Kernel | Yes | AppLayout | `admin` | `CostaAdmin` | COSTA costing engine |
+| 91 | `/admin/mushex` | Kernel | Yes | AppLayout | `admin` | `MushexAdmin` | MUSHEX payment switch & claims |
+| 92 | `/admin/indawo` | Kernel | Yes | AppLayout | `admin` | `IndawoAdmin` | INDAWO site & premises registry |
+| 93 | `/admin/ubomi` | Kernel | Yes | AppLayout | `admin` | `UbomiAdmin` | UBOMI CRVS interface |
+| 94 | `/public-health` | Public Health | Yes | AppLayout | `public-health` | `PublicHealthOps` | Public health operations hub |
+| 95 | `/coverage` | Coverage | Yes | AppLayout | `coverage` | `CoverageOperations` | Coverage & payer operations |
+| 96 | `/ai-governance` | AI | Yes | AppLayout | `ai` | `AIGovernance` | AI governance & insights |
+| 97 | `/omnichannel` | Omnichannel | Yes | AppLayout | `omnichannel` | `OmnichannelHub` | Omnichannel access hub |
+| 98 | `*` | Public | No | None | N/A | `NotFound` | 404 page |
 
-### Home (Module Hub)
-- `/` — ModuleHome: Three-tab hub (Work / My Professional / My Life)
-  - **Work tab**: Workplace selection → module category grid
-  - **My Professional tab**: CPD, credentials, affiliations, schedule
-  - **My Life tab**: Personal health, social, portal access
-
-### Work Zone
-#### Clinical
-- `/encounter`, `/encounter/:encounterId` — EHR clinical encounter (uses EHRLayout with TopBar + MainWorkArea + EncounterMenu)
-- `/queue` — Patient queue / worklist
-- `/beds` — Bed management / ward map
-- `/patients` — Patient registry search
-- `/sorting` — Patient arrival sorting / triage
-- `/discharge` — Discharge workflow dashboard
-- `/handoff` — Shift handoff reports
-- `/communication` — Messages, pages, calls
-- `/dashboard` — Personal clinical dashboard / worklist
-
-#### Orders & Diagnostics
-- `/orders` — Clinical order entry
-- `/pharmacy` — Pharmacy dispensing
-- `/lims` — Laboratory information system
-- `/pacs` — PACS radiology imaging
-
-#### Consults & Referrals
-- `/telemedicine` — Full-circle telemedicine hub
-
-#### Scheduling & Registration
-- `/appointments` — Appointment management
-- `/scheduling` — Advanced appointment scheduling
-- `/scheduling/theatre` — Surgical suite scheduling
-- `/scheduling/noticeboard` — Provider announcements
-- `/scheduling/resources` — Resource calendar
-- `/registration` — New patient registration
-- `/theatre` — Theatre booking
-
-#### Marketplace
-- `/fulfillment` — Prescription fulfillment bidding
-- `/vendor-portal` — Vendor bid submission
-
-#### Finance
-- `/payments` — Patient billing & collections
-- `/charges` — Encounter service charges
-
-#### Operations
-- `/stock` — Inventory / stock management
-- `/consumables` — Consumables tracking
-- `/operations` — Operations dashboard & roster
-
-#### Identity
-- `/id-services` — ID generation, validation, recovery
-
-### Registries
-- `/client-registry` — VITO Client Registry (National Health ID)
-- `/hpr` — VARAPI Health Provider Registry
-- `/facility-registry` — TUSO Facility Registry
-
-### My Life
-- `/social` — Social hub (communities, posts, marketplace)
-
-### Ops/Admin
-- `/admin` — System admin dashboard
-- `/above-site` — Above-site oversight dashboard
-- `/reports` — Reports & analytics
-- `/odoo` — ERP integration
-- `/registry-management` — HIE registry management
-- `/workspace-management` — Workspace configuration
-- `/landela` — Document management system
-
-### Kernel Service Admin Surfaces
-- `/admin/tshepo/*` — TSHEPO Trust Layer (consents, audit, break-glass, access history, offline)
-- `/admin/vito/*` — VITO Patient Registry (patients, merges, events, audit)
-- `/admin/tuso/*` — TUSO Facility Registry (facilities, workspaces, shifts, resources, config, control tower)
-- `/admin/varapi/*` — VARAPI Provider Registry (providers, privileges, councils, tokens, portal)
-- `/admin/butano/*` — BUTANO SHR (timeline, IPS, visit summary, reconciliation, stats)
-- `/admin/suite/*` — Landela Suite (docs console, self-service portal)
-- `/admin/pct/*` — PCT Patient Care Tracker (work tab, control tower)
-- `/admin/zibo` — ZIBO Terminology Service
-- `/admin/oros` — OROS Orders & Results
-- `/admin/pharmacy` — Pharmacy Service Admin
-- `/admin/inventory` — Inventory Service Admin
-- `/admin/msika-core` — MSIKA Core Products & Tariff Registry
-- `/admin/msika-flow` — MSIKA Flow Commerce & Fulfillment
-- `/admin/costa` — COSTA Costing Engine
-- `/admin/mushex` — MUSHEX Payment Switch & Claims
-- `/admin/indawo` — INDAWO Site & Premises Registry
-- `/admin/ubomi` — UBOMI CRVS Interface
-- `/admin/product-registry` — Product Registry Management
-
-### Public Health & Governance
-- `/public-health` — Public Health & Local Authority Operations
-- `/coverage` — Coverage, Financing & Payer Operations
-- `/ai-governance` — Intelligence, Automation & AI Governance
-- `/omnichannel` — Omnichannel & Experience Hub
+**Total: 98 routes** (including catch-all)
 
 ---
 
-## Sidebar Context Routing
+## Layout Mapping Summary
 
-The `AppSidebar` dynamically changes its navigation items based on `pageContext`, derived from the current URL path:
+| Layout | When Used | Structure |
+|--------|-----------|----------|
+| **None (standalone)** | `/auth`, `/reset-password`, `/forgot-password`, `/portal`, `/install`, `/catalogue`, `/marketplace`, `/kiosk`, `/shared/:type/:token`, `*` | Full-page, no shell chrome |
+| **ModuleHome (custom)** | `/` only | Custom header (logo + profile dropdown) → 3-tab hub (Work/My Professional/My Life) → floating emergency FAB |
+| **AppLayout** | Most protected routes | `AppSidebar` (left) + `AppHeader` (top) + scrollable `<main>` content |
+| **EHRLayout** | `/encounter`, `/encounter/:encounterId` | `TopBar` (top) + `PatientBanner` + `MainWorkArea` (center) + `EncounterMenu` (right nav) |
 
-| Page Context | Trigger Paths | Navigation Sections |
-|-------------|--------------|-------------------|
-| `home` | `/` (default) | Quick Access, Clinical, System |
-| `clinical` | `/encounter`, `/beds`, `/queue`, `/patients` | Quick Access, Clinical, Orders |
-| `operations` | `/stock`, `/consumables`, `/charges`, `/payments` | Operations |
-| `scheduling` | `/scheduling`, `/appointments`, `/theatre` | Scheduling |
-| `registry` | `/facility-registry`, `/hpr`, `/client-registry` | Registry, Tools, Admin |
-| `portal` | `/portal`, `/social` | Portal |
-| `public-health` | `/public-health` | Public Health |
-| `coverage` | `/coverage` | Coverage & Financing |
-| `ai` | `/ai-governance` | AI & Intelligence |
-| `omnichannel` | `/omnichannel` | Omnichannel Access |
-| `admin` | `/admin` | Admin |
+---
 
-**Note**: The `/encounter` route uses a DIFFERENT layout (`EHRLayout`) with `TopBar` + `PatientBanner` + `MainWorkArea` + `EncounterMenu` instead of the standard `AppLayout` with `AppSidebar` + `AppHeader`.
+## Sidebar Context Derivation Rules
+
+From `getPageContextFromPath()` in `src/components/layout/AppSidebar.tsx`:
+
+| URL Prefix | Context | Sidebar Sections Shown |
+|------------|---------|----------------------|
+| `/facility-registry`, `/hpr`, `/client-registry`, `/registry` | `registry` | Registry · Tools · Admin |
+| `/encounter`, `/beds`, `/queue`, `/patients` | `clinical` | Quick Access · Clinical · Orders |
+| `/stock`, `/consumables`, `/charges`, `/payments` | `operations` | Operations |
+| `/scheduling`, `/appointments`, `/theatre` | `scheduling` | Scheduling |
+| `/public-health` | `public-health` | Public Health |
+| `/coverage` | `coverage` | Coverage & Financing |
+| `/ai-governance` | `ai` | AI & Intelligence |
+| `/omnichannel` | `omnichannel` | Omnichannel Access |
+| `/admin` | `admin` | Admin |
+| `/portal`, `/social` | `portal` | Portal |
+| Everything else | `home` | Quick Access · Clinical · System |
+
+---
+
+## Auth Guard Summary
+
+- **Public routes** (no `ProtectedRoute`): `/auth`, `/reset-password`, `/forgot-password`, `/portal`, `/install`, `/catalogue`, `/marketplace`, `/kiosk`, `/shared/:type/:token`, `*`
+- **Protected routes**: All other 88 routes — redirects to `/auth` if no authenticated session

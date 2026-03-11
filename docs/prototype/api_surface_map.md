@@ -1,253 +1,338 @@
-# Impilo vNext — API Surface Map
+# Impilo vNext — API Surface Map (v2)
 
-> Maps all API calls, edge functions, and Supabase queries observed in the prototype.
-
----
-
-## Authentication
-
-### Sign In (Email/Password)
-- **Trigger**: Email login form submit on `/auth`
-- **Call**: `supabase.auth.signInWithPassword({ email, password })`
-- **Pre-call**: `supabase.functions.invoke('track-login-attempt', { body: { email, success: false, userAgent } })` — checks if account is locked
-- **Post-success**: `supabase.functions.invoke('track-login-attempt', { body: { email, success: true, userAgent } })`
-- **UI handling**: Success → toast + navigate "/"; Error → toast with message; Locked → toast with lock message
-
-### Sign Up
-- **Call**: `supabase.auth.signUp({ email, password, options: { emailRedirectTo, data: metadata } })`
-- **Metadata**: `display_name, role, specialty, department`
-
-### Sign Out
-- **Call**: `supabase.auth.signOut()`
-- **Side effects**: Clear user/session/profile state, end session tracking
-
-### Password Reset
-- **Request**: `supabase.auth.resetPasswordForEmail(email, { redirectTo })`
-- **Update**: `supabase.auth.updateUser({ password })`
+> All Supabase tables, RPCs, and Edge Functions referenced by the prototype UI.
+> Grouped by feature area. Extracted from hooks, contexts, and page components.
 
 ---
 
-## Session Management
+## 1. Authentication & Session
 
-### Create Session
-- **Trigger**: SIGNED_IN auth event
-- **Call**: `supabase.from('user_sessions').insert/update(...)` with session_token, user_agent, device_info
-- **Post-insert**: `supabase.functions.invoke('geolocate-ip', { body: { sessionId } })`
+### Tables
+| Table | Operations | Called From |
+|-------|-----------|------------|
+| `profiles` | SELECT (by user_id, by provider_registry_id) | `AuthContext`, `Auth.tsx` |
+| `user_sessions` | INSERT, UPDATE | `AuthContext` on sign-in/sign-out/activity |
+| `account_lockouts` | SELECT | `track-login-attempt` edge function |
+| `user_roles` | SELECT | `useUserRoles`, `useSystemRoles` |
+| `platform_roles` | SELECT | `has_platform_role()` RPC |
 
-### Update Session Activity
-- **Trigger**: Every 5 minutes (interval)
-- **Call**: `supabase.from('user_sessions').update({ last_activity_at }).eq('session_token', ...).eq('is_active', true)`
+### RPCs
+| Function | Inputs | Purpose |
+|----------|--------|---------|
+| `has_role(_user_id, _role)` | uuid, app_role | Check user role (used in RLS) |
+| `can_bypass_restrictions(_user_id)` | uuid | Admin/dev bypass check |
+| `has_platform_role(_user_id, _role_type)` | uuid, platform_role_type | Platform role check |
+| `is_platform_superuser(_user_id)` | uuid | Superuser check |
 
-### End Session
-- **Trigger**: SIGNED_OUT auth event
-- **Call**: `supabase.from('user_sessions').update({ is_active: false, ended_at }).eq('session_token', ...)`
-
-### Update Last Active
-- **Trigger**: Session load
-- **Call**: `supabase.from('profiles').update({ last_active_at }).eq('user_id', ...)`
-
----
-
-## Profile
-
-### Fetch Profile
-- **Call**: `supabase.from('profiles').select('*').eq('user_id', userId).maybeSingle()`
-- **Returns**: Profile with role, display_name, specialty, department, phone, license_number, avatar_url, facility_id
+### Edge Functions
+| Function | Method | Purpose |
+|----------|--------|---------|
+| `track-login-attempt` | POST | Pre/post login attempt logging + lockout check |
+| `geolocate-ip` | GET | IP geolocation for session tracking |
 
 ---
 
-## Patient Data
+## 2. Provider & Facility Identity
 
-### Fetch Patients
-- **Page**: `/patients`
-- **Call**: `supabase.from('patients').select('*').order('created_at', { ascending: false })`
-- **Columns**: id, mrn, first_name, middle_name, last_name, date_of_birth, gender, phone_primary, email, city, allergies, is_active
+### Tables
+| Table | Called From |
+|-------|------------|
+| `health_providers` | `HealthProviderRegistry`, `VarapiProviders`, eligibility |
+| `provider_licenses` | `useLicenseCheck`, eligibility |
+| `provider_affiliations` | Eligibility, facility context |
+| `provider_registry_logs` | `Auth.tsx` (biometric login log — INSERT) |
+| `provider_state_transitions` | Trigger on `health_providers.lifecycle_state` change |
+| `facilities` | `FacilityContext`, `FacilityRegistry`, `TusoFacilities` |
+| `facility_types` | `FacilityRegistry` |
+| `facility_services` | `FacilityContext` |
+| `workspaces` | `WorkspaceSelection`, `TusoWorkspaces` |
+| `workspace_memberships` | `can_access_workspace()` |
+| `providers` | Shift management, workspace memberships |
 
-### Patient Search
-- **Component**: `PatientSearch` (`src/components/search/PatientSearch.tsx`)
-- **Trigger**: Dialog opened via button or ⌘K / Ctrl+K keyboard shortcut
-- **Call**: `supabase.from("patients").select("id, mrn, first_name, last_name, date_of_birth, gender, allergies, phone_primary").or("first_name.ilike.%${query}%,last_name.ilike.%${query}%,mrn.ilike.%${query}%,phone_primary.ilike.%${query}%").limit(10)`
-- **Debounce**: 300ms (`setTimeout` in `useEffect`)
-- **On select**: Checks for active encounter via `supabase.from("encounters").select(...).eq("patient_id", id).in("status", ["active","in-progress","waiting"]).limit(1)` — if found, navigates to `/encounter/{id}`; otherwise navigates to `/patients?selected={id}`
-- **Recent patients**: Stored/retrieved from `localStorage` key `"recentPatients"` (max 5)
+### RPCs
+| Function | Purpose |
+|----------|---------|
+| `generate_provider_registry_id(p_province_code)` | VARAPI-format provider ID |
+| `generate_facility_registry_id(p_province_code)` | THUSO-format facility ID |
+| `generate_upid()` | Universal Provider ID |
+| `check_provider_eligibility(p_provider_id, ...)` | Full eligibility + decision logging |
+| `is_licensed_practitioner(_user_id)` | License validity |
+| `get_provider_facilities(_user_id)` | Provider facility affiliations |
+| `get_user_workspaces(_user_id, _facility_id)` | Available workspaces |
+| `can_access_workspace(_user_id, _workspace_id)` | Workspace access check |
+| `get_device_context(p_device_fingerprint)` | Device-facility binding recall |
+| `save_device_context(...)` | Device-facility binding store |
 
----
-
-## Queue Management
-
-### Fetch Queues
-- **Hook**: `useQueueManagement()`
-- **Call**: `supabase.from('queue_definitions').select('*')` (assumed)
-- **Related tables**: queue_items, queue_transitions
-
-### Add to Queue
-- **Component**: AddToQueueDialog
-- **Call**: `supabase.from('queue_items').insert(...)` (assumed)
-- **Trigger functions**: `queue_item_before_insert()` (auto-generates sequence_number and ticket_number)
-
-### Queue Status Changes
-- **Trigger function**: `queue_item_status_change()` — logs transitions, calculates wait/service times
-
----
-
-## Dashboard Data
-
-### Fetch Dashboard Data
-- **Hook**: `useDashboardData()` (`src/hooks/useDashboardData.ts`)
-- **Returns**: patients, tasks, orders, referrals, results, stats, loading
-- **Queries** (all run in single `useEffect` on mount when `user` is set):
-  1. `supabase.from("encounters").select("id, status, ward, bed, triage_category, updated_at, patient:patients(id, first_name, last_name, mrn)").eq("status", "active").order("updated_at", { ascending: false }).limit(20)`
-  2. `supabase.from("clinical_orders").select("id, order_name, order_type, priority, status, created_at, patient_id, encounter_id, patient:patients(first_name, last_name, mrn)").in("status", ["pending", "in_progress"]).order("created_at", { ascending: false }).limit(50)`
-  3. `supabase.from("referrals").select("id, referral_type, to_department, from_department, urgency, status, created_at, patient:patients(first_name, last_name, mrn)").in("status", ["pending", "accepted", "in_progress"]).order("created_at", { ascending: false }).limit(20)`
-  4. `supabase.from("lab_results").select("id, test_name, status, is_critical, released_at, performed_at, lab_order:lab_orders(patient:patients(first_name, last_name, mrn))").in("status", ["pending", "preliminary", "final"]).order("created_at", { ascending: false }).limit(20)`
-  5. Count queries for stats: `encounters` (active), `clinical_orders` (pending/in_progress), `clinical_alerts` (critical+unresolved), `clinical_orders` (completed today), `lab_results` (pending/preliminary), `referrals` (pending/accepted/in_progress)
+### Edge Functions
+| Function | Purpose |
+|----------|---------|
+| `varapi-v1` | Provider registry operations |
+| `tuso-v1` | Facility/workspace operations |
 
 ---
 
-## Encounter / EHR
+## 3. Client Registry (VITO)
 
-### Open Chart
-- **Context**: EHRContext
-- **Process**: Fetch encounter by ID from URL, load patient data, validate access
-- **Call**: `supabase.from('encounters').select(...)` (assumed)
+### Tables
+| Table | Called From |
+|-------|------------|
+| `client_registry` | `ClientRegistry`, `VitoPatients`, registration |
+| `client_state_transitions` | Trigger on lifecycle_state change |
+| `client_registry_events` | Trigger on create/death/merge |
+| `patients` | `Patients`, `Registration`, queue |
 
-### Provider Login Logging
-- **Call**: `supabase.from('provider_registry_logs').insert({ user_id, provider_registry_id, action: 'biometric_login', biometric_method, verification_status, user_agent })`
+### RPCs
+| Function | Purpose |
+|----------|---------|
+| `generate_client_registry_id()` | CR-format client ID |
+| `generate_health_id()` | HID-format health ID |
+| `generate_impilo_id()` | Composite Impilo ID (CR + SHR) |
+
+### Edge Functions
+| Function | Purpose |
+|----------|---------|
+| `vito-v1-1` | Client registry operations |
 
 ---
 
-## Edge Functions
+## 4. Clinical (EHR)
 
-All deployed automatically from `supabase/functions/`:
+### Tables
+| Table | Called From |
+|-------|------------|
+| `encounters` | `Encounter`, `EHRContext`, queue |
+| `visits` | Registration, discharge |
+| `clinical_observations` | EHR observation panels |
+| `clinical_orders` | `Orders`, order entry |
+| `clinical_notes` | EHR notes section |
+| `clinical_documents` | Document generation |
+| `clinical_pages` | Clinical paging |
+| `care_plans` | Care management |
+| `problems` | Problem list |
+| `referrals` | Consults & referrals |
+| `beds` | Bed management |
+| `discharge_cases` | Discharge workflow |
+| `discharge_clearances` | Auto-created via trigger on discharge_case insert |
+
+### RPCs
+| Function | Purpose |
+|----------|---------|
+| `generate_visit_number()` | Auto-generate visit number |
+| `generate_document_number()` | Auto-generate clinical document number |
+| `can_access_patient(_user_id, _patient_id)` | Patient access authorization |
+
+### Edge Functions
+| Function | Purpose |
+|----------|---------|
+| `oros-v1` | Orders & results orchestration |
+| `pharmacy-v1` | Pharmacy dispensing |
+| `ai-diagnostic` | AI diagnostic assistant |
+| `emergency-triage` | Emergency triage support |
+
+---
+
+## 5. Queue Management
+
+### Tables
+| Table | Called From |
+|-------|------------|
+| `queue_definitions` | `Queue`, queue config |
+| `queue_items` | `Queue`, workstation |
+| `queue_transitions` | Trigger on status change |
+| `appointments` | `Appointments`, scheduling |
+| `appointment_waitlist` | Waitlist management |
+
+### RPCs
+| Function | Purpose |
+|----------|---------|
+| `generate_queue_ticket(p_queue_id, p_prefix)` | Generate ticket number |
+| `get_next_queue_sequence(p_queue_id)` | Next sequence number |
+| `get_queue_metrics(p_queue_id)` | Queue statistics |
+| `flag_missed_appointments(hours_threshold)` | Auto-flag no-shows |
+
+---
+
+## 6. Shift & Operations
+
+### Tables
+| Table | Called From |
+|-------|------------|
+| `shifts` | `ShiftContext`, `useShiftManagement` |
+| `shift_definitions` | Roster planning |
+| `shift_assignments` | Roster assignments |
+| `roster_plans` | Roster management |
+| `operational_supervisors` | Supervisor checks |
+| `facility_operations_config` | Ops mode |
+
+### RPCs
+| Function | Purpose |
+|----------|---------|
+| `get_active_shift(_user_id)` | Current active shift |
+| `get_todays_roster_assignment(_user_id, _facility_id)` | Today's roster |
+| `is_operational_supervisor(_user_id, _facility_id)` | Supervisor check |
+| `get_facility_ops_mode(_facility_id)` | Facility operations mode |
+
+---
+
+## 7. TSHEPO Trust Layer
+
+### Tables
+| Table | Called From |
+|-------|------------|
+| `tshepo_audit_ledger` | `TshepoAuditSearch`, kernel audit lib |
+| `trust_layer_identity_mapping` | Trust resolution |
+| `trust_layer_consent` | `TshepoConsentAdmin` |
+| `offline_entitlements` | `TshepoOfflineStatus` |
+
+### RPCs
+| Function | Purpose |
+|----------|---------|
+| `tshepo_next_chain_sequence(p_tenant_id, p_pod_id)` | Next audit chain sequence |
+| `tshepo_last_audit_hash(p_tenant_id, p_pod_id)` | Last audit record hash |
+| `trust_layer_resolve_clinical(p_impilo_id)` | Resolve clinical identity |
+| `trust_layer_resolve_registry(p_impilo_id)` | Resolve registry identity |
+
+### Edge Functions
+| Function | Purpose |
+|----------|---------|
+| `tshepo` | Trust layer operations |
+| `trust-layer` | Trust resolution |
+
+---
+
+## 8. BUTANO Shared Health Record
+
+### Tables
+| Table | Called From |
+|-------|------------|
+| `butano_fhir_resources` | `ButanoTimeline`, `ButanoIPS` |
+| `butano_document_references` | `ButanoTimeline` |
+| `butano_outbox_events` | `ButanoStats` |
+| `butano_subject_mappings` | `ButanoReconciliation` |
+| `butano_reconciliation_queue` | `ButanoReconciliation` |
+| `butano_pii_violations` | `ButanoStats` |
+| `butano_tenants` | Multi-tenant config |
+| `butano_tenant_config` | Tenant config |
+
+### Edge Functions
+| Function | Purpose |
+|----------|---------|
+| `butano-v1` | SHR FHIR operations |
+
+---
+
+## 9. Above-Site Oversight
+
+### Tables
+| Table | Called From |
+|-------|------------|
+| `above_site_roles` | `useAboveSiteRole` |
+| `above_site_sessions` | `AboveSiteContextSelection`, session mgmt |
+| `above_site_audit_log` | `AboveSiteDashboard` |
+| `above_site_interventions` | `useAboveSiteInterventions` |
+| `jurisdiction_assignments` | Jurisdiction scope |
+
+### RPCs
+| Function | Purpose |
+|----------|---------|
+| `has_above_site_role(_user_id)` | Above-site role check |
+| `get_above_site_roles(_user_id)` | All active above-site roles |
+| `get_jurisdiction_scope(_role_id)` | Jurisdiction scope for role |
+| `can_access_facility_in_jurisdiction(_user_id, _facility_id)` | Jurisdiction access |
+
+---
+
+## 10. Commerce & Marketplace (MSIKA)
+
+### Tables
+| Table | Called From |
+|-------|------------|
+| `fulfillment_requests` | `PrescriptionFulfillment` |
+| `vendors` | `VendorPortal`, marketplace |
+| `vendor_ratings` | Rating system |
+| `bid_notifications` | `VendorPortal` |
+
+### RPCs
+| Function | Purpose |
+|----------|---------|
+| `generate_fulfillment_number()` | Fulfillment request number |
+
+### Edge Functions
+| Function | Purpose |
+|----------|---------|
+| `msika-core-v1` | Products & services registry |
+| `msika-flow-v1` | Commerce & fulfillment |
+
+---
+
+## 11. Finance (COSTA / MUSHEX)
+
+### Tables
+| Table | Called From |
+|-------|------------|
+| `charge_sheets` | `Charges` |
+| `invoices` | `Payments` |
+| `billing_adjustments` | Billing |
+| `visit_financial_accounts` | Visit billing |
+| `bed_day_costs` | Bed day accrual |
+
+### Edge Functions
+| Function | Purpose |
+|----------|---------|
+| `costa-v1` | Costing engine |
+| `mushex-v1` | Payment switch & claims |
+
+---
+
+## 12. Social & Communication
+
+### Tables
+| Table | Called From |
+|-------|------------|
+| `posts` | Social feed |
+| `post_reactions`, `post_comments` | Social interactions |
+| `communities`, `community_members` | Communities |
+| `clubs`, `club_members` | Clubs |
+| `professional_pages`, `page_followers`, `page_reviews` | Professional pages |
+| `crowdfunding_campaigns`, `crowdfunding_donations` | Crowdfunding |
+| `message_channels`, `messages` | Messaging |
+| `call_sessions`, `call_ice_candidates`, `call_recordings` | Voice/video |
+| `announcements`, `announcement_acknowledgments` | Noticeboard |
+
+---
+
+## 13. All Edge Functions (Complete List)
 
 | Function | Purpose |
 |----------|---------|
 | `ai-diagnostic` | AI diagnostic assistant |
-| `butano-v1` | BUTANO SHR operations |
+| `butano-v1` | SHR FHIR operations |
 | `cleanup-sessions` | Session cleanup cron |
-| `costa-v1` | COSTA costing engine |
-| `dicomweb` | DICOM web proxy for PACS |
-| `emergency-triage` | Emergency triage logic |
-| `geolocate-ip` | IP geolocation for sessions |
-| `inventory-v1` | Inventory service |
+| `costa-v1` | Costing engine |
+| `dicomweb` | DICOM image serving |
+| `emergency-triage` | Emergency triage |
+| `geolocate-ip` | IP geolocation |
+| `inventory-v1` | Inventory management |
 | `landela-process-document` | Document processing |
-| `landela-suite-v1` | Landela suite operations |
-| `msika-core-v1` | MSIKA product registry |
-| `msika-flow-v1` | MSIKA commerce/fulfillment |
-| `mushex-v1` | MUSHEX payment switch |
-| `odoo-integration` | Odoo ERP integration |
-| `oros-v1` | OROS orders & results |
-| `pct-v1` | PCT patient care tracker |
-| `pharmacy-v1` | Pharmacy service |
-| `seed-test-users` | Test user seeding |
-| `send-password-reset` | Password reset emails |
-| `send-role-notification` | Role assignment notifications |
+| `landela-suite-v1` | Credentials suite |
+| `msika-core-v1` | Products & services |
+| `msika-flow-v1` | Commerce & fulfillment |
+| `mushex-v1` | Payment switch |
+| `odoo-integration` | Odoo ERP connector |
+| `oros-v1` | Orders & results |
+| `pct-v1` | Patient care team |
+| `pharmacy-v1` | Pharmacy dispensing |
+| `seed-test-users` | Test data seeding |
+| `send-password-reset` | Password reset email |
+| `send-role-notification` | Role change notification |
 | `send-secure-id` | Secure ID delivery |
-| `send-security-notification` | Security alert emails |
-| `send-verification-email` | Email verification |
-| `totp-management` | TOTP/MFA management |
-| `track-login-attempt` | Login attempt tracking & lockout |
-| `trust-layer` | Trust layer operations |
-| `tshepo` | TSHEPO PDP/IAM operations |
-| `tuso-v1` | TUSO facility operations |
-| `varapi-v1` | VARAPI provider operations |
-| `vito-v1-1` | VITO patient registry operations |
-| `zibo-v1` | ZIBO terminology service |
-
----
-
-## Database Functions (RPC)
-
-Key database functions called via `supabase.rpc()`:
-
-| Function | Purpose |
-|----------|---------|
-| `generate_impilo_id()` | Generate composite Impilo ID (CR + SHR) |
-| `generate_health_id()` | Generate Health ID with Luhn check digit |
-| `generate_upid()` | Generate Unique Provider ID |
-| `generate_provider_registry_id()` | Generate VARAPI provider ID |
-| `generate_facility_registry_id()` | Generate TUSO facility ID |
-| `generate_client_registry_id()` | Generate client registry ID |
-| `check_provider_eligibility()` | Check provider roles/privileges at facility |
-| `get_provider_facilities()` | Get user's affiliated facilities |
-| `get_user_workspaces()` | Get user's workspace memberships |
-| `get_active_shift()` | Get current active shift |
-| `get_todays_roster_assignment()` | Get today's roster assignment |
-| `get_queue_metrics()` | Get queue statistics |
-| `has_role()` | Check user role |
-| `has_above_site_role()` | Check above-site role |
-| `has_platform_role()` | Check platform role |
-| `is_licensed_practitioner()` | Verify active license |
-| `can_access_workspace()` | Workspace access check |
-| `can_access_patient()` | Patient access authorization |
-| `can_access_facility_in_jurisdiction()` | Jurisdiction-based facility access |
-| `get_cpd_summary()` | Get CPD points summary |
-| `flag_missed_appointments()` | Auto-flag no-show appointments |
-| `trust_layer_resolve_clinical()` | Resolve CPID for clinical access |
-| `trust_layer_resolve_registry()` | Resolve CRID for registry access |
-| `get_device_context()` | Get remembered device context |
-| `save_device_context()` | Save device context for auto-selection |
-
----
-
-## Realtime Subscriptions
-
-Tables with realtime enabled (confirmed from migration ALTER PUBLICATION statements):
-
-| Table | Purpose | Migration |
-|-------|---------|-----------|
-| `beds` | Bed status changes | `20251221130528` |
-| `shift_handoffs` | Shift handoff notifications | `20251221174212` |
-| `clinical_messages` | Clinical messaging | `20251222082004` |
-| `clinical_pages` | Clinical paging | `20251222082004` |
-| `voice_calls` | Voice call signaling | `20251222082004` |
-| `teleconsult_signals` | Teleconsult WebRTC signaling | `20251221083700` |
-| `call_sessions` | Call session state | `20260110075031` |
-| `call_ice_candidates` | WebRTC ICE candidates | `20260110075031` |
-| `medication_schedule_times` | Medication schedule updates | `20251221182716` |
-| `posts` | Social feed posts | `20251222085616` |
-| `post_comments` | Post comments | `20251222085616` |
-| `campaign_donations` | Crowdfunding donations | `20251222085616` |
-| `idp_revocation_events` | Identity revocation events | `20260109163328` |
-| `client_registry` | Client registry changes | `20260109202530` |
-| `client_duplicate_queue` | Duplicate detection queue | `20260109202530` |
-| `sorting_sessions` | Patient sorting sessions | `20260110184104` |
-| `lab_critical_alerts` | Critical lab result alerts | `20260110083041` |
-| `client_queue_notifications` | Client queue notifications | `20260110135149` |
-| `client_queue_requests` | Client queue requests | `20260110135149` |
-| `teleconsult_responses` | Teleconsult responses | `20260111030548` |
-| `landela_notifications` | Document notifications | `20260115055342` |
-| `trust_layer_consent` | Consent changes | `20260116134259` |
-| `trust_layer_break_glass` | Break-glass events | `20260116134259` |
-
----
-
-## Key Supabase Tables Referenced in UI
-
-| Table | Used By |
-|-------|---------|
-| `profiles` | Auth context, user display |
-| `patients` | Patients page, search, encounters |
-| `encounters` | EHR, dashboard |
-| `queue_definitions` | Queue management |
-| `queue_items` | Queue workstation |
-| `beds` | Bed management |
-| `appointments` | Scheduling |
-| `user_sessions` | Session tracking |
-| `provider_registry_logs` | Login audit |
-| `health_providers` | Provider registry |
-| `provider_licenses` | License checks |
-| `provider_affiliations` | Facility affiliations |
-| `facilities` | Facility registry |
-| `workspaces` | Workspace management |
-| `workspace_memberships` | Workspace access |
-| `shifts` | Shift management |
-| `clinical_orders` | Order entry |
-| `above_site_roles` | Above-site access |
-| `above_site_sessions` | Above-site session tracking |
-| `user_roles` | Role-based access |
-| `client_registry` | National client registry |
-| `trust_layer_identity_mapping` | Trust layer |
-| `trust_layer_consent` | Consent management |
-| `tshepo_audit_ledger` | Audit trail |
-| `offline_entitlements` | Offline access (assumed) |
+| `send-security-notification` | Security alert |
+| `send-verification-email` | Verification email |
+| `totp-management` | TOTP 2FA |
+| `track-login-attempt` | Login attempt tracking |
+| `trust-layer` | Trust resolution |
+| `tshepo` | Trust layer ops |
+| `tuso-v1` | Facility/workspace ops |
+| `varapi-v1` | Provider registry |
+| `vito-v1-1` | Client registry |
+| `zibo-v1` | Terminology service |
