@@ -73,9 +73,9 @@ export function TopBar() {
   const navigate = useNavigate();
 
   return (
-    <header className="h-14 bg-topbar-bg text-topbar-foreground flex items-center justify-between px-4 border-b border-topbar-bg/20 shadow-sm">
+    <header className="h-14 min-h-[3.5rem] bg-topbar-bg text-topbar-foreground flex items-center justify-between px-4 border-b border-topbar-bg/20 shadow-sm overflow-hidden shrink-0">
       {/* Left: Back, Home, Logo & Actions */}
-      <div className="flex items-center gap-4">
+      <div className="flex items-center gap-4 min-w-0 overflow-x-auto scrollbar-none">
         {/* Navigation Buttons */}
         <div className="flex items-center gap-1">
           <Button
