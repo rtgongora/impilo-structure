@@ -140,17 +140,17 @@ export function useCadreFormConfig(
   const isFocused = complexity === 'focused';
   const isSimplified = complexity === 'simplified';
   
-  const isEmergency = visitType === 'emergency';
-  const isANC = visitType === 'anc' || visitType === 'pnc';
-  const isPsych = visitType === 'psychiatric';
-  const isPediatric = visitType === 'pediatric';
-  const isHighAcuity = acuity === 'red' || acuity === 'orange';
+  const isEmergency = effectiveVisitType === 'emergency';
+  const isANC = effectiveVisitType === 'anc' || effectiveVisitType === 'pnc';
+  const isPsych = effectiveVisitType === 'psychiatric';
+  const isPediatric = effectiveVisitType === 'pediatric';
+  const isHighAcuity = effectiveAcuity === 'red' || effectiveAcuity === 'orange';
 
   return {
     cadre,
     complexity,
-    visitType,
-    acuity,
+    visitType: effectiveVisitType,
+    acuity: effectiveAcuity,
     
     history: {
       showSOCRATES: isComprehensive,
