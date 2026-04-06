@@ -7,12 +7,48 @@
  * 3. Acuity level (Red/Orange/Yellow/Green)
  */
 
+import { useState, createContext, useContext } from 'react';
 import { useAuth } from '@/contexts/AuthContext';
 
 export type ClinicalCadre = 'doctor' | 'specialist' | 'nurse' | 'midwife' | 'chw' | 'pharmacist' | 'lab_tech' | 'radiologist' | 'admin';
 export type FormComplexity = 'comprehensive' | 'focused' | 'simplified';
 export type VisitType = 'emergency' | 'anc' | 'pnc' | 'chronic' | 'general' | 'surgical' | 'pediatric' | 'psychiatric';
 export type AcuityLevel = 'red' | 'orange' | 'yellow' | 'green';
+
+// ── Dev Override State (singleton) ──────────────
+let _devCadreOverride: ClinicalCadre | null = null;
+let _devVisitOverride: VisitType | null = null;
+let _devAcuityOverride: AcuityLevel | null = null;
+let _devListeners: (() => void)[] = [];
+
+function notifyDevListeners() {
+  _devListeners.forEach(fn => fn());
+}
+
+export function setDevCadreOverride(cadre: ClinicalCadre | null) {
+  _devCadreOverride = cadre;
+  notifyDevListeners();
+}
+export function setDevVisitOverride(visit: VisitType | null) {
+  _devVisitOverride = visit;
+  notifyDevListeners();
+}
+export function setDevAcuityOverride(acuity: AcuityLevel | null) {
+  _devAcuityOverride = acuity;
+  notifyDevListeners();
+}
+export function getDevOverrides() {
+  return { cadre: _devCadreOverride, visit: _devVisitOverride, acuity: _devAcuityOverride };
+}
+export function useDevOverrideListener() {
+  const [, setTick] = useState(0);
+  // Register listener on mount
+  useState(() => {
+    const fn = () => setTick(t => t + 1);
+    _devListeners.push(fn);
+    return () => { _devListeners = _devListeners.filter(l => l !== fn); };
+  });
+}
 
 export interface CadreFormConfig {
   cadre: ClinicalCadre;
@@ -90,26 +126,31 @@ export function useCadreFormConfig(
   acuity: AcuityLevel = 'green'
 ): CadreFormConfig {
   const { profile } = useAuth();
+  useDevOverrideListener();
+  
+  const overrides = getDevOverrides();
+  const effectiveVisitType = overrides.visit || visitType;
+  const effectiveAcuity = overrides.acuity || acuity;
   
   const profileRole = (profile?.role as string) || 'doctor';
-  const cadre: ClinicalCadre = CADRE_MAP[profileRole] || 'doctor';
-  const complexity = getCadreComplexity(cadre, acuity);
+  const cadre: ClinicalCadre = overrides.cadre || CADRE_MAP[profileRole] || 'doctor';
+  const complexity = getCadreComplexity(cadre, effectiveAcuity);
   
   const isComprehensive = complexity === 'comprehensive';
   const isFocused = complexity === 'focused';
   const isSimplified = complexity === 'simplified';
   
-  const isEmergency = visitType === 'emergency';
-  const isANC = visitType === 'anc' || visitType === 'pnc';
-  const isPsych = visitType === 'psychiatric';
-  const isPediatric = visitType === 'pediatric';
-  const isHighAcuity = acuity === 'red' || acuity === 'orange';
+  const isEmergency = effectiveVisitType === 'emergency';
+  const isANC = effectiveVisitType === 'anc' || effectiveVisitType === 'pnc';
+  const isPsych = effectiveVisitType === 'psychiatric';
+  const isPediatric = effectiveVisitType === 'pediatric';
+  const isHighAcuity = effectiveAcuity === 'red' || effectiveAcuity === 'orange';
 
   return {
     cadre,
     complexity,
-    visitType,
-    acuity,
+    visitType: effectiveVisitType,
+    acuity: effectiveAcuity,
     
     history: {
       showSOCRATES: isComprehensive,
