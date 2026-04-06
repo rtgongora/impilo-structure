@@ -238,7 +238,7 @@ export function QueueWorkstation({ facilityId, initialQueueId }: QueueWorkstatio
                 </TabsList>
 
                 <TabsContent value="waiting" className="mt-4">
-                  <ScrollArea className="h-[500px]">
+                  <ScrollArea className="flex-1">
                     <div className="space-y-3 pr-4">
                       {waitingItems.length === 0 ? (
                         <Card>
@@ -265,7 +265,7 @@ export function QueueWorkstation({ facilityId, initialQueueId }: QueueWorkstatio
                 </TabsContent>
 
                 <TabsContent value="called" className="mt-4">
-                  <ScrollArea className="h-[500px]">
+                  <ScrollArea className="flex-1">
                     <div className="space-y-3 pr-4">
                       {calledItems.length === 0 ? (
                         <Card>
@@ -290,7 +290,7 @@ export function QueueWorkstation({ facilityId, initialQueueId }: QueueWorkstatio
                 </TabsContent>
 
                 <TabsContent value="in_service" className="mt-4">
-                  <ScrollArea className="h-[500px]">
+                  <ScrollArea className="flex-1">
                     <div className="space-y-3 pr-4">
                       {inServiceItems.length === 0 ? (
                         <Card>
@@ -315,7 +315,7 @@ export function QueueWorkstation({ facilityId, initialQueueId }: QueueWorkstatio
                 </TabsContent>
 
                 <TabsContent value="paused" className="mt-4">
-                  <ScrollArea className="h-[500px]">
+                  <ScrollArea className="flex-1">
                     <div className="space-y-3 pr-4">
                       {pausedItems.map(item => (
                         <QueueItemCard
