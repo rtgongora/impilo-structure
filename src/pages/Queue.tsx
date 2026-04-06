@@ -277,7 +277,7 @@ const Queue = () => {
 
             {/* Wards Overview */}
             <TabsContent value="wards" className="h-full mt-0">
-              <WardsOverviewPanel />
+              <WardManagementPanel />
             </TabsContent>
 
             {/* Bookings */}
