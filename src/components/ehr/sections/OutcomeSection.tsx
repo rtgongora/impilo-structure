@@ -314,69 +314,44 @@ function DischargeForm({ checkedItems, toggleCheckItem }: {
         </TabsContent>
 
         <TabsContent value="followup" className="space-y-4">
+          <FollowUpSchedulingCard />
+
+          {/* CHW Tasks */}
           <Card>
             <CardHeader className="pb-3">
               <CardTitle className="text-base flex items-center gap-2">
-                <Calendar className="w-5 h-5 text-primary" />
-                Follow-up Planning
+                <User className="w-5 h-5 text-primary" />
+                CHW Follow-up Tasks
+              </CardTitle>
+            </CardHeader>
+            <CardContent className="space-y-3">
+              <div className="space-y-2">
+                {[
+                  "Home visit within 48 hours to check medication adherence",
+                  "Blood glucose monitoring education",
+                ].map((task) => (
+                  <div key={task} className="p-3 border rounded-lg flex items-center gap-3">
+                    <Checkbox id={task} />
+                    <Label htmlFor={task} className="text-sm cursor-pointer">{task}</Label>
+                  </div>
+                ))}
+                <Button variant="outline" size="sm" className="w-full">
+                  <Plus className="w-4 h-4 mr-1" />
+                  Add CHW Task
+                </Button>
+              </div>
+            </CardContent>
+          </Card>
+
+          {/* Patient Instructions */}
+          <Card>
+            <CardHeader className="pb-3">
+              <CardTitle className="text-base flex items-center gap-2">
+                <FileText className="w-5 h-5 text-primary" />
+                Discharge Instructions & Counseling
               </CardTitle>
             </CardHeader>
             <CardContent className="space-y-4">
-              {/* Follow-up Appointments */}
-              <div>
-                <Label className="text-sm font-medium">Follow-up Appointments</Label>
-                <div className="mt-2 space-y-2">
-                  <div className="p-3 border rounded-lg flex items-center justify-between">
-                    <div className="flex items-center gap-3">
-                      <Calendar className="w-4 h-4 text-primary" />
-                      <div>
-                        <span className="font-medium text-sm">Diabetes Clinic</span>
-                        <p className="text-xs text-muted-foreground">In 2 weeks</p>
-                      </div>
-                    </div>
-                    <Button variant="outline" size="sm">Schedule</Button>
-                  </div>
-                  <div className="p-3 border rounded-lg flex items-center justify-between">
-                    <div className="flex items-center gap-3">
-                      <Calendar className="w-4 h-4 text-primary" />
-                      <div>
-                        <span className="font-medium text-sm">General OPD</span>
-                        <p className="text-xs text-muted-foreground">Review in 1 week</p>
-                      </div>
-                    </div>
-                    <Button variant="outline" size="sm">Schedule</Button>
-                  </div>
-                  <Button variant="outline" size="sm" className="w-full">
-                    <Plus className="w-4 h-4 mr-1" />
-                    Add Follow-up
-                  </Button>
-                </div>
-              </div>
-
-              {/* CHW Tasks */}
-              <div>
-                <Label className="text-sm font-medium">CHW Follow-up Tasks</Label>
-                <div className="mt-2 space-y-2">
-                  <div className="p-3 border rounded-lg flex items-center gap-3">
-                    <Checkbox id="chw1" />
-                    <Label htmlFor="chw1" className="text-sm cursor-pointer">
-                      Home visit within 48 hours to check medication adherence
-                    </Label>
-                  </div>
-                  <div className="p-3 border rounded-lg flex items-center gap-3">
-                    <Checkbox id="chw2" />
-                    <Label htmlFor="chw2" className="text-sm cursor-pointer">
-                      Blood glucose monitoring education
-                    </Label>
-                  </div>
-                  <Button variant="outline" size="sm" className="w-full">
-                    <Plus className="w-4 h-4 mr-1" />
-                    Add CHW Task
-                  </Button>
-                </div>
-              </div>
-
-              {/* Patient Instructions */}
               <div>
                 <Label className="text-sm font-medium">Discharge Instructions</Label>
                 <Textarea
@@ -386,7 +361,6 @@ function DischargeForm({ checkedItems, toggleCheckItem }: {
                 />
               </div>
 
-              {/* Counseling Provided */}
               <div>
                 <Label className="text-sm font-medium">Counseling Provided</Label>
                 <div className="mt-2 flex flex-wrap gap-2">
