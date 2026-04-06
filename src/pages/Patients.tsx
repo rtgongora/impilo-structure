@@ -100,7 +100,7 @@ const Patients = () => {
 
   return (
     <AppLayout title="Patients">
-      <div className="h-[calc(100vh-48px)] flex flex-col p-3">
+      <div className="flex-1 flex flex-col p-3 min-h-0">
         {/* Stats */}
         <div className="grid grid-cols-4 gap-2 mb-3 shrink-0">
           <Card>
