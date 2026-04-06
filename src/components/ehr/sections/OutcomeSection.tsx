@@ -7,10 +7,14 @@ import { Textarea } from "@/components/ui/textarea";
 import { Input } from "@/components/ui/input";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { Calendar as CalendarComponent } from "@/components/ui/calendar";
+import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { 
   CheckCircle, Home, Building, Ambulance, Calendar, Send, AlertTriangle,
   Pill, FileText, User, Clock, MapPin, Phone, Stethoscope, Heart,
-  ClipboardList, AlertCircle, UserX, Plus, ChevronRight, FileDown, QrCode
+  ClipboardList, AlertCircle, UserX, Plus, ChevronRight, FileDown, QrCode,
+  Trash2, CalendarPlus
 } from "lucide-react";
 import { useState } from "react";
 import { PostEncounterNavigation } from "@/components/ehr/PostEncounterNavigation";
@@ -18,6 +22,8 @@ import { toast } from "sonner";
 import { SummaryActions } from "@/components/summaries";
 import { useEHR } from "@/contexts/EHRContext";
 import { PatientDocumentsPanel } from "@/components/landela/PatientDocumentsPanel";
+import { format, addDays, addWeeks, addMonths } from "date-fns";
+import { cn } from "@/lib/utils";
 type DispositionType = "discharge" | "admit" | "transfer" | "refer" | "death" | "lama" | "";
 
 const DISPOSITION_OPTIONS = [
@@ -314,69 +320,44 @@ function DischargeForm({ checkedItems, toggleCheckItem }: {
         </TabsContent>
 
         <TabsContent value="followup" className="space-y-4">
+          <FollowUpSchedulingCard />
+
+          {/* CHW Tasks */}
           <Card>
             <CardHeader className="pb-3">
               <CardTitle className="text-base flex items-center gap-2">
-                <Calendar className="w-5 h-5 text-primary" />
-                Follow-up Planning
+                <User className="w-5 h-5 text-primary" />
+                CHW Follow-up Tasks
+              </CardTitle>
+            </CardHeader>
+            <CardContent className="space-y-3">
+              <div className="space-y-2">
+                {[
+                  "Home visit within 48 hours to check medication adherence",
+                  "Blood glucose monitoring education",
+                ].map((task) => (
+                  <div key={task} className="p-3 border rounded-lg flex items-center gap-3">
+                    <Checkbox id={task} />
+                    <Label htmlFor={task} className="text-sm cursor-pointer">{task}</Label>
+                  </div>
+                ))}
+                <Button variant="outline" size="sm" className="w-full">
+                  <Plus className="w-4 h-4 mr-1" />
+                  Add CHW Task
+                </Button>
+              </div>
+            </CardContent>
+          </Card>
+
+          {/* Patient Instructions */}
+          <Card>
+            <CardHeader className="pb-3">
+              <CardTitle className="text-base flex items-center gap-2">
+                <FileText className="w-5 h-5 text-primary" />
+                Discharge Instructions & Counseling
               </CardTitle>
             </CardHeader>
             <CardContent className="space-y-4">
-              {/* Follow-up Appointments */}
-              <div>
-                <Label className="text-sm font-medium">Follow-up Appointments</Label>
-                <div className="mt-2 space-y-2">
-                  <div className="p-3 border rounded-lg flex items-center justify-between">
-                    <div className="flex items-center gap-3">
-                      <Calendar className="w-4 h-4 text-primary" />
-                      <div>
-                        <span className="font-medium text-sm">Diabetes Clinic</span>
-                        <p className="text-xs text-muted-foreground">In 2 weeks</p>
-                      </div>
-                    </div>
-                    <Button variant="outline" size="sm">Schedule</Button>
-                  </div>
-                  <div className="p-3 border rounded-lg flex items-center justify-between">
-                    <div className="flex items-center gap-3">
-                      <Calendar className="w-4 h-4 text-primary" />
-                      <div>
-                        <span className="font-medium text-sm">General OPD</span>
-                        <p className="text-xs text-muted-foreground">Review in 1 week</p>
-                      </div>
-                    </div>
-                    <Button variant="outline" size="sm">Schedule</Button>
-                  </div>
-                  <Button variant="outline" size="sm" className="w-full">
-                    <Plus className="w-4 h-4 mr-1" />
-                    Add Follow-up
-                  </Button>
-                </div>
-              </div>
-
-              {/* CHW Tasks */}
-              <div>
-                <Label className="text-sm font-medium">CHW Follow-up Tasks</Label>
-                <div className="mt-2 space-y-2">
-                  <div className="p-3 border rounded-lg flex items-center gap-3">
-                    <Checkbox id="chw1" />
-                    <Label htmlFor="chw1" className="text-sm cursor-pointer">
-                      Home visit within 48 hours to check medication adherence
-                    </Label>
-                  </div>
-                  <div className="p-3 border rounded-lg flex items-center gap-3">
-                    <Checkbox id="chw2" />
-                    <Label htmlFor="chw2" className="text-sm cursor-pointer">
-                      Blood glucose monitoring education
-                    </Label>
-                  </div>
-                  <Button variant="outline" size="sm" className="w-full">
-                    <Plus className="w-4 h-4 mr-1" />
-                    Add CHW Task
-                  </Button>
-                </div>
-              </div>
-
-              {/* Patient Instructions */}
               <div>
                 <Label className="text-sm font-medium">Discharge Instructions</Label>
                 <Textarea
@@ -386,7 +367,6 @@ function DischargeForm({ checkedItems, toggleCheckItem }: {
                 />
               </div>
 
-              {/* Counseling Provided */}
               <div>
                 <Label className="text-sm font-medium">Counseling Provided</Label>
                 <div className="mt-2 flex flex-wrap gap-2">
@@ -628,58 +608,62 @@ function TransferForm() {
 
 function ReferForm() {
   return (
-    <Card>
-      <CardHeader className="pb-3">
-        <CardTitle className="text-base flex items-center gap-2">
-          <Send className="w-5 h-5 text-blue-500" />
-          Outpatient Referral
-        </CardTitle>
-      </CardHeader>
-      <CardContent className="space-y-4">
-        <div className="grid grid-cols-2 gap-4">
-          <div>
-            <Label className="text-sm font-medium">Referral Destination</Label>
-            <select className="mt-2 w-full p-2 border rounded-lg bg-background">
-              <option value="">Select clinic/facility...</option>
-              <option value="diabetes">Diabetes Clinic</option>
-              <option value="cardiology">Cardiology Clinic</option>
-              <option value="surgery">Surgical Outpatient</option>
-              <option value="physio">Physiotherapy</option>
-              <option value="nutrition">Nutrition Clinic</option>
-            </select>
-          </div>
-          <div>
-            <Label className="text-sm font-medium">Urgency</Label>
-            <div className="flex gap-2 mt-2">
-              {["Routine", "Soon", "Urgent"].map((level) => (
-                <Badge 
-                  key={level} 
-                  variant={level === "Routine" ? "outline" : level === "Soon" ? "secondary" : "default"}
-                  className="cursor-pointer"
-                >
-                  {level}
-                </Badge>
-              ))}
+    <div className="space-y-4">
+      <Card>
+        <CardHeader className="pb-3">
+          <CardTitle className="text-base flex items-center gap-2">
+            <Send className="w-5 h-5 text-primary" />
+            Outpatient Referral
+          </CardTitle>
+        </CardHeader>
+        <CardContent className="space-y-4">
+          <div className="grid grid-cols-2 gap-4">
+            <div>
+              <Label className="text-sm font-medium">Referral Destination</Label>
+              <select className="mt-2 w-full p-2 border rounded-lg bg-background">
+                <option value="">Select clinic/facility...</option>
+                <option value="diabetes">Diabetes Clinic</option>
+                <option value="cardiology">Cardiology Clinic</option>
+                <option value="surgery">Surgical Outpatient</option>
+                <option value="physio">Physiotherapy</option>
+                <option value="nutrition">Nutrition Clinic</option>
+              </select>
+            </div>
+            <div>
+              <Label className="text-sm font-medium">Urgency</Label>
+              <div className="flex gap-2 mt-2">
+                {["Routine", "Soon", "Urgent"].map((level) => (
+                  <Badge 
+                    key={level} 
+                    variant={level === "Routine" ? "outline" : level === "Soon" ? "secondary" : "default"}
+                    className="cursor-pointer"
+                  >
+                    {level}
+                  </Badge>
+                ))}
+              </div>
             </div>
           </div>
-        </div>
 
-        <div>
-          <Label className="text-sm font-medium">Reason for Referral</Label>
-          <Textarea className="mt-2" placeholder="Clinical indication for referral..." />
-        </div>
+          <div>
+            <Label className="text-sm font-medium">Reason for Referral</Label>
+            <Textarea className="mt-2" placeholder="Clinical indication for referral..." />
+          </div>
 
-        <div>
-          <Label className="text-sm font-medium">Key Clinical Information</Label>
-          <Textarea className="mt-2 min-h-[100px]" placeholder="Relevant history, findings, and current management..." />
-        </div>
+          <div>
+            <Label className="text-sm font-medium">Key Clinical Information</Label>
+            <Textarea className="mt-2 min-h-[100px]" placeholder="Relevant history, findings, and current management..." />
+          </div>
 
-        <div>
-          <Label className="text-sm font-medium">Specific Questions for Specialist</Label>
-          <Textarea className="mt-2" placeholder="What do you need the specialist to address?" />
-        </div>
-      </CardContent>
-    </Card>
+          <div>
+            <Label className="text-sm font-medium">Specific Questions for Specialist</Label>
+            <Textarea className="mt-2" placeholder="What do you need the specialist to address?" />
+          </div>
+        </CardContent>
+      </Card>
+
+      <FollowUpSchedulingCard />
+    </div>
   );
 }
 
@@ -836,6 +820,270 @@ function LAMAForm() {
             ))}
           </div>
         </div>
+      </CardContent>
+    </Card>
+  );
+}
+
+// --- Follow-Up Scheduling Card ---
+
+const APPOINTMENT_TYPES = [
+  "General OPD Review",
+  "Diabetes Clinic",
+  "Cardiology Clinic",
+  "Surgical Follow-up",
+  "Physiotherapy",
+  "Nutrition Clinic",
+  "Antenatal Care",
+  "Paediatric Review",
+  "Mental Health",
+  "Wound Care",
+  "Lab Review",
+  "Imaging Review",
+  "Other",
+];
+
+const QUICK_INTERVALS = [
+  { label: "3 days", fn: () => addDays(new Date(), 3) },
+  { label: "1 week", fn: () => addWeeks(new Date(), 1) },
+  { label: "2 weeks", fn: () => addWeeks(new Date(), 2) },
+  { label: "1 month", fn: () => addMonths(new Date(), 1) },
+  { label: "3 months", fn: () => addMonths(new Date(), 3) },
+  { label: "6 months", fn: () => addMonths(new Date(), 6) },
+];
+
+interface ScheduledFollowUp {
+  id: string;
+  type: string;
+  date: Date;
+  notes: string;
+  isReviewDate: boolean;
+}
+
+function FollowUpSchedulingCard() {
+  const [followUps, setFollowUps] = useState<ScheduledFollowUp[]>([]);
+  const [showAddForm, setShowAddForm] = useState(false);
+  const [newType, setNewType] = useState("");
+  const [newDate, setNewDate] = useState<Date | undefined>();
+  const [newNotes, setNewNotes] = useState("");
+  const [isReviewDate, setIsReviewDate] = useState(false);
+  const [datePickerOpen, setDatePickerOpen] = useState(false);
+
+  const handleAddFollowUp = () => {
+    if (!newType || !newDate) {
+      toast.error("Please select an appointment type and date");
+      return;
+    }
+    const entry: ScheduledFollowUp = {
+      id: `fu-${Date.now()}`,
+      type: newType,
+      date: newDate,
+      notes: newNotes,
+      isReviewDate: isReviewDate,
+    };
+    setFollowUps((prev) => [...prev, entry]);
+    setNewType("");
+    setNewDate(undefined);
+    setNewNotes("");
+    setIsReviewDate(false);
+    setShowAddForm(false);
+    toast.success(`${isReviewDate ? "Review date" : "Follow-up appointment"} added`);
+  };
+
+  const handleRemove = (id: string) => {
+    setFollowUps((prev) => prev.filter((f) => f.id !== id));
+  };
+
+  return (
+    <Card>
+      <CardHeader className="pb-3">
+        <div className="flex items-center justify-between">
+          <CardTitle className="text-base flex items-center gap-2">
+            <CalendarPlus className="w-5 h-5 text-primary" />
+            Follow-up Appointments & Review Dates
+          </CardTitle>
+          <Button size="sm" variant="outline" onClick={() => setShowAddForm(true)}>
+            <Plus className="w-4 h-4 mr-1" />
+            Schedule
+          </Button>
+        </div>
+      </CardHeader>
+      <CardContent className="space-y-4">
+        {/* Scheduled items list */}
+        {followUps.length > 0 && (
+          <div className="space-y-2">
+            {followUps.map((fu) => (
+              <div
+                key={fu.id}
+                className="flex items-center justify-between p-3 border rounded-lg"
+              >
+                <div className="flex items-center gap-3">
+                  <div className={cn(
+                    "w-9 h-9 rounded-full flex items-center justify-center",
+                    fu.isReviewDate ? "bg-accent" : "bg-primary/10"
+                  )}>
+                    {fu.isReviewDate ? (
+                      <Clock className="w-4 h-4 text-accent-foreground" />
+                    ) : (
+                      <Calendar className="w-4 h-4 text-primary" />
+                    )}
+                  </div>
+                  <div>
+                    <div className="flex items-center gap-2">
+                      <span className="font-medium text-sm">{fu.type}</span>
+                      <Badge variant={fu.isReviewDate ? "secondary" : "outline"} className="text-[10px]">
+                        {fu.isReviewDate ? "Review Date" : "Appointment"}
+                      </Badge>
+                    </div>
+                    <p className="text-xs text-muted-foreground">
+                      {format(fu.date, "EEE, dd MMM yyyy")}
+                    </p>
+                    {fu.notes && (
+                      <p className="text-xs text-muted-foreground mt-0.5 italic">{fu.notes}</p>
+                    )}
+                  </div>
+                </div>
+                <Button
+                  variant="ghost"
+                  size="icon"
+                  className="h-7 w-7 text-muted-foreground hover:text-destructive"
+                  onClick={() => handleRemove(fu.id)}
+                >
+                  <Trash2 className="w-3.5 h-3.5" />
+                </Button>
+              </div>
+            ))}
+          </div>
+        )}
+
+        {followUps.length === 0 && !showAddForm && (
+          <div className="text-center py-6 text-muted-foreground">
+            <Calendar className="w-8 h-8 mx-auto mb-2 opacity-40" />
+            <p className="text-sm">No follow-up appointments scheduled</p>
+            <p className="text-xs">Click "Schedule" to add appointments or review dates</p>
+          </div>
+        )}
+
+        {/* Add form */}
+        {showAddForm && (
+          <div className="border rounded-lg p-4 space-y-4 bg-muted/30">
+            <div className="flex items-center gap-2 mb-1">
+              <CalendarPlus className="w-4 h-4 text-primary" />
+              <span className="text-sm font-medium">New Follow-up</span>
+            </div>
+
+            {/* Type toggle: Appointment vs Review Date */}
+            <div>
+              <Label className="text-sm font-medium">Type</Label>
+              <div className="flex gap-2 mt-1.5">
+                <Badge
+                  variant={!isReviewDate ? "default" : "outline"}
+                  className="cursor-pointer px-3 py-1"
+                  onClick={() => setIsReviewDate(false)}
+                >
+                  <Calendar className="w-3 h-3 mr-1" />
+                  Appointment
+                </Badge>
+                <Badge
+                  variant={isReviewDate ? "default" : "outline"}
+                  className="cursor-pointer px-3 py-1"
+                  onClick={() => setIsReviewDate(true)}
+                >
+                  <Clock className="w-3 h-3 mr-1" />
+                  Review Date
+                </Badge>
+              </div>
+            </div>
+
+            {/* Appointment type */}
+            <div>
+              <Label className="text-sm font-medium">
+                {isReviewDate ? "Review Purpose" : "Clinic / Service"}
+              </Label>
+              <Select value={newType} onValueChange={setNewType}>
+                <SelectTrigger className="mt-1.5">
+                  <SelectValue placeholder="Select type..." />
+                </SelectTrigger>
+                <SelectContent>
+                  {APPOINTMENT_TYPES.map((t) => (
+                    <SelectItem key={t} value={t}>{t}</SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </div>
+
+            {/* Date selection */}
+            <div>
+              <Label className="text-sm font-medium">Date</Label>
+              {/* Quick interval buttons */}
+              <div className="flex flex-wrap gap-1.5 mt-1.5 mb-2">
+                {QUICK_INTERVALS.map((qi) => (
+                  <Badge
+                    key={qi.label}
+                    variant={newDate && format(newDate, "yyyy-MM-dd") === format(qi.fn(), "yyyy-MM-dd") ? "default" : "outline"}
+                    className="cursor-pointer text-xs"
+                    onClick={() => {
+                      setNewDate(qi.fn());
+                      setDatePickerOpen(false);
+                    }}
+                  >
+                    {qi.label}
+                  </Badge>
+                ))}
+              </div>
+              {/* Calendar picker */}
+              <Popover open={datePickerOpen} onOpenChange={setDatePickerOpen}>
+                <PopoverTrigger asChild>
+                  <Button
+                    variant="outline"
+                    className={cn(
+                      "w-full justify-start text-left font-normal",
+                      !newDate && "text-muted-foreground"
+                    )}
+                  >
+                    <Calendar className="mr-2 h-4 w-4" />
+                    {newDate ? format(newDate, "EEE, dd MMM yyyy") : "Pick a specific date"}
+                  </Button>
+                </PopoverTrigger>
+                <PopoverContent className="w-auto p-0" align="start">
+                  <CalendarComponent
+                    mode="single"
+                    selected={newDate}
+                    onSelect={(d) => {
+                      setNewDate(d);
+                      setDatePickerOpen(false);
+                    }}
+                    disabled={(date) => date < new Date()}
+                    initialFocus
+                    className={cn("p-3 pointer-events-auto")}
+                  />
+                </PopoverContent>
+              </Popover>
+            </div>
+
+            {/* Notes */}
+            <div>
+              <Label className="text-sm font-medium">Notes (optional)</Label>
+              <Input
+                className="mt-1.5"
+                value={newNotes}
+                onChange={(e) => setNewNotes(e.target.value)}
+                placeholder={isReviewDate ? "e.g., Review lab results, reassess medication" : "e.g., Fasting blood glucose required"}
+              />
+            </div>
+
+            {/* Actions */}
+            <div className="flex justify-end gap-2 pt-1">
+              <Button variant="ghost" size="sm" onClick={() => setShowAddForm(false)}>
+                Cancel
+              </Button>
+              <Button size="sm" onClick={handleAddFollowUp}>
+                <CalendarPlus className="w-4 h-4 mr-1" />
+                {isReviewDate ? "Set Review Date" : "Schedule Appointment"}
+              </Button>
+            </div>
+          </div>
+        )}
       </CardContent>
     </Card>
   );
