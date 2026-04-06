@@ -120,7 +120,7 @@ const Queue = () => {
     setSelectedCarePoint(null);
   };
 
-  // ── Care Point Selector (Landing) — Dashboard-first ──
+  // ── Care Point Selector (Landing) — Dashboard + Wards tabs ──
   if (!selectedCarePoint) {
     return (
       <AppLayout title="Queues & Wards">
@@ -157,8 +157,25 @@ const Queue = () => {
             })}
           </div>
 
-          {/* Dashboard — stretches to fill viewport */}
-          <WorkspaceDashboardPanel />
+          {/* Dashboard + Wards Tabs */}
+          <Tabs defaultValue="dashboard" className="flex-1 flex flex-col min-h-0">
+            <TabsList className="shrink-0 h-9 w-fit">
+              <TabsTrigger value="dashboard" className="text-sm gap-1.5">
+                <BarChart3 className="h-4 w-4" />
+                Dashboard
+              </TabsTrigger>
+              <TabsTrigger value="wards" className="text-sm gap-1.5">
+                <Bed className="h-4 w-4" />
+                Wards
+              </TabsTrigger>
+            </TabsList>
+            <TabsContent value="dashboard" className="flex-1 overflow-auto mt-2">
+              <WorkspaceDashboardPanel />
+            </TabsContent>
+            <TabsContent value="wards" className="flex-1 overflow-auto mt-2">
+              <WardManagementPanel />
+            </TabsContent>
+          </Tabs>
         </div>
       </AppLayout>
     );
