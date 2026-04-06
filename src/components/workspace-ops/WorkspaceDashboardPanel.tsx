@@ -44,7 +44,8 @@ const ACTIVITY_FEED = [
   { id: 6, action: 'Shift started', detail: 'Night shift – 14 staff checked in', actor: 'System', time: '30m ago' },
 ];
 
-export function WorkspaceDashboardPanel() {
+export function WorkspaceDashboardPanel({ carePoint }: { carePoint?: string }) {
+  const isInpatient = carePoint === 'inpatient';
   return (
     <div className="space-y-4">
       {/* Row 1: Operational KPIs */}
@@ -127,38 +128,75 @@ export function WorkspaceDashboardPanel() {
           </CardContent>
         </Card>
 
-        {/* Queue Metrics */}
-        <Card className="flex flex-col">
-          <CardHeader className="pb-2 px-4 pt-4">
-            <CardTitle className="text-base flex items-center gap-2">
-              <Users className="h-4 w-4 text-muted-foreground" />
-              Queue Performance
-            </CardTitle>
-          </CardHeader>
-          <CardContent className="flex-1 px-4 pb-4 space-y-3">
-            {[
-              { name: 'General OPD', waiting: 12, avgWait: 28, inService: 4 },
-              { name: 'ANC Clinic', waiting: 5, avgWait: 15, inService: 2 },
-              { name: 'HIV Clinic', waiting: 8, avgWait: 35, inService: 3 },
-              { name: 'Pharmacy', waiting: 6, avgWait: 12, inService: 2 },
-              { name: 'Lab Reception', waiting: 3, avgWait: 18, inService: 1 },
-            ].map(q => (
-              <div key={q.name} className="flex items-center justify-between text-sm p-2 rounded-lg bg-muted/30">
-                <div>
-                  <span className="font-medium">{q.name}</span>
-                  <div className="flex items-center gap-2 mt-0.5">
-                    <span className="text-xs text-muted-foreground">{q.waiting} waiting</span>
-                    <span className="text-xs text-muted-foreground">·</span>
-                    <span className="text-xs text-muted-foreground">{q.inService} serving</span>
+        {/* Context-aware: Ward Performance (inpatient) or Queue Performance (outpatient/default) */}
+        {isInpatient ? (
+          <Card className="flex flex-col">
+            <CardHeader className="pb-2 px-4 pt-4">
+              <CardTitle className="text-base flex items-center gap-2">
+                <Bed className="h-4 w-4 text-muted-foreground" />
+                Ward Performance
+              </CardTitle>
+            </CardHeader>
+            <CardContent className="flex-1 px-4 pb-4 space-y-3">
+              {[
+                { name: 'Medical Ward', avgLOS: 5.2, discharges: 3, admissions: 4, pendingDischarge: 2 },
+                { name: 'Surgical Ward', avgLOS: 3.8, discharges: 2, admissions: 1, pendingDischarge: 1 },
+                { name: 'ICU', avgLOS: 8.1, discharges: 0, admissions: 1, pendingDischarge: 0 },
+                { name: 'Pediatrics', avgLOS: 2.9, discharges: 4, admissions: 2, pendingDischarge: 3 },
+                { name: 'Maternity', avgLOS: 2.1, discharges: 5, admissions: 3, pendingDischarge: 1 },
+              ].map(w => (
+                <div key={w.name} className="flex items-center justify-between text-sm p-2 rounded-lg bg-muted/30">
+                  <div>
+                    <span className="font-medium">{w.name}</span>
+                    <div className="flex items-center gap-2 mt-0.5">
+                      <span className="text-xs text-muted-foreground">LOS {w.avgLOS}d</span>
+                      <span className="text-xs text-muted-foreground">·</span>
+                      <span className="text-xs text-green-600">{w.discharges}↑</span>
+                      <span className="text-xs text-blue-600">{w.admissions}↓</span>
+                    </div>
                   </div>
+                  {w.pendingDischarge > 0 && (
+                    <Badge variant="secondary" className="text-xs">
+                      {w.pendingDischarge} pending d/c
+                    </Badge>
+                  )}
                 </div>
-                <Badge variant={q.avgWait > 30 ? "destructive" : q.avgWait > 20 ? "secondary" : "outline"} className="text-xs">
-                  {q.avgWait}min
-                </Badge>
-              </div>
-            ))}
-          </CardContent>
-        </Card>
+              ))}
+            </CardContent>
+          </Card>
+        ) : (
+          <Card className="flex flex-col">
+            <CardHeader className="pb-2 px-4 pt-4">
+              <CardTitle className="text-base flex items-center gap-2">
+                <Users className="h-4 w-4 text-muted-foreground" />
+                Queue Performance
+              </CardTitle>
+            </CardHeader>
+            <CardContent className="flex-1 px-4 pb-4 space-y-3">
+              {[
+                { name: 'General OPD', waiting: 12, avgWait: 28, inService: 4 },
+                { name: 'ANC Clinic', waiting: 5, avgWait: 15, inService: 2 },
+                { name: 'HIV Clinic', waiting: 8, avgWait: 35, inService: 3 },
+                { name: 'Pharmacy', waiting: 6, avgWait: 12, inService: 2 },
+                { name: 'Lab Reception', waiting: 3, avgWait: 18, inService: 1 },
+              ].map(q => (
+                <div key={q.name} className="flex items-center justify-between text-sm p-2 rounded-lg bg-muted/30">
+                  <div>
+                    <span className="font-medium">{q.name}</span>
+                    <div className="flex items-center gap-2 mt-0.5">
+                      <span className="text-xs text-muted-foreground">{q.waiting} waiting</span>
+                      <span className="text-xs text-muted-foreground">·</span>
+                      <span className="text-xs text-muted-foreground">{q.inService} serving</span>
+                    </div>
+                  </div>
+                  <Badge variant={q.avgWait > 30 ? "destructive" : q.avgWait > 20 ? "secondary" : "outline"} className="text-xs">
+                    {q.avgWait}min
+                  </Badge>
+                </div>
+              ))}
+            </CardContent>
+          </Card>
+        )}
 
         {/* Activity Feed */}
         <Card className="flex flex-col">
