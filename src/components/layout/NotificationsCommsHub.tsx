@@ -604,7 +604,7 @@ function NotificationItem({
 
   const priorityColors: Record<string, string> = {
     critical: "bg-destructive/10 text-destructive",
-    high: "bg-orange-500/10 text-orange-600",
+    high: "bg-accent text-accent-foreground",
     normal: "bg-primary/10 text-primary",
     low: "bg-muted text-muted-foreground",
   };

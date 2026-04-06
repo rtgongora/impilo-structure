@@ -1,4 +1,4 @@
-import { Bell, ArrowLeft, Home } from "lucide-react";
+import { ArrowLeft, Home } from "lucide-react";
 import { useNavigate, useLocation } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { PatientSearch } from "@/components/search/PatientSearch";
@@ -62,13 +62,6 @@ export function AppHeader({ title }: AppHeaderProps) {
       {/* Right: Contextual Actions */}
       <div className="flex items-center gap-1.5">
         <VoiceCommandButton onCommand={(cmd, action) => console.log(action, cmd)} />
-        <HandoffNotifications />
-        <Button variant="ghost" size="icon" className="relative h-8 w-8">
-          <Bell className="h-4 w-4" />
-          <span className="absolute -top-0.5 -right-0.5 h-4 w-4 bg-destructive text-destructive-foreground text-[10px] rounded-full flex items-center justify-center">
-            3
-          </span>
-        </Button>
       </div>
     </header>
   );
