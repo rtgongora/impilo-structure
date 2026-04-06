@@ -36,7 +36,7 @@ import {
   AlertDialogTitle,
   AlertDialogTrigger,
 } from "@/components/ui/alert-dialog";
-import { UserMenu } from "@/components/auth/UserMenu";
+
 import { ActiveWorkspaceIndicator } from "@/components/layout/ActiveWorkspaceIndicator";
 import { Link, useNavigate } from "react-router-dom";
 import { PatientSearch } from "@/components/search/PatientSearch";
