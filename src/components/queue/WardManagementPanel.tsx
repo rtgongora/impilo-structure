@@ -12,7 +12,9 @@ import { Textarea } from "@/components/ui/textarea";
 import {
   Bed, Users, Activity, AlertTriangle, Building2, ArrowRightLeft,
   User, Clock, RefreshCw, ChevronRight, Stethoscope, LogOut,
-  TrendingUp, Heart, FileText, Eye
+  TrendingUp, Heart, FileText, Eye, UserPlus, ClipboardList,
+  Pill, Thermometer, CheckCircle2, Circle, Timer, LogIn,
+  ShieldCheck, CalendarCheck, Clipboard, Ban, Syringe
 } from "lucide-react";
 import { useBedData, WARDS, type BedData } from "@/hooks/useBedData";
 import { BedCard } from "@/components/ehr/beds/BedCard";
