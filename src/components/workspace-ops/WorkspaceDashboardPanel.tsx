@@ -126,17 +126,17 @@ function MetricCard({ icon: Icon, label, value, sub, trend, color }: {
 }) {
   return (
     <Card>
-      <CardContent className="pt-4 pb-3 px-4">
-        <div className="flex items-center justify-between mb-1">
-          <Icon className={`h-4 w-4 ${color || 'text-muted-foreground'}`} />
+      <CardContent className="pt-5 pb-4 px-5">
+        <div className="flex items-center justify-between mb-2">
+          <Icon className={`h-5 w-5 ${color || 'text-muted-foreground'}`} />
           {trend && (trend === 'up'
-            ? <ArrowUpRight className="h-3.5 w-3.5 text-green-500" />
-            : <ArrowDownRight className="h-3.5 w-3.5 text-blue-500" />
+            ? <ArrowUpRight className="h-4 w-4 text-green-500" />
+            : <ArrowDownRight className="h-4 w-4 text-blue-500" />
           )}
         </div>
-        <p className="text-xl font-bold">{value}</p>
-        <p className="text-xs text-muted-foreground">{sub}</p>
-        <p className="text-[10px] text-muted-foreground mt-1">{label}</p>
+        <p className="text-2xl font-bold">{value}</p>
+        <p className="text-sm text-muted-foreground">{sub}</p>
+        <p className="text-xs text-muted-foreground mt-1">{label}</p>
       </CardContent>
     </Card>
   );
