@@ -820,3 +820,267 @@ function LAMAForm() {
     </Card>
   );
 }
+
+// --- Follow-Up Scheduling Card ---
+
+const APPOINTMENT_TYPES = [
+  "General OPD Review",
+  "Diabetes Clinic",
+  "Cardiology Clinic",
+  "Surgical Follow-up",
+  "Physiotherapy",
+  "Nutrition Clinic",
+  "Antenatal Care",
+  "Paediatric Review",
+  "Mental Health",
+  "Wound Care",
+  "Lab Review",
+  "Imaging Review",
+  "Other",
+];
+
+const QUICK_INTERVALS = [
+  { label: "3 days", fn: () => addDays(new Date(), 3) },
+  { label: "1 week", fn: () => addWeeks(new Date(), 1) },
+  { label: "2 weeks", fn: () => addWeeks(new Date(), 2) },
+  { label: "1 month", fn: () => addMonths(new Date(), 1) },
+  { label: "3 months", fn: () => addMonths(new Date(), 3) },
+  { label: "6 months", fn: () => addMonths(new Date(), 6) },
+];
+
+interface ScheduledFollowUp {
+  id: string;
+  type: string;
+  date: Date;
+  notes: string;
+  isReviewDate: boolean;
+}
+
+function FollowUpSchedulingCard() {
+  const [followUps, setFollowUps] = useState<ScheduledFollowUp[]>([]);
+  const [showAddForm, setShowAddForm] = useState(false);
+  const [newType, setNewType] = useState("");
+  const [newDate, setNewDate] = useState<Date | undefined>();
+  const [newNotes, setNewNotes] = useState("");
+  const [isReviewDate, setIsReviewDate] = useState(false);
+  const [datePickerOpen, setDatePickerOpen] = useState(false);
+
+  const handleAddFollowUp = () => {
+    if (!newType || !newDate) {
+      toast.error("Please select an appointment type and date");
+      return;
+    }
+    const entry: ScheduledFollowUp = {
+      id: `fu-${Date.now()}`,
+      type: newType,
+      date: newDate,
+      notes: newNotes,
+      isReviewDate: isReviewDate,
+    };
+    setFollowUps((prev) => [...prev, entry]);
+    setNewType("");
+    setNewDate(undefined);
+    setNewNotes("");
+    setIsReviewDate(false);
+    setShowAddForm(false);
+    toast.success(`${isReviewDate ? "Review date" : "Follow-up appointment"} added`);
+  };
+
+  const handleRemove = (id: string) => {
+    setFollowUps((prev) => prev.filter((f) => f.id !== id));
+  };
+
+  return (
+    <Card>
+      <CardHeader className="pb-3">
+        <div className="flex items-center justify-between">
+          <CardTitle className="text-base flex items-center gap-2">
+            <CalendarPlus className="w-5 h-5 text-primary" />
+            Follow-up Appointments & Review Dates
+          </CardTitle>
+          <Button size="sm" variant="outline" onClick={() => setShowAddForm(true)}>
+            <Plus className="w-4 h-4 mr-1" />
+            Schedule
+          </Button>
+        </div>
+      </CardHeader>
+      <CardContent className="space-y-4">
+        {/* Scheduled items list */}
+        {followUps.length > 0 && (
+          <div className="space-y-2">
+            {followUps.map((fu) => (
+              <div
+                key={fu.id}
+                className="flex items-center justify-between p-3 border rounded-lg"
+              >
+                <div className="flex items-center gap-3">
+                  <div className={cn(
+                    "w-9 h-9 rounded-full flex items-center justify-center",
+                    fu.isReviewDate ? "bg-accent" : "bg-primary/10"
+                  )}>
+                    {fu.isReviewDate ? (
+                      <Clock className="w-4 h-4 text-accent-foreground" />
+                    ) : (
+                      <Calendar className="w-4 h-4 text-primary" />
+                    )}
+                  </div>
+                  <div>
+                    <div className="flex items-center gap-2">
+                      <span className="font-medium text-sm">{fu.type}</span>
+                      <Badge variant={fu.isReviewDate ? "secondary" : "outline"} className="text-[10px]">
+                        {fu.isReviewDate ? "Review Date" : "Appointment"}
+                      </Badge>
+                    </div>
+                    <p className="text-xs text-muted-foreground">
+                      {format(fu.date, "EEE, dd MMM yyyy")}
+                    </p>
+                    {fu.notes && (
+                      <p className="text-xs text-muted-foreground mt-0.5 italic">{fu.notes}</p>
+                    )}
+                  </div>
+                </div>
+                <Button
+                  variant="ghost"
+                  size="icon"
+                  className="h-7 w-7 text-muted-foreground hover:text-destructive"
+                  onClick={() => handleRemove(fu.id)}
+                >
+                  <Trash2 className="w-3.5 h-3.5" />
+                </Button>
+              </div>
+            ))}
+          </div>
+        )}
+
+        {followUps.length === 0 && !showAddForm && (
+          <div className="text-center py-6 text-muted-foreground">
+            <Calendar className="w-8 h-8 mx-auto mb-2 opacity-40" />
+            <p className="text-sm">No follow-up appointments scheduled</p>
+            <p className="text-xs">Click "Schedule" to add appointments or review dates</p>
+          </div>
+        )}
+
+        {/* Add form */}
+        {showAddForm && (
+          <div className="border rounded-lg p-4 space-y-4 bg-muted/30">
+            <div className="flex items-center gap-2 mb-1">
+              <CalendarPlus className="w-4 h-4 text-primary" />
+              <span className="text-sm font-medium">New Follow-up</span>
+            </div>
+
+            {/* Type toggle: Appointment vs Review Date */}
+            <div>
+              <Label className="text-sm font-medium">Type</Label>
+              <div className="flex gap-2 mt-1.5">
+                <Badge
+                  variant={!isReviewDate ? "default" : "outline"}
+                  className="cursor-pointer px-3 py-1"
+                  onClick={() => setIsReviewDate(false)}
+                >
+                  <Calendar className="w-3 h-3 mr-1" />
+                  Appointment
+                </Badge>
+                <Badge
+                  variant={isReviewDate ? "default" : "outline"}
+                  className="cursor-pointer px-3 py-1"
+                  onClick={() => setIsReviewDate(true)}
+                >
+                  <Clock className="w-3 h-3 mr-1" />
+                  Review Date
+                </Badge>
+              </div>
+            </div>
+
+            {/* Appointment type */}
+            <div>
+              <Label className="text-sm font-medium">
+                {isReviewDate ? "Review Purpose" : "Clinic / Service"}
+              </Label>
+              <Select value={newType} onValueChange={setNewType}>
+                <SelectTrigger className="mt-1.5">
+                  <SelectValue placeholder="Select type..." />
+                </SelectTrigger>
+                <SelectContent>
+                  {APPOINTMENT_TYPES.map((t) => (
+                    <SelectItem key={t} value={t}>{t}</SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </div>
+
+            {/* Date selection */}
+            <div>
+              <Label className="text-sm font-medium">Date</Label>
+              {/* Quick interval buttons */}
+              <div className="flex flex-wrap gap-1.5 mt-1.5 mb-2">
+                {QUICK_INTERVALS.map((qi) => (
+                  <Badge
+                    key={qi.label}
+                    variant={newDate && format(newDate, "yyyy-MM-dd") === format(qi.fn(), "yyyy-MM-dd") ? "default" : "outline"}
+                    className="cursor-pointer text-xs"
+                    onClick={() => {
+                      setNewDate(qi.fn());
+                      setDatePickerOpen(false);
+                    }}
+                  >
+                    {qi.label}
+                  </Badge>
+                ))}
+              </div>
+              {/* Calendar picker */}
+              <Popover open={datePickerOpen} onOpenChange={setDatePickerOpen}>
+                <PopoverTrigger asChild>
+                  <Button
+                    variant="outline"
+                    className={cn(
+                      "w-full justify-start text-left font-normal",
+                      !newDate && "text-muted-foreground"
+                    )}
+                  >
+                    <Calendar className="mr-2 h-4 w-4" />
+                    {newDate ? format(newDate, "EEE, dd MMM yyyy") : "Pick a specific date"}
+                  </Button>
+                </PopoverTrigger>
+                <PopoverContent className="w-auto p-0" align="start">
+                  <CalendarComponent
+                    mode="single"
+                    selected={newDate}
+                    onSelect={(d) => {
+                      setNewDate(d);
+                      setDatePickerOpen(false);
+                    }}
+                    disabled={(date) => date < new Date()}
+                    initialFocus
+                    className={cn("p-3 pointer-events-auto")}
+                  />
+                </PopoverContent>
+              </Popover>
+            </div>
+
+            {/* Notes */}
+            <div>
+              <Label className="text-sm font-medium">Notes (optional)</Label>
+              <Input
+                className="mt-1.5"
+                value={newNotes}
+                onChange={(e) => setNewNotes(e.target.value)}
+                placeholder={isReviewDate ? "e.g., Review lab results, reassess medication" : "e.g., Fasting blood glucose required"}
+              />
+            </div>
+
+            {/* Actions */}
+            <div className="flex justify-end gap-2 pt-1">
+              <Button variant="ghost" size="sm" onClick={() => setShowAddForm(false)}>
+                Cancel
+              </Button>
+              <Button size="sm" onClick={handleAddFollowUp}>
+                <CalendarPlus className="w-4 h-4 mr-1" />
+                {isReviewDate ? "Set Review Date" : "Schedule Appointment"}
+              </Button>
+            </div>
+          </div>
+        )}
+      </CardContent>
+    </Card>
+  );
+}
