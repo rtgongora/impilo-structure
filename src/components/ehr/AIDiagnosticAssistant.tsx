@@ -21,7 +21,7 @@ import {
   FlaskConical,
 } from "lucide-react";
 import { toast } from "sonner";
-import { supabase } from "@/integrations/supabase/client";
+import { useKernelRequest } from "@/hooks/useKernelRequest";
 
 interface DiagnosticResult {
   differentials?: { diagnosis: string; likelihood: string; reasoning: string }[];
@@ -48,6 +48,7 @@ interface LabInterpretationResult {
 export function AIDiagnosticAssistant() {
   const [isOpen, setIsOpen] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
+  const { invoke, startCorrelation } = useKernelRequest();
   const [activeTab, setActiveTab] = useState("diagnostic");
   
   const [symptoms, setSymptoms] = useState("");
