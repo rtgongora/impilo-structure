@@ -272,6 +272,22 @@ const WorkspaceManagement = () => {
     );
   }
 
+  // If a workspace is open in ops mode, show the ops hub
+  if (activeOpsWorkspace) {
+    return (
+      <AppLayout>
+        <div className="p-4 h-[calc(100vh-4rem)]">
+          <WorkspaceOpsHub
+            workspaceName={activeOpsWorkspace.name}
+            workspaceType={activeOpsWorkspace.workspace_type as WorkspaceOpsType}
+            facilityName={activeOpsWorkspace.facility?.name}
+            onBack={() => setActiveOpsWorkspace(null)}
+          />
+        </div>
+      </AppLayout>
+    );
+  }
+
   return (
     <AppLayout>
       <div className="space-y-6 p-6">
