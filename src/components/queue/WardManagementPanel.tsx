@@ -168,12 +168,24 @@ export function WardManagementPanel() {
           </Card>
         </div>
 
-        {/* Ward Tabs: Beds View / Patient List */}
+        {/* Ward Tabs: Expanded with Intake, Daily Tasks, Checkout */}
         <Tabs defaultValue="patients" className="flex-1 flex flex-col min-h-0">
-          <TabsList className="h-9 shrink-0">
+          <TabsList className="h-9 shrink-0 flex-wrap justify-start">
             <TabsTrigger value="patients" className="text-xs gap-1.5">
               <Users className="h-3.5 w-3.5" />
               Patients ({wardOccupied.length})
+            </TabsTrigger>
+            <TabsTrigger value="intake" className="text-xs gap-1.5">
+              <LogIn className="h-3.5 w-3.5" />
+              Intake
+            </TabsTrigger>
+            <TabsTrigger value="daily" className="text-xs gap-1.5">
+              <ClipboardList className="h-3.5 w-3.5" />
+              Daily Tasks
+            </TabsTrigger>
+            <TabsTrigger value="checkout" className="text-xs gap-1.5">
+              <LogOut className="h-3.5 w-3.5" />
+              Checkout
             </TabsTrigger>
             <TabsTrigger value="beds" className="text-xs gap-1.5">
               <Bed className="h-3.5 w-3.5" />
@@ -222,6 +234,331 @@ export function WardManagementPanel() {
                 ))}
               </div>
             )}
+          </TabsContent>
+
+          {/* ── Intake / Admission ── */}
+          <TabsContent value="intake" className="flex-1 overflow-auto mt-2">
+            <div className="space-y-4">
+              <Card>
+                <CardHeader className="pb-2 pt-3 px-4">
+                  <CardTitle className="text-sm flex items-center gap-2">
+                    <UserPlus className="h-4 w-4 text-blue-600" />
+                    Pending Admissions
+                    <Badge variant="secondary" className="ml-auto text-xs">3 waiting</Badge>
+                  </CardTitle>
+                </CardHeader>
+                <CardContent className="px-4 pb-3 space-y-2">
+                  {[
+                    { name: 'John Moyo', mrn: 'MRN-2024-0891', from: 'Emergency', reason: 'Acute appendicitis – post-surgical monitoring', priority: 'high', waitTime: '25min' },
+                    { name: 'Grace Ndlovu', mrn: 'MRN-2024-1204', from: 'OPD', reason: 'Severe pneumonia – IV antibiotics', priority: 'medium', waitTime: '40min' },
+                    { name: 'Tendai Chirwa', mrn: 'MRN-2024-1198', from: 'Referral', reason: 'Elective hip replacement – pre-op admission', priority: 'low', waitTime: '1h 10min' },
+                  ].map((p, i) => (
+                    <Card key={i} className="border-dashed">
+                      <CardContent className="py-3 px-4">
+                        <div className="flex items-center justify-between">
+                          <div className="flex items-center gap-3">
+                            <div className={`h-9 w-9 rounded-lg flex items-center justify-center ${
+                              p.priority === 'high' ? 'bg-red-100' : p.priority === 'medium' ? 'bg-amber-100' : 'bg-green-100'
+                            }`}>
+                              <UserPlus className={`h-4 w-4 ${
+                                p.priority === 'high' ? 'text-red-600' : p.priority === 'medium' ? 'text-amber-600' : 'text-green-600'
+                              }`} />
+                            </div>
+                            <div>
+                              <p className="font-medium text-sm">{p.name}</p>
+                              <p className="text-xs text-muted-foreground">{p.mrn} · From: {p.from}</p>
+                              <p className="text-xs text-muted-foreground mt-0.5">{p.reason}</p>
+                            </div>
+                          </div>
+                          <div className="flex items-center gap-2 shrink-0">
+                            <div className="text-right">
+                              <Badge variant={p.priority === 'high' ? 'destructive' : 'secondary'} className="text-xs">{p.priority}</Badge>
+                              <p className="text-xs text-muted-foreground mt-1 flex items-center gap-1">
+                                <Timer className="h-3 w-3" />{p.waitTime}
+                              </p>
+                            </div>
+                            <Button size="sm" className="text-xs gap-1 h-8">
+                              <Bed className="h-3.5 w-3.5" />
+                              Assign Bed
+                            </Button>
+                          </div>
+                        </div>
+                      </CardContent>
+                    </Card>
+                  ))}
+                </CardContent>
+              </Card>
+
+              <Card>
+                <CardHeader className="pb-2 pt-3 px-4">
+                  <CardTitle className="text-sm flex items-center gap-2">
+                    <ShieldCheck className="h-4 w-4 text-green-600" />
+                    Admission Checklist
+                  </CardTitle>
+                </CardHeader>
+                <CardContent className="px-4 pb-3">
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-2">
+                    {[
+                      { label: 'Patient identity verified', done: true },
+                      { label: 'Consent forms signed', done: true },
+                      { label: 'Admission orders placed', done: false },
+                      { label: 'Allergies & medications reconciled', done: false },
+                      { label: 'Nursing assessment completed', done: false },
+                      { label: 'Fall risk assessment done', done: false },
+                      { label: 'Dietary needs documented', done: false },
+                      { label: 'Wristband & labels issued', done: true },
+                    ].map((item, i) => (
+                      <div key={i} className="flex items-center gap-2 text-sm p-2 rounded-lg hover:bg-muted/50">
+                        {item.done 
+                          ? <CheckCircle2 className="h-4 w-4 text-green-600 shrink-0" />
+                          : <Circle className="h-4 w-4 text-muted-foreground shrink-0" />
+                        }
+                        <span className={item.done ? 'text-muted-foreground line-through' : 'font-medium'}>{item.label}</span>
+                      </div>
+                    ))}
+                  </div>
+                </CardContent>
+              </Card>
+            </div>
+          </TabsContent>
+
+          {/* ── Daily Processes ── */}
+          <TabsContent value="daily" className="flex-1 overflow-auto mt-2">
+            <div className="space-y-4">
+              <div className="grid grid-cols-2 md:grid-cols-4 gap-2">
+                <Card className="p-3">
+                  <div className="flex items-center gap-2">
+                    <Thermometer className="h-4 w-4 text-blue-600" />
+                    <div>
+                      <p className="text-lg font-bold">{wardOccupied.length}</p>
+                      <p className="text-[10px] text-muted-foreground">Vitals Due</p>
+                    </div>
+                  </div>
+                </Card>
+                <Card className="p-3">
+                  <div className="flex items-center gap-2">
+                    <Pill className="h-4 w-4 text-purple-600" />
+                    <div>
+                      <p className="text-lg font-bold">18</p>
+                      <p className="text-[10px] text-muted-foreground">Meds Rounds</p>
+                    </div>
+                  </div>
+                </Card>
+                <Card className="p-3">
+                  <div className="flex items-center gap-2">
+                    <Stethoscope className="h-4 w-4 text-green-600" />
+                    <div>
+                      <p className="text-lg font-bold">6</p>
+                      <p className="text-[10px] text-muted-foreground">Ward Rounds</p>
+                    </div>
+                  </div>
+                </Card>
+                <Card className="p-3">
+                  <div className="flex items-center gap-2">
+                    <Syringe className="h-4 w-4 text-red-600" />
+                    <div>
+                      <p className="text-lg font-bold">4</p>
+                      <p className="text-[10px] text-muted-foreground">Procedures</p>
+                    </div>
+                  </div>
+                </Card>
+              </div>
+
+              <Card>
+                <CardHeader className="pb-2 pt-3 px-4">
+                  <CardTitle className="text-sm flex items-center gap-2">
+                    <ClipboardList className="h-4 w-4 text-indigo-600" />
+                    Patient Tasks — Today
+                    <Badge variant="secondary" className="ml-auto text-xs">12 pending</Badge>
+                  </CardTitle>
+                </CardHeader>
+                <CardContent className="px-4 pb-3 space-y-2">
+                  {wardOccupied.slice(0, 5).map((bed, idx) => {
+                    const tasks = [
+                      { label: '08:00 Vitals', status: idx < 2 ? 'done' : 'pending' },
+                      { label: '09:00 Medications', status: idx < 1 ? 'done' : idx < 3 ? 'pending' : 'upcoming' },
+                      { label: '10:00 Ward Round', status: 'upcoming' },
+                    ];
+                    return (
+                      <div key={bed.id} className="p-3 rounded-lg bg-muted/30 space-y-2">
+                        <div className="flex items-center justify-between">
+                          <div className="flex items-center gap-2">
+                            <span className="font-bold text-xs text-blue-700 bg-blue-100 h-7 w-7 rounded flex items-center justify-center">{bed.bedNumber}</span>
+                            <div>
+                              <p className="font-medium text-sm">{bed.patient?.name}</p>
+                              <p className="text-xs text-muted-foreground">{bed.patient?.diagnosis}</p>
+                            </div>
+                          </div>
+                          <Badge className={`text-xs ${getAcuityColor(bed.patient?.acuityLevel || 'medium')}`}>
+                            {bed.patient?.acuityLevel}
+                          </Badge>
+                        </div>
+                        <div className="flex flex-wrap gap-2">
+                          {tasks.map((t, ti) => (
+                            <Badge 
+                              key={ti} 
+                              variant={t.status === 'done' ? 'default' : t.status === 'pending' ? 'destructive' : 'outline'} 
+                              className="text-xs gap-1"
+                            >
+                              {t.status === 'done' && <CheckCircle2 className="h-3 w-3" />}
+                              {t.status === 'pending' && <Clock className="h-3 w-3" />}
+                              {t.status === 'upcoming' && <Circle className="h-3 w-3" />}
+                              {t.label}
+                            </Badge>
+                          ))}
+                        </div>
+                      </div>
+                    );
+                  })}
+                </CardContent>
+              </Card>
+
+              <Card>
+                <CardHeader className="pb-2 pt-3 px-4">
+                  <CardTitle className="text-sm flex items-center gap-2">
+                    <Clipboard className="h-4 w-4 text-amber-600" />
+                    Shift Handover Notes
+                  </CardTitle>
+                </CardHeader>
+                <CardContent className="px-4 pb-3 space-y-2">
+                  {[
+                    { time: '07:00', shift: 'Night → Day', nurse: 'Sr. Mabena', notes: 'Bed 3A patient spiked temp 38.9°C at 03:00, given paracetamol. Bed 5B fall risk – bed rails up. All IV lines patent.' },
+                    { time: '19:00', shift: 'Day → Night', nurse: 'Sr. Moyo', notes: 'Bed 2C post-op stable, drain output 50ml. Bed 4A discharge planned AM pending bloods. New admission expected from ED.' },
+                  ].map((h, i) => (
+                    <div key={i} className="p-3 rounded-lg border bg-muted/20 text-sm">
+                      <div className="flex items-center justify-between mb-1">
+                        <span className="font-semibold">{h.shift}</span>
+                        <span className="text-xs text-muted-foreground">{h.time} · {h.nurse}</span>
+                      </div>
+                      <p className="text-muted-foreground text-xs leading-relaxed">{h.notes}</p>
+                    </div>
+                  ))}
+                </CardContent>
+              </Card>
+            </div>
+          </TabsContent>
+
+          {/* ── Checkout / Discharge ── */}
+          <TabsContent value="checkout" className="flex-1 overflow-auto mt-2">
+            <div className="space-y-4">
+              <Card>
+                <CardHeader className="pb-2 pt-3 px-4">
+                  <CardTitle className="text-sm flex items-center gap-2">
+                    <CalendarCheck className="h-4 w-4 text-green-600" />
+                    Pending Discharges
+                    <Badge variant="secondary" className="ml-auto text-xs">{Math.min(wardOccupied.length, 3)} pending</Badge>
+                  </CardTitle>
+                </CardHeader>
+                <CardContent className="px-4 pb-3 space-y-2">
+                  {wardOccupied.slice(0, 3).map((bed, idx) => {
+                    const clearances = [
+                      { name: 'Clinical', cleared: idx < 2 },
+                      { name: 'Nursing', cleared: idx < 1 },
+                      { name: 'Pharmacy', cleared: idx < 2 },
+                      { name: 'Financial', cleared: idx === 0 },
+                    ];
+                    const allCleared = clearances.every(c => c.cleared);
+                    return (
+                      <Card key={bed.id} className={`border ${allCleared ? 'border-green-200 bg-green-50/30 dark:bg-green-950/10' : ''}`}>
+                        <CardContent className="py-3 px-4">
+                          <div className="flex items-center justify-between mb-2">
+                            <div className="flex items-center gap-3">
+                              <span className="font-bold text-xs text-blue-700 bg-blue-100 h-8 w-8 rounded-lg flex items-center justify-center">{bed.bedNumber}</span>
+                              <div>
+                                <p className="font-medium text-sm">{bed.patient?.name}</p>
+                                <p className="text-xs text-muted-foreground">{bed.patient?.mrn} · {bed.patient?.diagnosis}</p>
+                                <p className="text-xs text-muted-foreground">
+                                  LOS: {bed.patient ? Math.floor((Date.now() - bed.patient.admissionDate.getTime()) / 86400000) : 0}d · Dr. {bed.patient?.attendingPhysician}
+                                </p>
+                              </div>
+                            </div>
+                            <Button 
+                              size="sm" 
+                              variant={allCleared ? 'default' : 'outline'} 
+                              disabled={!allCleared}
+                              className="text-xs gap-1 h-8"
+                              onClick={() => allCleared && handleDischarge(bed)}
+                            >
+                              <LogOut className="h-3.5 w-3.5" />
+                              {allCleared ? 'Discharge' : 'Pending'}
+                            </Button>
+                          </div>
+                          <div className="flex flex-wrap gap-2">
+                            {clearances.map((c, ci) => (
+                              <Badge 
+                                key={ci} 
+                                variant={c.cleared ? 'default' : 'outline'}
+                                className={`text-xs gap-1 ${c.cleared ? 'bg-green-600 hover:bg-green-700' : ''}`}
+                              >
+                                {c.cleared ? <CheckCircle2 className="h-3 w-3" /> : <Circle className="h-3 w-3" />}
+                                {c.name}
+                              </Badge>
+                            ))}
+                          </div>
+                        </CardContent>
+                      </Card>
+                    );
+                  })}
+                </CardContent>
+              </Card>
+
+              <Card>
+                <CardHeader className="pb-2 pt-3 px-4">
+                  <CardTitle className="text-sm flex items-center gap-2">
+                    <ShieldCheck className="h-4 w-4 text-indigo-600" />
+                    Discharge Process Checklist
+                  </CardTitle>
+                </CardHeader>
+                <CardContent className="px-4 pb-3">
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-2">
+                    {[
+                      { label: 'Discharge summary completed', done: false },
+                      { label: 'Medications reconciled & dispensed', done: false },
+                      { label: 'Follow-up appointments scheduled', done: false },
+                      { label: 'Patient education completed', done: false },
+                      { label: 'Wound care instructions given', done: false },
+                      { label: 'Transport arranged', done: false },
+                      { label: 'Final bill generated', done: false },
+                      { label: 'Belongings returned', done: false },
+                    ].map((item, i) => (
+                      <div key={i} className="flex items-center gap-2 text-sm p-2 rounded-lg hover:bg-muted/50 cursor-pointer">
+                        {item.done 
+                          ? <CheckCircle2 className="h-4 w-4 text-green-600 shrink-0" />
+                          : <Circle className="h-4 w-4 text-muted-foreground shrink-0" />
+                        }
+                        <span className={item.done ? 'text-muted-foreground line-through' : ''}>{item.label}</span>
+                      </div>
+                    ))}
+                  </div>
+                </CardContent>
+              </Card>
+
+              <Card>
+                <CardHeader className="pb-2 pt-3 px-4">
+                  <CardTitle className="text-sm flex items-center gap-2">
+                    <LogOut className="h-4 w-4 text-muted-foreground" />
+                    Discharged Today
+                  </CardTitle>
+                </CardHeader>
+                <CardContent className="px-4 pb-3 space-y-2">
+                  {[
+                    { name: 'Simba Mhaka', bed: '2A', time: '09:30', destination: 'Home', los: 3 },
+                    { name: 'Rudo Katsande', bed: '6C', time: '11:15', destination: 'Step-down facility', los: 7 },
+                  ].map((d, i) => (
+                    <div key={i} className="flex items-center justify-between text-sm p-2 rounded-lg bg-muted/30">
+                      <div className="flex items-center gap-2">
+                        <CheckCircle2 className="h-4 w-4 text-green-600" />
+                        <div>
+                          <span className="font-medium">{d.name}</span>
+                          <p className="text-xs text-muted-foreground">Bed {d.bed} · LOS {d.los}d · → {d.destination}</p>
+                        </div>
+                      </div>
+                      <span className="text-xs text-muted-foreground">{d.time}</span>
+                    </div>
+                  ))}
+                </CardContent>
+              </Card>
+            </div>
           </TabsContent>
 
           {/* Bed Map */}
