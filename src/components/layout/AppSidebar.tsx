@@ -374,7 +374,7 @@ export function AppSidebar() {
     <aside
       className={cn(
         "h-full bg-sidebar border-r border-sidebar-border flex flex-col transition-all duration-200",
-        collapsed ? "w-12" : "w-48"
+        collapsed ? "w-14" : "w-52"
       )}
     >
       {/* Logo */}
