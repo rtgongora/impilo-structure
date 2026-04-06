@@ -23,7 +23,7 @@ export function AppLayout({ children, title }: AppLayoutProps) {
       </div>
 
       {/* Floating Help Button */}
-      <div className="fixed bottom-5 right-5 z-50">
+      <div className="fixed bottom-16 right-5 z-50">
         <HelpMenu variant="floating" />
       </div>
     </div>

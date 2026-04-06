@@ -20,7 +20,7 @@ export function UtilityStrip() {
 
       {/* Right: Help, Workspace & User */}
       <div className="flex items-center gap-2">
-        <HelpMenu variant="icon" />
+        <HelpMenu variant="button" />
         <ActiveWorkspaceIndicator compact />
         <div className="h-4 w-px bg-border" />
         <UserMenu />

@@ -62,17 +62,17 @@ export function HelpMenu({ variant = "icon", className }: HelpMenuProps) {
       case "floating":
         return (
           <Button
-            className="h-14 rounded-full shadow-xl bg-primary text-primary-foreground hover:bg-primary/90 px-5 gap-2 text-sm font-semibold animate-in fade-in slide-in-from-bottom-4 duration-500"
+            className="h-10 rounded-full shadow-md bg-primary/10 text-primary hover:bg-primary/20 border border-primary/15 px-4 gap-2 text-xs font-medium backdrop-blur-sm"
           >
-            <HelpCircle className="h-5 w-5" />
+            <HelpCircle className="h-3.5 w-3.5" />
             <span>Need Help?</span>
           </Button>
         );
       case "button":
         return (
-          <Button variant="ghost" size="sm" className={`gap-1.5 ${className}`}>
+          <Button size="sm" className={`gap-1.5 bg-emerald-600 hover:bg-emerald-700 text-white ${className}`}>
             <HelpCircle className="h-4 w-4" />
-            <span className="hidden sm:inline text-sm">Help</span>
+            <span className="text-sm">Help</span>
           </Button>
         );
       case "icon":
