@@ -571,6 +571,8 @@ const WorkspaceManagement = () => {
                             Open
                           </Button>
                         )}
+                        <Button
+                          variant="ghost"
                           size="icon"
                           onClick={() => openEditDialog(workspace)}
                         >
