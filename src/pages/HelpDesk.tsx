@@ -246,7 +246,7 @@ export default function HelpDesk() {
 
   return (
     <AppLayout title="Help & Support">
-      <div className="p-6 max-w-7xl mx-auto">
+      <div className="flex-1 min-h-0 overflow-auto p-6 max-w-7xl mx-auto">
         {/* Header */}
         <div className="text-center mb-8">
           <h1 className="text-3xl font-bold mb-2">Help Center</h1>
