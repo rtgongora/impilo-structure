@@ -50,7 +50,7 @@ export const TOP_BAR_ACTIONS: TopBarActionConfig[] = [
   { id: "queue", label: "Queue", icon: "Users" },
   { id: "beds", label: "Beds", icon: "Bed" },
   { id: "pharmacy", label: "Pharmacy", icon: "Pill" },
-  { id: "theatre", label: "Theatre Booking", icon: "Calendar" },
+  { id: "scheduling", label: "Appointments & Bookings", icon: "Calendar" },
   { id: "payments", label: "Payments", icon: "CreditCard" },
   { id: "handoff", label: "Shift Handoff", icon: "ClipboardCheck" },
   { id: "workspaces", label: "Workspaces", icon: "Boxes" },

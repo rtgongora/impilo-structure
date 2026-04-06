@@ -158,7 +158,7 @@ const operationsNavItems: NavItem[] = [
   { label: "Consumables", icon: Syringe, path: "/consumables" },
   { label: "Charges", icon: Receipt, path: "/charges" },
   { label: "Payments", icon: DollarSign, path: "/payments" },
-  { label: "Theatre", icon: Building2, path: "/theatre" },
+  { label: "Appointments & Bookings", icon: Building2, path: "/scheduling" },
 ];
 
 const schedulingNavItems: NavItem[] = [
