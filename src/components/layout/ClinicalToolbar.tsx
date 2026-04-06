@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useMemo } from "react";
 import { CriticalEventButton } from "@/components/ehr/CriticalEventButton";
 import { CDSAlertBadge } from "@/components/ehr/ClinicalDecisionSupport";
 import { AIDiagnosticAssistant } from "@/components/ehr/AIDiagnosticAssistant";
@@ -8,14 +8,27 @@ import { DrugDatabaseSheet, InteractionCheckerSheet, CalculatorsSheet, Condition
 import { ActiveCDSBanner } from "@/components/ehr/ActiveCDSBanner";
 import { SystemFeedbackStrip } from "@/components/ehr/SystemFeedbackStrip";
 import { useEHR } from "@/contexts/EHRContext";
+import { useCadreFormConfig } from "@/hooks/useCadreFormConfig";
 import { Route, ToggleLeft, ToggleRight, Users } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip";
 
+/**
+ * Cadre-aware clinical toolbar.
+ * - Comprehensive cadres (Doctors, Specialists): All tools visible
+ * - Focused cadres (Nurses, Allied Health): Drugs, Interactions, Calculators (filtered), Formulary
+ * - Simplified cadres (CHW, Admin): Drugs, basic Calculators only
+ */
 export function ClinicalToolbar() {
   const { hasActivePatient, activeTopBarAction, setActiveTopBarAction } = useEHR();
   const [cdsEnabled, setCdsEnabled] = useState(true);
   const [aiAssistEnabled, setAiAssistEnabled] = useState(true);
+
+  const cadreConfig = useCadreFormConfig();
+  const complexity = cadreConfig.complexity;
+  const isComprehensive = complexity === "comprehensive";
+  const isFocused = complexity === "focused";
+  const isSimplified = complexity === "simplified";
 
   if (!hasActivePatient) return null;
 
@@ -30,24 +43,37 @@ export function ClinicalToolbar() {
           <span className="text-[10px] font-medium text-muted-foreground uppercase tracking-wider shrink-0 mr-1.5">Tools</span>
           <div className="h-4 w-px bg-border mr-0.5 shrink-0" />
 
+          {/* Drugs — always visible */}
           <DrugDatabaseSheet />
-          <ConditionsBrowserSheet />
-          <InteractionCheckerSheet />
-          <CalculatorsSheet />
-          <FormularySheet />
+
+          {/* Conditions — comprehensive + focused */}
+          {!isSimplified && <ConditionsBrowserSheet />}
+
+          {/* Interactions — comprehensive + focused */}
+          {!isSimplified && <InteractionCheckerSheet />}
+
+          {/* Calculators — all cadres, filtered by complexity */}
+          <CalculatorsSheet complexity={complexity} />
+
+          {/* Formulary — comprehensive + focused */}
+          {!isSimplified && <FormularySheet />}
 
           <div className="h-4 w-px bg-border mx-0.5 shrink-0" />
 
-          <Button
-            variant="ghost"
-            size="sm"
-            className={`h-8 gap-1.5 text-xs shrink-0 ${isPathwaysActive ? "bg-primary/10 text-primary" : ""}`}
-            onClick={() => setActiveTopBarAction(isPathwaysActive ? null : "pathways")}
-          >
-            <Route className="w-3.5 h-3.5" />
-            Pathways
-          </Button>
+          {/* Pathways — comprehensive + focused */}
+          {!isSimplified && (
+            <Button
+              variant="ghost"
+              size="sm"
+              className={`h-8 gap-1.5 text-xs shrink-0 ${isPathwaysActive ? "bg-primary/10 text-primary" : ""}`}
+              onClick={() => setActiveTopBarAction(isPathwaysActive ? null : "pathways")}
+            >
+              <Route className="w-3.5 h-3.5" />
+              Pathways
+            </Button>
+          )}
 
+          {/* AI Assist toggle */}
           <Tooltip>
             <TooltipTrigger asChild>
               <Button variant="ghost" size="icon" className="h-7 w-7 shrink-0" onClick={() => setAiAssistEnabled(!aiAssistEnabled)}>
@@ -58,21 +84,29 @@ export function ClinicalToolbar() {
           </Tooltip>
           {aiAssistEnabled && <AIDiagnosticAssistant />}
 
-          <ClinicalReferences />
+          {/* References — comprehensive + focused */}
+          {!isSimplified && <ClinicalReferences />}
 
-          <Tooltip>
-            <TooltipTrigger asChild>
-              <Button variant="ghost" size="icon" className="h-7 w-7 shrink-0" onClick={() => setCdsEnabled(!cdsEnabled)}>
-                {cdsEnabled ? <ToggleRight className="h-4 w-4 text-emerald-600" /> : <ToggleLeft className="h-4 w-4 text-muted-foreground" />}
-              </Button>
-            </TooltipTrigger>
-            <TooltipContent side="bottom" className="text-xs">{cdsEnabled ? "Disable" : "Enable"} Clinical Decision Support</TooltipContent>
-          </Tooltip>
-          {cdsEnabled && <CDSAlertBadge />}
+          {/* Clinical Decision Support toggle — comprehensive + focused */}
+          {!isSimplified && (
+            <>
+              <Tooltip>
+                <TooltipTrigger asChild>
+                  <Button variant="ghost" size="icon" className="h-7 w-7 shrink-0" onClick={() => setCdsEnabled(!cdsEnabled)}>
+                    {cdsEnabled ? <ToggleRight className="h-4 w-4 text-emerald-600" /> : <ToggleLeft className="h-4 w-4 text-muted-foreground" />}
+                  </Button>
+                </TooltipTrigger>
+                <TooltipContent side="bottom" className="text-xs">{cdsEnabled ? "Disable" : "Enable"} Clinical Decision Support</TooltipContent>
+              </Tooltip>
+              {cdsEnabled && <CDSAlertBadge />}
+            </>
+          )}
 
           <AlertBadge />
           <div className="flex-1" />
           <CriticalEventButton />
+
+          {/* Directory — always visible */}
           <div className="h-4 w-px bg-border mx-0.5 shrink-0" />
           <Button variant="ghost" size="sm" className="h-8 gap-1.5 text-xs shrink-0">
             <Users className="w-3.5 h-3.5" />
@@ -81,7 +115,7 @@ export function ClinicalToolbar() {
         </div>
       </div>
       
-      {cdsEnabled && <ActiveCDSBanner />}
+      {cdsEnabled && !isSimplified && <ActiveCDSBanner />}
     </div>
   );
 }
