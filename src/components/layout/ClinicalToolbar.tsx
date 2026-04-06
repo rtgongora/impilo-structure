@@ -4,10 +4,11 @@ import { CDSAlertBadge } from "@/components/ehr/ClinicalDecisionSupport";
 import { AIDiagnosticAssistant } from "@/components/ehr/AIDiagnosticAssistant";
 import { AlertBadge } from "@/components/alerts/ClinicalAlerts";
 import { ClinicalReferences } from "@/components/ehr/ClinicalReferences";
+import { ClinicalToolsMenu, ConditionsButton } from "@/components/ehr/ClinicalToolsMenu";
 import { ActiveCDSBanner } from "@/components/ehr/ActiveCDSBanner";
 import { SystemFeedbackStrip } from "@/components/ehr/SystemFeedbackStrip";
 import { useEHR } from "@/contexts/EHRContext";
-import { Route, ToggleLeft, ToggleRight } from "lucide-react";
+import { Route, ToggleLeft, ToggleRight, ArrowLeftRight, Calculator, ClipboardList, Users } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip";
 
@@ -26,18 +27,41 @@ export function ClinicalToolbar() {
       <SystemFeedbackStrip />
 
       {/* Toolbar row */}
-      <div className="h-11 min-h-[2.75rem] bg-muted/50 flex items-center px-3">
-        <div className="flex items-center gap-1 flex-1">
-          <span className="text-[10px] font-medium text-muted-foreground uppercase tracking-wider shrink-0 mr-2">Clinical Tools</span>
-          <div className="h-4 w-px bg-border mr-1" />
+      <div className="h-11 min-h-[2.75rem] bg-muted/50 flex items-center px-3 overflow-x-auto">
+        <div className="flex items-center gap-0.5 flex-1 min-w-0">
+          <span className="text-[10px] font-medium text-muted-foreground uppercase tracking-wider shrink-0 mr-1.5">Tools</span>
+          <div className="h-4 w-px bg-border mr-0.5 shrink-0" />
+
+          {/* Core Medscape-like tools */}
+          <ClinicalToolsMenu />
+          <ConditionsButton />
+
+          <Button variant="ghost" size="sm" className="h-8 gap-1.5 text-xs shrink-0">
+            <ArrowLeftRight className="w-3.5 h-3.5" />
+            Interactions
+          </Button>
+
+          <Button variant="ghost" size="sm" className="h-8 gap-1.5 text-xs shrink-0">
+            <Calculator className="w-3.5 h-3.5" />
+            Calculators
+          </Button>
+
+          <Button variant="ghost" size="sm" className="h-8 gap-1.5 text-xs shrink-0">
+            <ClipboardList className="w-3.5 h-3.5" />
+            Formulary
+          </Button>
+
+          <div className="h-4 w-px bg-border mx-0.5 shrink-0" />
+
+          {/* Care Pathways */}
           <Button
             variant="ghost"
             size="sm"
-            className={`h-8 gap-1.5 text-xs flex-1 max-w-[160px] ${isPathwaysActive ? "bg-primary/10 text-primary" : ""}`}
+            className={`h-8 gap-1.5 text-xs shrink-0 ${isPathwaysActive ? "bg-primary/10 text-primary" : ""}`}
             onClick={() => setActiveTopBarAction(isPathwaysActive ? null : "pathways")}
           >
             <Route className="w-3.5 h-3.5" />
-            Care Pathways
+            Pathways
           </Button>
 
           {/* AI Assist with toggle */}
@@ -62,9 +86,10 @@ export function ClinicalToolbar() {
           </Tooltip>
           {aiAssistEnabled && <AIDiagnosticAssistant />}
 
+          {/* References & SOPs (now includes Pill ID, Guidelines, Procedures, Cases, Podcasts) */}
           <ClinicalReferences />
 
-          {/* CDS with toggle */}
+          {/* Clinical Decision Support with toggle */}
           <Tooltip>
             <TooltipTrigger asChild>
               <Button
@@ -91,6 +116,13 @@ export function ClinicalToolbar() {
           <div className="flex-1" />
 
           <CriticalEventButton />
+
+          {/* Directory — at the right end */}
+          <div className="h-4 w-px bg-border mx-0.5 shrink-0" />
+          <Button variant="ghost" size="sm" className="h-8 gap-1.5 text-xs shrink-0">
+            <Users className="w-3.5 h-3.5" />
+            Directory
+          </Button>
         </div>
       </div>
       
