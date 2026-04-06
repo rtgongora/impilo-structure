@@ -35,7 +35,7 @@ export function WorkspaceDashboardPanel() {
   return (
     <div className="space-y-3">
       {/* KPI Row */}
-      <div className="grid grid-cols-2 md:grid-cols-5 gap-3">
+      <div className="grid grid-cols-2 md:grid-cols-5 gap-2">
         <MetricCard icon={Bed} label="Bed Occupancy" value={`${METRICS.beds.occupancy}%`} sub={`${METRICS.beds.occupied}/${METRICS.beds.total}`} trend="up" color="text-amber-500" />
         <MetricCard icon={Users} label="Queue Load" value={`${METRICS.queues.waiting}`} sub={`${METRICS.queues.avgWait}min avg wait`} trend="down" color="text-blue-500" />
         <MetricCard icon={Activity} label="Staff On Shift" value={`${METRICS.staff.onShift}`} sub={`${METRICS.staff.overtime} overtime`} color="text-green-500" />
