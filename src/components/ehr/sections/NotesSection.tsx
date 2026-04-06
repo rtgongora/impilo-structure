@@ -214,8 +214,11 @@ export function NotesSection() {
             Ward Rounds
           </TabsTrigger>
           <TabsTrigger value="attachments" className="flex items-center gap-2">
-            <Paperclip className="w-4 h-4" />
-            Attachments
+            <FolderOpen className="w-4 h-4" />
+            Documents
+            {scannedAttachments.length > 0 && (
+              <Badge variant="destructive" className="h-4 px-1 text-[10px] ml-0.5">{scannedAttachments.length}</Badge>
+            )}
           </TabsTrigger>
         </TabsList>
 
