@@ -707,7 +707,7 @@ export default function ModuleHome() {
                       onClick={() => navigate("/queue")}
                     >
                       <Users className="h-5 w-5 text-blue-500 group-hover:text-white" />
-                      Queue
+                      Queues & Wards
                     </Button>
                     <Button
                       variant="outline"
