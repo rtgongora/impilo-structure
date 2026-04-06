@@ -602,23 +602,33 @@ export default function ModuleHome() {
           )}
 
           {/* Tabs - Fill remaining space */}
-          <Tabs value={activeTab} onValueChange={setActiveTab} className="flex-1 flex flex-col min-h-0">
+          <Tabs value={activeTab} onValueChange={(newTab) => {
+            if (newTab !== activeTab && hasActiveContext) {
+              // Show brief toast confirming context switch
+              const tabLabels: Record<string, string> = { work: 'Work', professional: 'My Professional', personal: 'My Life' };
+              toast.info(`Switched to ${tabLabels[newTab] || newTab}`, { duration: 1500 });
+            }
+            setActiveTab(newTab);
+          }} className="flex-1 flex flex-col min-h-0">
             <TabsList className={`grid w-full h-10 p-1 mb-4 ${isClient ? 'grid-cols-1' : 'grid-cols-3'}`}>
               {!isClient && (
                 <>
-                  <TabsTrigger value="work" className="flex items-center justify-center gap-2 text-sm data-[state=active]:bg-primary data-[state=active]:text-primary-foreground">
+                  <TabsTrigger value="work" className="flex items-center justify-center gap-2 text-sm data-[state=active]:bg-primary data-[state=active]:text-primary-foreground data-[state=inactive]:opacity-50">
                     <Briefcase className="h-4 w-4" />
                     Work
+                    {activeTab !== 'work' && <Lock className="h-3 w-3 ml-0.5 opacity-60" />}
                   </TabsTrigger>
-                  <TabsTrigger value="professional" className="flex items-center justify-center gap-2 text-sm data-[state=active]:bg-gradient-to-r data-[state=active]:from-teal-500 data-[state=active]:to-cyan-500 data-[state=active]:text-white">
+                  <TabsTrigger value="professional" className="flex items-center justify-center gap-2 text-sm data-[state=active]:bg-gradient-to-r data-[state=active]:from-teal-500 data-[state=active]:to-cyan-500 data-[state=active]:text-white data-[state=inactive]:opacity-50">
                     <Stethoscope className="h-4 w-4" />
                     My Professional
+                    {activeTab !== 'professional' && <Lock className="h-3 w-3 ml-0.5 opacity-60" />}
                   </TabsTrigger>
                 </>
               )}
-              <TabsTrigger value="personal" className="flex items-center justify-center gap-2 text-sm data-[state=active]:bg-gradient-to-r data-[state=active]:from-pink-500 data-[state=active]:to-purple-500 data-[state=active]:text-white">
+              <TabsTrigger value="personal" className="flex items-center justify-center gap-2 text-sm data-[state=active]:bg-gradient-to-r data-[state=active]:from-pink-500 data-[state=active]:to-purple-500 data-[state=active]:text-white data-[state=inactive]:opacity-50">
                 <Heart className="h-4 w-4" />
                 My Life
+                {activeTab !== 'personal' && <Lock className="h-3 w-3 ml-0.5 opacity-60" />}
               </TabsTrigger>
             </TabsList>
 
