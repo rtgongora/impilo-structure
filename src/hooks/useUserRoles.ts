@@ -5,7 +5,20 @@ import { supabase } from '@/integrations/supabase/client';
 export type AppRole = 'admin' | 'moderator' | 'user';
 
 // Clinical roles from profile (for clinical features)
-export type ClinicalRole = 'doctor' | 'nurse' | 'specialist' | 'patient' | 'admin' | 'pharmacist' | 'receptionist' | 'lab_tech' | 'radiologist';
+export type ClinicalRole =
+  | 'doctor' | 'specialist' | 'intern_doctor' | 'registrar' | 'consultant'
+  | 'dentist' | 'dental_therapist'
+  | 'nurse' | 'nurse_practitioner' | 'enrolled_nurse' | 'midwife'
+  | 'physiotherapist' | 'occupational_therapist' | 'speech_therapist'
+  | 'dietitian' | 'psychologist' | 'social_worker' | 'audiologist'
+  | 'optometrist' | 'podiatrist' | 'biokinetician' | 'orthotist_prosthetist'
+  | 'respiratory_therapist' | 'radiotherapist'
+  | 'radiographer' | 'sonographer' | 'lab_tech' | 'pharmacist' | 'pharmacy_tech'
+  | 'paramedic' | 'emt'
+  | 'oral_hygienist'
+  | 'chw' | 'env_health' | 'health_promoter'
+  | 'admin' | 'health_info_officer' | 'receptionist'
+  | 'patient';
 
 // Combined role type for module access control
 export type ModuleAccessRole = ClinicalRole | AppRole | 'vendor' | 'registrar' | 'hie_admin';

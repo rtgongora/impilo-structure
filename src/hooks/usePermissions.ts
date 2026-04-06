@@ -1,7 +1,20 @@
 import { useAuth } from '@/contexts/AuthContext';
 import { useSystemRoles } from '@/hooks/useSystemRoles';
 
-export type ClinicalRole = 'doctor' | 'nurse' | 'specialist' | 'patient' | 'admin' | 'superadmin';
+export type ClinicalRole =
+  | 'doctor' | 'specialist' | 'intern_doctor' | 'registrar' | 'consultant'
+  | 'dentist' | 'dental_therapist'
+  | 'nurse' | 'nurse_practitioner' | 'enrolled_nurse' | 'midwife'
+  | 'physiotherapist' | 'occupational_therapist' | 'speech_therapist'
+  | 'dietitian' | 'psychologist' | 'social_worker' | 'audiologist'
+  | 'optometrist' | 'podiatrist' | 'biokinetician' | 'orthotist_prosthetist'
+  | 'respiratory_therapist' | 'radiotherapist'
+  | 'radiographer' | 'sonographer' | 'lab_tech' | 'pharmacist' | 'pharmacy_tech'
+  | 'paramedic' | 'emt'
+  | 'oral_hygienist'
+  | 'chw' | 'env_health' | 'health_promoter'
+  | 'admin' | 'health_info_officer' | 'receptionist'
+  | 'patient' | 'superadmin';
 
 export type Permission =
   | 'view_patient_records'
@@ -69,55 +82,177 @@ const rolePermissions: Record<ClinicalRole, Permission[]> = {
     'edit_care_plans',
   ],
   doctor: [
-    'view_patient_records',
-    'edit_patient_records',
-    'prescribe_medication',
-    'order_labs',
-    'view_lab_results',
-    'create_referrals',
-    'manage_teleconsults',
-    'view_vitals',
-    'edit_vitals',
-    'manage_beds',
-    'manage_queue',
-    'view_clinical_notes',
-    'write_clinical_notes',
-    'critical_events',
-    'view_care_plans',
-    'edit_care_plans',
+    'view_patient_records', 'edit_patient_records', 'prescribe_medication',
+    'order_labs', 'view_lab_results', 'create_referrals', 'manage_teleconsults',
+    'view_vitals', 'edit_vitals', 'manage_beds', 'manage_queue',
+    'view_clinical_notes', 'write_clinical_notes', 'critical_events',
+    'view_care_plans', 'edit_care_plans',
+  ],
+  consultant: [
+    'view_patient_records', 'edit_patient_records', 'prescribe_medication',
+    'order_labs', 'view_lab_results', 'create_referrals', 'manage_teleconsults',
+    'view_vitals', 'edit_vitals', 'view_clinical_notes', 'write_clinical_notes',
+    'critical_events', 'view_care_plans', 'edit_care_plans',
+  ],
+  registrar: [
+    'view_patient_records', 'edit_patient_records', 'prescribe_medication',
+    'order_labs', 'view_lab_results', 'create_referrals', 'manage_teleconsults',
+    'view_vitals', 'edit_vitals', 'view_clinical_notes', 'write_clinical_notes',
+    'critical_events', 'view_care_plans', 'edit_care_plans',
+  ],
+  intern_doctor: [
+    'view_patient_records', 'edit_patient_records',
+    'order_labs', 'view_lab_results', 'create_referrals',
+    'view_vitals', 'edit_vitals', 'view_clinical_notes', 'write_clinical_notes',
+    'view_care_plans', 'edit_care_plans',
   ],
   specialist: [
-    'view_patient_records',
-    'edit_patient_records',
-    'prescribe_medication',
-    'order_labs',
-    'view_lab_results',
-    'create_referrals',
-    'manage_teleconsults',
-    'view_vitals',
-    'view_clinical_notes',
-    'write_clinical_notes',
-    'critical_events',
+    'view_patient_records', 'edit_patient_records', 'prescribe_medication',
+    'order_labs', 'view_lab_results', 'create_referrals', 'manage_teleconsults',
+    'view_vitals', 'view_clinical_notes', 'write_clinical_notes',
+    'critical_events', 'view_care_plans', 'edit_care_plans',
+  ],
+  dentist: [
+    'view_patient_records', 'edit_patient_records', 'prescribe_medication',
+    'order_labs', 'view_lab_results', 'create_referrals',
+    'view_vitals', 'view_clinical_notes', 'write_clinical_notes',
+    'view_care_plans', 'edit_care_plans',
+  ],
+  dental_therapist: [
+    'view_patient_records', 'view_lab_results',
+    'view_vitals', 'view_clinical_notes', 'write_clinical_notes',
     'view_care_plans',
-    'edit_care_plans',
   ],
   nurse: [
-    'view_patient_records',
-    'administer_medication',
-    'view_lab_results',
-    'view_vitals',
-    'edit_vitals',
-    'manage_beds',
-    'manage_queue',
-    'view_clinical_notes',
-    'write_clinical_notes',
-    'critical_events',
+    'view_patient_records', 'administer_medication', 'view_lab_results',
+    'view_vitals', 'edit_vitals', 'manage_beds', 'manage_queue',
+    'view_clinical_notes', 'write_clinical_notes', 'critical_events',
+    'view_care_plans', 'edit_care_plans',
+  ],
+  nurse_practitioner: [
+    'view_patient_records', 'edit_patient_records', 'prescribe_medication',
+    'administer_medication', 'order_labs', 'view_lab_results', 'create_referrals',
+    'view_vitals', 'edit_vitals', 'manage_beds', 'manage_queue',
+    'view_clinical_notes', 'write_clinical_notes', 'critical_events',
+    'view_care_plans', 'edit_care_plans',
+  ],
+  enrolled_nurse: [
+    'view_patient_records', 'administer_medication', 'view_lab_results',
+    'view_vitals', 'edit_vitals', 'view_clinical_notes', 'write_clinical_notes',
     'view_care_plans',
-    'edit_care_plans',
+  ],
+  midwife: [
+    'view_patient_records', 'edit_patient_records', 'administer_medication',
+    'order_labs', 'view_lab_results', 'create_referrals',
+    'view_vitals', 'edit_vitals', 'view_clinical_notes', 'write_clinical_notes',
+    'critical_events', 'view_care_plans', 'edit_care_plans',
+  ],
+  physiotherapist: [
+    'view_patient_records', 'view_lab_results', 'view_vitals',
+    'view_clinical_notes', 'write_clinical_notes', 'view_care_plans', 'edit_care_plans',
+  ],
+  occupational_therapist: [
+    'view_patient_records', 'view_lab_results', 'view_vitals',
+    'view_clinical_notes', 'write_clinical_notes', 'view_care_plans', 'edit_care_plans',
+  ],
+  speech_therapist: [
+    'view_patient_records', 'view_lab_results', 'view_vitals',
+    'view_clinical_notes', 'write_clinical_notes', 'view_care_plans', 'edit_care_plans',
+  ],
+  dietitian: [
+    'view_patient_records', 'view_lab_results', 'view_vitals',
+    'view_clinical_notes', 'write_clinical_notes', 'view_care_plans', 'edit_care_plans',
+  ],
+  psychologist: [
+    'view_patient_records', 'view_lab_results', 'view_vitals',
+    'view_clinical_notes', 'write_clinical_notes', 'view_care_plans', 'edit_care_plans',
+  ],
+  social_worker: [
+    'view_patient_records', 'view_vitals', 'create_referrals',
+    'view_clinical_notes', 'write_clinical_notes', 'view_care_plans', 'edit_care_plans',
+  ],
+  audiologist: [
+    'view_patient_records', 'view_lab_results', 'view_vitals',
+    'view_clinical_notes', 'write_clinical_notes', 'view_care_plans',
+  ],
+  optometrist: [
+    'view_patient_records', 'view_lab_results', 'view_vitals',
+    'view_clinical_notes', 'write_clinical_notes', 'view_care_plans', 'edit_care_plans',
+  ],
+  podiatrist: [
+    'view_patient_records', 'view_lab_results', 'view_vitals',
+    'view_clinical_notes', 'write_clinical_notes', 'view_care_plans',
+  ],
+  biokinetician: [
+    'view_patient_records', 'view_vitals',
+    'view_clinical_notes', 'write_clinical_notes', 'view_care_plans', 'edit_care_plans',
+  ],
+  orthotist_prosthetist: [
+    'view_patient_records', 'view_vitals',
+    'view_clinical_notes', 'write_clinical_notes', 'view_care_plans',
+  ],
+  respiratory_therapist: [
+    'view_patient_records', 'view_lab_results', 'view_vitals', 'edit_vitals',
+    'view_clinical_notes', 'write_clinical_notes', 'critical_events',
+    'view_care_plans', 'edit_care_plans',
+  ],
+  radiotherapist: [
+    'view_patient_records', 'view_lab_results', 'view_vitals',
+    'view_clinical_notes', 'write_clinical_notes', 'view_care_plans',
+  ],
+  radiographer: [
+    'view_patient_records', 'view_lab_results', 'view_vitals',
+    'view_clinical_notes', 'write_clinical_notes',
+  ],
+  sonographer: [
+    'view_patient_records', 'view_lab_results', 'view_vitals',
+    'view_clinical_notes', 'write_clinical_notes',
+  ],
+  lab_tech: [
+    'view_patient_records', 'view_lab_results', 'view_vitals',
+    'view_clinical_notes',
+  ],
+  pharmacist: [
+    'view_patient_records', 'administer_medication', 'view_lab_results',
+    'view_vitals', 'view_clinical_notes', 'write_clinical_notes',
+    'view_care_plans',
+  ],
+  pharmacy_tech: [
+    'view_patient_records', 'administer_medication', 'view_lab_results',
+    'view_vitals',
+  ],
+  paramedic: [
+    'view_patient_records', 'edit_patient_records', 'administer_medication',
+    'view_vitals', 'edit_vitals', 'view_clinical_notes', 'write_clinical_notes',
+    'critical_events',
+  ],
+  emt: [
+    'view_patient_records', 'administer_medication',
+    'view_vitals', 'edit_vitals', 'critical_events',
+  ],
+  oral_hygienist: [
+    'view_patient_records', 'view_vitals',
+    'view_clinical_notes', 'write_clinical_notes',
+  ],
+  chw: [
+    'view_patient_records', 'view_vitals', 'view_lab_results',
+  ],
+  env_health: [
+    'view_patient_records', 'view_vitals',
+    'view_clinical_notes', 'write_clinical_notes',
+  ],
+  health_promoter: [
+    'view_patient_records', 'view_vitals',
+  ],
+  health_info_officer: [
+    'view_patient_records', 'view_lab_results', 'view_vitals',
+    'view_clinical_notes',
+  ],
+  receptionist: [
+    'view_patient_records', 'manage_queue',
   ],
   patient: [
-    'view_vitals',
-    'view_lab_results',
+    'view_vitals', 'view_lab_results',
   ],
 };
 
