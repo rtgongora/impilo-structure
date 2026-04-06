@@ -21,6 +21,7 @@ import {
   TestTube,
   Clock,
   ClipboardList,
+  Shield,
 } from "lucide-react";
 import { format } from "date-fns";
 import { MOCK_TRIAGE, MOCK_HISTORY, MOCK_VITALS } from "@/data/mockClinicalData";
@@ -32,6 +33,9 @@ import { ClerkingTemplateSelector } from "@/components/ehr/clerking/ClerkingTemp
 import { ClerkingFormEditor } from "@/components/ehr/clerking/ClerkingFormEditor";
 import { CLERKING_TEMPLATES, type CadreLevel, type ClerkingTemplate } from "@/data/clerkingTemplates";
 import { useParams } from "react-router-dom";
+import { useCadreFormConfig } from "@/hooks/useCadreFormConfig";
+import { CadreHistoryForm } from "@/components/ehr/assessment/CadreHistoryForm";
+import { CadreExamForm } from "@/components/ehr/assessment/CadreExamForm";
 
 const triageColors: Record<TriageCategory, { bg: string; border: string; text: string; label: string }> = {
   red: { bg: "bg-critical", border: "border-critical", text: "text-critical-foreground", label: "Immediate" },
