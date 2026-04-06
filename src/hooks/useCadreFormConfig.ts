@@ -7,12 +7,48 @@
  * 3. Acuity level (Red/Orange/Yellow/Green)
  */
 
+import { useState, createContext, useContext } from 'react';
 import { useAuth } from '@/contexts/AuthContext';
 
 export type ClinicalCadre = 'doctor' | 'specialist' | 'nurse' | 'midwife' | 'chw' | 'pharmacist' | 'lab_tech' | 'radiologist' | 'admin';
 export type FormComplexity = 'comprehensive' | 'focused' | 'simplified';
 export type VisitType = 'emergency' | 'anc' | 'pnc' | 'chronic' | 'general' | 'surgical' | 'pediatric' | 'psychiatric';
 export type AcuityLevel = 'red' | 'orange' | 'yellow' | 'green';
+
+// ── Dev Override State (singleton) ──────────────
+let _devCadreOverride: ClinicalCadre | null = null;
+let _devVisitOverride: VisitType | null = null;
+let _devAcuityOverride: AcuityLevel | null = null;
+let _devListeners: (() => void)[] = [];
+
+function notifyDevListeners() {
+  _devListeners.forEach(fn => fn());
+}
+
+export function setDevCadreOverride(cadre: ClinicalCadre | null) {
+  _devCadreOverride = cadre;
+  notifyDevListeners();
+}
+export function setDevVisitOverride(visit: VisitType | null) {
+  _devVisitOverride = visit;
+  notifyDevListeners();
+}
+export function setDevAcuityOverride(acuity: AcuityLevel | null) {
+  _devAcuityOverride = acuity;
+  notifyDevListeners();
+}
+export function getDevOverrides() {
+  return { cadre: _devCadreOverride, visit: _devVisitOverride, acuity: _devAcuityOverride };
+}
+export function useDevOverrideListener() {
+  const [, setTick] = useState(0);
+  // Register listener on mount
+  useState(() => {
+    const fn = () => setTick(t => t + 1);
+    _devListeners.push(fn);
+    return () => { _devListeners = _devListeners.filter(l => l !== fn); };
+  });
+}
 
 export interface CadreFormConfig {
   cadre: ClinicalCadre;
