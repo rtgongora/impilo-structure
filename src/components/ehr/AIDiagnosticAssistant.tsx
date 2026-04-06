@@ -135,7 +135,7 @@ export function AIDiagnosticAssistant() {
           AI Assist
         </Button>
       </SheetTrigger>
-      <SheetContent side="right" className="w-[700px] sm:max-w-[700px]">
+      <SheetContent side="right" className="w-[700px] sm:max-w-[700px] h-[85vh]">
         <SheetHeader>
           <SheetTitle className="flex items-center gap-2">
             <div className="p-2 bg-primary/10 rounded-lg">
