@@ -649,68 +649,20 @@ export default function ModuleHome() {
               ) : (
                 /* Show modules when workspace is selected */
                 <>
-              {/* Communication and Quick Access - Stacked vertically */}
-              <div className="flex flex-col gap-3 flex-shrink-0">
-                {/* Communication Noticeboard */}
+              {/* Workspaces & Communication - Side by side */}
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-3 flex-shrink-0">
+                {/* Workspaces Tile */}
                 <div className="bg-card border rounded-lg p-4">
                   <div className="flex items-center justify-between mb-3">
                     <h3 className="text-lg font-semibold flex items-center gap-2">
-                      <MessageSquare className="h-5 w-5 text-primary" />
-                      Communication Noticeboard
+                      <Building2 className="h-5 w-5 text-primary" />
+                      Workspaces
                     </h3>
-                    <HealthDocumentScanner variant="button" className="h-10" />
+                    <Badge variant="outline" className="text-xs">
+                      {activeContext?.facilityName || "No workspace"}
+                    </Badge>
                   </div>
                   <div className="flex flex-wrap gap-2">
-                    <Button
-                      variant="outline"
-                      className="h-12 px-5 flex items-center gap-2 text-base"
-                      onClick={() => navigate("/communication?tab=messages")}
-                    >
-                      <MessageSquare className="h-5 w-5 text-primary" />
-                      Messages
-                    </Button>
-                    <Button
-                      variant="outline"
-                      className="h-12 px-5 flex items-center gap-2 text-base"
-                      onClick={() => navigate("/communication?tab=pages")}
-                    >
-                      <Bell className="h-5 w-5 text-warning" />
-                      Pages
-                    </Button>
-                    <Button
-                      variant="outline"
-                      className="h-12 px-5 flex items-center gap-2 text-base"
-                      onClick={() => navigate("/communication?tab=calls")}
-                    >
-                      <Phone className="h-5 w-5 text-success" />
-                      Calls
-                    </Button>
-                  </div>
-                </div>
-                
-                {/* Quick Access */}
-                <div className="bg-card border rounded-lg p-4">
-                  <h3 className="text-lg font-semibold mb-3 flex items-center gap-2">
-                    <Zap className="h-5 w-5 text-amber-500" />
-                    Quick Access
-                  </h3>
-                  <div className="flex flex-wrap gap-2">
-                    <Button
-                      variant="outline"
-                      className="h-12 px-5 flex items-center gap-2 text-base hover:bg-red-600 hover:text-white group"
-                      onClick={() => navigate("/encounter")}
-                    >
-                      <FileHeart className="h-5 w-5 text-red-600 group-hover:text-white" />
-                      EHR
-                    </Button>
-                    <Button
-                      variant="outline"
-                      className="h-12 px-5 flex items-center gap-2 text-base hover:bg-primary hover:text-primary-foreground group"
-                      onClick={() => navigate("/dashboard")}
-                    >
-                      <ClipboardList className="h-5 w-5 text-primary group-hover:text-primary-foreground" />
-                      Dashboard
-                    </Button>
                     <Button
                       className="h-14 px-6 flex items-center gap-3 text-base font-semibold bg-orange-500 hover:bg-orange-600 text-white shadow-md"
                       onClick={() => navigate("/queue")}
@@ -720,45 +672,148 @@ export default function ModuleHome() {
                     </Button>
                     <Button
                       variant="outline"
-                      className="h-12 px-5 flex items-center gap-2 text-base hover:bg-emerald-600 hover:text-white group"
-                      onClick={() => navigate("/pharmacy")}
+                      className="h-12 px-5 flex items-center gap-2 text-base"
+                      onClick={() => navigate("/workspace-management")}
                     >
-                      <Pill className="h-5 w-5 text-emerald-600 group-hover:text-white" />
-                      Prescribe
+                      <Settings className="h-5 w-5 text-muted-foreground" />
+                      Manage
                     </Button>
                     <Button
                       variant="outline"
-                      className="h-12 px-5 flex items-center gap-2 text-base hover:bg-green-500 hover:text-white group"
-                      onClick={() => navigate("/registration")}
+                      className="h-12 px-5 flex items-center gap-2 text-base"
+                      onClick={() => navigate("/operations")}
                     >
-                      <UserPlus className="h-5 w-5 text-green-500 group-hover:text-white" />
-                      Register
-                    </Button>
-                    <Button
-                      variant="outline"
-                      className="h-12 px-5 flex items-center gap-2 text-base hover:bg-purple-500 hover:text-white group"
-                      onClick={() => navigate("/lab")}
-                    >
-                      <TestTube2 className="h-5 w-5 text-purple-500 group-hover:text-white" />
-                      Lab
-                    </Button>
-                    <Button
-                      variant="outline"
-                      className="h-12 px-5 flex items-center gap-2 text-base hover:bg-rose-500 hover:text-white group"
-                      onClick={() => navigate("/radiology")}
-                    >
-                      <Scan className="h-5 w-5 text-rose-500 group-hover:text-white" />
-                      Radiology
-                    </Button>
-                    <Button
-                      variant="outline"
-                      className="h-12 px-5 flex items-center gap-2 text-base hover:bg-orange-500 hover:text-white group"
-                      onClick={() => navigate("/appointments")}
-                    >
-                      <Calendar className="h-5 w-5 text-orange-500 group-hover:text-white" />
-                      Schedule
+                      <BarChart3 className="h-5 w-5 text-muted-foreground" />
+                      Operations
                     </Button>
                   </div>
+                  <div className="mt-3 grid grid-cols-3 gap-2 text-center">
+                    <div className="bg-muted/50 rounded-md p-2">
+                      <p className="text-lg font-bold text-foreground">12</p>
+                      <p className="text-[10px] text-muted-foreground">Staff On Shift</p>
+                    </div>
+                    <div className="bg-muted/50 rounded-md p-2">
+                      <p className="text-lg font-bold text-foreground">3</p>
+                      <p className="text-[10px] text-muted-foreground">Stock Alerts</p>
+                    </div>
+                    <div className="bg-muted/50 rounded-md p-2">
+                      <p className="text-lg font-bold text-foreground">87%</p>
+                      <p className="text-[10px] text-muted-foreground">Bed Occupancy</p>
+                    </div>
+                  </div>
+                </div>
+
+                {/* Communication Noticeboard (narrower) */}
+                <div className="bg-card border rounded-lg p-4">
+                  <div className="flex items-center justify-between mb-3">
+                    <h3 className="text-lg font-semibold flex items-center gap-2">
+                      <MessageSquare className="h-5 w-5 text-primary" />
+                      Comms
+                    </h3>
+                    <HealthDocumentScanner variant="button" className="h-10" />
+                  </div>
+                  <div className="flex flex-wrap gap-2">
+                    <Button
+                      variant="outline"
+                      className="h-12 px-4 flex items-center gap-2 text-sm"
+                      onClick={() => navigate("/communication?tab=messages")}
+                    >
+                      <MessageSquare className="h-4 w-4 text-primary" />
+                      Messages
+                    </Button>
+                    <Button
+                      variant="outline"
+                      className="h-12 px-4 flex items-center gap-2 text-sm"
+                      onClick={() => navigate("/communication?tab=pages")}
+                    >
+                      <Bell className="h-4 w-4 text-warning" />
+                      Pages
+                    </Button>
+                    <Button
+                      variant="outline"
+                      className="h-12 px-4 flex items-center gap-2 text-sm"
+                      onClick={() => navigate("/communication?tab=calls")}
+                    >
+                      <Phone className="h-4 w-4 text-success" />
+                      Calls
+                    </Button>
+                  </div>
+                  <div className="mt-3 space-y-1.5">
+                    <div className="flex items-center gap-2 text-xs p-1.5 rounded bg-muted/50">
+                      <Badge variant="destructive" className="text-[9px] px-1.5 py-0">URGENT</Badge>
+                      <span className="truncate text-muted-foreground">ICU handover report due</span>
+                    </div>
+                    <div className="flex items-center gap-2 text-xs p-1.5 rounded bg-muted/50">
+                      <Badge variant="secondary" className="text-[9px] px-1.5 py-0">NEW</Badge>
+                      <span className="truncate text-muted-foreground">Policy update: PPE protocol</span>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              {/* Quick Access */}
+              <div className="bg-card border rounded-lg p-4 flex-shrink-0">
+                <h3 className="text-lg font-semibold mb-3 flex items-center gap-2">
+                  <Zap className="h-5 w-5 text-amber-500" />
+                  Quick Access
+                </h3>
+                <div className="flex flex-wrap gap-2">
+                  <Button
+                    variant="outline"
+                    className="h-12 px-5 flex items-center gap-2 text-base hover:bg-red-600 hover:text-white group"
+                    onClick={() => navigate("/encounter")}
+                  >
+                    <FileHeart className="h-5 w-5 text-red-600 group-hover:text-white" />
+                    EHR
+                  </Button>
+                  <Button
+                    variant="outline"
+                    className="h-12 px-5 flex items-center gap-2 text-base hover:bg-primary hover:text-primary-foreground group"
+                    onClick={() => navigate("/dashboard")}
+                  >
+                    <ClipboardList className="h-5 w-5 text-primary group-hover:text-primary-foreground" />
+                    Dashboard
+                  </Button>
+                  <Button
+                    variant="outline"
+                    className="h-12 px-5 flex items-center gap-2 text-base hover:bg-emerald-600 hover:text-white group"
+                    onClick={() => navigate("/pharmacy")}
+                  >
+                    <Pill className="h-5 w-5 text-emerald-600 group-hover:text-white" />
+                    Prescribe
+                  </Button>
+                  <Button
+                    variant="outline"
+                    className="h-12 px-5 flex items-center gap-2 text-base hover:bg-green-500 hover:text-white group"
+                    onClick={() => navigate("/registration")}
+                  >
+                    <UserPlus className="h-5 w-5 text-green-500 group-hover:text-white" />
+                    Register
+                  </Button>
+                  <Button
+                    variant="outline"
+                    className="h-12 px-5 flex items-center gap-2 text-base hover:bg-purple-500 hover:text-white group"
+                    onClick={() => navigate("/lab")}
+                  >
+                    <TestTube2 className="h-5 w-5 text-purple-500 group-hover:text-white" />
+                    Lab
+                  </Button>
+                  <Button
+                    variant="outline"
+                    className="h-12 px-5 flex items-center gap-2 text-base hover:bg-rose-500 hover:text-white group"
+                    onClick={() => navigate("/radiology")}
+                  >
+                    <Scan className="h-5 w-5 text-rose-500 group-hover:text-white" />
+                    Radiology
+                  </Button>
+                  <Button
+                    variant="outline"
+                    className="h-12 px-5 flex items-center gap-2 text-base hover:bg-orange-500 hover:text-white group"
+                    onClick={() => navigate("/appointments")}
+                  >
+                    <Calendar className="h-5 w-5 text-orange-500 group-hover:text-white" />
+                    Schedule
+                  </Button>
                 </div>
               </div>
 
