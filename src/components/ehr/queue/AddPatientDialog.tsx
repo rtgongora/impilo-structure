@@ -4,7 +4,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { Textarea } from "@/components/ui/textarea";
+import { DictatableTextarea } from "@/components/ui/dictatable-textarea";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import type { VisitType } from "@/components/queue/SecureQueueCard";
 
@@ -130,7 +130,7 @@ export function AddPatientDialog({ open, onOpenChange, onAdd, queueType }: AddPa
 
           <div>
             <Label htmlFor="complaint">Chief Complaint</Label>
-            <Textarea 
+            <DictatableTextarea 
               id="complaint" 
               value={chiefComplaint} 
               onChange={(e) => setChiefComplaint(e.target.value)} 

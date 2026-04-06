@@ -27,6 +27,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
+import { DictatableTextarea } from "@/components/ui/dictatable-textarea";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Progress } from "@/components/ui/progress";
@@ -317,7 +318,7 @@ export function ReferralBuilder({ onSubmit, onCancel }: ReferralBuilderProps) {
 
             <div className="space-y-2">
               <Label>Referral Letter *</Label>
-              <Textarea
+              <DictatableTextarea
                 value={referralPackage.letterContent}
                 onChange={(e) => setReferralPackage(prev => ({ ...prev, letterContent: e.target.value }))}
                 placeholder="Write your clinical referral letter here. Include relevant history, examination findings, and your management so far..."
