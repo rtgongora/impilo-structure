@@ -95,7 +95,7 @@ export function PatientSortingDesk({ facilityId, onBack }: PatientSortingDeskPro
   }
 
   return (
-    <div className="h-[calc(100vh-56px)] bg-background p-2 md:p-3 flex flex-col overflow-hidden">
+    <div className="h-full bg-background p-2 md:p-3 flex flex-col overflow-hidden">
       {/* Compact Header */}
       <div className="flex items-center justify-between mb-2 flex-shrink-0">
         <div className="flex items-center gap-2">

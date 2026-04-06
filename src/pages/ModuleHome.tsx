@@ -174,9 +174,8 @@ const workModuleCategories: ModuleCategory[] = [
     modules: [
       { id: "dashboard", label: "My Dashboard", description: "Your worklist, tasks, and alerts", icon: ClipboardList, path: "/dashboard", color: "bg-primary" },
       { id: "communication", label: "Communication", description: "Messages, pages & calls", icon: MessageSquare, path: "/communication", color: "bg-primary" },
-      { id: "sorting", label: "Patient Sorting", description: "Front desk: arrival & triage", icon: ClipboardCheck, path: "/sorting", color: "bg-orange-500" },
+      { id: "queue", label: "Queues, Wards & Workspaces", description: "Patient flow: intake, triage, queues & wards", icon: Users, path: "/queue", color: "bg-orange-500" },
       { id: "ehr", label: "Patient Encounters", description: "Clinical documentation & care", icon: Stethoscope, path: "/encounter", color: "bg-blue-500", roles: ["doctor", "nurse", "specialist", "admin"] },
-      { id: "queue", label: "Patient Queue", description: "Waiting patients & triage", icon: Users, path: "/queue", color: "bg-orange-500" },
       { id: "beds", label: "Bed Management", description: "Ward status & admissions", icon: Bed, path: "/beds", color: "bg-purple-500", roles: ["doctor", "nurse", "admin"], capabilities: ["inpatient"] },
       { id: "discharge", label: "Discharge & Exit", description: "Discharges, deaths & exits", icon: DoorOpen, path: "/discharge", color: "bg-amber-600", roles: ["doctor", "nurse", "admin"] },
       { id: "control-tower", label: "Control Tower", description: "Real-time facility operations", icon: Gauge, path: "/operations?tab=control-tower", color: "bg-rose-600", roles: ["admin", "nurse", "doctor"] },
@@ -213,7 +212,7 @@ const workModuleCategories: ModuleCategory[] = [
     title: "Scheduling & Registration",
     description: "Appointments, patient registration, and theatre",
     modules: [
-      { id: "sorting", label: "Patient Sorting", description: "Arrival, triage & queue assignment", icon: ClipboardCheck, path: "/sorting", color: "bg-orange-500" },
+      { id: "queue-intake", label: "Patient Intake & Sorting", description: "Arrival, triage & queue assignment", icon: ClipboardCheck, path: "/queue", color: "bg-orange-500" },
       { id: "appointments", label: "Appointments", description: "Clinic & provider scheduling", icon: Calendar, path: "/appointments", color: "bg-cyan-500" },
       { id: "scheduling", label: "Appointment Scheduling", description: "Advanced scheduling tools", icon: Calendar, path: "/scheduling", color: "bg-blue-500", roles: ["admin", "receptionist", "doctor", "nurse"] },
       { id: "noticeboard", label: "Provider Noticeboard", description: "Announcements & scheduling updates", icon: Megaphone, path: "/scheduling/noticeboard", color: "bg-amber-500" },
