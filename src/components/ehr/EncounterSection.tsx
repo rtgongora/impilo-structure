@@ -51,13 +51,13 @@ export function EncounterSection() {
       <header className="bg-workspace-header border-b border-border px-5 py-4">
         <div className="flex items-center justify-between">
           <Button
-            variant="ghost"
+            variant="outline"
             size="icon"
-            className="h-12 w-12 shrink-0"
+            className="h-14 w-14 shrink-0 rounded-xl"
             onClick={() => prev && setActiveMenuItem(prev)}
             disabled={!prev}
           >
-            <ChevronLeft className="w-7 h-7" />
+            <ChevronLeft className="w-9 h-9" />
           </Button>
 
           <motion.div
@@ -82,13 +82,13 @@ export function EncounterSection() {
           </motion.div>
 
           <Button
-            variant="ghost"
+            variant="outline"
             size="icon"
-            className="h-12 w-12 shrink-0"
+            className="h-14 w-14 shrink-0 rounded-xl"
             onClick={() => next && setActiveMenuItem(next)}
             disabled={!next}
           >
-            <ChevronRight className="w-7 h-7" />
+            <ChevronRight className="w-9 h-9" />
           </Button>
         </div>
 
