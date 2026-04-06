@@ -560,8 +560,17 @@ const WorkspaceManagement = () => {
                         </div>
                       </div>
                       <div className="flex items-center gap-2">
-                        <Button
-                          variant="ghost"
+                        {workspace.is_active && (
+                          <Button
+                            variant="default"
+                            size="sm"
+                            className="gap-1"
+                            onClick={() => setActiveOpsWorkspace(workspace)}
+                          >
+                            <Eye className="h-3.5 w-3.5" />
+                            Open
+                          </Button>
+                        )}
                           size="icon"
                           onClick={() => openEditDialog(workspace)}
                         >
