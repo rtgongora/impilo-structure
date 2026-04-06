@@ -97,7 +97,7 @@ export function ClinicalToolbar() {
         </div>
       </div>
       
-      {cdsEnabled && !isSimplified && <ActiveCDSBanner />}
+      {cdsEnabled && <ActiveCDSBanner />}
     </div>
   );
 }
