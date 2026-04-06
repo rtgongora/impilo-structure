@@ -1,6 +1,6 @@
 /**
  * useSpeechToText — Unified voice dictation hook
- * Uses Web Speech API (browser-native) with optional ElevenLabs Scribe fallback.
+ * Uses Web Speech API (browser-native) with ElevenLabs Scribe fallback.
  */
 import { useState, useRef, useCallback, useEffect } from "react";
 
@@ -27,12 +27,18 @@ interface UseSpeechToTextReturn {
   activeEngine: "browser" | "elevenlabs" | "none";
 }
 
-// Check Web Speech API support
-const getSpeechRecognitionClass = (): any => {
-  return (window as any).SpeechRecognition || (window as any).webkitSpeechRecognition || null;
-};
+const getSpeechRecognitionClass = (): any =>
+  (window as any).SpeechRecognition || (window as any).webkitSpeechRecognition || null;
 
 const isBrowserSpeechSupported = () => !!getSpeechRecognitionClass();
+
+// BCP-47 to ISO 639-3 mapping for ElevenLabs
+const bcp47ToIso639: Record<string, string> = {
+  "en": "eng", "en-US": "eng", "en-GB": "eng",
+  "es": "spa", "es-ES": "spa", "fr": "fra", "fr-FR": "fra",
+  "de": "deu", "de-DE": "deu", "pt": "por", "pt-BR": "por",
+  "zu": "zul", "xh": "xho", "af": "afr", "st": "sot",
+};
 
 export function useSpeechToText({
   engine = "auto",
@@ -46,28 +52,111 @@ export function useSpeechToText({
   const [transcript, setTranscript] = useState("");
   const [interimTranscript, setInterimTranscript] = useState("");
   const recognitionRef = useRef<any>(null);
+  const mediaRecorderRef = useRef<MediaRecorder | null>(null);
+  const chunksRef = useRef<Blob[]>([]);
+  const recordingIntervalRef = useRef<ReturnType<typeof setInterval> | null>(null);
   const activeEngineRef = useRef<"browser" | "elevenlabs" | "none">("none");
 
   const browserSupported = isBrowserSpeechSupported();
-  const isSupported = browserSupported; // ElevenLabs always available via edge function
+  // ElevenLabs fallback always available via edge function
+  const isSupported = browserSupported || true;
 
-  // Determine which engine to use
-  const resolvedEngine = engine === "auto" ? "browser" : engine;
+  // Determine engine: auto = browser first, fallback to elevenlabs
+  const resolvedEngine =
+    engine === "auto"
+      ? browserSupported ? "browser" : "elevenlabs"
+      : engine;
 
-  // Clean up on unmount
   useEffect(() => {
     return () => {
       if (recognitionRef.current) {
-        try {
-          recognitionRef.current.abort?.();
-        } catch {}
+        try { recognitionRef.current.abort?.(); } catch {}
       }
+      if (mediaRecorderRef.current && mediaRecorderRef.current.state !== "inactive") {
+        try { mediaRecorderRef.current.stop(); } catch {}
+      }
+      if (recordingIntervalRef.current) clearInterval(recordingIntervalRef.current);
     };
   }, []);
 
+  // --- ElevenLabs Scribe engine ---
+  const sendChunkToScribe = useCallback(async (audioBlob: Blob) => {
+    try {
+      const buffer = await audioBlob.arrayBuffer();
+      const base64 = btoa(String.fromCharCode(...new Uint8Array(buffer)));
+      const isoLang = bcp47ToIso639[language] || "eng";
+
+      const url = `${import.meta.env.VITE_SUPABASE_URL}/functions/v1/elevenlabs-scribe`;
+      const resp = await fetch(url, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY}`,
+        },
+        body: JSON.stringify({ audio: base64, language: isoLang, mimeType: audioBlob.type }),
+      });
+
+      if (!resp.ok) {
+        const err = await resp.text();
+        console.error("Scribe API error:", err);
+        return;
+      }
+
+      const data = await resp.json();
+      if (data.text && data.text.trim()) {
+        setTranscript((prev) => {
+          const newText = prev ? prev + " " + data.text.trim() : data.text.trim();
+          onTranscript?.(newText, true);
+          return newText;
+        });
+      }
+    } catch (e) {
+      console.error("Scribe chunk error:", e);
+    }
+  }, [language, onTranscript]);
+
+  const startElevenLabsRecognition = useCallback(async () => {
+    try {
+      const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+      const mimeType = MediaRecorder.isTypeSupported("audio/webm;codecs=opus")
+        ? "audio/webm;codecs=opus"
+        : "audio/webm";
+      const recorder = new MediaRecorder(stream, { mimeType });
+
+      chunksRef.current = [];
+      recorder.ondataavailable = (e) => {
+        if (e.data.size > 0) chunksRef.current.push(e.data);
+      };
+
+      recorder.start();
+      mediaRecorderRef.current = recorder;
+      activeEngineRef.current = "elevenlabs";
+      setIsListening(true);
+
+      // Send chunks every 5 seconds for near-real-time transcription
+      recordingIntervalRef.current = setInterval(() => {
+        if (recorder.state === "recording" && chunksRef.current.length > 0) {
+          const blob = new Blob(chunksRef.current, { type: mimeType });
+          chunksRef.current = [];
+          recorder.stop();
+          sendChunkToScribe(blob);
+          // Restart recording
+          const newRecorder = new MediaRecorder(stream, { mimeType });
+          newRecorder.ondataavailable = (e) => {
+            if (e.data.size > 0) chunksRef.current.push(e.data);
+          };
+          newRecorder.start();
+          mediaRecorderRef.current = newRecorder;
+        }
+      }, 5000);
+    } catch (e: any) {
+      onError?.(e.message || "Failed to start ElevenLabs recording");
+    }
+  }, [sendChunkToScribe, onError]);
+
+  // --- Browser engine ---
   const startBrowserRecognition = useCallback(() => {
     const SpeechRecognitionClass = getSpeechRecognitionClass();
-
     if (!SpeechRecognitionClass) {
       onError?.("Speech recognition not supported in this browser");
       return;
@@ -82,7 +171,6 @@ export function useSpeechToText({
     recognition.onresult = (event: any) => {
       let interim = "";
       let final = "";
-
       for (let i = event.resultIndex; i < event.results.length; i++) {
         const result = event.results[i];
         if (result.isFinal) {
@@ -91,7 +179,6 @@ export function useSpeechToText({
           interim += result[0].transcript;
         }
       }
-
       if (final) {
         setTranscript((prev) => {
           const newText = prev ? prev + " " + final.trim() : final.trim();
@@ -113,13 +200,8 @@ export function useSpeechToText({
     };
 
     recognition.onend = () => {
-      // Auto-restart if still supposed to be listening (continuous mode)
       if (isListening && continuous) {
-        try {
-          recognition.start();
-        } catch {
-          setIsListening(false);
-        }
+        try { recognition.start(); } catch { setIsListening(false); }
       } else {
         setIsListening(false);
       }
@@ -138,42 +220,52 @@ export function useSpeechToText({
   const startListening = useCallback(() => {
     if (isListening) return;
 
-    // Request mic permission first
-    navigator.mediaDevices
-      .getUserMedia({ audio: true })
-      .then(() => {
-        if (resolvedEngine === "browser" && browserSupported) {
-          startBrowserRecognition();
-        } else if (!browserSupported) {
-          onError?.(
-            "Speech recognition is not supported in this browser. Try Chrome or Edge."
-          );
-        } else {
-          startBrowserRecognition();
-        }
-      })
-      .catch(() => {
-        onError?.("Microphone access is required for voice dictation");
-      });
-  }, [
-    isListening,
-    resolvedEngine,
-    browserSupported,
-    startBrowserRecognition,
-    onError,
-  ]);
+    if (resolvedEngine === "elevenlabs") {
+      startElevenLabsRecognition();
+    } else {
+      navigator.mediaDevices
+        .getUserMedia({ audio: true })
+        .then(() => {
+          if (browserSupported) {
+            startBrowserRecognition();
+          } else {
+            startElevenLabsRecognition();
+          }
+        })
+        .catch(() => {
+          onError?.("Microphone access is required for voice dictation");
+        });
+    }
+  }, [isListening, resolvedEngine, browserSupported, startBrowserRecognition, startElevenLabsRecognition, onError]);
 
   const stopListening = useCallback(() => {
+    // Stop browser recognition
     if (recognitionRef.current) {
-      try {
-        recognitionRef.current.stop();
-      } catch {}
+      try { recognitionRef.current.stop(); } catch {}
       recognitionRef.current = null;
+    }
+    // Stop ElevenLabs recording
+    if (recordingIntervalRef.current) {
+      clearInterval(recordingIntervalRef.current);
+      recordingIntervalRef.current = null;
+    }
+    if (mediaRecorderRef.current && mediaRecorderRef.current.state !== "inactive") {
+      // Send final chunk
+      const recorder = mediaRecorderRef.current;
+      recorder.ondataavailable = (e) => {
+        if (e.data.size > 0) {
+          sendChunkToScribe(e.data);
+        }
+      };
+      try { recorder.stop(); } catch {}
+      // Stop all tracks
+      recorder.stream.getTracks().forEach((t) => t.stop());
+      mediaRecorderRef.current = null;
     }
     activeEngineRef.current = "none";
     setIsListening(false);
     setInterimTranscript("");
-  }, []);
+  }, [sendChunkToScribe]);
 
   const toggleListening = useCallback(() => {
     if (isListening) {
