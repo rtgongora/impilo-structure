@@ -93,7 +93,7 @@ export function PatientFileWorkspace() {
 
           {/* Documents Tab */}
           <TabsContent value="documents" className="h-full m-0 p-6 overflow-auto">
-            <DocumentsLibrary patientId={patientId} />
+            <PatientDocumentsPanel patientId={patientId} />
           </TabsContent>
 
           {/* IPS Tab */}
