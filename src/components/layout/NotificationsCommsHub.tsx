@@ -213,54 +213,45 @@ export function NotificationsCommsHub() {
 
       setNotifications(items);
 
-      // 4. Recent messages (quick view)
-      const { data: channelMembers } = await supabase
-        .from("channel_members")
-        .select("channel_id")
-        .eq("user_id", user.id)
-        .limit(10);
+      // 4. Recent messages (quick view) from clinical_messages
+      const { data: recentMsgs } = await supabase
+        .from("clinical_messages")
+        .select("id, content, created_at, sender_id, channel_id, is_read")
+        .neq("sender_id", user.id)
+        .order("created_at", { ascending: false })
+        .limit(15);
 
-      if (channelMembers && channelMembers.length > 0) {
-        const channelIds = channelMembers.map((cm) => cm.channel_id);
-        const { data: recentMsgs } = await supabase
-          .from("messages")
-          .select("id, content, created_at, sender_id, channel_id")
-          .in("channel_id", channelIds)
-          .neq("sender_id", user.id)
-          .order("created_at", { ascending: false })
-          .limit(10);
+      if (recentMsgs && recentMsgs.length > 0) {
+        const senderIds = [...new Set(recentMsgs.map((m) => m.sender_id))];
+        const { data: senderProfiles } = await supabase
+          .from("profiles")
+          .select("user_id, display_name")
+          .in("user_id", senderIds);
+        const senderMap: Record<string, string> = {};
+        (senderProfiles || []).forEach((p) => {
+          senderMap[p.user_id] = p.display_name || "Unknown";
+        });
 
-        if (recentMsgs && recentMsgs.length > 0) {
-          const senderIds = [...new Set(recentMsgs.map((m) => m.sender_id))];
-          const { data: senderProfiles } = await supabase
-            .from("profiles")
-            .select("user_id, display_name")
-            .in("user_id", senderIds);
-          const senderMap: Record<string, string> = {};
-          (senderProfiles || []).forEach((p) => {
-            senderMap[p.user_id] = p.display_name || "Unknown";
-          });
+        const channelIds = [...new Set(recentMsgs.map((m) => m.channel_id))];
+        const { data: channels } = await supabase
+          .from("message_channels")
+          .select("id, name")
+          .in("id", channelIds);
+        const channelMap: Record<string, string> = {};
+        (channels || []).forEach((c) => {
+          channelMap[c.id] = c.name || "Direct";
+        });
 
-          const { data: channels } = await supabase
-            .from("message_channels")
-            .select("id, name")
-            .in("id", channelIds);
-          const channelMap: Record<string, string> = {};
-          (channels || []).forEach((c) => {
-            channelMap[c.id] = c.name || "Direct";
-          });
+        const msgItems: QuickMessage[] = recentMsgs.map((m) => ({
+          id: m.id,
+          channelName: channelMap[m.channel_id] || "Channel",
+          senderName: senderMap[m.sender_id] || "Unknown",
+          content: m.content?.substring(0, 80) || "",
+          timestamp: m.created_at,
+          isRead: m.is_read || false,
+        }));
 
-          const msgItems: QuickMessage[] = recentMsgs.map((m) => ({
-            id: m.id,
-            channelName: channelMap[m.channel_id] || "Channel",
-            senderName: senderMap[m.sender_id] || "Unknown",
-            content: m.content?.substring(0, 80) || "",
-            timestamp: m.created_at,
-            isRead: false,
-          }));
-
-          setMessages(msgItems);
-        }
+        setMessages(msgItems);
       }
     } catch (err) {
       console.error("Failed to fetch notifications:", err);
