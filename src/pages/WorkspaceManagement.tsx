@@ -4,6 +4,7 @@ import { useAuth } from "@/contexts/AuthContext";
 import { useSystemRoles } from "@/hooks/useSystemRoles";
 import { supabase } from "@/integrations/supabase/client";
 import { AppLayout } from "@/components/layout/AppLayout";
+import { WorkspaceOpsHub, type WorkspaceOpsType } from "@/components/workspace-ops/WorkspaceOpsHub";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
