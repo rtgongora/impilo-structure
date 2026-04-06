@@ -138,12 +138,13 @@ export function TopBar() {
                   <TooltipTrigger asChild>
                     <Button
                       variant="ghost"
-                      size="icon"
-                      className="h-8 w-8 text-topbar-muted hover:text-topbar-foreground hover:bg-topbar-foreground/10"
+                      size="sm"
+                      className="h-9 gap-1.5 text-xs text-topbar-muted hover:text-topbar-foreground hover:bg-topbar-foreground/10"
                       asChild
                     >
                       <Link to="/registration">
                         <UserPlus className="w-4 h-4" />
+                        Register
                       </Link>
                     </Button>
                   </TooltipTrigger>
