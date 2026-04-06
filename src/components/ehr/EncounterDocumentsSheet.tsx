@@ -44,7 +44,7 @@ export function EncounterDocumentsSheet() {
   const { currentEncounter } = useEHR();
   const patientId = currentEncounter?.patient?.id;
   const encounterId = currentEncounter?.id;
-  const visitId = currentEncounter?.visitId;
+  const visitId = encounterId; // Use encounter ID as visit context
 
   const [open, setOpen] = useState(false);
   const [activeTab, setActiveTab] = useState("browse");
