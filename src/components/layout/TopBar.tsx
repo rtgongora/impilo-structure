@@ -1,5 +1,4 @@
 import { useEHR } from "@/contexts/EHRContext";
-import { UserMenu } from "@/components/auth/UserMenu";
 import { TOP_BAR_ACTIONS } from "@/types/ehr";
 import { Tooltip, TooltipContent, TooltipTrigger, TooltipProvider } from "@/components/ui/tooltip";
 import {

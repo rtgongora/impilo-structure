@@ -9,14 +9,14 @@ export function UtilityStrip() {
       {/* Left: Logo & Facility */}
       <div className="flex items-center gap-3">
         <img src={impiloLogo} alt="Impilo" className="h-5 w-auto" />
-        <div className="h-4 w-px bg-slate-700" />
+        <div className="h-4 w-px bg-border" />
         <FacilitySelector />
       </div>
 
       {/* Right: Workspace & User */}
       <div className="flex items-center gap-2">
         <ActiveWorkspaceIndicator compact />
-        <div className="h-4 w-px bg-slate-700" />
+        <div className="h-4 w-px bg-border" />
         <UserMenu />
       </div>
     </div>
