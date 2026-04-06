@@ -14,6 +14,8 @@ interface SystemMaintenanceAuthProps {
   onBack: () => void;
 }
 
+const IS_PRODUCTION = window.location.hostname.endsWith('.lovable.app') && !window.location.hostname.includes('preview');
+
 export const SystemMaintenanceAuth: React.FC<SystemMaintenanceAuthProps> = ({ onBack }) => {
   const navigate = useNavigate();
   const [email, setEmail] = useState("");
