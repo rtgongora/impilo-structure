@@ -1,4 +1,5 @@
 import { TopBar } from "./TopBar";
+import { ClinicalToolbar } from "./ClinicalToolbar";
 import { EncounterMenu } from "./EncounterMenu";
 import { MainWorkArea } from "./MainWorkArea";
 import { PatientBanner } from "@/components/ehr/PatientBanner";
