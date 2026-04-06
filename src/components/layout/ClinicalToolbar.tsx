@@ -10,6 +10,7 @@ import { SystemFeedbackStrip } from "@/components/ehr/SystemFeedbackStrip";
 import { useEHR } from "@/contexts/EHRContext";
 import { useCadreFormConfig } from "@/hooks/useCadreFormConfig";
 import { Route, ToggleLeft, ToggleRight, Users, ScanLine, FolderOpen } from "lucide-react";
+import { ClinicalDocumentScanner } from "@/components/documents/ClinicalDocumentScanner";
 import { Button } from "@/components/ui/button";
 import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip";
 import { EncounterDocumentsSheet } from "@/components/ehr/EncounterDocumentsSheet";
