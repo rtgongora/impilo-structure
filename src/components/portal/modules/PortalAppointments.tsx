@@ -5,7 +5,7 @@ import { Badge } from "@/components/ui/badge";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Input } from "@/components/ui/input";
-import { Textarea } from "@/components/ui/textarea";
+import { DictatableTextarea } from "@/components/ui/dictatable-textarea";
 import { 
   Calendar,
   Clock,
@@ -354,7 +354,7 @@ export function PortalAppointments() {
                               <div className="space-y-4 mt-4">
                                 <div>
                                   <label className="text-sm font-medium">Reason for visit</label>
-                                  <Textarea 
+                                  <DictatableTextarea 
                                     placeholder="Describe your main concern..."
                                     value={preVisitNotes}
                                     onChange={(e) => setPreVisitNotes(e.target.value)}
