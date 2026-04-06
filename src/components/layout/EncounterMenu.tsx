@@ -46,7 +46,7 @@ export function EncounterMenu() {
   return (
     <aside
       className={cn(
-        "w-48 bg-encounter-bg border-l border-border flex flex-col transition-opacity duration-200",
+        "w-52 bg-encounter-bg border-l border-border flex flex-col transition-opacity duration-200",
         isDeemphasized && "opacity-50 pointer-events-none"
       )}
     >
