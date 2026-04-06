@@ -86,7 +86,10 @@ const DEMO_FACILITIES: ProviderFacility[] = [
 
 // List of dev/tester emails that can fallback to demo mode
 // Demo mode only activates if these users have NO real affiliations
-const DEV_TESTER_EMAILS = [
+// DISABLED in production environments
+const IS_PRODUCTION = typeof window !== 'undefined' && window.location.hostname.endsWith('.lovable.app') && !window.location.hostname.includes('preview');
+
+const DEV_TESTER_EMAILS = IS_PRODUCTION ? [] : [
   'dev@impilo.health',
   'admin@impilo.health',
   'test@impilo.health',
@@ -99,8 +102,8 @@ export function useProviderFacilities(): UseProviderFacilitiesReturn {
   const [error, setError] = useState<string | null>(null);
   const [isDemoMode, setIsDemoMode] = useState(false);
 
-  // Check if user can fallback to demo mode (only for specific test accounts)
-  const isDevTester = user?.email && DEV_TESTER_EMAILS.includes(user.email.toLowerCase());
+  // Check if user can fallback to demo mode (only for specific test accounts, never in production)
+  const isDevTester = !IS_PRODUCTION && user?.email && DEV_TESTER_EMAILS.includes(user.email.toLowerCase());
 
   const fetchFacilities = useCallback(async () => {
     if (!user) {

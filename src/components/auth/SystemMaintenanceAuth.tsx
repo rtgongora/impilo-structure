@@ -14,6 +14,8 @@ interface SystemMaintenanceAuthProps {
   onBack: () => void;
 }
 
+const IS_PRODUCTION = window.location.hostname.endsWith('.lovable.app') && !window.location.hostname.includes('preview');
+
 export const SystemMaintenanceAuth: React.FC<SystemMaintenanceAuthProps> = ({ onBack }) => {
   const navigate = useNavigate();
   const [email, setEmail] = useState("");
@@ -78,6 +80,10 @@ export const SystemMaintenanceAuth: React.FC<SystemMaintenanceAuthProps> = ({ on
 
   // Quick login for dev account
   const handleDevQuickLogin = async () => {
+    if (IS_PRODUCTION) {
+      toast.error("Dev account disabled", { description: "Dev quick-login is not available in production environments." });
+      return;
+    }
     setIsSubmitting(true);
     try {
       const { data: authData, error: authError } = await supabase.auth.signInWithPassword({
@@ -91,7 +97,7 @@ export const SystemMaintenanceAuth: React.FC<SystemMaintenanceAuthProps> = ({ on
       }
 
       toast.success("Dev Mode Activated", { 
-        description: "Zero-restriction access enabled." 
+        description: "Zero-restriction access enabled. DEV/TEST ONLY." 
       });
 
       navigate("/");
@@ -132,28 +138,30 @@ export const SystemMaintenanceAuth: React.FC<SystemMaintenanceAuthProps> = ({ on
           </div>
         </div>
 
-        {/* Dev Quick Login */}
-        <div className="bg-muted/50 border border-border rounded-lg p-4">
-          <div className="flex items-center justify-between">
-            <div className="flex items-center gap-3">
-              <div className="h-10 w-10 rounded-lg bg-primary/10 flex items-center justify-center">
-                <Terminal className="h-5 w-5 text-primary" />
+        {/* Dev Quick Login — hidden in production */}
+        {!IS_PRODUCTION && (
+          <div className="bg-muted/50 border border-border rounded-lg p-4">
+            <div className="flex items-center justify-between">
+              <div className="flex items-center gap-3">
+                <div className="h-10 w-10 rounded-lg bg-primary/10 flex items-center justify-center">
+                  <Terminal className="h-5 w-5 text-primary" />
+                </div>
+                <div>
+                  <p className="font-medium text-sm">Dev/Test Account</p>
+                  <p className="text-xs text-muted-foreground">Zero-restriction access — dev only</p>
+                </div>
               </div>
-              <div>
-                <p className="font-medium text-sm">Dev/Test Account</p>
-                <p className="text-xs text-muted-foreground">Zero-restriction access</p>
-              </div>
+              <Button 
+                size="sm" 
+                variant="outline"
+                onClick={handleDevQuickLogin}
+                disabled={isSubmitting}
+              >
+                Quick Login
+              </Button>
             </div>
-            <Button 
-              size="sm" 
-              variant="outline"
-              onClick={handleDevQuickLogin}
-              disabled={isSubmitting}
-            >
-              Quick Login
-            </Button>
           </div>
-        </div>
+        )}
 
         <div className="relative">
           <div className="absolute inset-0 flex items-center">
