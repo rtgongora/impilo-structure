@@ -318,7 +318,7 @@ export function ReferralBuilder({ onSubmit, onCancel }: ReferralBuilderProps) {
 
             <div className="space-y-2">
               <Label>Referral Letter *</Label>
-              <Textarea
+              <DictatableTextarea
                 value={referralPackage.letterContent}
                 onChange={(e) => setReferralPackage(prev => ({ ...prev, letterContent: e.target.value }))}
                 placeholder="Write your clinical referral letter here. Include relevant history, examination findings, and your management so far..."
