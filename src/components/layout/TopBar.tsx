@@ -1,5 +1,6 @@
 import { useEHR } from "@/contexts/EHRContext";
 import { TOP_BAR_ACTIONS } from "@/types/ehr";
+import { Tooltip, TooltipContent, TooltipTrigger, TooltipProvider } from "@/components/ui/tooltip";
 import {
   Boxes,
   Route,
@@ -66,8 +67,7 @@ const iconMap: Record<string, React.ComponentType<{ className?: string }>> = {
   ClipboardCheck,
 };
 
-// Show first 5 actions directly, rest in overflow menu
-const PRIMARY_ACTION_COUNT = 5;
+// All actions shown as icon-only with tooltips
 
 export function TopBar() {
   const { 
@@ -81,8 +81,6 @@ export function TopBar() {
   } = useEHR();
   const navigate = useNavigate();
 
-  const primaryActions = TOP_BAR_ACTIONS.slice(0, PRIMARY_ACTION_COUNT);
-  const overflowActions = TOP_BAR_ACTIONS.slice(PRIMARY_ACTION_COUNT);
 
   return (
     <header className="h-14 min-h-[3.5rem] shrink-0 bg-topbar-bg text-topbar-foreground flex items-center justify-between px-3 border-b border-topbar-bg/20 shadow-sm">
