@@ -1,6 +1,7 @@
 import { ReactNode } from "react";
 import { AppSidebar } from "./AppSidebar";
 import { AppHeader } from "./AppHeader";
+import { HelpMenu } from "@/components/help/HelpMenu";
 
 interface AppLayoutProps {
   children: ReactNode;
@@ -19,6 +20,11 @@ export function AppLayout({ children, title }: AppLayoutProps) {
         <main className="flex-1 flex flex-col overflow-auto overscroll-contain">
           {children}
         </main>
+      </div>
+
+      {/* Floating Help Button */}
+      <div className="fixed bottom-5 right-5 z-50">
+        <HelpMenu variant="floating" />
       </div>
     </div>
   );
