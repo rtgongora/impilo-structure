@@ -202,11 +202,9 @@ export function TopBar() {
         </div>
       )}
 
-      {/* Right: Search, Workspace & User */}
+      {/* Right: Search (only when no patient), Workspace & User */}
       <div className="flex items-center gap-1.5 shrink-0">
-        {hasActivePatient && <PatientSearch />}
-
-        {hasActivePatient && <div className="h-5 w-px bg-topbar-muted/30" />}
+        {!hasActivePatient && <PatientSearch />}
 
         {hasActivePatient && <ActiveWorkspaceIndicator compact />}
 
