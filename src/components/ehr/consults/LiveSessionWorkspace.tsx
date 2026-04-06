@@ -460,7 +460,7 @@ export function LiveSessionWorkspace({
           <div className="space-y-6 max-w-2xl">
             <div className="space-y-2">
               <Label>Assessment *</Label>
-              <Textarea
+              <DictatableTextarea
                 value={responseDraft.assessment}
                 onChange={(e) => {
                   setResponseDraft((prev) => ({ ...prev, assessment: e.target.value }));
@@ -473,7 +473,7 @@ export function LiveSessionWorkspace({
 
             <div className="space-y-2">
               <Label>Clinical Interpretation *</Label>
-              <Textarea
+              <DictatableTextarea
                 value={responseDraft.clinicalInterpretation}
                 onChange={(e) => {
                   setResponseDraft((prev) => ({ ...prev, clinicalInterpretation: e.target.value }));
@@ -511,7 +511,7 @@ export function LiveSessionWorkspace({
 
             <div className="space-y-2">
               <Label>Response to Referrer's Questions</Label>
-              <Textarea
+              <DictatableTextarea
                 value={responseDraft.responseToQuestions}
                 onChange={(e) => {
                   setResponseDraft((prev) => ({ ...prev, responseToQuestions: e.target.value }));
@@ -523,7 +523,7 @@ export function LiveSessionWorkspace({
 
             <div className="space-y-2">
               <Label>Key Findings</Label>
-              <Textarea
+              <DictatableTextarea
                 value={responseDraft.keyFindings}
                 onChange={(e) => {
                   setResponseDraft((prev) => ({ ...prev, keyFindings: e.target.value }));
@@ -537,7 +537,7 @@ export function LiveSessionWorkspace({
 
             <div className="space-y-2">
               <Label>Treatment Plan *</Label>
-              <Textarea
+              <DictatableTextarea
                 value={responseDraft.treatmentPlan}
                 onChange={(e) => {
                   setResponseDraft((prev) => ({ ...prev, treatmentPlan: e.target.value }));
@@ -550,7 +550,7 @@ export function LiveSessionWorkspace({
 
             <div className="space-y-2">
               <Label>Monitoring Requirements</Label>
-              <Textarea
+              <DictatableTextarea
                 value={responseDraft.monitoringRequirements}
                 onChange={(e) => {
                   setResponseDraft((prev) => ({ ...prev, monitoringRequirements: e.target.value }));
@@ -610,7 +610,7 @@ export function LiveSessionWorkspace({
               </div>
               <div className="space-y-2">
                 <Label>Instructions</Label>
-                <Textarea
+                <DictatableTextarea
                   value={responseDraft.followUpInstructions}
                   onChange={(e) => {
                     setResponseDraft((prev) => ({ ...prev, followUpInstructions: e.target.value }));
