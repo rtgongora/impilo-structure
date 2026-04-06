@@ -21,6 +21,7 @@ import {
   TestTube,
   Clock,
   ClipboardList,
+  Shield,
 } from "lucide-react";
 import { format } from "date-fns";
 import { MOCK_TRIAGE, MOCK_HISTORY, MOCK_VITALS } from "@/data/mockClinicalData";
@@ -32,6 +33,9 @@ import { ClerkingTemplateSelector } from "@/components/ehr/clerking/ClerkingTemp
 import { ClerkingFormEditor } from "@/components/ehr/clerking/ClerkingFormEditor";
 import { CLERKING_TEMPLATES, type CadreLevel, type ClerkingTemplate } from "@/data/clerkingTemplates";
 import { useParams } from "react-router-dom";
+import { useCadreFormConfig } from "@/hooks/useCadreFormConfig";
+import { CadreHistoryForm } from "@/components/ehr/assessment/CadreHistoryForm";
+import { CadreExamForm } from "@/components/ehr/assessment/CadreExamForm";
 
 const triageColors: Record<TriageCategory, { bg: string; border: string; text: string; label: string }> = {
   red: { bg: "bg-critical", border: "border-critical", text: "text-critical-foreground", label: "Immediate" },
@@ -653,71 +657,112 @@ function ClerkingPanel() {
 
 export function AssessmentSection() {
   const { encounterId } = useParams<{ encounterId?: string }>();
+  const cadreConfig = useCadreFormConfig();
+
+  // Determine which tabs to show based on cadre
+  const isSimplified = cadreConfig.complexity === 'simplified';
+  const isFocused = cadreConfig.complexity === 'focused';
 
   return (
-    <Tabs defaultValue="triage" className="space-y-4">
-      <TabsList className="grid w-full grid-cols-7 h-12">
-        <TabsTrigger value="triage" className="flex items-center gap-2 text-sm font-medium">
-          <AlertTriangle className="w-5 h-5" />
-          Triage
-        </TabsTrigger>
-        <TabsTrigger value="record-vitals" className="flex items-center gap-2 text-sm font-medium">
-          <Thermometer className="w-5 h-5" />
-          Vitals
-        </TabsTrigger>
-        <TabsTrigger value="clerking" className="flex items-center gap-2 text-sm font-medium">
-          <ClipboardList className="w-5 h-5" />
-          Clerking
-        </TabsTrigger>
+    <Tabs defaultValue={isSimplified ? "history" : "triage"} className="space-y-4">
+      <TabsList className={`grid w-full h-12 ${isSimplified ? 'grid-cols-4' : isFocused ? 'grid-cols-6' : 'grid-cols-7'}`}>
+        {/* Triage - hidden for CHW */}
+        {!isSimplified && (
+          <TabsTrigger value="triage" className="flex items-center gap-2 text-sm font-medium">
+            <AlertTriangle className="w-5 h-5" />
+            Triage
+          </TabsTrigger>
+        )}
+        {/* Vitals - shown for nurse & doctor */}
+        {!isSimplified && (
+          <TabsTrigger value="record-vitals" className="flex items-center gap-2 text-sm font-medium">
+            <Thermometer className="w-5 h-5" />
+            Vitals
+          </TabsTrigger>
+        )}
+        {/* Clerking - doctor only */}
+        {cadreConfig.complexity === 'comprehensive' && (
+          <TabsTrigger value="clerking" className="flex items-center gap-2 text-sm font-medium">
+            <ClipboardList className="w-5 h-5" />
+            Clerking
+          </TabsTrigger>
+        )}
+        {/* History - cadre-adaptive label */}
         <TabsTrigger value="history" className="flex items-center gap-2 text-sm font-medium">
-          <FileText className="w-5 h-5" />
-          History
+          {isSimplified ? <Shield className="w-5 h-5" /> : <FileText className="w-5 h-5" />}
+          {cadreConfig.labels.historyTabLabel}
         </TabsTrigger>
+        {/* Exam - cadre-adaptive label */}
         <TabsTrigger value="examination" className="flex items-center gap-2 text-sm font-medium">
           <Stethoscope className="w-5 h-5" />
-          Exam
+          {cadreConfig.labels.examTabLabel}
         </TabsTrigger>
-        <TabsTrigger value="labs" className="flex items-center gap-2 text-sm font-medium">
-          <TestTube className="w-5 h-5" />
-          Labs
-        </TabsTrigger>
+        {/* Labs - hidden for CHW */}
+        {!isSimplified && (
+          <TabsTrigger value="labs" className="flex items-center gap-2 text-sm font-medium">
+            <TestTube className="w-5 h-5" />
+            Labs
+          </TabsTrigger>
+        )}
+        {/* Timeline */}
         <TabsTrigger value="timeline" className="flex items-center gap-2 text-sm font-medium">
           <Clock className="w-5 h-5" />
           Timeline
         </TabsTrigger>
       </TabsList>
 
-      <TabsContent value="triage">
-        <TriagePanel />
-      </TabsContent>
+      {/* Cadre Context Badge */}
+      <div className="flex items-center gap-2">
+        <Badge variant="outline" className="text-xs capitalize">
+          {cadreConfig.cadre} · {cadreConfig.complexity}
+        </Badge>
+        <Badge variant="secondary" className="text-xs capitalize">
+          {cadreConfig.visitType} visit
+        </Badge>
+        <Badge variant={cadreConfig.acuity === 'red' ? 'destructive' : cadreConfig.acuity === 'orange' ? 'default' : 'secondary'} className="text-xs capitalize">
+          {cadreConfig.acuity} acuity
+        </Badge>
+      </div>
 
-      <TabsContent value="record-vitals">
-        {encounterId ? (
-          <VitalsRecorder encounterId={encounterId} />
-        ) : (
-          <Card>
-            <CardContent className="p-6 text-center text-muted-foreground">
-              Select a patient encounter to record vitals
-            </CardContent>
-          </Card>
-        )}
-      </TabsContent>
+      {!isSimplified && (
+        <TabsContent value="triage">
+          <TriagePanel />
+        </TabsContent>
+      )}
 
-      <TabsContent value="clerking">
-        <ClerkingPanel />
-      </TabsContent>
+      {!isSimplified && (
+        <TabsContent value="record-vitals">
+          {encounterId ? (
+            <VitalsRecorder encounterId={encounterId} />
+          ) : (
+            <Card>
+              <CardContent className="p-6 text-center text-muted-foreground">
+                Select a patient encounter to record vitals
+              </CardContent>
+            </Card>
+          )}
+        </TabsContent>
+      )}
+
+      {cadreConfig.complexity === 'comprehensive' && (
+        <TabsContent value="clerking">
+          <ClerkingPanel />
+        </TabsContent>
+      )}
 
       <TabsContent value="history">
-        <HistoryPanel />
+        <CadreHistoryForm config={cadreConfig} />
       </TabsContent>
 
       <TabsContent value="examination">
-        <ExaminationPanel />
+        <CadreExamForm config={cadreConfig} />
       </TabsContent>
 
-      <TabsContent value="labs">
-        <LabResultsSystem />
-      </TabsContent>
+      {!isSimplified && (
+        <TabsContent value="labs">
+          <LabResultsSystem />
+        </TabsContent>
+      )}
 
       <TabsContent value="timeline">
         <PatientTimeline />
