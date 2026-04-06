@@ -44,48 +44,48 @@ export function AppHeader({ title }: AppHeaderProps) {
   };
 
   return (
-    <header className="h-12 bg-card border-b flex items-center justify-between px-2 shrink-0">
+    <header className="h-14 bg-card border-b flex items-center justify-between px-4 shrink-0">
       {/* Left: Home Button & Navigation */}
-      <div className="flex items-center gap-1">
+      <div className="flex items-center gap-2">
         {!isHomePage && (
           <Button
             variant="default"
-            size="sm"
+            size="default"
             onClick={() => navigate("/")}
-            className="gap-1"
+            className="gap-1.5"
           >
-            <Home className="w-3.5 h-3.5" />
-            <span className="hidden sm:inline text-xs">Home</span>
+            <Home className="w-4 h-4" />
+            <span className="hidden sm:inline text-sm">Home</span>
           </Button>
         )}
         
         {!isHomePage && !isDashboard && (
           <Button
             variant="ghost"
-            size="sm"
+            size="default"
             onClick={() => navigate(-1)}
             className="text-muted-foreground hover:text-foreground"
           >
-            <ArrowLeft className="w-3.5 h-3.5" />
-            <span className="hidden sm:inline text-xs">Back</span>
+            <ArrowLeft className="w-4 h-4" />
+            <span className="hidden sm:inline text-sm">Back</span>
           </Button>
         )}
         
         {title && (
           <>
-            <div className="h-4 w-px bg-border mx-1 hidden sm:block" />
-            <h1 className="text-xs font-semibold truncate max-w-[120px] md:max-w-none">{title}</h1>
+            <div className="h-5 w-px bg-border mx-1 hidden sm:block" />
+            <h1 className="text-base font-semibold truncate max-w-[200px] md:max-w-none">{title}</h1>
           </>
         )}
       </div>
 
       {/* Center: Patient Search */}
-      <div className="flex-1 max-w-xs mx-2">
+      <div className="flex-1 max-w-sm mx-4">
         <PatientSearch />
       </div>
 
       {/* Right: Actions & User */}
-      <div className="flex items-center gap-1">
+      <div className="flex items-center gap-2">
         <div className="hidden md:block">
           <FacilitySelector />
         </div>
@@ -98,38 +98,38 @@ export function AppHeader({ title }: AppHeaderProps) {
         
         <HandoffNotifications />
 
-        <Button variant="ghost" size="icon" className="relative h-7 w-7">
-          <Bell className="h-3.5 w-3.5" />
-          <span className="absolute -top-0.5 -right-0.5 h-3.5 w-3.5 bg-destructive text-destructive-foreground text-[9px] rounded-full flex items-center justify-center">
+        <Button variant="ghost" size="icon" className="relative h-9 w-9">
+          <Bell className="h-4 w-4" />
+          <span className="absolute -top-0.5 -right-0.5 h-4 w-4 bg-destructive text-destructive-foreground text-[10px] rounded-full flex items-center justify-center">
             3
           </span>
         </Button>
 
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
-            <Button variant="ghost" className="flex items-center gap-1.5 px-1.5 h-8">
-              <Avatar className="h-6 w-6">
+            <Button variant="ghost" className="flex items-center gap-2 px-2 h-10">
+              <Avatar className="h-8 w-8">
                 <AvatarImage src={profile?.avatar_url || ""} />
-                <AvatarFallback className="bg-primary text-primary-foreground text-[10px]">
+                <AvatarFallback className="bg-primary text-primary-foreground text-xs">
                   {profile?.display_name ? getInitials(profile.display_name) : "U"}
                 </AvatarFallback>
               </Avatar>
               <div className="hidden lg:block text-left">
-                <p className="text-xs font-medium leading-none">{profile?.display_name}</p>
-                <p className="text-[10px] text-muted-foreground capitalize">{profile?.role}</p>
+                <p className="text-sm font-medium leading-none">{profile?.display_name}</p>
+                <p className="text-xs text-muted-foreground capitalize">{profile?.role}</p>
               </div>
             </Button>
           </DropdownMenuTrigger>
-          <DropdownMenuContent align="end" className="w-48">
-            <DropdownMenuLabel className="text-xs">My Account</DropdownMenuLabel>
+          <DropdownMenuContent align="end" className="w-52">
+            <DropdownMenuLabel className="text-sm">My Account</DropdownMenuLabel>
             <DropdownMenuSeparator />
-            <DropdownMenuItem onClick={() => navigate("/profile")} className="text-xs">
-              <Settings className="mr-2 h-3.5 w-3.5" />
+            <DropdownMenuItem onClick={() => navigate("/profile")} className="text-sm">
+              <Settings className="mr-2 h-4 w-4" />
               Profile Settings
             </DropdownMenuItem>
             <DropdownMenuSeparator />
-            <DropdownMenuItem onClick={handleSignOut} className="text-xs text-destructive">
-              <LogOut className="mr-2 h-3.5 w-3.5" />
+            <DropdownMenuItem onClick={handleSignOut} className="text-sm text-destructive">
+              <LogOut className="mr-2 h-4 w-4" />
               Sign Out
             </DropdownMenuItem>
           </DropdownMenuContent>
