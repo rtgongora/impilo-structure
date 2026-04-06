@@ -269,8 +269,8 @@ export function EncounterDocumentsSheet() {
                         <CardContent className="p-3">
                           <div className="flex items-start gap-3">
                             <div className="h-12 w-12 rounded bg-muted flex items-center justify-center shrink-0">
-                              {doc.previewUrl ? (
-                                <img src={doc.previewUrl} alt="" className="h-full w-full object-cover rounded" />
+                              {doc.imageData ? (
+                                <img src={doc.imageData} alt="" className="h-full w-full object-cover rounded" />
                               ) : (
                                 <FileText className="h-5 w-5 text-muted-foreground" />
                               )}
@@ -278,9 +278,9 @@ export function EncounterDocumentsSheet() {
                             <div className="flex-1 min-w-0">
                               <p className="text-sm font-medium truncate">{doc.name}</p>
                               <p className="text-[11px] text-muted-foreground">{doc.type} · Just now</p>
-                              {doc.confidentiality && (
+                              {doc.isConfidential && (
                                 <Badge variant="outline" className="text-[10px] mt-1">
-                                  {doc.confidentiality}
+                                  Confidential
                                 </Badge>
                               )}
                             </div>
