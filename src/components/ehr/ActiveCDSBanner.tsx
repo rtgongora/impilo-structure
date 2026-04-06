@@ -120,6 +120,7 @@ const typeIcons = {
 
 export function ActiveCDSBanner() {
   const { hasActivePatient } = useEHR();
+  const { invoke, startCorrelation } = useKernelRequest();
   const [guidance, setGuidance] = useState<CDSGuidanceItem[]>([]);
   const [currentIndex, setCurrentIndex] = useState(0);
   const [expanded, setExpanded] = useState(false);
@@ -133,7 +134,7 @@ export function ActiveCDSBanner() {
       setGuidance(items);
       setCurrentIndex(0);
       
-      // Simulate fetching AI insight
+      // Fetch AI insight
       fetchAIGuidance();
     }
   }, [hasActivePatient]);
@@ -153,37 +154,35 @@ export function ActiveCDSBanner() {
   const fetchAIGuidance = useCallback(async () => {
     setIsLoadingAI(true);
     try {
-      const { data, error } = await supabase.functions.invoke("ai-diagnostic", {
-        body: {
-          type: "cds-guidance",
-          patientData: {
-            symptoms: ["acute cholecystitis", "fever", "right upper quadrant pain"],
-            vitalSigns: {
-              temperature: 38.2,
-              bloodPressure: { systolic: 142, diastolic: 88 },
-              heartRate: 103,
-              respiratoryRate: 18,
-              oxygenSaturation: 94,
-            },
-            labResults: [
-              { name: "WBC", value: 14.2, unit: "x10^9/L" },
-              { name: "CRP", value: 85, unit: "mg/L" },
-              { name: "Creatinine", value: 2.1, unit: "mg/dL" },
-              { name: "Potassium", value: 5.8, unit: "mmol/L" },
-              { name: "Blood Glucose", value: 245, unit: "mg/dL" },
-            ],
-            medications: ["Metformin 500mg BD", "Lisinopril 10mg OD", "Insulin Glargine 20U"],
-            allergies: ["Penicillin"],
-            conditions: ["Type 2 Diabetes Mellitus", "Hypertension", "Acute Cholecystitis"],
-            age: 33,
-            gender: "Female",
+      startCorrelation();
+      const { data, error } = await invoke<{ data?: { result?: { redFlags?: string[]; clinicalPearls?: string[] } } }>("ai-diagnostic", {
+        type: "cds-guidance",
+        patientData: {
+          symptoms: ["acute cholecystitis", "fever", "right upper quadrant pain"],
+          vitalSigns: {
+            temperature: 38.2,
+            bloodPressure: { systolic: 142, diastolic: 88 },
+            heartRate: 103,
+            respiratoryRate: 18,
+            oxygenSaturation: 94,
           },
+          labResults: [
+            { name: "WBC", value: 14.2, unit: "x10^9/L" },
+            { name: "CRP", value: 85, unit: "mg/L" },
+            { name: "Creatinine", value: 2.1, unit: "mg/dL" },
+            { name: "Potassium", value: 5.8, unit: "mmol/L" },
+            { name: "Blood Glucose", value: 245, unit: "mg/dL" },
+          ],
+          medications: ["Metformin 500mg BD", "Lisinopril 10mg OD", "Insulin Glargine 20U"],
+          allergies: ["Penicillin"],
+          conditions: ["Type 2 Diabetes Mellitus", "Hypertension", "Acute Cholecystitis"],
+          age: 33,
+          gender: "Female",
         },
       });
 
       if (data?.data?.result) {
         const result = data.data.result;
-        // Add AI-generated guidance items
         if (result.redFlags?.length) {
           setGuidance((prev) => [
             ...prev,
@@ -192,7 +191,7 @@ export function ActiveCDSBanner() {
               type: "ai-insight" as const,
               severity: "high" as const,
               title: "AI Red Flag Detection",
-              message: result.redFlags.join(". "),
+              message: result.redFlags!.join(". "),
               source: "AI Diagnostic Engine (Live)",
               timestamp: new Date(),
               dismissed: false,
@@ -200,11 +199,11 @@ export function ActiveCDSBanner() {
           ]);
         }
         if (result.clinicalPearls?.length) {
-          setAiInsight(result.clinicalPearls.join(" • "));
+          setAiInsight(result.clinicalPearls!.join(" • "));
         }
       }
     } catch (err) {
-      console.warn("CDS AI guidance unavailable:", err);
+      console.warn("Clinical Decision Support AI guidance unavailable:", err);
     } finally {
       setIsLoadingAI(false);
     }
