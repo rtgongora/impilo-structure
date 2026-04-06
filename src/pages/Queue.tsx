@@ -7,7 +7,8 @@ import { Badge } from "@/components/ui/badge";
 import { 
   Users, LayoutDashboard, QrCode, Settings, GitBranch, CalendarDays,
   UserPlus, Bed, Building2, Activity, AlertTriangle,
-  Stethoscope, Globe, Home, Wifi, ChevronRight, ArrowLeft
+  Stethoscope, Globe, Home, Wifi, ChevronRight, ArrowLeft,
+  Package, DollarSign, Clock, BarChart3
 } from "lucide-react";
 import { 
   QueueWorkstation, 
@@ -20,13 +21,17 @@ import { PatientSortingDesk } from "@/components/sorting";
 import { WardManagementPanel } from "@/components/queue/WardManagementPanel";
 import { SelfCheckInKiosk } from "@/components/booking/SelfCheckInKiosk";
 import { BookingManager } from "@/components/booking/BookingManager";
+import { WorkspaceDashboardPanel } from "@/components/workspace-ops/WorkspaceDashboardPanel";
+import { StockManagementPanel } from "@/components/workspace-ops/StockManagementPanel";
+import { HRShiftsPanel } from "@/components/workspace-ops/HRShiftsPanel";
+import { BillingPanel } from "@/components/workspace-ops/BillingPanel";
 import { AppLayout } from "@/components/layout/AppLayout";
 import { useQueueManagement } from "@/hooks/useQueueManagement";
 import { useFacility } from "@/contexts/FacilityContext";
 
 // ── Care Point Types ──
 type CarePoint = 'outpatient' | 'inpatient' | 'community' | 'virtual';
-type TabValue = 'intake' | 'workstation' | 'supervisor' | 'wards' | 'bookings' | 'check-in' | 'config' | 'pathways';
+type TabValue = 'dashboard' | 'intake' | 'workstation' | 'supervisor' | 'wards' | 'bookings' | 'check-in' | 'stock' | 'hr-shifts' | 'billing' | 'config' | 'pathways';
 
 const CARE_POINTS: { id: CarePoint; label: string; icon: React.ComponentType<{ className?: string }>; description: string; color: string }[] = [
   { id: 'outpatient', label: 'Outpatient', icon: Stethoscope, description: 'OPD, clinics, walk-ins & appointments', color: 'bg-blue-500' },
@@ -35,15 +40,21 @@ const CARE_POINTS: { id: CarePoint; label: string; icon: React.ComponentType<{ c
   { id: 'virtual', label: 'Virtual', icon: Wifi, description: 'Telemedicine, teleconsults & remote care', color: 'bg-purple-500' },
 ];
 
-// Role-based tab visibility
+// Role-based tab visibility — combined clinical + operational roles
 const ROLE_TAB_ACCESS: Record<string, TabValue[]> = {
-  receptionist: ['intake', 'workstation', 'bookings', 'check-in'],
-  nurse: ['intake', 'workstation', 'supervisor', 'wards', 'bookings'],
-  doctor: ['workstation', 'supervisor', 'wards', 'bookings'],
-  specialist: ['workstation', 'supervisor', 'wards'],
-  admin: ['intake', 'workstation', 'supervisor', 'wards', 'bookings', 'check-in', 'config', 'pathways'],
-  pharmacist: ['workstation'],
-  lab_tech: ['workstation'],
+  receptionist: ['dashboard', 'intake', 'workstation', 'bookings', 'check-in'],
+  nurse: ['dashboard', 'intake', 'workstation', 'supervisor', 'wards', 'bookings', 'stock'],
+  doctor: ['dashboard', 'workstation', 'supervisor', 'wards', 'bookings'],
+  specialist: ['dashboard', 'workstation', 'supervisor', 'wards'],
+  admin: ['dashboard', 'intake', 'workstation', 'supervisor', 'wards', 'bookings', 'check-in', 'stock', 'hr-shifts', 'billing', 'config', 'pathways'],
+  pharmacist: ['dashboard', 'workstation', 'stock'],
+  lab_tech: ['dashboard', 'workstation', 'stock'],
+  // Operational roles
+  ward_manager: ['dashboard', 'wards', 'supervisor', 'hr-shifts', 'stock', 'billing', 'config'],
+  stock_controller: ['dashboard', 'stock', 'config'],
+  hr_officer: ['dashboard', 'hr-shifts'],
+  finance_officer: ['dashboard', 'billing'],
+  facility_manager: ['dashboard', 'intake', 'workstation', 'supervisor', 'wards', 'bookings', 'stock', 'hr-shifts', 'billing', 'config', 'pathways'],
 };
 
 function getVisibleTabs(role: string): TabValue[] {
@@ -51,30 +62,34 @@ function getVisibleTabs(role: string): TabValue[] {
 }
 
 const TAB_CONFIG: Record<TabValue, { label: string; icon: React.ComponentType<{ className?: string }>; description: string }> = {
+  dashboard: { label: "Dashboard", icon: BarChart3, description: "Workspace overview & KPIs" },
   intake: { label: "Patient Intake", icon: UserPlus, description: "Arrival, registration & triage" },
   workstation: { label: "My Queue", icon: Users, description: "Active queue workstation" },
   supervisor: { label: "Supervisor", icon: LayoutDashboard, description: "All queues overview" },
   wards: { label: "Wards", icon: Bed, description: "Ward occupancy & flow" },
   bookings: { label: "Bookings", icon: CalendarDays, description: "Appointments & bookings" },
   'check-in': { label: "Self Check-In", icon: QrCode, description: "Kiosk mode" },
+  stock: { label: "Stock", icon: Package, description: "Inventory, orders & receiving" },
+  'hr-shifts': { label: "HR & Shifts", icon: Clock, description: "Staff roster, shifts & leave" },
+  billing: { label: "Billing", icon: DollarSign, description: "Charges, invoices & claims" },
   config: { label: "Config", icon: Settings, description: "Queue configuration" },
   pathways: { label: "Pathways", icon: GitBranch, description: "Patient flow pathways" },
 };
 
 // Map care points to relevant default tabs
 const CARE_POINT_DEFAULT_TAB: Record<CarePoint, TabValue> = {
-  outpatient: 'intake',
-  inpatient: 'wards',
-  community: 'workstation',
-  virtual: 'workstation',
+  outpatient: 'dashboard',
+  inpatient: 'dashboard',
+  community: 'dashboard',
+  virtual: 'dashboard',
 };
 
-// Filter tabs per care point
+// Filter tabs per care point — all care points get operational tabs
 const CARE_POINT_TABS: Record<CarePoint, TabValue[]> = {
-  outpatient: ['intake', 'workstation', 'supervisor', 'bookings', 'check-in', 'config', 'pathways'],
-  inpatient: ['wards', 'workstation', 'supervisor', 'bookings', 'config'],
-  community: ['workstation', 'supervisor', 'bookings', 'config'],
-  virtual: ['workstation', 'supervisor', 'bookings', 'config'],
+  outpatient: ['dashboard', 'intake', 'workstation', 'supervisor', 'bookings', 'check-in', 'stock', 'hr-shifts', 'billing', 'config', 'pathways'],
+  inpatient: ['dashboard', 'wards', 'workstation', 'supervisor', 'bookings', 'stock', 'hr-shifts', 'billing', 'config'],
+  community: ['dashboard', 'workstation', 'supervisor', 'bookings', 'stock', 'hr-shifts', 'billing', 'config'],
+  virtual: ['dashboard', 'workstation', 'supervisor', 'bookings', 'billing', 'config'],
 };
 
 const Queue = () => {
@@ -255,6 +270,11 @@ const Queue = () => {
           </TabsList>
 
           <div className="flex-1 overflow-auto mt-2">
+            {/* Dashboard */}
+            <TabsContent value="dashboard" className="h-full mt-0">
+              <WorkspaceDashboardPanel />
+            </TabsContent>
+
             {/* Patient Intake — Sorting Desk embedded */}
             <TabsContent value="intake" className="h-full mt-0">
               <PatientSortingDesk facilityId={currentFacility?.id} />
@@ -290,6 +310,21 @@ const Queue = () => {
               <div className="max-w-md mx-auto">
                 <SelfCheckInKiosk facilityName="Impilo Health" />
               </div>
+            </TabsContent>
+
+            {/* Stock Management */}
+            <TabsContent value="stock" className="h-full mt-0">
+              <StockManagementPanel />
+            </TabsContent>
+
+            {/* HR & Shifts */}
+            <TabsContent value="hr-shifts" className="h-full mt-0">
+              <HRShiftsPanel />
+            </TabsContent>
+
+            {/* Billing */}
+            <TabsContent value="billing" className="h-full mt-0">
+              <BillingPanel />
             </TabsContent>
 
             {/* Config */}
