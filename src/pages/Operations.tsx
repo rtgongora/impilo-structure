@@ -69,32 +69,52 @@ export default function Operations() {
         </div>
 
         <Tabs value={activeTab} onValueChange={handleTabChange} className="w-full">
-          <TabsList className="grid w-full grid-cols-6 lg:w-auto lg:inline-grid">
-            <TabsTrigger value="control-tower" className="flex items-center gap-2">
-              <Gauge className="h-4 w-4" />
+          <TabsList className="flex-wrap justify-start h-auto gap-1">
+            <TabsTrigger value="overview" className="flex items-center gap-1.5 text-xs">
+              <BarChart3 className="h-3.5 w-3.5" />
+              <span className="hidden sm:inline">Overview</span>
+            </TabsTrigger>
+            <TabsTrigger value="control-tower" className="flex items-center gap-1.5 text-xs">
+              <Gauge className="h-3.5 w-3.5" />
               <span className="hidden sm:inline">Control Tower</span>
             </TabsTrigger>
-            <TabsTrigger value="shift" className="flex items-center gap-2">
-              <Clock className="h-4 w-4" />
+            <TabsTrigger value="shift" className="flex items-center gap-1.5 text-xs">
+              <Clock className="h-3.5 w-3.5" />
               <span className="hidden sm:inline">My Shift</span>
             </TabsTrigger>
-            <TabsTrigger value="on-duty" className="flex items-center gap-2">
-              <Users className="h-4 w-4" />
+            <TabsTrigger value="on-duty" className="flex items-center gap-1.5 text-xs">
+              <Users className="h-3.5 w-3.5" />
               <span className="hidden sm:inline">On Duty</span>
             </TabsTrigger>
-            <TabsTrigger value="roster" className="flex items-center gap-2">
-              <Calendar className="h-4 w-4" />
+            <TabsTrigger value="roster" className="flex items-center gap-1.5 text-xs">
+              <Calendar className="h-3.5 w-3.5" />
               <span className="hidden sm:inline">Roster</span>
             </TabsTrigger>
-            <TabsTrigger value="cover" className="flex items-center gap-2">
-              <ArrowRightLeft className="h-4 w-4" />
+            <TabsTrigger value="cover" className="flex items-center gap-1.5 text-xs">
+              <ArrowRightLeft className="h-3.5 w-3.5" />
               <span className="hidden sm:inline">Cover Requests</span>
             </TabsTrigger>
-            <TabsTrigger value="workspaces" className="flex items-center gap-2">
-              <Building2 className="h-4 w-4" />
+            <TabsTrigger value="stock" className="flex items-center gap-1.5 text-xs">
+              <Package className="h-3.5 w-3.5" />
+              <span className="hidden sm:inline">Stock</span>
+            </TabsTrigger>
+            <TabsTrigger value="hr-shifts" className="flex items-center gap-1.5 text-xs">
+              <Users className="h-3.5 w-3.5" />
+              <span className="hidden sm:inline">HR & Shifts</span>
+            </TabsTrigger>
+            <TabsTrigger value="billing" className="flex items-center gap-1.5 text-xs">
+              <DollarSign className="h-3.5 w-3.5" />
+              <span className="hidden sm:inline">Billing</span>
+            </TabsTrigger>
+            <TabsTrigger value="workspaces" className="flex items-center gap-1.5 text-xs">
+              <Building2 className="h-3.5 w-3.5" />
               <span className="hidden sm:inline">Workspaces</span>
             </TabsTrigger>
           </TabsList>
+
+          <TabsContent value="overview" className="mt-6">
+            <WorkspaceDashboardPanel />
+          </TabsContent>
 
           <TabsContent value="control-tower" className="mt-6">
             <FacilityControlTower facilityId={facilityId} facilityName={facilityName} />
