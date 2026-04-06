@@ -659,7 +659,7 @@ export default function ModuleHome() {
                       Workspaces
                     </h3>
                     <Badge variant="outline" className="text-xs">
-                      {activeContext?.workspace_name || "No workspace"}
+                      {activeContext?.facilityName || "No workspace"}
                     </Badge>
                   </div>
                   <div className="flex flex-wrap gap-2">
