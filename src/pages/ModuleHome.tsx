@@ -702,11 +702,10 @@ export default function ModuleHome() {
                       Dashboard
                     </Button>
                     <Button
-                      variant="outline"
-                      className="h-12 px-5 flex items-center gap-2 text-base hover:bg-blue-500 hover:text-white group"
+                      className="h-14 px-6 flex items-center gap-3 text-base font-semibold bg-orange-500 hover:bg-orange-600 text-white shadow-md"
                       onClick={() => navigate("/queue")}
                     >
-                      <Users className="h-5 w-5 text-blue-500 group-hover:text-white" />
+                      <Users className="h-6 w-6" />
                       Queues & Wards
                     </Button>
                     <Button
