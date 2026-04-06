@@ -57,7 +57,7 @@ function PatientLocationContent() {
       return {
         icon: <Video className="h-3 w-3" />,
         label: "Remote Consult",
-        detail: selectedFacility?.name || "Remote",
+        detail: currentFacility?.name || "Remote",
         variant: "secondary" as const,
       };
     }
@@ -77,7 +77,7 @@ function PatientLocationContent() {
       return {
         icon: <Users className="h-3 w-3" />,
         label: queueName,
-        detail: selectedFacility?.name,
+        detail: currentFacility?.name,
         variant: "default" as const,
       };
     }
@@ -87,17 +87,17 @@ function PatientLocationContent() {
       return {
         icon: <MapPin className="h-3 w-3" />,
         label: "Emergency Dept",
-        detail: selectedFacility?.name,
+        detail: currentFacility?.name,
         variant: "destructive" as const,
       };
     }
 
     // Outpatient at facility
-    if (selectedFacility) {
+    if (currentFacility) {
       return {
         icon: <Building2 className="h-3 w-3" />,
         label: "Outpatient",
-        detail: selectedFacility.name,
+        detail: currentFacility.name,
         variant: "default" as const,
       };
     }
