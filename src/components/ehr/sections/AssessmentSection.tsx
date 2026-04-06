@@ -655,6 +655,109 @@ function ClerkingPanel() {
   );
 }
 
+function DevCadreSwitcher() {
+  useDevOverrideListener();
+  const overrides = getDevOverrides();
+  const [open, setOpen] = useState(true);
+
+  const cadres: { value: ClinicalCadre; label: string; emoji: string }[] = [
+    { value: 'doctor', label: 'Doctor', emoji: '🩺' },
+    { value: 'nurse', label: 'Nurse', emoji: '👩‍⚕️' },
+    { value: 'chw', label: 'CHW', emoji: '🏘️' },
+    { value: 'specialist', label: 'Specialist', emoji: '🔬' },
+    { value: 'midwife', label: 'Midwife', emoji: '🤱' },
+  ];
+
+  const visits: { value: VisitType; label: string }[] = [
+    { value: 'general', label: 'General' },
+    { value: 'emergency', label: 'Emergency' },
+    { value: 'anc', label: 'ANC' },
+    { value: 'chronic', label: 'Chronic' },
+    { value: 'pediatric', label: 'Paediatric' },
+    { value: 'psychiatric', label: 'Psychiatric' },
+    { value: 'surgical', label: 'Surgical' },
+  ];
+
+  const acuities: { value: AcuityLevel; label: string; color: string }[] = [
+    { value: 'red', label: 'Red', color: 'bg-red-500' },
+    { value: 'orange', label: 'Orange', color: 'bg-orange-500' },
+    { value: 'yellow', label: 'Yellow', color: 'bg-yellow-500' },
+    { value: 'green', label: 'Green', color: 'bg-green-500' },
+  ];
+
+  if (!open) {
+    return (
+      <button onClick={() => setOpen(true)}
+        className="fixed bottom-4 right-4 z-50 px-3 py-2 rounded-full bg-primary text-primary-foreground text-xs font-bold shadow-lg hover:scale-105 transition-transform">
+        🧪 Dev Switcher
+      </button>
+    );
+  }
+
+  return (
+    <div className="border border-dashed border-primary/40 rounded-lg p-3 bg-primary/5 space-y-3">
+      <div className="flex items-center justify-between">
+        <span className="text-xs font-bold text-primary uppercase tracking-wider flex items-center gap-1.5">
+          🧪 Dev Cadre Switcher
+        </span>
+        <button onClick={() => setOpen(false)} className="text-xs text-muted-foreground hover:text-foreground">Hide</button>
+      </div>
+      
+      {/* Cadre */}
+      <div className="space-y-1">
+        <label className="text-[10px] font-bold text-muted-foreground uppercase">Role / Cadre</label>
+        <div className="flex flex-wrap gap-1.5">
+          {cadres.map(c => (
+            <button key={c.value} onClick={() => setDevCadreOverride(overrides.cadre === c.value ? null : c.value)}
+              className={`px-3 py-1.5 rounded-md text-xs font-semibold transition-all ${
+                overrides.cadre === c.value
+                  ? 'bg-primary text-primary-foreground shadow-sm'
+                  : 'bg-muted hover:bg-muted/80'
+              }`}>
+              {c.emoji} {c.label}
+            </button>
+          ))}
+        </div>
+      </div>
+
+      {/* Visit Type */}
+      <div className="space-y-1">
+        <label className="text-[10px] font-bold text-muted-foreground uppercase">Visit Type</label>
+        <div className="flex flex-wrap gap-1.5">
+          {visits.map(v => (
+            <button key={v.value} onClick={() => setDevVisitOverride(overrides.visit === v.value ? null : v.value)}
+              className={`px-3 py-1.5 rounded-md text-xs font-semibold transition-all ${
+                overrides.visit === v.value
+                  ? 'bg-primary text-primary-foreground shadow-sm'
+                  : 'bg-muted hover:bg-muted/80'
+              }`}>
+              {v.label}
+            </button>
+          ))}
+        </div>
+      </div>
+
+      {/* Acuity */}
+      <div className="space-y-1">
+        <label className="text-[10px] font-bold text-muted-foreground uppercase">Acuity</label>
+        <div className="flex gap-1.5">
+          {acuities.map(a => (
+            <button key={a.value} onClick={() => setDevAcuityOverride(overrides.acuity === a.value ? null : a.value)}
+              className={`px-3 py-1.5 rounded-md text-xs font-semibold transition-all flex items-center gap-1.5 ${
+                overrides.acuity === a.value
+                  ? 'bg-primary text-primary-foreground shadow-sm'
+                  : 'bg-muted hover:bg-muted/80'
+              }`}>
+              <span className={`w-2.5 h-2.5 rounded-full ${a.color}`} />
+              {a.label}
+            </button>
+          ))}
+        </div>
+      </div>
+    </div>
+  );
+}
+
 export function AssessmentSection() {
   const { encounterId } = useParams<{ encounterId?: string }>();
   const cadreConfig = useCadreFormConfig();
@@ -665,6 +768,9 @@ export function AssessmentSection() {
 
   return (
     <Tabs defaultValue={isSimplified ? "history" : "triage"} className="space-y-4">
+      {/* Dev Cadre Switcher */}
+      <DevCadreSwitcher />
+
       <TabsList className={`grid w-full h-12 ${isSimplified ? 'grid-cols-4' : isFocused ? 'grid-cols-6' : 'grid-cols-7'}`}>
         {/* Triage - hidden for CHW */}
         {!isSimplified && (
