@@ -139,6 +139,12 @@ export default function Landela() {
                 <RefreshCw className="h-4 w-4 mr-2" />
                 Refresh
               </Button>
+              <ClinicalDocumentScanner
+                variant="button"
+                context="encounter"
+                onDocumentScanned={() => refetchDocs()}
+                buttonLabel="Scan Document"
+              />
               <Button onClick={() => setShowUpload(true)}>
                 <Upload className="h-4 w-4 mr-2" />
                 Upload Documents
