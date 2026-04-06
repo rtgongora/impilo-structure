@@ -13,7 +13,6 @@ import { Route, ToggleLeft, ToggleRight, Users, ScanLine, FolderOpen } from "luc
 import { ClinicalDocumentScanner } from "@/components/documents/ClinicalDocumentScanner";
 import { Button } from "@/components/ui/button";
 import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip";
-import { EncounterDocumentsSheet } from "@/components/ehr/EncounterDocumentsSheet";
 
 /**
  * Cadre-aware clinical toolbar.
