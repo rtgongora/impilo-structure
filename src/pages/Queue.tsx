@@ -22,41 +22,40 @@ const Queue = () => {
 
   return (
     <AppLayout title="Queue Management">
-      <div className="flex-1 flex flex-col p-3 min-h-0">
+      <div className="flex-1 flex flex-col p-4 min-h-0">
         {/* Header */}
-        <div className="flex items-center justify-between mb-2 shrink-0">
+        <div className="flex items-center justify-between mb-3 shrink-0">
           <div>
-            <h1 className="text-sm font-bold">Queue Management</h1>
-            <p className="text-[10px] text-muted-foreground">Manage patient queues across service points</p>
+            <p className="text-sm text-muted-foreground">Manage patient queues across service points</p>
           </div>
           <AddToQueueDialog queues={queues} onSuccess={refetch} />
         </div>
 
         {/* Tabs */}
         <Tabs value={activeTab} onValueChange={(v) => setActiveTab(v as TabValue)} className="flex-1 flex flex-col min-h-0">
-          <TabsList className="shrink-0">
-            <TabsTrigger value="workstation" className="flex items-center gap-1">
-              <Users className="h-3 w-3" />
+          <TabsList className="shrink-0 h-10">
+            <TabsTrigger value="workstation" className="flex items-center gap-1.5 text-sm">
+              <Users className="h-4 w-4" />
               <span className="hidden sm:inline">Workstation</span>
             </TabsTrigger>
-            <TabsTrigger value="supervisor" className="flex items-center gap-1">
-              <LayoutDashboard className="h-3 w-3" />
+            <TabsTrigger value="supervisor" className="flex items-center gap-1.5 text-sm">
+              <LayoutDashboard className="h-4 w-4" />
               <span className="hidden sm:inline">Supervisor</span>
             </TabsTrigger>
-            <TabsTrigger value="bookings" className="flex items-center gap-1">
-              <CalendarDays className="h-3 w-3" />
+            <TabsTrigger value="bookings" className="flex items-center gap-1.5 text-sm">
+              <CalendarDays className="h-4 w-4" />
               <span className="hidden sm:inline">Bookings</span>
             </TabsTrigger>
-            <TabsTrigger value="check-in" className="flex items-center gap-1">
-              <QrCode className="h-3 w-3" />
+            <TabsTrigger value="check-in" className="flex items-center gap-1.5 text-sm">
+              <QrCode className="h-4 w-4" />
               <span className="hidden sm:inline">Check-In</span>
             </TabsTrigger>
-            <TabsTrigger value="config" className="flex items-center gap-1">
-              <Settings className="h-3 w-3" />
+            <TabsTrigger value="config" className="flex items-center gap-1.5 text-sm">
+              <Settings className="h-4 w-4" />
               <span className="hidden sm:inline">Config</span>
             </TabsTrigger>
-            <TabsTrigger value="pathways" className="flex items-center gap-1">
-              <GitBranch className="h-3 w-3" />
+            <TabsTrigger value="pathways" className="flex items-center gap-1.5 text-sm">
+              <GitBranch className="h-4 w-4" />
               <span className="hidden sm:inline">Pathways</span>
             </TabsTrigger>
           </TabsList>
