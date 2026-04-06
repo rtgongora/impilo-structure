@@ -1,5 +1,4 @@
 import { useEHR } from "@/contexts/EHRContext";
-import { UserMenu } from "@/components/auth/UserMenu";
 import { TOP_BAR_ACTIONS } from "@/types/ehr";
 import { Tooltip, TooltipContent, TooltipTrigger, TooltipProvider } from "@/components/ui/tooltip";
 import {
@@ -38,10 +37,8 @@ import {
   AlertDialogTrigger,
 } from "@/components/ui/alert-dialog";
 
-import { ActiveWorkspaceIndicator } from "@/components/layout/ActiveWorkspaceIndicator";
 import { Link, useNavigate } from "react-router-dom";
 import { PatientSearch } from "@/components/search/PatientSearch";
-import impiloLogo from "@/assets/impilo-logo.png";
 
 const iconMap: Record<string, React.ComponentType<{ className?: string }>> = {
   Boxes,
@@ -99,7 +96,7 @@ export function TopBar() {
           </Button>
         </div>
 
-        <img src={impiloLogo} alt="Impilo" className="h-6 w-auto" />
+        
         
         {/* Top Bar Actions - Only show if patient is active */}
         {hasActivePatient && (
@@ -202,15 +199,9 @@ export function TopBar() {
         </div>
       )}
 
-      {/* Right: Search (only when no patient), Workspace & User */}
+      {/* Right: Search (only when no patient) */}
       <div className="flex items-center gap-1.5 shrink-0">
         {!hasActivePatient && <PatientSearch />}
-
-        {hasActivePatient && <ActiveWorkspaceIndicator compact />}
-
-        <div className="h-5 w-px bg-topbar-muted/30" />
-
-        <UserMenu />
       </div>
     </header>
   );
