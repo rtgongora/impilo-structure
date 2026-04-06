@@ -97,7 +97,7 @@ export function TopBar() {
           </Button>
         </div>
 
-        <img src={impiloLogo} alt="Impilo" className="h-6 w-auto" />
+        
         
         {/* Top Bar Actions - Only show if patient is active */}
         {hasActivePatient && (
@@ -200,15 +200,9 @@ export function TopBar() {
         </div>
       )}
 
-      {/* Right: Search (only when no patient), Workspace & User */}
+      {/* Right: Search (only when no patient) */}
       <div className="flex items-center gap-1.5 shrink-0">
         {!hasActivePatient && <PatientSearch />}
-
-        {hasActivePatient && <ActiveWorkspaceIndicator compact />}
-
-        <div className="h-5 w-px bg-topbar-muted/30" />
-
-        <UserMenu />
       </div>
     </header>
   );
