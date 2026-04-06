@@ -105,7 +105,7 @@ export function TopBar() {
           <>
             <div className="h-5 w-px bg-topbar-muted/30" />
             <TooltipProvider delayDuration={200}>
-              <nav className="flex items-center gap-0.5">
+               <nav className="flex items-center gap-1">
                 {TOP_BAR_ACTIONS.map((action) => {
                   const Icon = iconMap[action.icon];
                   const isActive = activeTopBarAction === action.id;
@@ -115,13 +115,14 @@ export function TopBar() {
                       <TooltipTrigger asChild>
                         <Button
                           variant="ghost"
-                          size="icon"
-                          className={`h-8 w-8 text-topbar-muted hover:text-topbar-foreground hover:bg-topbar-foreground/10
+                          size="sm"
+                          className={`h-9 gap-1.5 text-xs text-topbar-muted hover:text-topbar-foreground hover:bg-topbar-foreground/10
                             ${isActive ? "bg-topbar-foreground/15 text-topbar-foreground" : ""}
                           `}
                           onClick={() => setActiveTopBarAction(isActive ? null : action.id)}
                         >
                           <Icon className="w-4 h-4" />
+                          {action.label}
                         </Button>
                       </TooltipTrigger>
                       <TooltipContent side="bottom" className="text-xs">
