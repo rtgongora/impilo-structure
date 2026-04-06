@@ -36,10 +36,6 @@ import {
   AlertDialogTitle,
   AlertDialogTrigger,
 } from "@/components/ui/alert-dialog";
-import { CriticalEventButton } from "@/components/ehr/CriticalEventButton";
-import { CDSAlertBadge } from "@/components/ehr/ClinicalDecisionSupport";
-import { AIDiagnosticAssistant } from "@/components/ehr/AIDiagnosticAssistant";
-import { AlertBadge } from "@/components/alerts/ClinicalAlerts";
 import { UserMenu } from "@/components/auth/UserMenu";
 import { ActiveWorkspaceIndicator } from "@/components/layout/ActiveWorkspaceIndicator";
 import { Link, useNavigate } from "react-router-dom";
@@ -229,11 +225,6 @@ export function TopBar() {
         {hasActivePatient && <ActiveWorkspaceIndicator compact />}
 
         {hasActivePatient && <div className="h-5 w-px bg-topbar-muted/30" />}
-
-        {hasActivePatient && <AIDiagnosticAssistant />}
-        {hasActivePatient && <AlertBadge />}
-        {hasActivePatient && <CDSAlertBadge />}
-        {hasActivePatient && <CriticalEventButton />}
 
         <UserMenu />
       </div>

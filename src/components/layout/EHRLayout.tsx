@@ -1,4 +1,5 @@
 import { TopBar } from "./TopBar";
+import { ClinicalToolbar } from "./ClinicalToolbar";
 import { EncounterMenu } from "./EncounterMenu";
 import { MainWorkArea } from "./MainWorkArea";
 import { PatientBanner } from "@/components/ehr/PatientBanner";
@@ -20,6 +21,9 @@ export function EHRLayout() {
 
       {/* PATIENT BANNER - Demographics, Alerts, Active Episodes */}
       <PatientBanner />
+
+      {/* CLINICAL TOOLBAR - AI, CDS, Alerts, Critical Events */}
+      <ClinicalToolbar />
 
       {/* Content Area */}
       <div className="flex-1 flex overflow-hidden">
