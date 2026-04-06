@@ -10,9 +10,49 @@
 import { useState, createContext, useContext } from 'react';
 import { useAuth } from '@/contexts/AuthContext';
 
-export type ClinicalCadre = 'doctor' | 'specialist' | 'nurse' | 'midwife' | 'chw' | 'pharmacist' | 'lab_tech' | 'radiologist' | 'admin';
+// ── Medical Practitioners ──
+// doctor, specialist, intern_doctor, registrar, consultant, dentist, dental_therapist
+// ── Nursing & Midwifery ──
+// nurse, nurse_practitioner, enrolled_nurse, midwife
+// ── Allied Health Professionals ──
+// physiotherapist, occupational_therapist, speech_therapist, dietitian, 
+// psychologist, social_worker, audiologist, optometrist, podiatrist,
+// biokinetician, orthotist_prosthetist, respiratory_therapist, radiotherapist
+// ── Diagnostic & Technical ──
+// radiographer, sonographer, lab_tech, pharmacist, pharmacy_tech
+// ── Emergency ──
+// paramedic, emt
+// ── Dental ──
+// oral_hygienist
+// ── Community & Public Health ──
+// chw, env_health, health_promoter
+// ── Administrative ──
+// admin, health_info_officer, receptionist
+
+export type ClinicalCadre =
+  // Medical practitioners
+  | 'doctor' | 'specialist' | 'intern_doctor' | 'registrar' | 'consultant'
+  | 'dentist' | 'dental_therapist'
+  // Nursing & Midwifery
+  | 'nurse' | 'nurse_practitioner' | 'enrolled_nurse' | 'midwife'
+  // Allied Health
+  | 'physiotherapist' | 'occupational_therapist' | 'speech_therapist'
+  | 'dietitian' | 'psychologist' | 'social_worker' | 'audiologist'
+  | 'optometrist' | 'podiatrist' | 'biokinetician' | 'orthotist_prosthetist'
+  | 'respiratory_therapist' | 'radiotherapist'
+  // Diagnostic & Technical
+  | 'radiographer' | 'sonographer' | 'lab_tech' | 'pharmacist' | 'pharmacy_tech'
+  // Emergency
+  | 'paramedic' | 'emt'
+  // Dental
+  | 'oral_hygienist'
+  // Community & Public Health
+  | 'chw' | 'env_health' | 'health_promoter'
+  // Administrative
+  | 'admin' | 'health_info_officer' | 'receptionist';
+
 export type FormComplexity = 'comprehensive' | 'focused' | 'simplified';
-export type VisitType = 'emergency' | 'anc' | 'pnc' | 'chronic' | 'general' | 'surgical' | 'pediatric' | 'psychiatric';
+export type VisitType = 'emergency' | 'anc' | 'pnc' | 'chronic' | 'general' | 'surgical' | 'pediatric' | 'psychiatric' | 'rehab' | 'dental' | 'mental_health' | 'nutrition' | 'occupational_health';
 export type AcuityLevel = 'red' | 'orange' | 'yellow' | 'green';
 
 // ── Dev Override State (singleton) ──────────────

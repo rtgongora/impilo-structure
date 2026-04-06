@@ -660,22 +660,44 @@ function DevCadreSwitcher() {
   const overrides = getDevOverrides();
   const [open, setOpen] = useState(true);
 
-  const cadres: { value: ClinicalCadre; label: string; emoji: string }[] = [
-    { value: 'doctor', label: 'Doctor', emoji: '🩺' },
-    { value: 'nurse', label: 'Nurse', emoji: '👩‍⚕️' },
-    { value: 'chw', label: 'CHW', emoji: '🏘️' },
-    { value: 'specialist', label: 'Specialist', emoji: '🔬' },
-    { value: 'midwife', label: 'Midwife', emoji: '🤱' },
+  const cadreGroups: { group: string; items: { value: ClinicalCadre; label: string }[] }[] = [
+    { group: '🩺 Medical', items: [
+      { value: 'doctor', label: 'Doctor' }, { value: 'specialist', label: 'Specialist' },
+      { value: 'consultant', label: 'Consultant' }, { value: 'registrar', label: 'Registrar' },
+      { value: 'intern_doctor', label: 'Intern' }, { value: 'dentist', label: 'Dentist' },
+    ]},
+    { group: '👩‍⚕️ Nursing', items: [
+      { value: 'nurse', label: 'Nurse' }, { value: 'nurse_practitioner', label: 'Nurse Pract.' },
+      { value: 'enrolled_nurse', label: 'Enrolled Nurse' }, { value: 'midwife', label: 'Midwife' },
+    ]},
+    { group: '🦴 Allied Health', items: [
+      { value: 'physiotherapist', label: 'Physio' }, { value: 'occupational_therapist', label: 'OT' },
+      { value: 'speech_therapist', label: 'Speech' }, { value: 'dietitian', label: 'Dietitian' },
+      { value: 'psychologist', label: 'Psychologist' }, { value: 'social_worker', label: 'Social Worker' },
+      { value: 'audiologist', label: 'Audiologist' }, { value: 'optometrist', label: 'Optometrist' },
+      { value: 'podiatrist', label: 'Podiatrist' }, { value: 'biokinetician', label: 'Biokineticist' },
+      { value: 'respiratory_therapist', label: 'Resp. Therapy' }, { value: 'radiotherapist', label: 'Radiotherapy' },
+    ]},
+    { group: '🔬 Diagnostic', items: [
+      { value: 'radiographer', label: 'Radiographer' }, { value: 'sonographer', label: 'Sonographer' },
+      { value: 'lab_tech', label: 'Lab Tech' }, { value: 'pharmacist', label: 'Pharmacist' },
+    ]},
+    { group: '🚑 Emergency', items: [
+      { value: 'paramedic', label: 'Paramedic' }, { value: 'emt', label: 'EMT' },
+    ]},
+    { group: '🏘️ Community', items: [
+      { value: 'chw', label: 'CHW' }, { value: 'env_health', label: 'Env. Health' },
+      { value: 'health_promoter', label: 'Health Promoter' },
+    ]},
   ];
 
   const visits: { value: VisitType; label: string }[] = [
-    { value: 'general', label: 'General' },
-    { value: 'emergency', label: 'Emergency' },
-    { value: 'anc', label: 'ANC' },
-    { value: 'chronic', label: 'Chronic' },
-    { value: 'pediatric', label: 'Paediatric' },
-    { value: 'psychiatric', label: 'Psychiatric' },
-    { value: 'surgical', label: 'Surgical' },
+    { value: 'general', label: 'General' }, { value: 'emergency', label: 'Emergency' },
+    { value: 'anc', label: 'ANC' }, { value: 'chronic', label: 'Chronic' },
+    { value: 'pediatric', label: 'Paediatric' }, { value: 'psychiatric', label: 'Psychiatric' },
+    { value: 'surgical', label: 'Surgical' }, { value: 'rehab', label: 'Rehab' },
+    { value: 'dental', label: 'Dental' }, { value: 'mental_health', label: 'Mental Health' },
+    { value: 'nutrition', label: 'Nutrition' }, { value: 'occupational_health', label: 'Occ. Health' },
   ];
 
   const acuities: { value: AcuityLevel; label: string; color: string }[] = [
@@ -703,21 +725,26 @@ function DevCadreSwitcher() {
         <button onClick={() => setOpen(false)} className="text-xs text-muted-foreground hover:text-foreground">Hide</button>
       </div>
       
-      {/* Cadre */}
-      <div className="space-y-1">
+      {/* Cadre Groups */}
+      <div className="space-y-2">
         <label className="text-[10px] font-bold text-muted-foreground uppercase">Role / Cadre</label>
-        <div className="flex flex-wrap gap-1.5">
-          {cadres.map(c => (
-            <button key={c.value} onClick={() => setDevCadreOverride(overrides.cadre === c.value ? null : c.value)}
-              className={`px-3 py-1.5 rounded-md text-xs font-semibold transition-all ${
-                overrides.cadre === c.value
-                  ? 'bg-primary text-primary-foreground shadow-sm'
-                  : 'bg-muted hover:bg-muted/80'
-              }`}>
-              {c.emoji} {c.label}
-            </button>
-          ))}
-        </div>
+        {cadreGroups.map(g => (
+          <div key={g.group} className="space-y-1">
+            <span className="text-[10px] text-muted-foreground">{g.group}</span>
+            <div className="flex flex-wrap gap-1">
+              {g.items.map(c => (
+                <button key={c.value} onClick={() => setDevCadreOverride(overrides.cadre === c.value ? null : c.value)}
+                  className={`px-2 py-1 rounded text-[11px] font-medium transition-all ${
+                    overrides.cadre === c.value
+                      ? 'bg-primary text-primary-foreground shadow-sm'
+                      : 'bg-muted hover:bg-muted/80'
+                  }`}>
+                  {c.label}
+                </button>
+              ))}
+            </div>
+          </div>
+        ))}
       </div>
 
       {/* Visit Type */}
