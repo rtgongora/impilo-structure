@@ -41,7 +41,7 @@ const generateContextualGuidance = (): CDSGuidanceItem[] => [
     title: "Sepsis Screening Due",
     message: "Patient has fever (38.2°C), tachycardia (103 bpm), and elevated WBC. qSOFA score ≥2 — initiate Sepsis Bundle within 1 hour.",
 
-    source: "CDS Rules Engine",
+    source: "Clinical Decision Support Rules Engine",
     timestamp: new Date(),
     dismissed: false,
     actionLabel: "Start Sepsis Bundle",
