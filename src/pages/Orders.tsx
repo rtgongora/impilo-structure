@@ -26,7 +26,7 @@ const Orders = () => {
 
   return (
     <AppLayout title="Order Entry System">
-      <div className="p-6">
+      <div className="flex-1 flex flex-col min-h-0 p-6 overflow-auto">
         <div className="grid lg:grid-cols-4 gap-6">
           {/* Patient Selector Sidebar */}
           <div className="lg:col-span-1">

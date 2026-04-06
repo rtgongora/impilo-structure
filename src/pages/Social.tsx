@@ -200,7 +200,7 @@ export default function Social() {
 
   return (
     <AppLayout>
-      <div className="flex">
+      <div className="flex-1 flex min-h-0 overflow-auto">
         {/* Main Content */}
         <div className="flex-1 p-6">
           {/* Header */}

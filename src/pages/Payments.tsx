@@ -15,7 +15,7 @@ import { RemittanceProcessing } from "@/components/payments/RemittanceProcessing
 const Payments = () => {
   return (
     <AppLayout title="Payments & Billing">
-      <Tabs defaultValue="cashier" className="p-4 space-y-4">
+      <Tabs defaultValue="cashier" className="flex-1 flex flex-col min-h-0 p-4">
         <div className="overflow-x-auto">
           <TabsList className="inline-flex w-max min-w-full">
             <TabsTrigger value="cashier">Cashier Dashboard</TabsTrigger>

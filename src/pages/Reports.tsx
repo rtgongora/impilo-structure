@@ -6,15 +6,15 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 const Reports = () => {
   return (
     <AppLayout title="Reports & Analytics">
-      <Tabs defaultValue="dashboard" className="h-full p-4">
-        <TabsList>
+      <Tabs defaultValue="dashboard" className="flex-1 flex flex-col min-h-0 p-4">
+        <TabsList className="shrink-0">
           <TabsTrigger value="dashboard">Dashboard</TabsTrigger>
           <TabsTrigger value="builder">Report Builder</TabsTrigger>
         </TabsList>
-        <TabsContent value="dashboard" className="mt-4">
+        <TabsContent value="dashboard" className="flex-1 min-h-0 mt-4 overflow-auto">
           <ReportingDashboard />
         </TabsContent>
-        <TabsContent value="builder" className="mt-4 h-[calc(100vh-200px)]">
+        <TabsContent value="builder" className="flex-1 min-h-0 mt-4 overflow-auto">
           <CustomReportBuilder />
         </TabsContent>
       </Tabs>
