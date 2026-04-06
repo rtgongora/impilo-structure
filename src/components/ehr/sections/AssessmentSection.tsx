@@ -447,33 +447,33 @@ export function AssessmentSection() {
 
   return (
     <Tabs defaultValue="triage" className="space-y-4">
-      <TabsList className="grid w-full grid-cols-7">
-        <TabsTrigger value="triage" className="flex items-center gap-2">
-          <AlertTriangle className="w-4 h-4" />
+      <TabsList className="grid w-full grid-cols-7 h-12">
+        <TabsTrigger value="triage" className="flex items-center gap-2 text-sm font-medium">
+          <AlertTriangle className="w-5 h-5" />
           Triage
         </TabsTrigger>
-        <TabsTrigger value="record-vitals" className="flex items-center gap-2">
-          <Thermometer className="w-4 h-4" />
+        <TabsTrigger value="record-vitals" className="flex items-center gap-2 text-sm font-medium">
+          <Thermometer className="w-5 h-5" />
           Vitals
         </TabsTrigger>
-        <TabsTrigger value="clerking" className="flex items-center gap-2">
-          <ClipboardList className="w-4 h-4" />
+        <TabsTrigger value="clerking" className="flex items-center gap-2 text-sm font-medium">
+          <ClipboardList className="w-5 h-5" />
           Clerking
         </TabsTrigger>
-        <TabsTrigger value="history" className="flex items-center gap-2">
-          <FileText className="w-4 h-4" />
+        <TabsTrigger value="history" className="flex items-center gap-2 text-sm font-medium">
+          <FileText className="w-5 h-5" />
           History
         </TabsTrigger>
-        <TabsTrigger value="examination" className="flex items-center gap-2">
-          <Stethoscope className="w-4 h-4" />
+        <TabsTrigger value="examination" className="flex items-center gap-2 text-sm font-medium">
+          <Stethoscope className="w-5 h-5" />
           Exam
         </TabsTrigger>
-        <TabsTrigger value="labs" className="flex items-center gap-2">
-          <TestTube className="w-4 h-4" />
+        <TabsTrigger value="labs" className="flex items-center gap-2 text-sm font-medium">
+          <TestTube className="w-5 h-5" />
           Labs
         </TabsTrigger>
-        <TabsTrigger value="timeline" className="flex items-center gap-2">
-          <Clock className="w-4 h-4" />
+        <TabsTrigger value="timeline" className="flex items-center gap-2 text-sm font-medium">
+          <Clock className="w-5 h-5" />
           Timeline
         </TabsTrigger>
       </TabsList>
