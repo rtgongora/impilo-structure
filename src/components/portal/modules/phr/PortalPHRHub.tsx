@@ -13,7 +13,8 @@ import {
   Activity,
   FileText,
   Heart,
-  ExternalLink
+  ExternalLink,
+  Upload
 } from "lucide-react";
 import { IPSViewer } from "./IPSViewer";
 import { ConditionsList } from "./ConditionsList";
@@ -21,6 +22,8 @@ import { ImmunizationRecords } from "./ImmunizationRecords";
 import { AllergyList } from "./AllergyList";
 import { ClinicalDocuments } from "./ClinicalDocuments";
 import { HealthDataExport } from "./HealthDataExport";
+import { PatientDocumentsPanel } from "@/components/landela/PatientDocumentsPanel";
+import { ClinicalDocumentScanner } from "@/components/documents/ClinicalDocumentScanner";
 import {
   DropdownMenu,
   DropdownMenuContent,
