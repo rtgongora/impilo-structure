@@ -1144,5 +1144,3 @@ export function FormularySheet() {
   );
 }
 
-// Re-export for toolbar convenience
-import { ClipboardList, Stethoscope } from "lucide-react";
