@@ -21,6 +21,9 @@ export function EHRLayout() {
       {/* PATIENT BANNER - Demographics, Alerts, Active Episodes */}
       <PatientBanner />
 
+      {/* CLINICAL TOOLBAR - AI, CDS, Alerts, Critical Events */}
+      <ClinicalToolbar />
+
       {/* Content Area */}
       <div className="flex-1 flex overflow-hidden">
         {/* MAIN WORK AREA - Focus Zone */}

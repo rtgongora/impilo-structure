@@ -230,11 +230,6 @@ export function TopBar() {
 
         {hasActivePatient && <div className="h-5 w-px bg-topbar-muted/30" />}
 
-        {hasActivePatient && <AIDiagnosticAssistant />}
-        {hasActivePatient && <AlertBadge />}
-        {hasActivePatient && <CDSAlertBadge />}
-        {hasActivePatient && <CriticalEventButton />}
-
         <UserMenu />
       </div>
     </header>
