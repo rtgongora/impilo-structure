@@ -1,4 +1,4 @@
-import { useState, useMemo } from "react";
+import { useState } from "react";
 import { CriticalEventButton } from "@/components/ehr/CriticalEventButton";
 import { CDSAlertBadge } from "@/components/ehr/ClinicalDecisionSupport";
 import { AIDiagnosticAssistant } from "@/components/ehr/AIDiagnosticAssistant";
@@ -9,9 +9,11 @@ import { ActiveCDSBanner } from "@/components/ehr/ActiveCDSBanner";
 import { SystemFeedbackStrip } from "@/components/ehr/SystemFeedbackStrip";
 import { useEHR } from "@/contexts/EHRContext";
 import { useCadreFormConfig } from "@/hooks/useCadreFormConfig";
-import { Route, ToggleLeft, ToggleRight, Users } from "lucide-react";
+import { Route, ToggleLeft, ToggleRight, Users, ScanLine, FolderOpen } from "lucide-react";
+import { ClinicalDocumentScanner } from "@/components/documents/ClinicalDocumentScanner";
 import { Button } from "@/components/ui/button";
 import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip";
+import { EncounterDocumentsSheet } from "@/components/ehr/EncounterDocumentsSheet";
 
 /**
  * Cadre-aware clinical toolbar.
@@ -48,6 +50,17 @@ export function ClinicalToolbar() {
           <InteractionCheckerSheet />
           <CalculatorsSheet complexity={complexity} />
           <FormularySheet />
+
+          <div className="h-4 w-px bg-border mx-0.5 shrink-0" />
+
+          {/* Document Scan/Upload & Browse — always accessible during encounter */}
+          <ClinicalDocumentScanner
+            variant="button"
+            context="encounter"
+            onDocumentScanned={() => {}}
+            buttonLabel="Scan"
+          />
+          <EncounterDocumentsSheet />
 
           <div className="h-4 w-px bg-border mx-0.5 shrink-0" />
 
