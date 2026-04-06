@@ -531,7 +531,6 @@ export function NotesSection() {
         </TabsContent>
 
         {/* Documents & Attachments */}
-        {/* Documents & Attachments */}
         <TabsContent value="attachments" className="space-y-4">
           {/* Recently scanned during this encounter */}
           {scannedAttachments.length > 0 && (
