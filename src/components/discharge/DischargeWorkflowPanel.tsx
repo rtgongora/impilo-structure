@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import { 
-  LogOut, Skull, Check, 
+  LogOut, Skull, Check, ScanLine, Upload,
   FileText, DollarSign, ClipboardCheck, Home, Building2, UserX, ArrowRightLeft
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
@@ -14,6 +14,8 @@ import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
 import { DischargeWorkflowStepper } from "./DischargeWorkflowStepper";
 import { ClearanceChecklist } from "./ClearanceChecklist";
+import { PatientDocumentsPanel } from "@/components/landela/PatientDocumentsPanel";
+import { ClinicalDocumentScanner } from "@/components/documents/ClinicalDocumentScanner";
 import { 
   DischargeCase, 
   DischargeClearance, 
@@ -506,13 +508,20 @@ export function DischargeWorkflowPanel({
           </Card>
         </TabsContent>
 
-        <TabsContent value="documents" className="mt-4">
-          <Card>
-            <CardContent className="p-8 text-center text-muted-foreground">
-              <FileText className="w-12 h-12 mx-auto mb-4 opacity-50" />
-              <p>Documents will be generated upon workflow completion</p>
-            </CardContent>
-          </Card>
+        <TabsContent value="documents" className="mt-4 space-y-4">
+          <div className="flex items-center justify-between">
+            <h3 className="text-sm font-medium">Discharge Documents</h3>
+            <ClinicalDocumentScanner
+              variant="button"
+              context="encounter"
+              onDocumentScanned={() => {}}
+              buttonLabel="Scan Document"
+            />
+          </div>
+          <PatientDocumentsPanel
+            patientId={patientId}
+            visitId={visitId}
+          />
         </TabsContent>
       </Tabs>
 

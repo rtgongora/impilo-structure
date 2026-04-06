@@ -30,6 +30,7 @@ import {
 } from "lucide-react";
 import { LandelaDocumentUpload } from "@/components/landela/LandelaDocumentUpload";
 import { LandelaDocumentViewer } from "@/components/landela/LandelaDocumentViewer";
+import { ClinicalDocumentScanner } from "@/components/documents/ClinicalDocumentScanner";
 import { useQuery } from "@tanstack/react-query";
 import { landelaApi, LandelaDocument, DocumentType } from "@/lib/api/landela";
 import { format } from "date-fns";
@@ -138,6 +139,12 @@ export default function Landela() {
                 <RefreshCw className="h-4 w-4 mr-2" />
                 Refresh
               </Button>
+              <ClinicalDocumentScanner
+                variant="button"
+                context="encounter"
+                onDocumentScanned={() => refetchDocs()}
+                buttonLabel="Scan Document"
+              />
               <Button onClick={() => setShowUpload(true)}>
                 <Upload className="h-4 w-4 mr-2" />
                 Upload Documents

@@ -1,4 +1,6 @@
 import { useState } from "react";
+import { ClinicalDocumentScanner } from "@/components/documents/ClinicalDocumentScanner";
+import { PatientDocumentsPanel } from "@/components/landela/PatientDocumentsPanel";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -493,6 +495,27 @@ export function VirtualCareWorkspace() {
                   </Select>
                 </div>
               </div>
+            </CardContent>
+          </Card>
+
+          {/* Attached Documents */}
+          <Card>
+            <CardHeader>
+              <CardTitle className="text-sm flex items-center justify-between">
+                <span className="flex items-center gap-2">
+                  <FileText className="h-4 w-4" />
+                  Visit Documents
+                </span>
+                <ClinicalDocumentScanner
+                  variant="button"
+                  context="teleconsult"
+                  onDocumentScanned={() => {}}
+                  buttonLabel="Scan"
+                />
+              </CardTitle>
+            </CardHeader>
+            <CardContent>
+              <PatientDocumentsPanel patientId="virtual-patient" compact={true} />
             </CardContent>
           </Card>
 

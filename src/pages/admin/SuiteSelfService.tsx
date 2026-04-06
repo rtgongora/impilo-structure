@@ -9,7 +9,8 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
-import { Upload, FileText, CreditCard, Share2, QrCode, CheckCircle, XCircle, Printer } from "lucide-react";
+import { Upload, FileText, CreditCard, Share2, QrCode, CheckCircle, XCircle, Printer, ScanLine } from "lucide-react";
+import { ClinicalDocumentScanner } from "@/components/documents/ClinicalDocumentScanner";
 
 export default function SuiteSelfService() {
   const [actorType, setActorType] = useState<"PROVIDER" | "CLIENT">("PROVIDER");
@@ -130,7 +131,17 @@ export default function SuiteSelfService() {
 
         <TabsContent value="documents" className="space-y-4">
           <Card>
-            <CardHeader><CardTitle className="text-lg flex items-center gap-2"><Upload className="h-4 w-4" /> Upload Attachment</CardTitle></CardHeader>
+            <CardHeader>
+              <CardTitle className="text-lg flex items-center justify-between">
+                <span className="flex items-center gap-2"><Upload className="h-4 w-4" /> Upload Attachment</span>
+                <ClinicalDocumentScanner
+                  variant="button"
+                  context="encounter"
+                  onDocumentScanned={() => {}}
+                  buttonLabel="Scan Document"
+                />
+              </CardTitle>
+            </CardHeader>
             <CardContent className="flex gap-3">
               <Select value={uploadDocType} onValueChange={setUploadDocType}>
                 <SelectTrigger className="w-40"><SelectValue /></SelectTrigger>
