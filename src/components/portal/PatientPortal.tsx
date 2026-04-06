@@ -323,6 +323,10 @@ export function PatientPortal() {
             <PortalWellness />
           </TabsContent>
 
+          <TabsContent value="report">
+            <PortalHealthReporting />
+          </TabsContent>
+
           <TabsContent value="services">
             <ServiceDiscovery />
           </TabsContent>
