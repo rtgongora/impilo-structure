@@ -261,13 +261,13 @@ function NavSection({ title, items, collapsed, userRole }: NavSectionProps) {
   if (visibleItems.length === 0) return null;
 
   return (
-    <div className="mb-2">
+    <div className="mb-3">
       {!collapsed && (
-        <h3 className="px-2 mb-1 text-[10px] font-semibold text-sidebar-foreground/50 uppercase tracking-wider">
+        <h3 className="px-3 mb-1.5 text-[11px] font-semibold text-sidebar-foreground/50 uppercase tracking-wider">
           {title}
         </h3>
       )}
-      <nav className="space-y-0.5">
+      <nav className="space-y-1">
         {visibleItems.map((item) => {
           const isActive = location.pathname === item.path || 
             (item.path !== "/" && location.pathname.startsWith(item.path.split('?')[0]));
@@ -276,14 +276,14 @@ function NavSection({ title, items, collapsed, userRole }: NavSectionProps) {
             <NavLink
               to={item.path}
               className={cn(
-                "flex items-center gap-2 px-2 py-1.5 rounded-md text-xs font-medium transition-colors",
+                "flex items-center gap-2.5 px-3 py-2.5 rounded-lg text-sm font-medium transition-colors",
                 "hover:bg-sidebar-accent hover:text-sidebar-accent-foreground",
                 isActive 
                   ? "bg-sidebar-primary text-sidebar-primary-foreground" 
                   : "text-sidebar-foreground"
               )}
             >
-              <item.icon className={cn("h-3.5 w-3.5 shrink-0", collapsed && "mx-auto")} />
+              <item.icon className={cn("h-4.5 w-4.5 shrink-0", collapsed && "mx-auto")} />
               {!collapsed && <span>{item.label}</span>}
             </NavLink>
           );
@@ -378,12 +378,12 @@ export function AppSidebar() {
       )}
     >
       {/* Logo */}
-      <div className="h-12 flex items-center justify-between px-2 border-b border-sidebar-border">
+      <div className="h-14 flex items-center justify-between px-3 border-b border-sidebar-border">
         {!collapsed && (
-          <img src={impiloLogo} alt="Impilo" className="h-6 w-auto" />
+          <img src={impiloLogo} alt="Impilo" className="h-7 w-auto" />
         )}
         {collapsed && (
-          <img src={impiloLogo} alt="Impilo" className="h-5 w-auto mx-auto" />
+          <img src={impiloLogo} alt="Impilo" className="h-6 w-auto mx-auto" />
         )}
       </div>
 
@@ -414,24 +414,24 @@ export function AppSidebar() {
       )}
 
       {/* Navigation */}
-      <ScrollArea className="flex-1 py-2 px-1.5">
+      <ScrollArea className="flex-1 py-3 px-2">
         {renderNavigation()}
       </ScrollArea>
 
       {/* Collapse Toggle */}
-      <div className="p-1.5 border-t border-sidebar-border">
+      <div className="p-2 border-t border-sidebar-border">
         <Button
           variant="ghost"
           size="sm"
-          className="w-full justify-center h-7 text-sidebar-foreground/70 hover:text-sidebar-foreground"
+          className="w-full justify-center h-9 text-sidebar-foreground/70 hover:text-sidebar-foreground"
           onClick={() => setCollapsed(!collapsed)}
         >
           {collapsed ? (
-            <ChevronRight className="h-3.5 w-3.5" />
+            <ChevronRight className="h-4 w-4" />
           ) : (
             <>
-              <ChevronLeft className="h-3.5 w-3.5 mr-1" />
-              <span className="text-[10px]">Collapse</span>
+              <ChevronLeft className="h-4 w-4 mr-1" />
+              <span className="text-xs">Collapse</span>
             </>
           )}
         </Button>
