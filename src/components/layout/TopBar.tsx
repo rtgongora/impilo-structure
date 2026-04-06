@@ -1,5 +1,6 @@
 import { useEHR } from "@/contexts/EHRContext";
 import { TOP_BAR_ACTIONS } from "@/types/ehr";
+import { Tooltip, TooltipContent, TooltipTrigger, TooltipProvider } from "@/components/ui/tooltip";
 import {
   Boxes,
   Route,
@@ -20,7 +21,7 @@ import {
   X,
   ShieldCheck,
   Lock,
-  MoreHorizontal,
+  
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -35,12 +36,6 @@ import {
   AlertDialogTitle,
   AlertDialogTrigger,
 } from "@/components/ui/alert-dialog";
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu";
 import { CriticalEventButton } from "@/components/ehr/CriticalEventButton";
 import { CDSAlertBadge } from "@/components/ehr/ClinicalDecisionSupport";
 import { AIDiagnosticAssistant } from "@/components/ehr/AIDiagnosticAssistant";
@@ -66,8 +61,7 @@ const iconMap: Record<string, React.ComponentType<{ className?: string }>> = {
   ClipboardCheck,
 };
 
-// Show first 5 actions directly, rest in overflow menu
-const PRIMARY_ACTION_COUNT = 5;
+// All actions shown as icon-only with tooltips
 
 export function TopBar() {
   const { 
@@ -81,8 +75,6 @@ export function TopBar() {
   } = useEHR();
   const navigate = useNavigate();
 
-  const primaryActions = TOP_BAR_ACTIONS.slice(0, PRIMARY_ACTION_COUNT);
-  const overflowActions = TOP_BAR_ACTIONS.slice(PRIMARY_ACTION_COUNT);
 
   return (
     <header className="h-14 min-h-[3.5rem] shrink-0 bg-topbar-bg text-topbar-foreground flex items-center justify-between px-3 border-b border-topbar-bg/20 shadow-sm">
@@ -116,72 +108,54 @@ export function TopBar() {
         {hasActivePatient && (
           <>
             <div className="h-5 w-px bg-topbar-muted/30" />
-            <nav className="flex items-center gap-0.5">
-              {primaryActions.map((action) => {
-                const Icon = iconMap[action.icon];
-                const isActive = activeTopBarAction === action.id;
+            <TooltipProvider delayDuration={200}>
+              <nav className="flex items-center gap-0.5">
+                {TOP_BAR_ACTIONS.map((action) => {
+                  const Icon = iconMap[action.icon];
+                  const isActive = activeTopBarAction === action.id;
+                  
+                  return (
+                    <Tooltip key={action.id}>
+                      <TooltipTrigger asChild>
+                        <Button
+                          variant="ghost"
+                          size="icon"
+                          className={`h-8 w-8 text-topbar-muted hover:text-topbar-foreground hover:bg-topbar-foreground/10
+                            ${isActive ? "bg-topbar-foreground/15 text-topbar-foreground" : ""}
+                          `}
+                          onClick={() => setActiveTopBarAction(isActive ? null : action.id)}
+                        >
+                          <Icon className="w-4 h-4" />
+                        </Button>
+                      </TooltipTrigger>
+                      <TooltipContent side="bottom" className="text-xs">
+                        {action.label}
+                      </TooltipContent>
+                    </Tooltip>
+                  );
+                })}
                 
-                return (
-                  <Button
-                    key={action.id}
-                    variant="ghost"
-                    size="sm"
-                    className={`h-8 px-2 text-xs text-topbar-muted hover:text-topbar-foreground hover:bg-topbar-foreground/10
-                      ${isActive ? "bg-topbar-foreground/15 text-topbar-foreground" : ""}
-                    `}
-                    onClick={() => setActiveTopBarAction(isActive ? null : action.id)}
-                  >
-                    <Icon className="w-3.5 h-3.5 mr-1" />
-                    {action.label}
-                  </Button>
-                );
-              })}
-
-              {/* Overflow menu for remaining actions */}
-              {overflowActions.length > 0 && (
-                <DropdownMenu>
-                  <DropdownMenuTrigger asChild>
+                <div className="h-5 w-px bg-topbar-muted/30 mx-0.5" />
+                
+                <Tooltip>
+                  <TooltipTrigger asChild>
                     <Button
                       variant="ghost"
                       size="icon"
                       className="h-8 w-8 text-topbar-muted hover:text-topbar-foreground hover:bg-topbar-foreground/10"
+                      asChild
                     >
-                      <MoreHorizontal className="w-4 h-4" />
+                      <Link to="/registration">
+                        <UserPlus className="w-4 h-4" />
+                      </Link>
                     </Button>
-                  </DropdownMenuTrigger>
-                  <DropdownMenuContent align="start" className="min-w-[180px]">
-                    {overflowActions.map((action) => {
-                      const Icon = iconMap[action.icon];
-                      const isActive = activeTopBarAction === action.id;
-                      return (
-                        <DropdownMenuItem
-                          key={action.id}
-                          className={isActive ? "bg-accent" : ""}
-                          onClick={() => setActiveTopBarAction(isActive ? null : action.id)}
-                        >
-                          <Icon className="w-4 h-4 mr-2" />
-                          {action.label}
-                        </DropdownMenuItem>
-                      );
-                    })}
-                  </DropdownMenuContent>
-                </DropdownMenu>
-              )}
-              
-              <div className="h-5 w-px bg-topbar-muted/30 mx-0.5" />
-              
-              <Button
-                variant="ghost"
-                size="sm"
-                className="h-8 px-2 text-xs text-topbar-muted hover:text-topbar-foreground hover:bg-topbar-foreground/10"
-                asChild
-              >
-                <Link to="/registration">
-                  <UserPlus className="w-3.5 h-3.5 mr-1" />
-                  Register
-                </Link>
-              </Button>
-            </nav>
+                  </TooltipTrigger>
+                  <TooltipContent side="bottom" className="text-xs">
+                    Register
+                  </TooltipContent>
+                </Tooltip>
+              </nav>
+            </TooltipProvider>
           </>
         )}
       </div>
