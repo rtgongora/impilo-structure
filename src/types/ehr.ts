@@ -37,7 +37,7 @@ export type TopBarAction =
   | "beds" 
   | "handoff" 
   | "pharmacy"
-  | "theatre"
+  | "scheduling"
   | "payments";
 
 export interface TopBarActionConfig {
