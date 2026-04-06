@@ -94,7 +94,7 @@ export function EncounterMenu() {
                     "hover:bg-encounter-item-hover group",
                     isActive
                       ? "bg-encounter-item-active-bg text-encounter-item-active font-medium"
-                      : "text-secondary-foreground"
+                      : "text-foreground/80"
                   )}
                 >
                   <div
