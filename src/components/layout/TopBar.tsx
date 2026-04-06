@@ -70,7 +70,7 @@ export function TopBar() {
     closeChart,
   } = useEHR();
   const navigate = useNavigate();
-import { UserMenu } from "@/components/auth/UserMenu";
+
 
   return (
     <header className="h-14 min-h-[3.5rem] shrink-0 bg-topbar-bg text-topbar-foreground flex items-center justify-between px-3 border-b border-topbar-bg/20 shadow-sm">
