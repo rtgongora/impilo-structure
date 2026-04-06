@@ -3,44 +3,72 @@ import { Badge } from "@/components/ui/badge";
 import { Progress } from "@/components/ui/progress";
 import {
   Bed, Users, Package, DollarSign, AlertTriangle, TrendingUp,
-  Clock, Activity, CheckCircle2, XCircle, ArrowUpRight, ArrowDownRight
+  Clock, Activity, CheckCircle2, XCircle, ArrowUpRight, ArrowDownRight,
+  UserX, FlaskConical, HeartPulse, CalendarX, Siren, ListChecks
 } from "lucide-react";
 
 // Mock dashboard data
 const METRICS = {
   beds: { total: 120, occupied: 98, available: 18, cleaning: 4, occupancy: 82 },
-  queues: { waiting: 34, inService: 12, avgWait: 23, completed: 87 },
+  queues: { waiting: 34, inService: 12, avgWait: 23, completed: 87, longestWait: 58 },
   staff: { onShift: 28, offShift: 14, onBreak: 3, overtime: 2 },
   stock: { lowItems: 5, expiringSoon: 8, pendingOrders: 3, criticalOut: 1 },
   billing: { unbilled: 12, pendingClaims: 7, todayRevenue: 45200, outstanding: 128500 },
+  patients: {
+    lostToFollowUp: 14,
+    criticalResults: 6,
+    overdueTasks: 9,
+    pendingDischarges: 5,
+    readmissions30d: 3,
+    missedAppointments: 11,
+    activeCarePlans: 42,
+    avgLOS: 4.2,
+  },
 };
 
 const ALERTS = [
   { id: 1, type: 'critical', message: 'ICU at 95% capacity – consider diversion', time: '5m ago' },
-  { id: 2, type: 'warning', message: 'Paracetamol IV below reorder level (12 units)', time: '15m ago' },
-  { id: 3, type: 'warning', message: '3 patients waiting >45min in General OPD', time: '20m ago' },
-  { id: 4, type: 'info', message: 'Shift handover due in 35 minutes', time: '25m ago' },
+  { id: 2, type: 'critical', message: '6 critical lab results pending review', time: '8m ago' },
+  { id: 3, type: 'warning', message: 'Paracetamol IV below reorder level (12 units)', time: '15m ago' },
+  { id: 4, type: 'warning', message: '3 patients waiting >45min in General OPD', time: '20m ago' },
   { id: 5, type: 'critical', message: 'Blood bank: O- stock critical (2 units)', time: '30m ago' },
+  { id: 6, type: 'warning', message: '14 patients lost to follow-up this month', time: '1h ago' },
 ];
 
 const ACTIVITY_FEED = [
   { id: 1, action: 'Patient admitted', detail: 'Bed 4B, Medical Ward', actor: 'Sr. Moyo', time: '2m ago' },
-  { id: 2, action: 'Stock received', detail: 'PO-20260406-0012 (Surgical supplies)', actor: 'Pharmacy', time: '8m ago' },
-  { id: 3, action: 'Discharge completed', detail: 'Bed 2A, Pediatrics', actor: 'Dr. Nkomo', time: '12m ago' },
-  { id: 4, action: 'Shift started', detail: 'Night shift – 14 staff checked in', actor: 'System', time: '30m ago' },
-  { id: 5, action: 'Invoice generated', detail: 'INV-202604-000342 – R4,200', actor: 'Billing', time: '45m ago' },
+  { id: 2, action: 'Critical result flagged', detail: 'K+ 6.8 mEq/L – Bed 2C ICU', actor: 'Lab', time: '5m ago' },
+  { id: 3, action: 'Stock received', detail: 'PO-20260406-0012 (Surgical supplies)', actor: 'Pharmacy', time: '8m ago' },
+  { id: 4, action: 'Discharge completed', detail: 'Bed 2A, Pediatrics', actor: 'Dr. Nkomo', time: '12m ago' },
+  { id: 5, action: 'Missed appointment', detail: 'HIV Clinic – 3 no-shows today', actor: 'System', time: '25m ago' },
+  { id: 6, action: 'Shift started', detail: 'Night shift – 14 staff checked in', actor: 'System', time: '30m ago' },
 ];
 
 export function WorkspaceDashboardPanel() {
   return (
-    <div className="space-y-3">
-      {/* KPI Row — bigger cards */}
-      <div className="grid grid-cols-2 md:grid-cols-5 gap-2">
-        <MetricCard icon={Bed} label="Bed Occupancy" value={`${METRICS.beds.occupancy}%`} sub={`${METRICS.beds.occupied}/${METRICS.beds.total}`} trend="up" color="text-amber-500" />
-        <MetricCard icon={Users} label="Queue Load" value={`${METRICS.queues.waiting}`} sub={`${METRICS.queues.avgWait}min avg wait`} trend="down" color="text-blue-500" />
-        <MetricCard icon={Activity} label="Staff On Shift" value={`${METRICS.staff.onShift}`} sub={`${METRICS.staff.overtime} overtime`} color="text-green-500" />
-        <MetricCard icon={Package} label="Stock Alerts" value={`${METRICS.stock.lowItems + METRICS.stock.criticalOut}`} sub={`${METRICS.stock.expiringSoon} expiring`} trend="up" color="text-red-500" />
-        <MetricCard icon={DollarSign} label="Today Revenue" value={`R${(METRICS.billing.todayRevenue / 1000).toFixed(1)}k`} sub={`${METRICS.billing.unbilled} unbilled`} trend="up" color="text-emerald-500" />
+    <div className="space-y-4">
+      {/* Row 1: Operational KPIs */}
+      <div>
+        <h3 className="text-xs font-semibold text-muted-foreground uppercase tracking-wider mb-2 px-1">Operations</h3>
+        <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-3">
+          <MetricCard icon={Bed} label="Bed Occupancy" value={`${METRICS.beds.occupancy}%`} sub={`${METRICS.beds.occupied}/${METRICS.beds.total} beds`} trend="up" color="text-amber-600" />
+          <MetricCard icon={Users} label="Queue Load" value={`${METRICS.queues.waiting}`} sub={`${METRICS.queues.avgWait}min avg · ${METRICS.queues.longestWait}min max`} trend="down" color="text-blue-600" />
+          <MetricCard icon={Activity} label="Staff On Shift" value={`${METRICS.staff.onShift}`} sub={`${METRICS.staff.overtime} overtime`} color="text-green-600" />
+          <MetricCard icon={Package} label="Stock Alerts" value={`${METRICS.stock.lowItems + METRICS.stock.criticalOut}`} sub={`${METRICS.stock.expiringSoon} expiring soon`} trend="up" color="text-red-600" />
+          <MetricCard icon={DollarSign} label="Today Revenue" value={`R${(METRICS.billing.todayRevenue / 1000).toFixed(1)}k`} sub={`${METRICS.billing.unbilled} unbilled charges`} trend="up" color="text-emerald-600" />
+        </div>
+      </div>
+
+      {/* Row 2: Patient Care KPIs */}
+      <div>
+        <h3 className="text-xs font-semibold text-muted-foreground uppercase tracking-wider mb-2 px-1">Patient Care</h3>
+        <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-3">
+          <MetricCard icon={UserX} label="Lost to Follow-Up" value={`${METRICS.patients.lostToFollowUp}`} sub="This month · needs outreach" trend="up" color="text-orange-600" highlight />
+          <MetricCard icon={FlaskConical} label="Critical Results" value={`${METRICS.patients.criticalResults}`} sub="Pending clinician review" trend="up" color="text-red-600" highlight />
+          <MetricCard icon={CalendarX} label="Missed Appointments" value={`${METRICS.patients.missedAppointments}`} sub="Today · across all clinics" color="text-amber-600" />
+          <MetricCard icon={ListChecks} label="Active Care Plans" value={`${METRICS.patients.activeCarePlans}`} sub={`${METRICS.patients.overdueTasks} overdue tasks`} color="text-indigo-600" />
+          <MetricCard icon={HeartPulse} label="Avg Length of Stay" value={`${METRICS.patients.avgLOS}d`} sub={`${METRICS.patients.readmissions30d} readmissions (30d)`} color="text-purple-600" />
+        </div>
       </div>
 
       {/* Active Alerts — full width */}
@@ -49,11 +77,11 @@ export function WorkspaceDashboardPanel() {
           <CardTitle className="text-base flex items-center gap-2">
             <AlertTriangle className="h-5 w-5 text-amber-500" />
             Active Alerts
-            <Badge variant="destructive" className="ml-auto">{ALERTS.filter(a => a.type === 'critical').length} critical</Badge>
+            <Badge variant="destructive" className="ml-auto text-xs">{ALERTS.filter(a => a.type === 'critical').length} critical</Badge>
           </CardTitle>
         </CardHeader>
         <CardContent className="px-4 pb-4">
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-2">
+          <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-2">
             {ALERTS.map(alert => (
               <div key={alert.id} className={`text-sm p-3 rounded-lg border ${alert.type === 'critical' ? 'border-red-200 bg-red-50 dark:bg-red-950/30 dark:border-red-800' : alert.type === 'warning' ? 'border-amber-200 bg-amber-50 dark:bg-amber-950/30 dark:border-amber-800' : 'border-border bg-muted/30'}`}>
                 <div className="flex items-start justify-between gap-2">
@@ -66,12 +94,15 @@ export function WorkspaceDashboardPanel() {
         </CardContent>
       </Card>
 
-      {/* Ward Capacity + Activity Feed — side by side */}
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-3 min-h-[300px]">
+      {/* Ward Capacity + Queue Metrics + Activity Feed — 3 cols */}
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-3">
         {/* Ward Capacity */}
         <Card className="flex flex-col">
           <CardHeader className="pb-2 px-4 pt-4">
-            <CardTitle className="text-base">Ward Capacity</CardTitle>
+            <CardTitle className="text-base flex items-center gap-2">
+              <Bed className="h-4 w-4 text-muted-foreground" />
+              Ward Capacity
+            </CardTitle>
           </CardHeader>
           <CardContent className="flex-1 px-4 pb-4 space-y-3">
             {[
@@ -84,10 +115,10 @@ export function WorkspaceDashboardPanel() {
             ].map(ward => {
               const pct = Math.round((ward.occupied / ward.total) * 100);
               return (
-                <div key={ward.name} className="space-y-1.5">
+                <div key={ward.name} className="space-y-1">
                   <div className="flex justify-between text-sm">
                     <span className="font-medium">{ward.name}</span>
-                    <span className="text-muted-foreground">{ward.occupied}/{ward.total} ({pct}%)</span>
+                    <span className="text-muted-foreground text-xs">{ward.occupied}/{ward.total} ({pct}%)</span>
                   </div>
                   <Progress value={pct} className={`h-2 ${pct > 90 ? '[&>div]:bg-red-500' : pct > 75 ? '[&>div]:bg-amber-500' : '[&>div]:bg-green-500'}`} />
                 </div>
@@ -96,18 +127,54 @@ export function WorkspaceDashboardPanel() {
           </CardContent>
         </Card>
 
+        {/* Queue Metrics */}
+        <Card className="flex flex-col">
+          <CardHeader className="pb-2 px-4 pt-4">
+            <CardTitle className="text-base flex items-center gap-2">
+              <Users className="h-4 w-4 text-muted-foreground" />
+              Queue Performance
+            </CardTitle>
+          </CardHeader>
+          <CardContent className="flex-1 px-4 pb-4 space-y-3">
+            {[
+              { name: 'General OPD', waiting: 12, avgWait: 28, inService: 4 },
+              { name: 'ANC Clinic', waiting: 5, avgWait: 15, inService: 2 },
+              { name: 'HIV Clinic', waiting: 8, avgWait: 35, inService: 3 },
+              { name: 'Pharmacy', waiting: 6, avgWait: 12, inService: 2 },
+              { name: 'Lab Reception', waiting: 3, avgWait: 18, inService: 1 },
+            ].map(q => (
+              <div key={q.name} className="flex items-center justify-between text-sm p-2 rounded-lg bg-muted/30">
+                <div>
+                  <span className="font-medium">{q.name}</span>
+                  <div className="flex items-center gap-2 mt-0.5">
+                    <span className="text-xs text-muted-foreground">{q.waiting} waiting</span>
+                    <span className="text-xs text-muted-foreground">·</span>
+                    <span className="text-xs text-muted-foreground">{q.inService} serving</span>
+                  </div>
+                </div>
+                <Badge variant={q.avgWait > 30 ? "destructive" : q.avgWait > 20 ? "secondary" : "outline"} className="text-xs">
+                  {q.avgWait}min
+                </Badge>
+              </div>
+            ))}
+          </CardContent>
+        </Card>
+
         {/* Activity Feed */}
         <Card className="flex flex-col">
           <CardHeader className="pb-2 px-4 pt-4">
-            <CardTitle className="text-base">Recent Activity</CardTitle>
+            <CardTitle className="text-base flex items-center gap-2">
+              <Activity className="h-4 w-4 text-muted-foreground" />
+              Recent Activity
+            </CardTitle>
           </CardHeader>
-          <CardContent className="flex-1 px-4 pb-4 space-y-2">
+          <CardContent className="flex-1 px-4 pb-4 space-y-1">
             {ACTIVITY_FEED.map(item => (
-              <div key={item.id} className="flex items-start gap-3 text-sm p-3 rounded-lg hover:bg-muted/50">
+              <div key={item.id} className="flex items-start gap-3 text-sm p-2.5 rounded-lg hover:bg-muted/50">
                 <CheckCircle2 className="h-4 w-4 mt-0.5 text-green-500 shrink-0" />
                 <div className="min-w-0 flex-1">
                   <p className="font-medium">{item.action}</p>
-                  <p className="text-muted-foreground truncate">{item.detail} • {item.actor}</p>
+                  <p className="text-muted-foreground truncate text-xs">{item.detail} · {item.actor}</p>
                 </div>
                 <span className="text-muted-foreground whitespace-nowrap text-xs">{item.time}</span>
               </div>
@@ -119,24 +186,24 @@ export function WorkspaceDashboardPanel() {
   );
 }
 
-function MetricCard({ icon: Icon, label, value, sub, trend, color }: {
+function MetricCard({ icon: Icon, label, value, sub, trend, color, highlight }: {
   icon: React.ComponentType<{ className?: string }>;
   label: string; value: string; sub: string;
-  trend?: 'up' | 'down'; color?: string;
+  trend?: 'up' | 'down'; color?: string; highlight?: boolean;
 }) {
   return (
-    <Card>
-      <CardContent className="pt-5 pb-4 px-5">
-        <div className="flex items-center justify-between mb-2">
+    <Card className={highlight ? 'border-orange-200 dark:border-orange-800' : ''}>
+      <CardContent className="pt-4 pb-3 px-4">
+        <div className="flex items-center justify-between mb-1.5">
           <Icon className={`h-5 w-5 ${color || 'text-muted-foreground'}`} />
           {trend && (trend === 'up'
-            ? <ArrowUpRight className="h-4 w-4 text-green-500" />
-            : <ArrowDownRight className="h-4 w-4 text-blue-500" />
+            ? <ArrowUpRight className="h-4 w-4 text-red-500" />
+            : <ArrowDownRight className="h-4 w-4 text-green-500" />
           )}
         </div>
-        <p className="text-2xl font-bold">{value}</p>
-        <p className="text-sm text-muted-foreground">{sub}</p>
-        <p className="text-xs text-muted-foreground mt-1">{label}</p>
+        <p className="text-2xl font-bold leading-tight">{value}</p>
+        <p className="text-xs text-muted-foreground mt-0.5 leading-snug">{sub}</p>
+        <p className="text-[10px] text-muted-foreground mt-1 uppercase tracking-wide">{label}</p>
       </CardContent>
     </Card>
   );
