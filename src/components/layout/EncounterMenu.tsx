@@ -107,7 +107,7 @@ export function EncounterMenu() {
                   >
                     <Icon className="w-3.5 h-3.5" />
                   </div>
-                  <span className="text-xs truncate flex-1">{item.label}</span>
+                  <span className="text-xs truncate flex-1 min-w-0">{item.label}</span>
                   {isActive && (
                     <ChevronRight className="w-3 h-3 text-encounter-item-active shrink-0" />
                   )}
