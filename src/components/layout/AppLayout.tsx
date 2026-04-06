@@ -16,7 +16,7 @@ export function AppLayout({ children, title }: AppLayoutProps) {
       {/* Main Content */}
       <div className="flex-1 flex flex-col overflow-hidden min-w-0">
         <AppHeader title={title} />
-        <main className="flex-1 overflow-auto overscroll-contain">
+        <main className="flex-1 flex flex-col overflow-auto overscroll-contain">
           {children}
         </main>
       </div>
