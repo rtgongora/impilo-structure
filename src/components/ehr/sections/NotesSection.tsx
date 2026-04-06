@@ -184,6 +184,8 @@ export function NotesSection() {
   const [expandedSoap, setExpandedSoap] = useState<number | null>(1);
   const [expandedRound, setExpandedRound] = useState<number | null>(1);
   const { encounterId } = useParams<{ encounterId?: string }>();
+  const { currentEncounter } = useEHR();
+  const patientId = currentEncounter?.patient?.id;
   const [scannedAttachments, setScannedAttachments] = useState<ScannedDocument[]>([]);
 
   const handleDocumentScanned = (doc: ScannedDocument) => {
