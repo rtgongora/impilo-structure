@@ -508,7 +508,7 @@ export function NotificationsCommsHub() {
               }}
             >
               {permission === "granted" ? (
-                <Bell className="h-3 w-3 text-emerald-500" />
+                <Bell className="h-3 w-3 text-primary" />
               ) : (
                 <BellOff className="h-3 w-3" />
               )}
