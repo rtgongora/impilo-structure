@@ -9,6 +9,8 @@ import { CareSection } from "./sections/CareSection";
 import { ConsultsSection } from "./sections/ConsultsSection";
 import { NotesSection } from "./sections/NotesSection";
 import { OutcomeSection } from "./sections/OutcomeSection";
+import { PatientBanner } from "./PatientBanner";
+import { EncounterPatientHeader } from "./EncounterPatientHeader";
 
 const sectionComponents: Record<string, React.ComponentType> = {
   overview: OverviewSection,
@@ -28,6 +30,12 @@ export function EncounterSection() {
 
   return (
     <div className="h-full flex flex-col overflow-hidden">
+      {/* Persistent Patient Header */}
+      <EncounterPatientHeader />
+
+      {/* Patient Banner - Vitals, Alerts, Episodes */}
+      <PatientBanner />
+
       {/* Section Header */}
       <header className="bg-workspace-header border-b border-border px-4 py-2">
         <motion.div
