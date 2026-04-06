@@ -6,13 +6,15 @@ import { Textarea } from "@/components/ui/textarea";
 import { 
   Plus, FileEdit, Paperclip, Clock, User, FileText, Stethoscope, 
   Users, ClipboardList, Image, File, Download, Trash2, Eye,
-  ChevronDown, ChevronUp, Calendar, Building2, PenSquare, ScanLine
+  ChevronDown, ChevronUp, Calendar, Building2, PenSquare, ScanLine, FolderOpen
 } from "lucide-react";
 import { useState } from "react";
 import { useParams } from "react-router-dom";
 import { SOAPNoteEditor } from "@/components/clinical/SOAPNoteEditor";
 import { LiveSOAPNoteEditor } from "@/components/clinical/LiveSOAPNoteEditor";
 import { ClinicalDocumentScanner, ScannedDocument } from "@/components/documents/ClinicalDocumentScanner";
+import { PatientDocumentsPanel } from "@/components/landela/PatientDocumentsPanel";
+import { useEHR } from "@/contexts/EHRContext";
 import { toast } from "sonner";
 
 const MOCK_SOAP_NOTES = [
