@@ -16,7 +16,7 @@ import {
   Pill,
   Users,
   CheckCircle2,
-  Plus,
+  
   Thermometer,
   TestTube,
   Clock,
