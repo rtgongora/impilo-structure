@@ -35,6 +35,7 @@ import {
 } from "@/data/mockClinicalData";
 import { LiveVitalsMonitor } from "@/components/ehr/LiveVitalsMonitor";
 import { AllergiesAlert } from "@/components/ehr/AllergiesAlert";
+import { PatientDocumentsPanel } from "@/components/landela/PatientDocumentsPanel";
 
 function VitalCard({ 
   icon: Icon, 
