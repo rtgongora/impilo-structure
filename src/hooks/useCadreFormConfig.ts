@@ -141,23 +141,42 @@ export interface CadreFormConfig {
 }
 
 const CADRE_MAP: Record<string, ClinicalCadre> = {
-  doctor: 'doctor',
-  specialist: 'specialist',
-  nurse: 'nurse',
-  midwife: 'midwife',
-  patient: 'chw', // fallback
-  admin: 'admin',
-  pharmacist: 'pharmacist',
-  lab_tech: 'lab_tech',
-  radiologist: 'radiologist',
-  receptionist: 'admin',
+  doctor: 'doctor', specialist: 'specialist', intern_doctor: 'intern_doctor',
+  registrar: 'registrar', consultant: 'consultant',
+  dentist: 'dentist', dental_therapist: 'dental_therapist',
+  nurse: 'nurse', nurse_practitioner: 'nurse_practitioner',
+  enrolled_nurse: 'enrolled_nurse', midwife: 'midwife',
+  physiotherapist: 'physiotherapist', occupational_therapist: 'occupational_therapist',
+  speech_therapist: 'speech_therapist', dietitian: 'dietitian',
+  psychologist: 'psychologist', social_worker: 'social_worker',
+  audiologist: 'audiologist', optometrist: 'optometrist',
+  podiatrist: 'podiatrist', biokinetician: 'biokinetician',
+  orthotist_prosthetist: 'orthotist_prosthetist',
+  respiratory_therapist: 'respiratory_therapist', radiotherapist: 'radiotherapist',
+  radiographer: 'radiographer', sonographer: 'sonographer',
+  lab_tech: 'lab_tech', pharmacist: 'pharmacist', pharmacy_tech: 'pharmacy_tech',
+  paramedic: 'paramedic', emt: 'emt',
+  oral_hygienist: 'oral_hygienist',
+  chw: 'chw', env_health: 'env_health', health_promoter: 'health_promoter',
+  admin: 'admin', health_info_officer: 'health_info_officer', receptionist: 'receptionist',
+  patient: 'chw', radiologist: 'radiographer',
 };
 
-function getCadreComplexity(cadre: ClinicalCadre, acuity: AcuityLevel): FormComplexity {
-  if (cadre === 'doctor' || cadre === 'specialist') return 'comprehensive';
-  if (cadre === 'nurse' || cadre === 'midwife') {
-    return acuity === 'red' ? 'focused' : 'focused';
-  }
+function getCadreComplexity(cadre: ClinicalCadre, _acuity: AcuityLevel): FormComplexity {
+  const comprehensive: ClinicalCadre[] = [
+    'doctor', 'specialist', 'consultant', 'registrar', 'intern_doctor',
+    'dentist', 'nurse_practitioner',
+  ];
+  const focused: ClinicalCadre[] = [
+    'nurse', 'enrolled_nurse', 'midwife', 'pharmacist',
+    'physiotherapist', 'occupational_therapist', 'speech_therapist',
+    'dietitian', 'psychologist', 'social_worker', 'audiologist',
+    'optometrist', 'podiatrist', 'biokinetician', 'orthotist_prosthetist',
+    'respiratory_therapist', 'radiotherapist', 'radiographer', 'sonographer',
+    'paramedic', 'dental_therapist', 'oral_hygienist',
+  ];
+  if (comprehensive.includes(cadre)) return 'comprehensive';
+  if (focused.includes(cadre)) return 'focused';
   return 'simplified';
 }
 
