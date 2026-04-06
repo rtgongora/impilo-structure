@@ -161,21 +161,8 @@ export function TopBar() {
         <div className="flex items-center gap-2 shrink-0">
           <Badge variant="outline" className="bg-success/20 text-success border-success/50 text-xs gap-1">
             <Lock className="w-3 h-3" />
-            Locked
+            Chart Locked
           </Badge>
-          
-          <div className="text-center">
-            <div className="text-xs font-medium">{currentEncounter.patient.name}</div>
-            <div className="text-[10px] text-topbar-muted">
-              {currentEncounter.patient.mrn} • {currentEncounter.patient.ward}
-            </div>
-          </div>
-          
-          {currentEncounter.patient.allergies.length > 0 && (
-            <Badge variant="outline" className="bg-warning/20 text-warning border-warning/50 text-xs px-1.5">
-              <AlertTriangle className="w-3 h-3" />
-            </Badge>
-          )}
 
           <AlertDialog>
             <AlertDialogTrigger asChild>
