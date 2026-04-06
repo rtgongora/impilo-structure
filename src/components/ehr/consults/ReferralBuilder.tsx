@@ -39,6 +39,7 @@ import { format } from "date-fns";
 import { cn } from "@/lib/utils";
 import { toast } from "sonner";
 import { ClinicalDocumentScanner, ScannedDocument } from "@/components/documents/ClinicalDocumentScanner";
+import { PatientDocumentsPanel } from "@/components/landela/PatientDocumentsPanel";
 import { TelemedicineModeSelection } from "./TelemedicineModeSelection";
 import type { TelemedicineMode, ReferralUrgency } from "@/types/telehealth";
 
@@ -471,6 +472,12 @@ export function ReferralBuilder({ onSubmit, onCancel }: ReferralBuilderProps) {
                 ))}
               </div>
             )}
+
+            {/* Existing patient documents to attach */}
+            <div className="border-t pt-4">
+              <Label className="text-sm font-medium mb-2 block">Attach from Patient File</Label>
+              <PatientDocumentsPanel patientId="current-patient" compact={true} />
+            </div>
           </div>
         );
 
