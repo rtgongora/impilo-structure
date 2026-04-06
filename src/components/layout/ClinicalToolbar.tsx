@@ -52,6 +52,17 @@ export function ClinicalToolbar() {
 
           <div className="h-4 w-px bg-border mx-0.5 shrink-0" />
 
+          {/* Document Scan/Upload & Browse — always accessible during encounter */}
+          <ClinicalDocumentScanner
+            variant="button"
+            context="encounter"
+            onDocumentScanned={() => {}}
+            buttonLabel="Scan"
+          />
+          <EncounterDocumentsSheet />
+
+          <div className="h-4 w-px bg-border mx-0.5 shrink-0" />
+
           <Button
             variant="ghost"
             size="sm"
