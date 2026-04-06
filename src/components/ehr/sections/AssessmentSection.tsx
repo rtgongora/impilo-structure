@@ -34,6 +34,7 @@ import { ClerkingFormEditor } from "@/components/ehr/clerking/ClerkingFormEditor
 import { CLERKING_TEMPLATES, type CadreLevel, type ClerkingTemplate } from "@/data/clerkingTemplates";
 import { useParams } from "react-router-dom";
 import { useCadreFormConfig, setDevCadreOverride, setDevVisitOverride, setDevAcuityOverride, getDevOverrides, useDevOverrideListener, type ClinicalCadre, type VisitType, type AcuityLevel } from "@/hooks/useCadreFormConfig";
+import { useCadreContext, useCadreGroups } from "@/engines/pct/cadreEngine";
 import { CadreHistoryForm } from "@/components/ehr/assessment/CadreHistoryForm";
 import { CadreExamForm } from "@/components/ehr/assessment/CadreExamForm";
 
@@ -659,37 +660,9 @@ function DevCadreSwitcher() {
   useDevOverrideListener();
   const overrides = getDevOverrides();
   const [open, setOpen] = useState(true);
-
-  const cadreGroups: { group: string; items: { value: ClinicalCadre; label: string }[] }[] = [
-    { group: '🩺 Medical', items: [
-      { value: 'doctor', label: 'Doctor' }, { value: 'specialist', label: 'Specialist' },
-      { value: 'consultant', label: 'Consultant' }, { value: 'registrar', label: 'Registrar' },
-      { value: 'intern_doctor', label: 'Intern' }, { value: 'dentist', label: 'Dentist' },
-    ]},
-    { group: '👩‍⚕️ Nursing', items: [
-      { value: 'nurse', label: 'Nurse' }, { value: 'nurse_practitioner', label: 'Nurse Pract.' },
-      { value: 'enrolled_nurse', label: 'Enrolled Nurse' }, { value: 'midwife', label: 'Midwife' },
-    ]},
-    { group: '🦴 Allied Health', items: [
-      { value: 'physiotherapist', label: 'Physio' }, { value: 'occupational_therapist', label: 'OT' },
-      { value: 'speech_therapist', label: 'Speech' }, { value: 'dietitian', label: 'Dietitian' },
-      { value: 'psychologist', label: 'Psychologist' }, { value: 'social_worker', label: 'Social Worker' },
-      { value: 'audiologist', label: 'Audiologist' }, { value: 'optometrist', label: 'Optometrist' },
-      { value: 'podiatrist', label: 'Podiatrist' }, { value: 'biokinetician', label: 'Biokineticist' },
-      { value: 'respiratory_therapist', label: 'Resp. Therapy' }, { value: 'radiotherapist', label: 'Radiotherapy' },
-    ]},
-    { group: '🔬 Diagnostic', items: [
-      { value: 'radiographer', label: 'Radiographer' }, { value: 'sonographer', label: 'Sonographer' },
-      { value: 'lab_tech', label: 'Lab Tech' }, { value: 'pharmacist', label: 'Pharmacist' },
-    ]},
-    { group: '🚑 Emergency', items: [
-      { value: 'paramedic', label: 'Paramedic' }, { value: 'emt', label: 'EMT' },
-    ]},
-    { group: '🏘️ Community', items: [
-      { value: 'chw', label: 'CHW' }, { value: 'env_health', label: 'Env. Health' },
-      { value: 'health_promoter', label: 'Health Promoter' },
-    ]},
-  ];
+  const [expandedCategory, setExpandedCategory] = useState<string | null>(null);
+  const { groups, loading: groupsLoading } = useCadreGroups();
+  const cadreContext = useCadreContext();
 
   const visits: { value: VisitType; label: string }[] = [
     { value: 'general', label: 'General' }, { value: 'emergency', label: 'Emergency' },
@@ -719,33 +692,123 @@ function DevCadreSwitcher() {
   return (
     <div className="border border-dashed border-primary/40 rounded-lg p-3 bg-primary/5 space-y-3">
       <div className="flex items-center justify-between">
-        <span className="text-xs font-bold text-primary uppercase tracking-wider flex items-center gap-1.5">
-          🧪 Dev Cadre Switcher
-        </span>
+        <div className="flex items-center gap-3">
+          <span className="text-xs font-bold text-primary uppercase tracking-wider flex items-center gap-1.5">
+            🧪 PCT Cadre Engine
+          </span>
+          {cadreContext.cadre && (
+            <div className="flex items-center gap-1.5">
+              <Badge variant="outline" className="text-[10px] font-mono">
+                {cadreContext.cadre.abbreviation || cadreContext.cadre.cadre_code}
+              </Badge>
+              <Badge variant={cadreContext.isSurgical ? "destructive" : "secondary"} className="text-[10px]">
+                {cadreContext.isSurgical ? '🔪 Surgical' : '💊 Medical'}
+              </Badge>
+              <Badge className="text-[10px] bg-primary/20 text-primary">
+                {cadreContext.formComplexity}
+              </Badge>
+            </div>
+          )}
+        </div>
         <button onClick={() => setOpen(false)} className="text-xs text-muted-foreground hover:text-foreground">Hide</button>
       </div>
       
-      {/* Cadre Groups */}
-      <div className="space-y-2">
-        <label className="text-[10px] font-bold text-muted-foreground uppercase">Role / Cadre</label>
-        {cadreGroups.map(g => (
-          <div key={g.group} className="space-y-1">
-            <span className="text-[10px] text-muted-foreground">{g.group}</span>
-            <div className="flex flex-wrap gap-1">
-              {g.items.map(c => (
-                <button key={c.value} onClick={() => setDevCadreOverride(overrides.cadre === c.value ? null : c.value)}
-                  className={`px-2 py-1 rounded text-[11px] font-medium transition-all ${
-                    overrides.cadre === c.value
-                      ? 'bg-primary text-primary-foreground shadow-sm'
-                      : 'bg-muted hover:bg-muted/80'
-                  }`}>
-                  {c.label}
-                </button>
+      {/* Cadre Groups — DB-driven */}
+      <div className="space-y-1.5">
+        <label className="text-[10px] font-bold text-muted-foreground uppercase">Role / Cadre / Specialty</label>
+        {groupsLoading ? (
+          <div className="text-xs text-muted-foreground animate-pulse">Loading cadre definitions...</div>
+        ) : (
+          groups.map(g => {
+            const isExpanded = expandedCategory === g.category;
+            // Show top-level items (no parent) by default, show subtypes when expanded
+            const topLevel = g.items.filter(i => !i.parent_cadre_code);
+            const subtypes = g.items.filter(i => i.parent_cadre_code);
+            const hasSubtypes = subtypes.length > 0;
+
+            return (
+              <div key={g.category} className="space-y-0.5">
+                <div className="flex items-center gap-1">
+                  <span className="text-[10px] text-muted-foreground">{g.emoji} {g.label}</span>
+                  {hasSubtypes && (
+                    <button
+                      onClick={() => setExpandedCategory(isExpanded ? null : g.category)}
+                      className="text-[9px] text-primary hover:underline"
+                    >
+                      {isExpanded ? '▾ collapse' : `▸ +${subtypes.length} subtypes`}
+                    </button>
+                  )}
+                </div>
+                <div className="flex flex-wrap gap-1">
+                  {topLevel.map(c => (
+                    <button key={c.cadre_code}
+                      onClick={() => setDevCadreOverride(
+                        overrides.cadre === (c.cadre_code as ClinicalCadre) ? null : c.cadre_code as ClinicalCadre
+                      )}
+                      className={`px-2 py-0.5 rounded text-[11px] font-medium transition-all ${
+                        overrides.cadre === c.cadre_code
+                          ? 'bg-primary text-primary-foreground shadow-sm'
+                          : 'bg-muted hover:bg-muted/80'
+                      }`}>
+                      {c.abbreviation || c.display_name}
+                    </button>
+                  ))}
+                </div>
+                {isExpanded && subtypes.length > 0 && (
+                  <div className="ml-3 flex flex-wrap gap-1 border-l-2 border-primary/20 pl-2">
+                    {subtypes.map(c => (
+                      <button key={c.cadre_code}
+                        onClick={() => setDevCadreOverride(
+                          overrides.cadre === (c.cadre_code as ClinicalCadre) ? null : c.cadre_code as ClinicalCadre
+                        )}
+                        className={`px-2 py-0.5 rounded text-[10px] font-medium transition-all ${
+                          overrides.cadre === c.cadre_code
+                            ? c.is_surgical
+                              ? 'bg-destructive text-destructive-foreground shadow-sm'
+                              : 'bg-primary text-primary-foreground shadow-sm'
+                            : 'bg-muted/60 hover:bg-muted/80'
+                        }`}
+                        title={`${c.display_name} — ${c.is_surgical ? 'Surgical' : 'Medical'}`}
+                      >
+                        {c.is_surgical && '🔪 '}{c.abbreviation || c.display_name}
+                      </button>
+                    ))}
+                  </div>
+                )}
+              </div>
+            );
+          })
+        )}
+      </div>
+
+      {/* Scope of Practice summary for selected cadre */}
+      {cadreContext.cadre && (
+        <div className="space-y-1 border-t border-primary/20 pt-2">
+          <label className="text-[10px] font-bold text-muted-foreground uppercase">Scope of Practice</label>
+          <div className="flex flex-wrap gap-1">
+            {cadreContext.cadre.scope_of_practice.slice(0, 8).map(s => (
+              <Badge key={s} variant="outline" className="text-[9px] font-mono">
+                {s.replace(/_/g, ' ')}
+              </Badge>
+            ))}
+            {cadreContext.cadre.scope_of_practice.length > 8 && (
+              <Badge variant="outline" className="text-[9px]">
+                +{cadreContext.cadre.scope_of_practice.length - 8} more
+              </Badge>
+            )}
+          </div>
+          {cadreContext.cadre.specialty_exam_sections.length > 0 && (
+            <div className="flex flex-wrap gap-1 mt-1">
+              <span className="text-[9px] text-muted-foreground mr-1">Specialty Exam:</span>
+              {cadreContext.cadre.specialty_exam_sections.slice(0, 5).map(s => (
+                <Badge key={s} variant="secondary" className="text-[9px]">
+                  {s.replace(/_/g, ' ')}
+                </Badge>
               ))}
             </div>
-          </div>
-        ))}
-      </div>
+          )}
+        </div>
+      )}
 
       {/* Visit Type */}
       <div className="space-y-1">
