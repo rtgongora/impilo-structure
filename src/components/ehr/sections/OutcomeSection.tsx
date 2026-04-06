@@ -7,10 +7,14 @@ import { Textarea } from "@/components/ui/textarea";
 import { Input } from "@/components/ui/input";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { Calendar as CalendarComponent } from "@/components/ui/calendar";
+import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { 
   CheckCircle, Home, Building, Ambulance, Calendar, Send, AlertTriangle,
   Pill, FileText, User, Clock, MapPin, Phone, Stethoscope, Heart,
-  ClipboardList, AlertCircle, UserX, Plus, ChevronRight, FileDown, QrCode
+  ClipboardList, AlertCircle, UserX, Plus, ChevronRight, FileDown, QrCode,
+  Trash2, CalendarPlus
 } from "lucide-react";
 import { useState } from "react";
 import { PostEncounterNavigation } from "@/components/ehr/PostEncounterNavigation";
@@ -18,6 +22,8 @@ import { toast } from "sonner";
 import { SummaryActions } from "@/components/summaries";
 import { useEHR } from "@/contexts/EHRContext";
 import { PatientDocumentsPanel } from "@/components/landela/PatientDocumentsPanel";
+import { format, addDays, addWeeks, addMonths } from "date-fns";
+import { cn } from "@/lib/utils";
 type DispositionType = "discharge" | "admit" | "transfer" | "refer" | "death" | "lama" | "";
 
 const DISPOSITION_OPTIONS = [
