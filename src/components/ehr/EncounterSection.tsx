@@ -48,20 +48,18 @@ export function EncounterSection() {
       <PatientBanner />
 
       {/* Wizard Section Header with Navigation */}
-      <header className="bg-workspace-header border-b border-border px-4 py-3">
+      <header className="bg-workspace-header border-b border-border px-5 py-4">
         <div className="flex items-center justify-between">
-          {/* Left: Back arrow */}
           <Button
             variant="ghost"
             size="icon"
-            className="h-10 w-10 shrink-0"
+            className="h-12 w-12 shrink-0"
             onClick={() => prev && setActiveMenuItem(prev)}
             disabled={!prev}
           >
-            <ChevronLeft className="w-5 h-5" />
+            <ChevronLeft className="w-7 h-7" />
           </Button>
 
-          {/* Center: Step info */}
           <motion.div
             key={activeMenuItem}
             initial={{ opacity: 0, y: -6 }}
@@ -69,29 +67,28 @@ export function EncounterSection() {
             transition={{ duration: 0.15 }}
             className="flex-1 text-center min-w-0"
           >
-            <div className="flex items-center justify-center gap-2">
-              <Badge variant="outline" className="text-xs h-6 px-2 font-mono tabular-nums">
+            <div className="flex items-center justify-center gap-3">
+              <Badge variant="outline" className="text-sm h-7 px-2.5 font-mono tabular-nums">
                 {currentIndex + 1}/{ENCOUNTER_MENU_ITEMS.length}
               </Badge>
-              <h1 className="text-base font-bold text-foreground">{menuItem?.label}</h1>
+              <h1 className="text-xl font-bold text-foreground">{menuItem?.label}</h1>
               {recommendation.priority === "high" && (
-                <Sparkles className="w-4 h-4 text-warning animate-pulse" />
+                <Sparkles className="w-5 h-5 text-warning animate-pulse" />
               )}
             </div>
-            <div className="text-xs text-muted-foreground mt-1">
+            <div className="text-sm text-muted-foreground mt-1.5">
               {recommendation.reason}
             </div>
           </motion.div>
 
-          {/* Right: Forward arrow */}
           <Button
             variant="ghost"
             size="icon"
-            className="h-10 w-10 shrink-0"
+            className="h-12 w-12 shrink-0"
             onClick={() => next && setActiveMenuItem(next)}
             disabled={!next}
           >
-            <ChevronRight className="w-5 h-5" />
+            <ChevronRight className="w-7 h-7" />
           </Button>
         </div>
 
