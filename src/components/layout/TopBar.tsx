@@ -159,19 +159,15 @@ export function TopBar() {
       {/* Center: Patient Context - Only show if patient is active */}
       {hasActivePatient && currentEncounter && (
         <div className="flex items-center gap-2 shrink-0">
-          <Badge variant="outline" className="bg-success/20 text-success border-success/50 text-xs gap-1">
-            <Lock className="w-3 h-3" />
-            Chart Locked
-          </Badge>
-
           <AlertDialog>
             <AlertDialogTrigger asChild>
               <Button
                 variant="ghost"
-                size="icon"
-                className="h-7 w-7 text-topbar-muted hover:text-destructive hover:bg-destructive/10"
+                size="sm"
+                className="h-7 text-topbar-muted hover:text-destructive hover:bg-destructive/10 gap-1 text-xs"
               >
                 <X className="w-3.5 h-3.5" />
+                Close Chart
               </Button>
             </AlertDialogTrigger>
             <AlertDialogContent>
