@@ -496,6 +496,27 @@ export function VirtualCareWorkspace() {
             </CardContent>
           </Card>
 
+          {/* Attached Documents */}
+          <Card>
+            <CardHeader>
+              <CardTitle className="text-sm flex items-center justify-between">
+                <span className="flex items-center gap-2">
+                  <FileText className="h-4 w-4" />
+                  Visit Documents
+                </span>
+                <ClinicalDocumentScanner
+                  variant="button"
+                  context="teleconsult"
+                  onDocumentScanned={() => {}}
+                  buttonLabel="Scan"
+                />
+              </CardTitle>
+            </CardHeader>
+            <CardContent>
+              <PatientDocumentsPanel patientId="virtual-patient" compact={true} />
+            </CardContent>
+          </Card>
+
           <div className="flex justify-end gap-2">
             <Button variant="outline">
               <Pill className="h-4 w-4 mr-1" />
