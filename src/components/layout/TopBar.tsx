@@ -21,7 +21,7 @@ import {
   X,
   ShieldCheck,
   Lock,
-  MoreHorizontal,
+  
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -36,12 +36,6 @@ import {
   AlertDialogTitle,
   AlertDialogTrigger,
 } from "@/components/ui/alert-dialog";
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu";
 import { CriticalEventButton } from "@/components/ehr/CriticalEventButton";
 import { CDSAlertBadge } from "@/components/ehr/ClinicalDecisionSupport";
 import { AIDiagnosticAssistant } from "@/components/ehr/AIDiagnosticAssistant";
