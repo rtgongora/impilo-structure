@@ -164,9 +164,9 @@ export function TopBar() {
               <Button
                 variant="ghost"
                 size="sm"
-                className="h-7 text-topbar-muted hover:text-destructive hover:bg-destructive/10 gap-1 text-xs"
+                className="h-9 text-topbar-muted hover:text-destructive hover:bg-destructive/10 gap-2 text-sm font-medium"
               >
-                <X className="w-3.5 h-3.5" />
+                <X className="w-4 h-4" />
                 Close Chart
               </Button>
             </AlertDialogTrigger>
@@ -192,8 +192,8 @@ export function TopBar() {
       {/* Center: No patient message when not active */}
       {!hasActivePatient && (
         <div className="text-center">
-          <div className="text-xs text-topbar-muted flex items-center gap-1.5">
-            <ShieldCheck className="w-3.5 h-3.5" />
+          <div className="text-sm text-topbar-muted flex items-center gap-2 font-medium">
+            <ShieldCheck className="w-4 h-4" />
             No Patient Selected
           </div>
         </div>
