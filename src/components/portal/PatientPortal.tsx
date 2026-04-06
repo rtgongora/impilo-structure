@@ -43,6 +43,7 @@ import { PortalSecureMessaging } from "./modules/PortalSecureMessaging";
 import { PortalMarketplace } from "./modules/PortalMarketplace";
 import { PortalWellness } from "./modules/PortalWellness";
 import { PortalPHRHub } from "./modules/phr";
+import { PortalHealthReporting } from "./modules/PortalHealthReporting";
 const MOCK_PATIENT = {
   name: "John Doe",
   healthId: "HID-0000000001-AB12-3",
@@ -150,6 +151,10 @@ export function PatientPortal() {
               <TabsTrigger value="wellness">
                 <Activity className="h-4 w-4 mr-1" />
                 Wellness
+              </TabsTrigger>
+              <TabsTrigger value="report">
+                <AlertTriangle className="h-4 w-4 mr-1" />
+                Report
               </TabsTrigger>
               <TabsTrigger value="services">Services</TabsTrigger>
               <TabsTrigger value="queue">Queue</TabsTrigger>
