@@ -70,7 +70,7 @@ export function TopBar() {
     closeChart,
   } = useEHR();
   const navigate = useNavigate();
-
+import { UserMenu } from "@/components/auth/UserMenu";
 
   return (
     <header className="h-14 min-h-[3.5rem] shrink-0 bg-topbar-bg text-topbar-foreground flex items-center justify-between px-3 border-b border-topbar-bg/20 shadow-sm">
@@ -201,13 +201,17 @@ export function TopBar() {
         </div>
       )}
 
-      {/* Right: Search & Workspace */}
+      {/* Right: Search, Workspace & User */}
       <div className="flex items-center gap-1.5 shrink-0">
         {hasActivePatient && <PatientSearch />}
 
         {hasActivePatient && <div className="h-5 w-px bg-topbar-muted/30" />}
 
         {hasActivePatient && <ActiveWorkspaceIndicator compact />}
+
+        <div className="h-5 w-px bg-topbar-muted/30" />
+
+        <UserMenu />
       </div>
     </header>
   );
