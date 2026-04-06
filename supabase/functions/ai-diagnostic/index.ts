@@ -86,6 +86,29 @@ Always structure your response as JSON with this format:
       userPrompt = `Interpret these lab results in clinical context:\n${JSON.stringify(patientData.labResults, null, 2)}\nPatient conditions: ${patientData.conditions?.join(", ")}`;
       break;
 
+    case "cds-guidance":
+      systemPrompt = `You are a proactive Clinical Decision Support (CDS) engine for an EHR system. Analyze patient data in real-time and provide actionable clinical guidance.
+
+Your role is to:
+1. Identify immediate safety concerns (red flags)
+2. Suggest evidence-based next steps
+3. Flag medication/lab interactions relevant to current context
+4. Provide clinical pearls that help the treating team
+
+Always structure your response as JSON with this format:
+{
+  "redFlags": ["Urgent findings requiring immediate attention"],
+  "recommendations": [
+    { "action": "What to do", "priority": "immediate|soon|routine", "rationale": "Why" }
+  ],
+  "clinicalPearls": ["Brief, helpful clinical insights"],
+  "monitoringPlan": ["Parameters to watch and frequency"]
+}
+
+Be concise, evidence-based, and clinician-friendly. Focus on actionable guidance, not general medical information.`;
+      userPrompt = `Provide real-time clinical guidance for this patient:\n${JSON.stringify(patientData, null, 2)}`;
+      break;
+
     default:
       return kernelError("INVALID_REQUEST", "Invalid request type", 400, ctx);
   }
