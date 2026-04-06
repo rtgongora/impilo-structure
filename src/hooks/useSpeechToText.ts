@@ -28,12 +28,11 @@ interface UseSpeechToTextReturn {
 }
 
 // Check Web Speech API support
-const isBrowserSpeechSupported = () => {
-  return !!(
-    window.SpeechRecognition ||
-    (window as any).webkitSpeechRecognition
-  );
+const getSpeechRecognitionClass = (): (new () => SpeechRecognition) | null => {
+  return (window as any).SpeechRecognition || (window as any).webkitSpeechRecognition || null;
 };
+
+const isBrowserSpeechSupported = () => !!getSpeechRecognitionClass();
 
 export function useSpeechToText({
   engine = "auto",
@@ -67,15 +66,14 @@ export function useSpeechToText({
   }, []);
 
   const startBrowserRecognition = useCallback(() => {
-    const SpeechRecognition =
-      window.SpeechRecognition || (window as any).webkitSpeechRecognition;
+    const SpeechRecognitionClass = getSpeechRecognitionClass();
 
-    if (!SpeechRecognition) {
+    if (!SpeechRecognitionClass) {
       onError?.("Speech recognition not supported in this browser");
       return;
     }
 
-    const recognition = new SpeechRecognition();
+    const recognition = new SpeechRecognitionClass();
     recognition.lang = language;
     recognition.continuous = continuous;
     recognition.interimResults = interimResults;
