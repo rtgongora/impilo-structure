@@ -27,7 +27,7 @@ function PatientLocationContent() {
   const { currentEncounter, hasActivePatient, patientContext } = useEHR();
   const [searchParams] = useSearchParams();
   const [queueName, setQueueName] = useState<string | null>(null);
-  const { selectedFacility } = useFacility();
+  const { currentFacility } = useFacility();
 
   const queueId = searchParams.get("queueId");
 
