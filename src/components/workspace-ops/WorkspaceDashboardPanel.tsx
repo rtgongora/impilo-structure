@@ -34,7 +34,7 @@ const ACTIVITY_FEED = [
 export function WorkspaceDashboardPanel() {
   return (
     <div className="space-y-3">
-      {/* KPI Row */}
+      {/* KPI Row — bigger cards */}
       <div className="grid grid-cols-2 md:grid-cols-5 gap-2">
         <MetricCard icon={Bed} label="Bed Occupancy" value={`${METRICS.beds.occupancy}%`} sub={`${METRICS.beds.occupied}/${METRICS.beds.total}`} trend="up" color="text-amber-500" />
         <MetricCard icon={Users} label="Queue Load" value={`${METRICS.queues.waiting}`} sub={`${METRICS.queues.avgWait}min avg wait`} trend="down" color="text-blue-500" />
@@ -43,34 +43,37 @@ export function WorkspaceDashboardPanel() {
         <MetricCard icon={DollarSign} label="Today Revenue" value={`R${(METRICS.billing.todayRevenue / 1000).toFixed(1)}k`} sub={`${METRICS.billing.unbilled} unbilled`} trend="up" color="text-emerald-500" />
       </div>
 
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-3 min-h-[340px]">
-        {/* Alerts */}
-        <Card className="lg:col-span-1">
-          <CardHeader className="pb-2">
-            <CardTitle className="text-sm flex items-center gap-2">
-              <AlertTriangle className="h-4 w-4 text-amber-500" />
-              Active Alerts
-              <Badge variant="destructive" className="ml-auto text-xs">{ALERTS.filter(a => a.type === 'critical').length}</Badge>
-            </CardTitle>
-          </CardHeader>
-          <CardContent className="space-y-2">
+      {/* Active Alerts — full width */}
+      <Card>
+        <CardHeader className="pb-2 px-4 pt-4">
+          <CardTitle className="text-base flex items-center gap-2">
+            <AlertTriangle className="h-5 w-5 text-amber-500" />
+            Active Alerts
+            <Badge variant="destructive" className="ml-auto">{ALERTS.filter(a => a.type === 'critical').length} critical</Badge>
+          </CardTitle>
+        </CardHeader>
+        <CardContent className="px-4 pb-4">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-2">
             {ALERTS.map(alert => (
-              <div key={alert.id} className={`text-xs p-2 rounded-lg border ${alert.type === 'critical' ? 'border-red-200 bg-red-50 dark:bg-red-950/30 dark:border-red-800' : alert.type === 'warning' ? 'border-amber-200 bg-amber-50 dark:bg-amber-950/30 dark:border-amber-800' : 'border-border bg-muted/30'}`}>
+              <div key={alert.id} className={`text-sm p-3 rounded-lg border ${alert.type === 'critical' ? 'border-red-200 bg-red-50 dark:bg-red-950/30 dark:border-red-800' : alert.type === 'warning' ? 'border-amber-200 bg-amber-50 dark:bg-amber-950/30 dark:border-amber-800' : 'border-border bg-muted/30'}`}>
                 <div className="flex items-start justify-between gap-2">
                   <span className="font-medium">{alert.message}</span>
-                  <span className="text-muted-foreground whitespace-nowrap">{alert.time}</span>
+                  <span className="text-muted-foreground whitespace-nowrap text-xs">{alert.time}</span>
                 </div>
               </div>
             ))}
-          </CardContent>
-        </Card>
+          </div>
+        </CardContent>
+      </Card>
 
+      {/* Ward Capacity + Activity Feed — side by side */}
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-3 min-h-[300px]">
         {/* Ward Capacity */}
-        <Card>
-          <CardHeader className="pb-2">
-            <CardTitle className="text-sm">Ward Capacity</CardTitle>
+        <Card className="flex flex-col">
+          <CardHeader className="pb-2 px-4 pt-4">
+            <CardTitle className="text-base">Ward Capacity</CardTitle>
           </CardHeader>
-          <CardContent className="space-y-3">
+          <CardContent className="flex-1 px-4 pb-4 space-y-3">
             {[
               { name: 'Medical Ward', occupied: 24, total: 28 },
               { name: 'Surgical Ward', occupied: 18, total: 22 },
@@ -81,12 +84,12 @@ export function WorkspaceDashboardPanel() {
             ].map(ward => {
               const pct = Math.round((ward.occupied / ward.total) * 100);
               return (
-                <div key={ward.name} className="space-y-1">
-                  <div className="flex justify-between text-xs">
+                <div key={ward.name} className="space-y-1.5">
+                  <div className="flex justify-between text-sm">
                     <span className="font-medium">{ward.name}</span>
                     <span className="text-muted-foreground">{ward.occupied}/{ward.total} ({pct}%)</span>
                   </div>
-                  <Progress value={pct} className={`h-1.5 ${pct > 90 ? '[&>div]:bg-red-500' : pct > 75 ? '[&>div]:bg-amber-500' : '[&>div]:bg-green-500'}`} />
+                  <Progress value={pct} className={`h-2 ${pct > 90 ? '[&>div]:bg-red-500' : pct > 75 ? '[&>div]:bg-amber-500' : '[&>div]:bg-green-500'}`} />
                 </div>
               );
             })}
@@ -94,19 +97,19 @@ export function WorkspaceDashboardPanel() {
         </Card>
 
         {/* Activity Feed */}
-        <Card>
-          <CardHeader className="pb-2">
-            <CardTitle className="text-sm">Recent Activity</CardTitle>
+        <Card className="flex flex-col">
+          <CardHeader className="pb-2 px-4 pt-4">
+            <CardTitle className="text-base">Recent Activity</CardTitle>
           </CardHeader>
-          <CardContent className="space-y-2">
+          <CardContent className="flex-1 px-4 pb-4 space-y-2">
             {ACTIVITY_FEED.map(item => (
-              <div key={item.id} className="flex items-start gap-2 text-xs p-2 rounded-lg hover:bg-muted/50">
-                <CheckCircle2 className="h-3.5 w-3.5 mt-0.5 text-green-500 shrink-0" />
-                <div className="min-w-0">
+              <div key={item.id} className="flex items-start gap-3 text-sm p-3 rounded-lg hover:bg-muted/50">
+                <CheckCircle2 className="h-4 w-4 mt-0.5 text-green-500 shrink-0" />
+                <div className="min-w-0 flex-1">
                   <p className="font-medium">{item.action}</p>
                   <p className="text-muted-foreground truncate">{item.detail} • {item.actor}</p>
                 </div>
-                <span className="text-muted-foreground whitespace-nowrap ml-auto">{item.time}</span>
+                <span className="text-muted-foreground whitespace-nowrap text-xs">{item.time}</span>
               </div>
             ))}
           </CardContent>
