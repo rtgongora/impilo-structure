@@ -208,9 +208,9 @@ export function QueueWorkstation({ facilityId, initialQueueId }: QueueWorkstatio
         <ResizablePanelGroup direction="horizontal" className="flex-1 rounded-lg border">
           {/* Queue Items Panel */}
           <ResizablePanel defaultSize={60} minSize={40}>
-            <div className="h-full p-4">
-              <Tabs value={activeTab} onValueChange={setActiveTab}>
-                <TabsList>
+            <div className="h-full flex flex-col p-4">
+              <Tabs value={activeTab} onValueChange={setActiveTab} className="flex-1 flex flex-col min-h-0">
+                <TabsList className="shrink-0">
                   <TabsTrigger value="waiting">
                     Waiting
                     {waitingItems.length > 0 && (
@@ -237,8 +237,8 @@ export function QueueWorkstation({ facilityId, initialQueueId }: QueueWorkstatio
                   )}
                 </TabsList>
 
-                <TabsContent value="waiting" className="mt-4">
-                  <ScrollArea className="flex-1">
+                <TabsContent value="waiting" className="flex-1 min-h-0 mt-4">
+                  <ScrollArea className="h-full">
                     <div className="space-y-3 pr-4">
                       {waitingItems.length === 0 ? (
                         <Card>
@@ -264,8 +264,8 @@ export function QueueWorkstation({ facilityId, initialQueueId }: QueueWorkstatio
                   </ScrollArea>
                 </TabsContent>
 
-                <TabsContent value="called" className="mt-4">
-                  <ScrollArea className="flex-1">
+                <TabsContent value="called" className="flex-1 min-h-0 mt-4">
+                  <ScrollArea className="h-full">
                     <div className="space-y-3 pr-4">
                       {calledItems.length === 0 ? (
                         <Card>
@@ -289,8 +289,8 @@ export function QueueWorkstation({ facilityId, initialQueueId }: QueueWorkstatio
                   </ScrollArea>
                 </TabsContent>
 
-                <TabsContent value="in_service" className="mt-4">
-                  <ScrollArea className="flex-1">
+                <TabsContent value="in_service" className="flex-1 min-h-0 mt-4">
+                  <ScrollArea className="h-full">
                     <div className="space-y-3 pr-4">
                       {inServiceItems.length === 0 ? (
                         <Card>
@@ -314,8 +314,8 @@ export function QueueWorkstation({ facilityId, initialQueueId }: QueueWorkstatio
                   </ScrollArea>
                 </TabsContent>
 
-                <TabsContent value="paused" className="mt-4">
-                  <ScrollArea className="flex-1">
+                <TabsContent value="paused" className="flex-1 min-h-0 mt-4">
+                  <ScrollArea className="h-full">
                     <div className="space-y-3 pr-4">
                       {pausedItems.map(item => (
                         <QueueItemCard
