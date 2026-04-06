@@ -97,11 +97,10 @@ export function AIDiagnosticAssistant() {
           break;
       }
 
-      const { data, error } = await supabase.functions.invoke("ai-diagnostic", {
-        body: { type, patientData }
-      });
+      startCorrelation();
+      const { data, error } = await invoke<{ result: unknown }>("ai-diagnostic", { type, patientData });
 
-      if (error) throw error;
+      if (error) throw new Error(error.error?.message || "AI analysis failed");
 
       switch (type) {
         case "diagnostic":
