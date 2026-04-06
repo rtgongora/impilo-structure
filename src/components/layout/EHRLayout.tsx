@@ -19,11 +19,11 @@ export function EHRLayout() {
       {/* TOP BAR - Action & Status Layer */}
       <TopBar />
 
-      {/* PATIENT BANNER - Demographics, Alerts, Active Episodes */}
-      <PatientBanner />
-
       {/* CLINICAL TOOLBAR - AI, CDS, Alerts, Critical Events */}
       <ClinicalToolbar />
+
+      {/* PATIENT BANNER - Vitals, Alerts, Active Episodes */}
+      <PatientBanner />
 
       {/* Content Area */}
       <div className="flex-1 flex overflow-hidden">

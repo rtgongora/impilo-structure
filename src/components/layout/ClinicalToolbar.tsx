@@ -14,10 +14,9 @@ export function ClinicalToolbar() {
   const isPathwaysActive = activeTopBarAction === "pathways";
 
   return (
-    <div className="h-9 min-h-[2.25rem] shrink-0 bg-muted/50 border-b flex items-center justify-between px-3">
-      {/* Left: Clinical decision support tools */}
-      <div className="flex items-center gap-2">
-        <span className="text-[10px] font-medium text-muted-foreground uppercase tracking-wider">Clinical Tools</span>
+    <div className="h-9 min-h-[2.25rem] shrink-0 bg-muted/50 border-b flex items-center px-3">
+      <div className="flex items-center gap-3 flex-1">
+        <span className="text-[10px] font-medium text-muted-foreground uppercase tracking-wider shrink-0">Clinical Tools</span>
         <div className="h-4 w-px bg-border" />
         <Button
           variant="ghost"
@@ -28,14 +27,12 @@ export function ClinicalToolbar() {
           <Route className="w-3.5 h-3.5" />
           Care Pathways
         </Button>
-        <div className="h-4 w-px bg-border" />
         <AIDiagnosticAssistant />
         <CDSAlertBadge />
         <AlertBadge />
-      </div>
 
-      {/* Right: Critical Event */}
-      <div className="flex items-center gap-2">
+        <div className="flex-1" />
+
         <CriticalEventButton />
       </div>
     </div>

@@ -111,45 +111,6 @@ export function PatientBanner() {
         {/* Compact Banner - Always Visible */}
         <div className="px-3 py-1.5">
           <div className="flex items-center justify-between gap-4">
-            {/* Patient Identity */}
-            <div className="flex items-center gap-3">
-              <div className="w-9 h-9 rounded-full bg-primary/10 flex items-center justify-center border-2 border-primary/30">
-                <User className="w-4 h-4 text-primary" />
-              </div>
-              <div>
-                <div className="flex items-center gap-2">
-                  <h2 className="text-sm font-semibold text-foreground">
-                    {patient.name}
-                  </h2>
-                  <Badge variant="outline" className="text-xs font-mono">
-                    {patient.mrn}
-                  </Badge>
-                  <Badge
-                    variant="outline"
-                    className={`text-xs ${
-                      patient.gender === "female"
-                        ? "bg-pink-500/10 text-pink-600 border-pink-500/30"
-                        : patient.gender === "male"
-                        ? "bg-blue-500/10 text-blue-600 border-blue-500/30"
-                        : "bg-purple-500/10 text-purple-600 border-purple-500/30"
-                    }`}
-                  >
-                    {patient.gender === "female" ? "F" : patient.gender === "male" ? "M" : "O"} • {age}y
-                  </Badge>
-                </div>
-                <div className="flex items-center gap-3 text-xs text-muted-foreground">
-                  <span className="flex items-center gap-1">
-                    <Calendar className="w-3.5 h-3.5" />
-                    DOB: {formattedDob}
-                  </span>
-                  <span className="flex items-center gap-1">
-                    <MapPin className="w-3.5 h-3.5" />
-                    {patient.ward} • {patient.bed}
-                  </span>
-                </div>
-              </div>
-            </div>
-
             {/* Quick Vitals with Real-time Monitoring */}
             <VitalsMonitor compact />
 
