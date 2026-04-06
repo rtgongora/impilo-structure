@@ -487,7 +487,7 @@ export function CDSAlertBadge() {
           )}
         >
           <Zap className="w-4 h-4" />
-          <span className="hidden sm:inline">CDS</span>
+          <span className="hidden sm:inline">Clinical Decision Support</span>
           {totalAlerts > 0 && (
             <Badge
               className={cn(
