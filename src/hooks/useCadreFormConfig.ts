@@ -126,10 +126,15 @@ export function useCadreFormConfig(
   acuity: AcuityLevel = 'green'
 ): CadreFormConfig {
   const { profile } = useAuth();
+  useDevOverrideListener();
+  
+  const overrides = getDevOverrides();
+  const effectiveVisitType = overrides.visit || visitType;
+  const effectiveAcuity = overrides.acuity || acuity;
   
   const profileRole = (profile?.role as string) || 'doctor';
-  const cadre: ClinicalCadre = CADRE_MAP[profileRole] || 'doctor';
-  const complexity = getCadreComplexity(cadre, acuity);
+  const cadre: ClinicalCadre = overrides.cadre || CADRE_MAP[profileRole] || 'doctor';
+  const complexity = getCadreComplexity(cadre, effectiveAcuity);
   
   const isComprehensive = complexity === 'comprehensive';
   const isFocused = complexity === 'focused';
