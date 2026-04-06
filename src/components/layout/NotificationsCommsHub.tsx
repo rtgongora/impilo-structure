@@ -20,6 +20,8 @@ import {
   Filter,
   Volume2,
   VolumeX,
+  Phone,
+  Video,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -347,22 +349,22 @@ export function NotificationsCommsHub() {
           variant="ghost"
           size="sm"
           className={cn(
-            "h-7 w-7 p-0 relative",
+            "h-7 px-2 gap-1.5 relative",
             hasCritical && !isMuted && "text-destructive"
           )}
         >
-          <Bell className="h-3.5 w-3.5" />
+          <Bell className="h-4 w-4" />
+          <span className="text-xs font-medium">Comms</span>
           {totalUnread > 0 && (
-            <span
+            <Badge
+              variant="destructive"
               className={cn(
-                "absolute -top-0.5 -right-0.5 h-4 min-w-[1rem] px-0.5 flex items-center justify-center rounded-full text-[9px] font-bold",
-                hasCritical
-                  ? "bg-destructive text-destructive-foreground animate-pulse"
-                  : "bg-primary text-primary-foreground"
+                "h-4 min-w-[1rem] px-1 text-[9px] font-bold ml-0.5",
+                hasCritical && !isMuted && "animate-pulse"
               )}
             >
               {totalUnread > 99 ? "99+" : totalUnread}
-            </span>
+            </Badge>
           )}
         </Button>
       </PopoverTrigger>
@@ -493,40 +495,80 @@ export function NotificationsCommsHub() {
           </TabsContent>
         </Tabs>
 
-        {/* Footer */}
-        <div className="border-t border-border px-3 py-2 flex items-center justify-between">
-          {isSupported && (
+        {/* Quick Actions */}
+        <div className="border-t border-border px-3 py-2">
+          <div className="flex items-center gap-1.5 mb-2">
+            <Button
+              variant="outline"
+              size="sm"
+              className="flex-1 h-8 text-xs gap-1.5"
+              onClick={() => {
+                navigate("/communication?tab=messages");
+                setIsOpen(false);
+              }}
+            >
+              <MessageSquare className="h-3.5 w-3.5" />
+              Messages
+            </Button>
+            <Button
+              variant="outline"
+              size="sm"
+              className="flex-1 h-8 text-xs gap-1.5"
+              onClick={() => {
+                navigate("/communication?tab=calls");
+                setIsOpen(false);
+              }}
+            >
+              <Phone className="h-3.5 w-3.5" />
+              Calls
+            </Button>
+            <Button
+              variant="outline"
+              size="sm"
+              className="flex-1 h-8 text-xs gap-1.5"
+              onClick={() => {
+                navigate("/communication?tab=pages");
+                setIsOpen(false);
+              }}
+            >
+              <Bell className="h-3.5 w-3.5" />
+              Pages
+            </Button>
+          </div>
+          <div className="flex items-center justify-between">
+            {isSupported && (
+              <Button
+                variant="ghost"
+                size="sm"
+                className="text-xs h-7 gap-1"
+                onClick={async () => {
+                  if (permission !== "granted") {
+                    const granted = await requestPermission();
+                    if (granted) toast.success("Push notifications enabled");
+                  }
+                }}
+              >
+                {permission === "granted" ? (
+                  <Bell className="h-3 w-3 text-primary" />
+                ) : (
+                  <BellOff className="h-3 w-3" />
+                )}
+                {permission === "granted" ? "Push on" : "Enable push"}
+              </Button>
+            )}
             <Button
               variant="ghost"
               size="sm"
-              className="text-xs h-7 gap-1"
-              onClick={async () => {
-                if (permission !== "granted") {
-                  const granted = await requestPermission();
-                  if (granted) toast.success("Push notifications enabled");
-                }
+              className="text-xs h-7 gap-1 ml-auto"
+              onClick={() => {
+                navigate("/communication");
+                setIsOpen(false);
               }}
             >
-              {permission === "granted" ? (
-                <Bell className="h-3 w-3 text-primary" />
-              ) : (
-                <BellOff className="h-3 w-3" />
-              )}
-              {permission === "granted" ? "Push on" : "Enable push"}
+              Open Full Hub
+              <ArrowRight className="h-3 w-3" />
             </Button>
-          )}
-          <Button
-            variant="ghost"
-            size="sm"
-            className="text-xs h-7 gap-1 ml-auto"
-            onClick={() => {
-              navigate("/communication");
-              setIsOpen(false);
-            }}
-          >
-            Open Comms Hub
-            <ArrowRight className="h-3 w-3" />
-          </Button>
+          </div>
         </div>
       </PopoverContent>
     </Popover>
