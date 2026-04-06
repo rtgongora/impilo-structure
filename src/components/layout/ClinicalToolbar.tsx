@@ -43,35 +43,23 @@ export function ClinicalToolbar() {
           <span className="text-[10px] font-medium text-muted-foreground uppercase tracking-wider shrink-0 mr-1.5">Tools</span>
           <div className="h-4 w-px bg-border mr-0.5 shrink-0" />
 
-          {/* Drugs — always visible */}
           <DrugDatabaseSheet />
-
-          {/* Conditions — comprehensive + focused */}
-          {!isSimplified && <ConditionsBrowserSheet />}
-
-          {/* Interactions — comprehensive + focused */}
-          {!isSimplified && <InteractionCheckerSheet />}
-
-          {/* Calculators — all cadres, filtered by complexity */}
+          <ConditionsBrowserSheet />
+          <InteractionCheckerSheet />
           <CalculatorsSheet complexity={complexity} />
-
-          {/* Formulary — comprehensive + focused */}
-          {!isSimplified && <FormularySheet />}
+          <FormularySheet />
 
           <div className="h-4 w-px bg-border mx-0.5 shrink-0" />
 
-          {/* Pathways — comprehensive + focused */}
-          {!isSimplified && (
-            <Button
-              variant="ghost"
-              size="sm"
-              className={`h-8 gap-1.5 text-xs shrink-0 ${isPathwaysActive ? "bg-primary/10 text-primary" : ""}`}
-              onClick={() => setActiveTopBarAction(isPathwaysActive ? null : "pathways")}
-            >
-              <Route className="w-3.5 h-3.5" />
-              Pathways
-            </Button>
-          )}
+          <Button
+            variant="ghost"
+            size="sm"
+            className={`h-8 gap-1.5 text-xs shrink-0 ${isPathwaysActive ? "bg-primary/10 text-primary" : ""}`}
+            onClick={() => setActiveTopBarAction(isPathwaysActive ? null : "pathways")}
+          >
+            <Route className="w-3.5 h-3.5" />
+            Pathways
+          </Button>
 
           {/* AI Assist toggle */}
           <Tooltip>
@@ -84,23 +72,17 @@ export function ClinicalToolbar() {
           </Tooltip>
           {aiAssistEnabled && <AIDiagnosticAssistant />}
 
-          {/* References — comprehensive + focused */}
-          {!isSimplified && <ClinicalReferences />}
+          <ClinicalReferences />
 
-          {/* Clinical Decision Support toggle — comprehensive + focused */}
-          {!isSimplified && (
-            <>
-              <Tooltip>
-                <TooltipTrigger asChild>
-                  <Button variant="ghost" size="icon" className="h-7 w-7 shrink-0" onClick={() => setCdsEnabled(!cdsEnabled)}>
-                    {cdsEnabled ? <ToggleRight className="h-4 w-4 text-emerald-600" /> : <ToggleLeft className="h-4 w-4 text-muted-foreground" />}
-                  </Button>
-                </TooltipTrigger>
-                <TooltipContent side="bottom" className="text-xs">{cdsEnabled ? "Disable" : "Enable"} Clinical Decision Support</TooltipContent>
-              </Tooltip>
-              {cdsEnabled && <CDSAlertBadge />}
-            </>
-          )}
+          <Tooltip>
+            <TooltipTrigger asChild>
+              <Button variant="ghost" size="icon" className="h-7 w-7 shrink-0" onClick={() => setCdsEnabled(!cdsEnabled)}>
+                {cdsEnabled ? <ToggleRight className="h-4 w-4 text-emerald-600" /> : <ToggleLeft className="h-4 w-4 text-muted-foreground" />}
+              </Button>
+            </TooltipTrigger>
+            <TooltipContent side="bottom" className="text-xs">{cdsEnabled ? "Disable" : "Enable"} Clinical Decision Support</TooltipContent>
+          </Tooltip>
+          {cdsEnabled && <CDSAlertBadge />}
 
           <AlertBadge />
           <div className="flex-1" />
@@ -115,7 +97,7 @@ export function ClinicalToolbar() {
         </div>
       </div>
       
-      {cdsEnabled && !isSimplified && <ActiveCDSBanner />}
+      {cdsEnabled && <ActiveCDSBanner />}
     </div>
   );
 }
