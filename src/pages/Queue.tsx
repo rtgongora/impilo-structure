@@ -124,7 +124,7 @@ const Queue = () => {
   if (!selectedCarePoint) {
     return (
       <AppLayout title="Queues & Wards">
-        <div className="flex-1 flex flex-col min-h-0 p-3 gap-2">
+        <div className="flex-1 flex flex-col min-h-0 p-3 gap-2 overflow-auto">
           {/* Care Points — Compact Action Strip */}
           <div className="grid grid-cols-2 lg:grid-cols-4 gap-2 shrink-0">
             {CARE_POINTS.map((cp) => {
@@ -157,10 +157,8 @@ const Queue = () => {
             })}
           </div>
 
-          {/* Dashboard — fills remaining space */}
-          <div className="flex-1 min-h-0 overflow-auto">
-            <WorkspaceDashboardPanel />
-          </div>
+          {/* Dashboard — stretches to fill viewport */}
+          <WorkspaceDashboardPanel />
         </div>
       </AppLayout>
     );
