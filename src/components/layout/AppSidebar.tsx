@@ -133,7 +133,7 @@ const registryAdminItems: NavItem[] = [
 
 const clinicalPriorityItems: NavItem[] = [
   { label: "Dashboard", icon: Home, path: "/" },
-  { label: "My Worklist", icon: ClipboardList, path: "/queue" },
+  { label: "Queues & Wards", icon: ClipboardList, path: "/queue" },
   { label: "Communication", icon: MessageSquare, path: "/communication" },
 ];
 
@@ -225,7 +225,7 @@ const adminNavItems: NavItem[] = [
 
 const homePriorityItems: NavItem[] = [
   { label: "Dashboard", icon: Home, path: "/" },
-  { label: "My Worklist", icon: ClipboardList, path: "/queue" },
+  { label: "Queues & Wards", icon: ClipboardList, path: "/queue" },
   { label: "Communication", icon: MessageSquare, path: "/communication" },
   { label: "Social Hub", icon: Users, path: "/social" },
 ];
