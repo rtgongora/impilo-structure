@@ -186,7 +186,7 @@ const Queue = () => {
     <AppLayout title="Queues & Wards">
       <div className="flex-1 flex flex-col p-2 min-h-0">
         {/* Care Point Header with back nav */}
-        <div className="flex items-center justify-between mb-3 shrink-0">
+        <div className="flex items-center justify-between mb-1.5 shrink-0">
           <div className="flex items-center gap-3">
             <Button variant="ghost" size="icon" className="h-8 w-8" onClick={handleBackToCarePoints}>
               <ArrowLeft className="h-4 w-4" />
