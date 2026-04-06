@@ -75,23 +75,23 @@ export function TopBar() {
       {/* Left: Back, Home, Logo & Actions */}
       <div className="flex items-center gap-2 min-w-0">
         {/* Navigation Buttons */}
-        <div className="flex items-center gap-0.5">
+        <div className="flex items-center gap-1">
           <Button
             variant="ghost"
             size="icon"
-            className="h-8 w-8 text-topbar-muted hover:text-topbar-foreground hover:bg-topbar-foreground/10"
+            className="h-10 w-10 text-topbar-muted hover:text-topbar-foreground hover:bg-topbar-foreground/10"
             onClick={() => navigate(-1)}
           >
-            <ArrowLeft className="w-4 h-4" />
+            <ArrowLeft className="w-5 h-5" />
           </Button>
           <Button
             variant="ghost"
             size="icon"
-            className="h-8 w-8 text-topbar-muted hover:text-topbar-foreground hover:bg-topbar-foreground/10"
+            className="h-10 w-10 text-topbar-muted hover:text-topbar-foreground hover:bg-topbar-foreground/10"
             asChild
           >
             <Link to="/">
-              <Home className="w-4 h-4" />
+              <Home className="w-5 h-5" />
             </Link>
           </Button>
         </div>
@@ -101,7 +101,7 @@ export function TopBar() {
         {/* Top Bar Actions - Only show if patient is active */}
         {hasActivePatient && (
           <>
-            <div className="h-5 w-px bg-topbar-muted/30" />
+            <div className="h-6 w-px bg-topbar-muted/30" />
             <TooltipProvider delayDuration={200}>
                <nav className="flex items-center gap-1">
                 {TOP_BAR_ACTIONS.map((action) => {
@@ -114,39 +114,39 @@ export function TopBar() {
                         <Button
                           variant="ghost"
                           size="sm"
-                          className={`h-9 gap-1.5 text-xs text-topbar-muted hover:text-topbar-foreground hover:bg-topbar-foreground/10
+                          className={`h-10 gap-2 text-sm font-medium text-topbar-muted hover:text-topbar-foreground hover:bg-topbar-foreground/10
                             ${isActive ? "bg-topbar-foreground/15 text-topbar-foreground" : ""}
                           `}
                           onClick={() => setActiveTopBarAction(isActive ? null : action.id)}
                         >
-                          <Icon className="w-4 h-4" />
+                          <Icon className="w-5 h-5" />
                           {action.label}
                         </Button>
                       </TooltipTrigger>
-                      <TooltipContent side="bottom" className="text-xs">
+                      <TooltipContent side="bottom" className="text-sm">
                         {action.label}
                       </TooltipContent>
                     </Tooltip>
                   );
                 })}
                 
-                <div className="h-5 w-px bg-topbar-muted/30 mx-0.5" />
+                <div className="h-6 w-px bg-topbar-muted/30 mx-1" />
                 
                 <Tooltip>
                   <TooltipTrigger asChild>
                     <Button
                       variant="ghost"
                       size="sm"
-                      className="h-9 gap-1.5 text-xs text-topbar-muted hover:text-topbar-foreground hover:bg-topbar-foreground/10"
+                      className="h-10 gap-2 text-sm font-medium text-topbar-muted hover:text-topbar-foreground hover:bg-topbar-foreground/10"
                       asChild
                     >
                       <Link to="/registration">
-                        <UserPlus className="w-4 h-4" />
+                        <UserPlus className="w-5 h-5" />
                         Register
                       </Link>
                     </Button>
                   </TooltipTrigger>
-                  <TooltipContent side="bottom" className="text-xs">
+                  <TooltipContent side="bottom" className="text-sm">
                     Register
                   </TooltipContent>
                 </Tooltip>
