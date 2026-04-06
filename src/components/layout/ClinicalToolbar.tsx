@@ -2,6 +2,7 @@ import { CriticalEventButton } from "@/components/ehr/CriticalEventButton";
 import { CDSAlertBadge } from "@/components/ehr/ClinicalDecisionSupport";
 import { AIDiagnosticAssistant } from "@/components/ehr/AIDiagnosticAssistant";
 import { AlertBadge } from "@/components/alerts/ClinicalAlerts";
+import { ClinicalReferences } from "@/components/ehr/ClinicalReferences";
 import { useEHR } from "@/contexts/EHRContext";
 import { Route } from "lucide-react";
 import { Button } from "@/components/ui/button";
@@ -28,6 +29,7 @@ export function ClinicalToolbar() {
           Care Pathways
         </Button>
         <AIDiagnosticAssistant />
+        <ClinicalReferences />
         <CDSAlertBadge />
         <AlertBadge />
 
