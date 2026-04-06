@@ -109,16 +109,16 @@ export function PatientBanner() {
     <Collapsible open={isExpanded} onOpenChange={setIsExpanded}>
       <div className="bg-card border-b border-border">
         {/* Compact Banner - Always Visible */}
-        <div className="px-4 py-2">
-          <div className="flex items-center justify-between gap-6">
+        <div className="px-3 py-1.5">
+          <div className="flex items-center justify-between gap-4">
             {/* Patient Identity */}
-            <div className="flex items-center gap-4">
-              <div className="w-12 h-12 rounded-full bg-primary/10 flex items-center justify-center border-2 border-primary/30">
-                <User className="w-6 h-6 text-primary" />
+            <div className="flex items-center gap-3">
+              <div className="w-9 h-9 rounded-full bg-primary/10 flex items-center justify-center border-2 border-primary/30">
+                <User className="w-4 h-4 text-primary" />
               </div>
               <div>
                 <div className="flex items-center gap-2">
-                  <h2 className="text-lg font-semibold text-foreground">
+                  <h2 className="text-sm font-semibold text-foreground">
                     {patient.name}
                   </h2>
                   <Badge variant="outline" className="text-xs font-mono">
@@ -137,7 +137,7 @@ export function PatientBanner() {
                     {patient.gender === "female" ? "F" : patient.gender === "male" ? "M" : "O"} • {age}y
                   </Badge>
                 </div>
-                <div className="flex items-center gap-4 text-sm text-muted-foreground mt-0.5">
+                <div className="flex items-center gap-3 text-xs text-muted-foreground">
                   <span className="flex items-center gap-1">
                     <Calendar className="w-3.5 h-3.5" />
                     DOB: {formattedDob}
