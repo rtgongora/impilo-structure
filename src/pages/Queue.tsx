@@ -270,6 +270,11 @@ const Queue = () => {
           </TabsList>
 
           <div className="flex-1 overflow-auto mt-2">
+            {/* Dashboard */}
+            <TabsContent value="dashboard" className="h-full mt-0">
+              <WorkspaceDashboardPanel />
+            </TabsContent>
+
             {/* Patient Intake — Sorting Desk embedded */}
             <TabsContent value="intake" className="h-full mt-0">
               <PatientSortingDesk facilityId={currentFacility?.id} />
@@ -305,6 +310,21 @@ const Queue = () => {
               <div className="max-w-md mx-auto">
                 <SelfCheckInKiosk facilityName="Impilo Health" />
               </div>
+            </TabsContent>
+
+            {/* Stock Management */}
+            <TabsContent value="stock" className="h-full mt-0">
+              <StockManagementPanel />
+            </TabsContent>
+
+            {/* HR & Shifts */}
+            <TabsContent value="hr-shifts" className="h-full mt-0">
+              <HRShiftsPanel />
+            </TabsContent>
+
+            {/* Billing */}
+            <TabsContent value="billing" className="h-full mt-0">
+              <BillingPanel />
             </TabsContent>
 
             {/* Config */}
