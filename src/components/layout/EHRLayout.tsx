@@ -1,3 +1,4 @@
+import { UtilityStrip } from "./UtilityStrip";
 import { TopBar } from "./TopBar";
 import { ClinicalToolbar } from "./ClinicalToolbar";
 import { EncounterMenu } from "./EncounterMenu";
@@ -15,6 +16,9 @@ export function EHRLayout() {
         isCriticalEventActive && "ring-4 ring-critical ring-inset critical-mode"
       )}
     >
+      {/* UTILITY STRIP - User & Facility */}
+      <UtilityStrip />
+
       {/* TOP BAR - Action & Status Layer */}
       <TopBar />
 
