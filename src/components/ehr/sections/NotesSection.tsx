@@ -530,10 +530,7 @@ export function NotesSection() {
           </Card>
         </TabsContent>
 
-        {/* Attachments */}
-        <TabsContent value="attachments" className="space-y-4">
-          <Card>
-            <CardHeader className="flex flex-row items-center justify-between pb-3">
+        {/* Documents & Attachments */}
         {/* Documents & Attachments */}
         <TabsContent value="attachments" className="space-y-4">
           {/* Recently scanned during this encounter */}
