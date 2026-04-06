@@ -33,7 +33,7 @@ import { ClerkingTemplateSelector } from "@/components/ehr/clerking/ClerkingTemp
 import { ClerkingFormEditor } from "@/components/ehr/clerking/ClerkingFormEditor";
 import { CLERKING_TEMPLATES, type CadreLevel, type ClerkingTemplate } from "@/data/clerkingTemplates";
 import { useParams } from "react-router-dom";
-import { useCadreFormConfig } from "@/hooks/useCadreFormConfig";
+import { useCadreFormConfig, setDevCadreOverride, setDevVisitOverride, setDevAcuityOverride, getDevOverrides, useDevOverrideListener, type ClinicalCadre, type VisitType, type AcuityLevel } from "@/hooks/useCadreFormConfig";
 import { CadreHistoryForm } from "@/components/ehr/assessment/CadreHistoryForm";
 import { CadreExamForm } from "@/components/ehr/assessment/CadreExamForm";
 
