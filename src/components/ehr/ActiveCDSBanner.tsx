@@ -155,7 +155,7 @@ export function ActiveCDSBanner() {
     setIsLoadingAI(true);
     try {
       startCorrelation();
-      const { data, error } = await invoke<{ data?: { result?: { redFlags?: string[]; clinicalPearls?: string[] } } }>("ai-diagnostic", {
+      const { data, error } = await invoke<{ result?: { redFlags?: string[]; clinicalPearls?: string[] } }>("ai-diagnostic", {
         type: "cds-guidance",
         patientData: {
           symptoms: ["acute cholecystitis", "fever", "right upper quadrant pain"],
@@ -181,8 +181,8 @@ export function ActiveCDSBanner() {
         },
       });
 
-      if (data?.data?.result) {
-        const result = data.data.result;
+      if (data?.result) {
+        const result = data.result;
         if (result.redFlags?.length) {
           setGuidance((prev) => [
             ...prev,
