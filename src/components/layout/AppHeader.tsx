@@ -99,6 +99,8 @@ export function AppHeader({ title }: AppHeaderProps) {
         
         <HandoffNotifications />
 
+        <HelpMenu variant="icon" />
+
         <Button variant="ghost" size="icon" className="relative h-9 w-9">
           <Bell className="h-4 w-4" />
           <span className="absolute -top-0.5 -right-0.5 h-4 w-4 bg-destructive text-destructive-foreground text-[10px] rounded-full flex items-center justify-center">
