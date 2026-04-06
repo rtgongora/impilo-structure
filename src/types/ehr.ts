@@ -54,7 +54,7 @@ export const TOP_BAR_ACTIONS: TopBarActionConfig[] = [
   { id: "payments", label: "Payments", icon: "CreditCard" },
   { id: "handoff", label: "Shift Handoff", icon: "ClipboardCheck" },
   { id: "workspaces", label: "Workspaces", icon: "Boxes" },
-  { id: "pathways", label: "Care Pathways", icon: "Route" },
+  
   { id: "consumables", label: "Consumables", icon: "Package" },
   { id: "charges", label: "Charges", icon: "Receipt" },
 ];
