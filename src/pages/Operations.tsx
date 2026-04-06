@@ -9,6 +9,10 @@ import { RosterDashboard } from "@/components/roster/RosterDashboard";
 import { OnDutyView } from "@/components/roster/OnDutyView";
 import { CoverRequestWorkflow } from "@/components/roster/CoverRequestWorkflow";
 import { FacilityControlTower } from "@/components/operations/FacilityControlTower";
+import { StockManagementPanel } from "@/components/workspace-ops/StockManagementPanel";
+import { HRShiftsPanel } from "@/components/workspace-ops/HRShiftsPanel";
+import { BillingPanel } from "@/components/workspace-ops/BillingPanel";
+import { WorkspaceDashboardPanel } from "@/components/workspace-ops/WorkspaceDashboardPanel";
 import { useAuth } from "@/contexts/AuthContext";
 import { useSearchParams } from "react-router-dom";
 import { 
@@ -18,7 +22,10 @@ import {
   ClipboardList, 
   ArrowRightLeft,
   Building2,
-  Gauge
+  Gauge,
+  Package,
+  DollarSign,
+  BarChart3
 } from "lucide-react";
 
 export default function Operations() {
