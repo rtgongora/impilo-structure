@@ -243,7 +243,7 @@ const Queue = () => {
           <div className="flex-1 overflow-auto mt-1">
             {/* Dashboard */}
             <TabsContent value="dashboard" className="h-full mt-0">
-              <WorkspaceDashboardPanel />
+              <WorkspaceDashboardPanel carePoint={selectedCarePoint} />
             </TabsContent>
 
             {/* Patient Intake — Sorting Desk embedded */}
