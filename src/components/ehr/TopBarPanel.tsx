@@ -94,7 +94,7 @@ export function TopBarPanel({ action }: TopBarPanelProps) {
         return <ShiftHandoffReport />;
       case "pharmacy":
         return <MedicationDispensing />;
-      case "theatre":
+      case "scheduling":
         return <TheatreBookingSystem />;
       case "payments":
         return <PaymentGateway />;
