@@ -16,6 +16,7 @@ import { HandoffNotifications } from "@/components/handoff/HandoffNotifications"
 import { VoiceCommandButton } from "@/components/voice/VoiceCommandButton";
 import { ActiveWorkspaceIndicator } from "@/components/layout/ActiveWorkspaceIndicator";
 import { FacilitySelector } from "@/components/layout/FacilitySelector";
+import { HelpMenu } from "@/components/help/HelpMenu";
 
 interface AppHeaderProps {
   title?: string;

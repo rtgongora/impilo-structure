@@ -2,6 +2,7 @@ import { UserMenu } from "@/components/auth/UserMenu";
 import { ActiveWorkspaceIndicator } from "@/components/layout/ActiveWorkspaceIndicator";
 import { FacilitySelector } from "@/components/layout/FacilitySelector";
 import { PatientLocationBadge } from "@/components/layout/PatientLocationBadge";
+import { HelpMenu } from "@/components/help/HelpMenu";
 import impiloLogo from "@/assets/impilo-logo.png";
 
 export function UtilityStrip() {
@@ -17,8 +18,9 @@ export function UtilityStrip() {
       {/* Center: Patient Location Context */}
       <PatientLocationBadge />
 
-      {/* Right: Workspace & User */}
+      {/* Right: Help, Workspace & User */}
       <div className="flex items-center gap-2">
+        <HelpMenu variant="icon" />
         <ActiveWorkspaceIndicator compact />
         <div className="h-4 w-px bg-border" />
         <UserMenu />
