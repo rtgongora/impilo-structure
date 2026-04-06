@@ -1,4 +1,6 @@
 import { useState } from "react";
+import { ClinicalDocumentScanner } from "@/components/documents/ClinicalDocumentScanner";
+import { PatientDocumentsPanel } from "@/components/landela/PatientDocumentsPanel";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
