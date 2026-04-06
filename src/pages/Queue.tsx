@@ -17,6 +17,7 @@ import {
   QueuePathwayEditor 
 } from "@/components/queue";
 import { PatientSortingDesk } from "@/components/sorting";
+import { WardManagementPanel } from "@/components/queue/WardManagementPanel";
 import { SelfCheckInKiosk } from "@/components/booking/SelfCheckInKiosk";
 import { BookingManager } from "@/components/booking/BookingManager";
 import { AppLayout } from "@/components/layout/AppLayout";
