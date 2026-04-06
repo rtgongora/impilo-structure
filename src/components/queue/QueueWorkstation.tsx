@@ -156,7 +156,7 @@ export function QueueWorkstation({ facilityId, initialQueueId }: QueueWorkstatio
   }
 
   return (
-    <div className="space-y-4">
+    <div className="flex flex-col h-full gap-4">
       {/* Queue Selector & Actions */}
       <div className="flex items-center justify-between gap-4">
         <div className="flex items-center gap-4">
@@ -205,7 +205,7 @@ export function QueueWorkstation({ facilityId, initialQueueId }: QueueWorkstatio
 
       {/* Main Content - Queue + Appointments Side by Side */}
       {selectedQueueId ? (
-        <ResizablePanelGroup direction="horizontal" className="min-h-[600px] rounded-lg border">
+        <ResizablePanelGroup direction="horizontal" className="flex-1 rounded-lg border">
           {/* Queue Items Panel */}
           <ResizablePanel defaultSize={60} minSize={40}>
             <div className="h-full p-4">
@@ -238,7 +238,7 @@ export function QueueWorkstation({ facilityId, initialQueueId }: QueueWorkstatio
                 </TabsList>
 
                 <TabsContent value="waiting" className="mt-4">
-                  <ScrollArea className="h-[500px]">
+                  <ScrollArea className="flex-1">
                     <div className="space-y-3 pr-4">
                       {waitingItems.length === 0 ? (
                         <Card>
@@ -265,7 +265,7 @@ export function QueueWorkstation({ facilityId, initialQueueId }: QueueWorkstatio
                 </TabsContent>
 
                 <TabsContent value="called" className="mt-4">
-                  <ScrollArea className="h-[500px]">
+                  <ScrollArea className="flex-1">
                     <div className="space-y-3 pr-4">
                       {calledItems.length === 0 ? (
                         <Card>
@@ -290,7 +290,7 @@ export function QueueWorkstation({ facilityId, initialQueueId }: QueueWorkstatio
                 </TabsContent>
 
                 <TabsContent value="in_service" className="mt-4">
-                  <ScrollArea className="h-[500px]">
+                  <ScrollArea className="flex-1">
                     <div className="space-y-3 pr-4">
                       {inServiceItems.length === 0 ? (
                         <Card>
@@ -315,7 +315,7 @@ export function QueueWorkstation({ facilityId, initialQueueId }: QueueWorkstatio
                 </TabsContent>
 
                 <TabsContent value="paused" className="mt-4">
-                  <ScrollArea className="h-[500px]">
+                  <ScrollArea className="flex-1">
                     <div className="space-y-3 pr-4">
                       {pausedItems.map(item => (
                         <QueueItemCard
@@ -343,7 +343,7 @@ export function QueueWorkstation({ facilityId, initialQueueId }: QueueWorkstatio
           </ResizablePanel>
         </ResizablePanelGroup>
       ) : (
-        <Card>
+        <Card className="flex-1 flex items-center justify-center">
           <CardContent className="py-12 text-center">
             <Users className="h-12 w-12 mx-auto mb-4 text-muted-foreground opacity-50" />
             <p className="text-muted-foreground">Select a queue to view patients</p>
