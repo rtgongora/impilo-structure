@@ -1683,6 +1683,101 @@ export type Database = {
         }
         Relationships: []
       }
+      cadre_form_sections: {
+        Row: {
+          cadre_code: string
+          created_at: string
+          id: string
+          is_active: boolean
+          section_code: string
+          section_label: string
+          sort_order: number
+          visibility: Database["public"]["Enums"]["cadre_section_visibility"]
+          visit_type_filter: string[] | null
+        }
+        Insert: {
+          cadre_code: string
+          created_at?: string
+          id?: string
+          is_active?: boolean
+          section_code: string
+          section_label: string
+          sort_order?: number
+          visibility?: Database["public"]["Enums"]["cadre_section_visibility"]
+          visit_type_filter?: string[] | null
+        }
+        Update: {
+          cadre_code?: string
+          created_at?: string
+          id?: string
+          is_active?: boolean
+          section_code?: string
+          section_label?: string
+          sort_order?: number
+          visibility?: Database["public"]["Enums"]["cadre_section_visibility"]
+          visit_type_filter?: string[] | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "cadre_form_sections_cadre_code_fkey"
+            columns: ["cadre_code"]
+            isOneToOne: false
+            referencedRelation: "clinical_cadre_definitions"
+            referencedColumns: ["cadre_code"]
+          },
+        ]
+      }
+      cadre_scope_rules: {
+        Row: {
+          action_code: string
+          cadre_code: string
+          created_at: string
+          description: string | null
+          facility_level_minimum: string | null
+          id: string
+          is_active: boolean
+          permission: Database["public"]["Enums"]["cadre_action_permission"]
+          requires_supervision_by: string | null
+        }
+        Insert: {
+          action_code: string
+          cadre_code: string
+          created_at?: string
+          description?: string | null
+          facility_level_minimum?: string | null
+          id?: string
+          is_active?: boolean
+          permission?: Database["public"]["Enums"]["cadre_action_permission"]
+          requires_supervision_by?: string | null
+        }
+        Update: {
+          action_code?: string
+          cadre_code?: string
+          created_at?: string
+          description?: string | null
+          facility_level_minimum?: string | null
+          id?: string
+          is_active?: boolean
+          permission?: Database["public"]["Enums"]["cadre_action_permission"]
+          requires_supervision_by?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "cadre_scope_rules_cadre_code_fkey"
+            columns: ["cadre_code"]
+            isOneToOne: false
+            referencedRelation: "clinical_cadre_definitions"
+            referencedColumns: ["cadre_code"]
+          },
+          {
+            foreignKeyName: "cadre_scope_rules_requires_supervision_by_fkey"
+            columns: ["requires_supervision_by"]
+            isOneToOne: false
+            referencedRelation: "clinical_cadre_definitions"
+            referencedColumns: ["cadre_code"]
+          },
+        ]
+      }
       call_ice_candidates: {
         Row: {
           candidate_data: Json
@@ -3931,6 +4026,65 @@ export type Database = {
             isOneToOne: false
             referencedRelation: "patients"
             referencedColumns: ["id"]
+          },
+        ]
+      }
+      clinical_cadre_definitions: {
+        Row: {
+          abbreviation: string | null
+          cadre_category: Database["public"]["Enums"]["cadre_category"]
+          cadre_code: string
+          cds_capabilities: Json
+          created_at: string
+          display_name: string
+          form_complexity: Database["public"]["Enums"]["cadre_form_complexity"]
+          is_active: boolean
+          is_surgical: boolean
+          parent_cadre_code: string | null
+          scope_of_practice: Json
+          sort_order: number
+          specialty_exam_sections: Json
+          updated_at: string
+        }
+        Insert: {
+          abbreviation?: string | null
+          cadre_category: Database["public"]["Enums"]["cadre_category"]
+          cadre_code: string
+          cds_capabilities?: Json
+          created_at?: string
+          display_name: string
+          form_complexity?: Database["public"]["Enums"]["cadre_form_complexity"]
+          is_active?: boolean
+          is_surgical?: boolean
+          parent_cadre_code?: string | null
+          scope_of_practice?: Json
+          sort_order?: number
+          specialty_exam_sections?: Json
+          updated_at?: string
+        }
+        Update: {
+          abbreviation?: string | null
+          cadre_category?: Database["public"]["Enums"]["cadre_category"]
+          cadre_code?: string
+          cds_capabilities?: Json
+          created_at?: string
+          display_name?: string
+          form_complexity?: Database["public"]["Enums"]["cadre_form_complexity"]
+          is_active?: boolean
+          is_surgical?: boolean
+          parent_cadre_code?: string | null
+          scope_of_practice?: Json
+          sort_order?: number
+          specialty_exam_sections?: Json
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "clinical_cadre_definitions_parent_cadre_code_fkey"
+            columns: ["parent_cadre_code"]
+            isOneToOne: false
+            referencedRelation: "clinical_cadre_definitions"
+            referencedColumns: ["cadre_code"]
           },
         ]
       }
@@ -37031,6 +37185,21 @@ export type Database = {
       app_role: "admin" | "moderator" | "user" | "dev_tester"
       approval_status: "pending" | "approved" | "suspended" | "rejected"
       arrival_mode: "walk_in" | "appointment" | "referral" | "emergency"
+      cadre_action_permission: "allowed" | "supervised" | "blocked"
+      cadre_category:
+        | "medical_officer"
+        | "medical_specialist"
+        | "surgical_specialist"
+        | "nursing"
+        | "midwifery"
+        | "allied_health"
+        | "diagnostic"
+        | "emergency"
+        | "dental"
+        | "community"
+        | "admin"
+      cadre_form_complexity: "comprehensive" | "focused" | "simplified"
+      cadre_section_visibility: "required" | "optional" | "hidden"
       charge_status:
         | "pending"
         | "approved"
@@ -37729,6 +37898,22 @@ export const Constants = {
       app_role: ["admin", "moderator", "user", "dev_tester"],
       approval_status: ["pending", "approved", "suspended", "rejected"],
       arrival_mode: ["walk_in", "appointment", "referral", "emergency"],
+      cadre_action_permission: ["allowed", "supervised", "blocked"],
+      cadre_category: [
+        "medical_officer",
+        "medical_specialist",
+        "surgical_specialist",
+        "nursing",
+        "midwifery",
+        "allied_health",
+        "diagnostic",
+        "emergency",
+        "dental",
+        "community",
+        "admin",
+      ],
+      cadre_form_complexity: ["comprehensive", "focused", "simplified"],
+      cadre_section_visibility: ["required", "optional", "hidden"],
       charge_status: [
         "pending",
         "approved",
