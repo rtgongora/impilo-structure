@@ -52,7 +52,7 @@ const generateContextualGuidance = (): CDSGuidanceItem[] => [
     severity: "high",
     title: "Renal Dose Adjustment Needed",
     message: "Creatinine rising (1.8 → 2.1 mg/dL). Metformin 500mg requires dose review — hold or reduce per eGFR calculation.",
-    source: "Pharmacy CDS",
+    source: "Pharmacy Clinical Decision Support",
     timestamp: new Date(Date.now() - 5 * 60000),
     dismissed: false,
     actionLabel: "Review Medications",
