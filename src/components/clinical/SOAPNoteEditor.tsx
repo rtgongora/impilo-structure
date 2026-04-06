@@ -40,7 +40,7 @@ export function SOAPNoteEditor({ encounterId, existingNotes = [], onNoteSaved }:
   const [saving, setSaving] = useState(false);
   const [selectedNote, setSelectedNote] = useState<SOAPNote | null>(null);
   
-  const { register, handleSubmit, reset, setValue, formState: { isDirty } } = useForm<SOAPNoteFormData>({
+  const { register, handleSubmit, reset, setValue, watch, formState: { isDirty } } = useForm<SOAPNoteFormData>({
     defaultValues: {
       subjective: '',
       objective: '',
