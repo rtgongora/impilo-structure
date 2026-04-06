@@ -120,51 +120,48 @@ const Queue = () => {
     setSelectedCarePoint(null);
   };
 
-  // ── Care Point Selector (Landing) ──
+  // ── Care Point Selector (Landing) — Dashboard-first ──
   if (!selectedCarePoint) {
     return (
-    <AppLayout title="Queues & Wards">
-        <div className="flex-1 flex flex-col p-4 md:p-6">
-          <div className="mb-6">
-            <p className="text-sm text-muted-foreground">
-              Select a care setting to manage patient flow, queues, wards and workspaces
-            </p>
+      <AppLayout title="Queues & Wards">
+        <div className="flex-1 flex flex-col min-h-0 overflow-auto p-3 gap-3">
+          {/* KPI Row */}
+          <div className="grid grid-cols-2 md:grid-cols-5 gap-2 shrink-0">
+            <Card><CardContent className="pt-3 pb-2 px-3"><div className="flex items-center justify-between mb-1"><Bed className="h-4 w-4 text-amber-500" /></div><p className="text-xl font-bold">82%</p><p className="text-xs text-muted-foreground">98/120 beds</p><p className="text-[10px] text-muted-foreground">Bed Occupancy</p></CardContent></Card>
+            <Card><CardContent className="pt-3 pb-2 px-3"><div className="flex items-center justify-between mb-1"><Users className="h-4 w-4 text-blue-500" /></div><p className="text-xl font-bold">34</p><p className="text-xs text-muted-foreground">23min avg wait</p><p className="text-[10px] text-muted-foreground">Queue Load</p></CardContent></Card>
+            <Card><CardContent className="pt-3 pb-2 px-3"><div className="flex items-center justify-between mb-1"><Activity className="h-4 w-4 text-green-500" /></div><p className="text-xl font-bold">28</p><p className="text-xs text-muted-foreground">2 overtime</p><p className="text-[10px] text-muted-foreground">Staff On Shift</p></CardContent></Card>
+            <Card><CardContent className="pt-3 pb-2 px-3"><div className="flex items-center justify-between mb-1"><Package className="h-4 w-4 text-red-500" /></div><p className="text-xl font-bold">6</p><p className="text-xs text-muted-foreground">8 expiring soon</p><p className="text-[10px] text-muted-foreground">Stock Alerts</p></CardContent></Card>
+            <Card><CardContent className="pt-3 pb-2 px-3"><div className="flex items-center justify-between mb-1"><DollarSign className="h-4 w-4 text-emerald-500" /></div><p className="text-xl font-bold">R45.2k</p><p className="text-xs text-muted-foreground">12 unbilled</p><p className="text-[10px] text-muted-foreground">Today Revenue</p></CardContent></Card>
           </div>
 
-          {/* Care Point Cards */}
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
+          {/* Care Points — Action Cards */}
+          <div className="grid grid-cols-2 lg:grid-cols-4 gap-2 shrink-0">
             {CARE_POINTS.map((cp) => {
               const Icon = cp.icon;
-              // Count relevant queues
               const queueCount = queues.filter(q => {
                 if (cp.id === 'outpatient') return ['opd_triage', 'opd_consultation', 'specialist_clinic', 'anc_clinic', 'hiv_clinic', 'tb_clinic', 'ncd_clinic', 'child_welfare_clinic', 'pharmacy', 'lab_reception', 'lab_sample_collection', 'imaging', 'general_reception'].includes(q.service_type);
                 if (cp.id === 'inpatient') return ['theatre_preop', 'theatre_recovery', 'procedure_room', 'dialysis'].includes(q.service_type);
                 if (cp.id === 'virtual') return ['telecare'].includes(q.service_type);
                 return ['specialist_pool'].includes(q.service_type);
               }).length;
-
               return (
-                <Card 
-                  key={cp.id} 
+                <Card
+                  key={cp.id}
                   className="group cursor-pointer hover:shadow-md transition-all hover:border-primary/30 relative overflow-hidden"
                   onClick={() => handleSelectCarePoint(cp.id)}
                 >
                   <div className={`absolute top-0 left-0 right-0 h-1 ${cp.color}`} />
-                  <CardContent className="pt-6 pb-4">
-                    <div className="flex flex-col items-center text-center gap-3">
-                      <div className={`h-14 w-14 rounded-xl ${cp.color} flex items-center justify-center text-white shadow-sm`}>
-                        <Icon className="h-7 w-7" />
-                      </div>
-                      <div>
-                        <h3 className="font-semibold text-base">{cp.label}</h3>
-                        <p className="text-xs text-muted-foreground mt-1">{cp.description}</p>
-                      </div>
-                      {queueCount > 0 && (
-                        <Badge variant="secondary" className="text-xs">
-                          {queueCount} active queue{queueCount !== 1 ? 's' : ''}
-                        </Badge>
-                      )}
-                      <ChevronRight className="h-4 w-4 text-muted-foreground group-hover:text-primary transition-colors" />
+                  <CardContent className="pt-4 pb-3 px-4 flex items-center gap-3">
+                    <div className={`h-11 w-11 rounded-lg ${cp.color} flex items-center justify-center text-white shrink-0`}>
+                      <Icon className="h-5 w-5" />
+                    </div>
+                    <div className="min-w-0 flex-1">
+                      <h3 className="font-semibold text-sm">{cp.label}</h3>
+                      <p className="text-xs text-muted-foreground truncate">{cp.description}</p>
+                    </div>
+                    <div className="flex flex-col items-end gap-1 shrink-0">
+                      {queueCount > 0 && <Badge variant="secondary" className="text-[10px]">{queueCount} queues</Badge>}
+                      <ChevronRight className="h-4 w-4 text-muted-foreground group-hover:text-primary" />
                     </div>
                   </CardContent>
                 </Card>
@@ -172,38 +169,9 @@ const Queue = () => {
             })}
           </div>
 
-          {/* Quick Actions */}
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
-            <Card className="cursor-pointer hover:bg-accent/50 transition-colors" onClick={() => handleSelectCarePoint('outpatient')}>
-              <CardContent className="py-3 px-4 flex items-center gap-3">
-                <UserPlus className="h-5 w-5 text-blue-500" />
-                <div>
-                  <p className="font-medium text-sm">New Patient Arrival</p>
-                  <p className="text-xs text-muted-foreground">Register, triage & assign to queue</p>
-                </div>
-                <ChevronRight className="h-4 w-4 ml-auto text-muted-foreground" />
-              </CardContent>
-            </Card>
-            <Card className="cursor-pointer hover:bg-accent/50 transition-colors" onClick={() => handleSelectCarePoint('inpatient')}>
-              <CardContent className="py-3 px-4 flex items-center gap-3">
-                <Bed className="h-5 w-5 text-amber-500" />
-                <div>
-                  <p className="font-medium text-sm">Ward Management</p>
-                  <p className="text-xs text-muted-foreground">Beds, admissions & discharges</p>
-                </div>
-                <ChevronRight className="h-4 w-4 ml-auto text-muted-foreground" />
-              </CardContent>
-            </Card>
-            <Card className="cursor-pointer hover:bg-accent/50 transition-colors" onClick={() => { setSelectedCarePoint('outpatient'); setActiveTab('bookings'); }}>
-              <CardContent className="py-3 px-4 flex items-center gap-3">
-                <CalendarDays className="h-5 w-5 text-green-500" />
-                <div>
-                  <p className="font-medium text-sm">Today's Bookings</p>
-                  <p className="text-xs text-muted-foreground">Scheduled appointments & reviews</p>
-                </div>
-                <ChevronRight className="h-4 w-4 ml-auto text-muted-foreground" />
-              </CardContent>
-            </Card>
+          {/* Dashboard Content — fills remaining space */}
+          <div className="flex-1 min-h-0">
+            <WorkspaceDashboardPanel />
           </div>
         </div>
       </AppLayout>
@@ -216,7 +184,7 @@ const Queue = () => {
 
   return (
     <AppLayout title="Queues & Wards">
-      <div className="flex-1 flex flex-col p-4 min-h-0">
+      <div className="flex-1 flex flex-col p-2 min-h-0">
         {/* Care Point Header with back nav */}
         <div className="flex items-center justify-between mb-3 shrink-0">
           <div className="flex items-center gap-3">
