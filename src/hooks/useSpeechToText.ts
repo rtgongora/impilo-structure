@@ -28,7 +28,7 @@ interface UseSpeechToTextReturn {
 }
 
 // Check Web Speech API support
-const getSpeechRecognitionClass = (): (new () => SpeechRecognition) | null => {
+const getSpeechRecognitionClass = (): any => {
   return (window as any).SpeechRecognition || (window as any).webkitSpeechRecognition || null;
 };
 
