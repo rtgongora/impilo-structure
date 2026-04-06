@@ -11,6 +11,7 @@ import { NotesSection } from "./sections/NotesSection";
 import { OutcomeSection } from "./sections/OutcomeSection";
 import { PatientBanner } from "./PatientBanner";
 import { EncounterPatientHeader } from "./EncounterPatientHeader";
+import { EncounterStepNav } from "./EncounterStepNav";
 
 const sectionComponents: Record<string, React.ComponentType> = {
   overview: OverviewSection,
@@ -61,6 +62,9 @@ export function EncounterSection() {
           <SectionComponent />
         </motion.div>
       </div>
+
+      {/* Step Navigation */}
+      <EncounterStepNav />
     </div>
   );
 }
