@@ -43,7 +43,7 @@ export function WorkspaceDashboardPanel() {
         <MetricCard icon={DollarSign} label="Today Revenue" value={`R${(METRICS.billing.todayRevenue / 1000).toFixed(1)}k`} sub={`${METRICS.billing.unbilled} unbilled`} trend="up" color="text-emerald-500" />
       </div>
 
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-3">
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-3 min-h-[340px]">
         {/* Alerts */}
         <Card className="lg:col-span-1">
           <CardHeader className="pb-2">
