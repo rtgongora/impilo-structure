@@ -171,7 +171,10 @@ export function PortalPHRHub() {
           <ImmunizationRecords />
         </TabsContent>
 
-        <TabsContent value="documents" className="mt-4">
+        <TabsContent value="documents" className="mt-4 space-y-4">
+          {/* Real patient documents from DMS */}
+          <PatientDocumentsPanel patientId="portal-patient" />
+          {/* Clinical documents (system-generated summaries, reports) */}
           <ClinicalDocuments />
         </TabsContent>
 
