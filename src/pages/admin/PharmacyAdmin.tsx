@@ -25,7 +25,7 @@ const statusColor = (s: string) => {
 export default function PharmacyAdmin() {
   return (
     <AppLayout title="Pharmacy Service v1.1">
-      <Tabs defaultValue="worklist" className="space-y-4">
+      <Tabs defaultValue="worklist" className="flex-1 flex flex-col min-h-0 p-4">
         <TabsList className="flex flex-wrap gap-1">
           <TabsTrigger value="worklist"><Pill className="w-4 h-4 mr-1" />Dispense Worklist</TabsTrigger>
           <TabsTrigger value="stock"><Package className="w-4 h-4 mr-1" />Stock</TabsTrigger>

@@ -17,7 +17,7 @@ import { inventoryClient } from "@/lib/kernel/inventory/inventoryClient";
 export default function InventoryAdmin() {
   return (
     <AppLayout title="Inventory & Supply Chain v1.1">
-      <Tabs defaultValue="dashboard" className="space-y-4">
+      <Tabs defaultValue="dashboard" className="flex-1 flex flex-col min-h-0 p-4">
         <TabsList className="flex flex-wrap gap-1">
           <TabsTrigger value="dashboard"><Warehouse className="w-4 h-4 mr-1" />Dashboard</TabsTrigger>
           <TabsTrigger value="movements"><ArrowLeftRight className="w-4 h-4 mr-1" />Movements</TabsTrigger>

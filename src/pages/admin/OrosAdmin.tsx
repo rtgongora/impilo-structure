@@ -26,7 +26,7 @@ export default function OrosAdmin() {
 
   return (
     <AppLayout title="OROS — Orders & Results">
-      <div className="p-6 space-y-4">
+      <div className="flex-1 flex flex-col min-h-0 p-6 overflow-auto space-y-4">
         <div className="flex items-center gap-2">
           <Activity className="h-6 w-6 text-primary" />
           <h1 className="text-2xl font-bold">OROS v1.1 — Orders & Results Orchestration</h1>
