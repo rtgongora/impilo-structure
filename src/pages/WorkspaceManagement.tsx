@@ -77,7 +77,7 @@ const WorkspaceManagement = () => {
   const [filterFacility, setFilterFacility] = useState<string>("all");
   const [isCreateDialogOpen, setIsCreateDialogOpen] = useState(false);
   const [selectedWorkspace, setSelectedWorkspace] = useState<Workspace | null>(null);
-  
+  const [activeOpsWorkspace, setActiveOpsWorkspace] = useState<Workspace | null>(null);
   // Form state for creating/editing
   const [formData, setFormData] = useState({
     name: "",
