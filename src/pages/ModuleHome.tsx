@@ -174,7 +174,7 @@ const workModuleCategories: ModuleCategory[] = [
     modules: [
       { id: "dashboard", label: "My Dashboard", description: "Your worklist, tasks, and alerts", icon: ClipboardList, path: "/dashboard", color: "bg-primary" },
       { id: "communication", label: "Communication", description: "Messages, pages & calls", icon: MessageSquare, path: "/communication", color: "bg-primary" },
-      { id: "queue", label: "Queues, Wards & Workspaces", description: "Patient flow: intake, triage, queues & wards", icon: Users, path: "/queue", color: "bg-orange-500" },
+      { id: "queue", label: "Queues & Wards", description: "Patient flow: intake, triage, queues & ward management", icon: Users, path: "/queue", color: "bg-orange-500" },
       { id: "ehr", label: "Patient Encounters", description: "Clinical documentation & care", icon: Stethoscope, path: "/encounter", color: "bg-blue-500", roles: ["doctor", "nurse", "specialist", "admin"] },
       { id: "beds", label: "Bed Management", description: "Ward status & admissions", icon: Bed, path: "/beds", color: "bg-purple-500", roles: ["doctor", "nurse", "admin"], capabilities: ["inpatient"] },
       { id: "discharge", label: "Discharge & Exit", description: "Discharges, deaths & exits", icon: DoorOpen, path: "/discharge", color: "bg-amber-600", roles: ["doctor", "nurse", "admin"] },
@@ -702,11 +702,10 @@ export default function ModuleHome() {
                       Dashboard
                     </Button>
                     <Button
-                      variant="outline"
-                      className="h-12 px-5 flex items-center gap-2 text-base hover:bg-blue-500 hover:text-white group"
+                      className="h-14 px-6 flex items-center gap-3 text-base font-semibold bg-orange-500 hover:bg-orange-600 text-white shadow-md"
                       onClick={() => navigate("/queue")}
                     >
-                      <Users className="h-5 w-5 text-blue-500 group-hover:text-white" />
+                      <Users className="h-6 w-6" />
                       Queues & Wards
                     </Button>
                     <Button

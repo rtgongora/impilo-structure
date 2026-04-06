@@ -107,7 +107,7 @@ const Queue = () => {
   // ── Care Point Selector (Landing) ──
   if (!selectedCarePoint) {
     return (
-      <AppLayout title="Queues, Wards & Workspaces">
+    <AppLayout title="Queues & Wards">
         <div className="flex-1 flex flex-col p-4 md:p-6">
           <div className="mb-6">
             <p className="text-sm text-muted-foreground">
@@ -199,7 +199,7 @@ const Queue = () => {
   const CareIcon = currentCarePoint.icon;
 
   return (
-    <AppLayout title="Queues, Wards & Workspaces">
+    <AppLayout title="Queues & Wards">
       <div className="flex-1 flex flex-col p-4 min-h-0">
         {/* Care Point Header with back nav */}
         <div className="flex items-center justify-between mb-3 shrink-0">
