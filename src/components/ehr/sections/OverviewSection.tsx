@@ -138,51 +138,6 @@ export function OverviewSection() {
 
   return (
     <div className="space-y-6">
-      {/* Patient Banner */}
-      <Card className="border-l-4 border-l-primary">
-        <CardContent className="p-6">
-          <div className="flex items-start justify-between">
-            <div className="flex items-center gap-4">
-              <div className="w-16 h-16 rounded-full bg-primary/10 flex items-center justify-center">
-                <User className="w-8 h-8 text-primary" />
-              </div>
-              <div>
-                <h2 className="text-2xl font-semibold">{patient.name}</h2>
-                <div className="flex items-center gap-4 text-muted-foreground mt-1">
-                  <span className="font-mono text-sm">{patient.mrn}</span>
-                  <span>•</span>
-                  <span>{patient.gender === "female" ? "Female" : "Male"}</span>
-                  <span>•</span>
-                  <span>DOB: {format(new Date(patient.dateOfBirth), "dd MMM yyyy")}</span>
-                  <span>•</span>
-                  <span>38 years</span>
-                </div>
-                {primaryDiagnosis && (
-                  <div className="flex items-center gap-2 mt-2">
-                    <Stethoscope className="w-4 h-4 text-primary" />
-                    <span className="text-sm font-medium">{primaryDiagnosis.name}</span>
-                    <Badge variant="outline" className="text-xs">{primaryDiagnosis.icdCode}</Badge>
-                  </div>
-                )}
-              </div>
-            </div>
-            <div className="text-right">
-              <Badge 
-                variant={currentEncounter.status === 'active' ? 'default' : 'secondary'}
-                className="mb-2"
-              >
-                {currentEncounter.type.toUpperCase()}
-              </Badge>
-              <div className="text-sm text-muted-foreground">
-                {patient.ward} • {patient.bed}
-              </div>
-              <div className="text-xs text-muted-foreground mt-1">
-                LOS: {los} days
-              </div>
-            </div>
-          </div>
-        </CardContent>
-      </Card>
 
       {/* Clinical Alerts & Allergies */}
       <div className="grid grid-cols-2 gap-4">
