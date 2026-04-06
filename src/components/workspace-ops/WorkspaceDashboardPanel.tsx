@@ -33,7 +33,7 @@ const ACTIVITY_FEED = [
 
 export function WorkspaceDashboardPanel() {
   return (
-    <div className="space-y-4">
+    <div className="space-y-3">
       {/* KPI Row */}
       <div className="grid grid-cols-2 md:grid-cols-5 gap-3">
         <MetricCard icon={Bed} label="Bed Occupancy" value={`${METRICS.beds.occupancy}%`} sub={`${METRICS.beds.occupied}/${METRICS.beds.total}`} trend="up" color="text-amber-500" />
@@ -43,7 +43,7 @@ export function WorkspaceDashboardPanel() {
         <MetricCard icon={DollarSign} label="Today Revenue" value={`R${(METRICS.billing.todayRevenue / 1000).toFixed(1)}k`} sub={`${METRICS.billing.unbilled} unbilled`} trend="up" color="text-emerald-500" />
       </div>
 
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-4">
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-3">
         {/* Alerts */}
         <Card className="lg:col-span-1">
           <CardHeader className="pb-2">

@@ -124,17 +124,8 @@ const Queue = () => {
   if (!selectedCarePoint) {
     return (
       <AppLayout title="Queues & Wards">
-        <div className="flex-1 flex flex-col min-h-0 overflow-auto p-3 gap-3">
-          {/* KPI Row */}
-          <div className="grid grid-cols-2 md:grid-cols-5 gap-2 shrink-0">
-            <Card><CardContent className="pt-3 pb-2 px-3"><div className="flex items-center justify-between mb-1"><Bed className="h-4 w-4 text-amber-500" /></div><p className="text-xl font-bold">82%</p><p className="text-xs text-muted-foreground">98/120 beds</p><p className="text-[10px] text-muted-foreground">Bed Occupancy</p></CardContent></Card>
-            <Card><CardContent className="pt-3 pb-2 px-3"><div className="flex items-center justify-between mb-1"><Users className="h-4 w-4 text-blue-500" /></div><p className="text-xl font-bold">34</p><p className="text-xs text-muted-foreground">23min avg wait</p><p className="text-[10px] text-muted-foreground">Queue Load</p></CardContent></Card>
-            <Card><CardContent className="pt-3 pb-2 px-3"><div className="flex items-center justify-between mb-1"><Activity className="h-4 w-4 text-green-500" /></div><p className="text-xl font-bold">28</p><p className="text-xs text-muted-foreground">2 overtime</p><p className="text-[10px] text-muted-foreground">Staff On Shift</p></CardContent></Card>
-            <Card><CardContent className="pt-3 pb-2 px-3"><div className="flex items-center justify-between mb-1"><Package className="h-4 w-4 text-red-500" /></div><p className="text-xl font-bold">6</p><p className="text-xs text-muted-foreground">8 expiring soon</p><p className="text-[10px] text-muted-foreground">Stock Alerts</p></CardContent></Card>
-            <Card><CardContent className="pt-3 pb-2 px-3"><div className="flex items-center justify-between mb-1"><DollarSign className="h-4 w-4 text-emerald-500" /></div><p className="text-xl font-bold">R45.2k</p><p className="text-xs text-muted-foreground">12 unbilled</p><p className="text-[10px] text-muted-foreground">Today Revenue</p></CardContent></Card>
-          </div>
-
-          {/* Care Points — Action Cards */}
+        <div className="flex-1 flex flex-col min-h-0 p-3 gap-2">
+          {/* Care Points — Compact Action Strip */}
           <div className="grid grid-cols-2 lg:grid-cols-4 gap-2 shrink-0">
             {CARE_POINTS.map((cp) => {
               const Icon = cp.icon;
@@ -151,26 +142,23 @@ const Queue = () => {
                   onClick={() => handleSelectCarePoint(cp.id)}
                 >
                   <div className={`absolute top-0 left-0 right-0 h-1 ${cp.color}`} />
-                  <CardContent className="pt-4 pb-3 px-4 flex items-center gap-3">
-                    <div className={`h-11 w-11 rounded-lg ${cp.color} flex items-center justify-center text-white shrink-0`}>
-                      <Icon className="h-5 w-5" />
+                  <CardContent className="pt-3 pb-2 px-3 flex items-center gap-2">
+                    <div className={`h-9 w-9 rounded-lg ${cp.color} flex items-center justify-center text-white shrink-0`}>
+                      <Icon className="h-4 w-4" />
                     </div>
                     <div className="min-w-0 flex-1">
                       <h3 className="font-semibold text-sm">{cp.label}</h3>
-                      <p className="text-xs text-muted-foreground truncate">{cp.description}</p>
+                      <p className="text-[11px] text-muted-foreground truncate">{cp.description}</p>
                     </div>
-                    <div className="flex flex-col items-end gap-1 shrink-0">
-                      {queueCount > 0 && <Badge variant="secondary" className="text-[10px]">{queueCount} queues</Badge>}
-                      <ChevronRight className="h-4 w-4 text-muted-foreground group-hover:text-primary" />
-                    </div>
+                    <ChevronRight className="h-4 w-4 text-muted-foreground group-hover:text-primary shrink-0" />
                   </CardContent>
                 </Card>
               );
             })}
           </div>
 
-          {/* Dashboard Content — fills remaining space */}
-          <div className="flex-1 min-h-0">
+          {/* Dashboard — fills remaining space */}
+          <div className="flex-1 min-h-0 overflow-auto">
             <WorkspaceDashboardPanel />
           </div>
         </div>
