@@ -4,6 +4,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Textarea } from "@/components/ui/textarea";
+import { DictationButton } from "@/components/ui/dictation-button";
 import { Label } from "@/components/ui/label";
 import { Badge } from "@/components/ui/badge";
 import { ScrollArea } from "@/components/ui/scroll-area";
@@ -143,9 +144,17 @@ export function SOAPNoteEditor({ encounterId, existingNotes = [], onNoteSaved }:
           <CardContent>
             <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
               <div>
-                <Label htmlFor="subjective" className="text-base font-semibold text-blue-600">
-                  S - Subjective
-                </Label>
+                <div className="flex items-center justify-between">
+                  <Label htmlFor="subjective" className="text-base font-semibold text-blue-600">
+                    S - Subjective
+                  </Label>
+                  <DictationButton
+                    value={watch('subjective')}
+                    onValueChange={(v) => setValue('subjective', v, { shouldDirty: true })}
+                    size="sm"
+                    className="h-6 w-6"
+                  />
+                </div>
                 <p className="text-xs text-muted-foreground mb-1">
                   Patient's symptoms, history, and concerns in their own words
                 </p>
@@ -159,9 +168,17 @@ export function SOAPNoteEditor({ encounterId, existingNotes = [], onNoteSaved }:
               </div>
 
               <div>
-                <Label htmlFor="objective" className="text-base font-semibold text-green-600">
-                  O - Objective
-                </Label>
+                <div className="flex items-center justify-between">
+                  <Label htmlFor="objective" className="text-base font-semibold text-green-600">
+                    O - Objective
+                  </Label>
+                  <DictationButton
+                    value={watch('objective')}
+                    onValueChange={(v) => setValue('objective', v, { shouldDirty: true })}
+                    size="sm"
+                    className="h-6 w-6"
+                  />
+                </div>
                 <p className="text-xs text-muted-foreground mb-1">
                   Physical examination findings, vital signs, test results
                 </p>
@@ -175,9 +192,17 @@ export function SOAPNoteEditor({ encounterId, existingNotes = [], onNoteSaved }:
               </div>
 
               <div>
-                <Label htmlFor="assessment" className="text-base font-semibold text-orange-600">
-                  A - Assessment
-                </Label>
+                <div className="flex items-center justify-between">
+                  <Label htmlFor="assessment" className="text-base font-semibold text-orange-600">
+                    A - Assessment
+                  </Label>
+                  <DictationButton
+                    value={watch('assessment')}
+                    onValueChange={(v) => setValue('assessment', v, { shouldDirty: true })}
+                    size="sm"
+                    className="h-6 w-6"
+                  />
+                </div>
                 <p className="text-xs text-muted-foreground mb-1">
                   Diagnosis, differential diagnoses, clinical reasoning
                 </p>
@@ -191,9 +216,17 @@ export function SOAPNoteEditor({ encounterId, existingNotes = [], onNoteSaved }:
               </div>
 
               <div>
-                <Label htmlFor="plan" className="text-base font-semibold text-purple-600">
-                  P - Plan
-                </Label>
+                <div className="flex items-center justify-between">
+                  <Label htmlFor="plan" className="text-base font-semibold text-purple-600">
+                    P - Plan
+                  </Label>
+                  <DictationButton
+                    value={watch('plan')}
+                    onValueChange={(v) => setValue('plan', v, { shouldDirty: true })}
+                    size="sm"
+                    className="h-6 w-6"
+                  />
+                </div>
                 <p className="text-xs text-muted-foreground mb-1">
                   Treatment plan, medications, follow-up, patient education
                 </p>
