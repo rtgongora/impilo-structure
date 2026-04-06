@@ -38,3 +38,6 @@ verify_jwt = false
 
 [functions.mushex-v1]
 verify_jwt = false
+
+[functions.elevenlabs-scribe]
+verify_jwt = false
