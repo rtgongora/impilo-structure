@@ -33,7 +33,7 @@ const ACTIVITY_FEED = [
 
 export function WorkspaceDashboardPanel() {
   return (
-    <div className="space-y-4">
+    <div className="space-y-3">
       {/* KPI Row */}
       <div className="grid grid-cols-2 md:grid-cols-5 gap-3">
         <MetricCard icon={Bed} label="Bed Occupancy" value={`${METRICS.beds.occupancy}%`} sub={`${METRICS.beds.occupied}/${METRICS.beds.total}`} trend="up" color="text-amber-500" />
