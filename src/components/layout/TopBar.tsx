@@ -1,4 +1,5 @@
 import { useEHR } from "@/contexts/EHRContext";
+import { UserMenu } from "@/components/auth/UserMenu";
 import { TOP_BAR_ACTIONS } from "@/types/ehr";
 import { Tooltip, TooltipContent, TooltipTrigger, TooltipProvider } from "@/components/ui/tooltip";
 import {
@@ -201,13 +202,17 @@ export function TopBar() {
         </div>
       )}
 
-      {/* Right: Search & Workspace */}
+      {/* Right: Search, Workspace & User */}
       <div className="flex items-center gap-1.5 shrink-0">
         {hasActivePatient && <PatientSearch />}
 
         {hasActivePatient && <div className="h-5 w-px bg-topbar-muted/30" />}
 
         {hasActivePatient && <ActiveWorkspaceIndicator compact />}
+
+        <div className="h-5 w-px bg-topbar-muted/30" />
+
+        <UserMenu />
       </div>
     </header>
   );
