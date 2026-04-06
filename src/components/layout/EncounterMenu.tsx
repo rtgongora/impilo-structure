@@ -11,10 +11,7 @@ import {
   FileEdit,
   CheckCircle,
   FolderOpen,
-  Circle,
-  CircleDot,
   CheckCircle2,
-  AlertCircle,
   Sparkles,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
@@ -73,20 +70,20 @@ export function EncounterMenu() {
   return (
     <aside
       className={cn(
-        "w-56 bg-encounter-bg border-l border-border flex flex-col transition-opacity duration-200",
+        "w-64 bg-encounter-bg border-l border-border flex flex-col transition-opacity duration-200",
         isDeemphasized && "opacity-50 pointer-events-none"
       )}
     >
       {/* Header with Progress */}
-      <div className="px-4 py-3 border-b border-border">
-        <h2 className="text-sm font-semibold text-foreground tracking-tight">
+      <div className="px-4 py-4 border-b border-border">
+        <h2 className="text-base font-bold text-foreground tracking-tight">
           Encounter Record
         </h2>
-        <div className="flex items-center gap-2 mt-2">
-          <Progress value={wizard.progress} className="h-2 flex-1" />
-          <span className="text-xs text-muted-foreground font-semibold">{wizard.progress}%</span>
+        <div className="flex items-center gap-3 mt-3">
+          <Progress value={wizard.progress} className="h-2.5 flex-1" />
+          <span className="text-sm text-muted-foreground font-bold tabular-nums">{wizard.progress}%</span>
         </div>
-        <p className="text-[10px] text-muted-foreground mt-1">
+        <p className="text-xs text-muted-foreground mt-1.5">
           {wizard.attentionSections.length > 0
             ? `${wizard.attentionSections.length} sections need attention`
             : "All sections reviewed"}
@@ -94,24 +91,24 @@ export function EncounterMenu() {
       </div>
 
       {/* Patient File Button */}
-      <div className="px-3 py-2 border-b border-border">
+      <div className="px-3 py-3 border-b border-border">
         <Button
           variant={isPatientFileOpen ? "secondary" : "outline"}
-          size="sm"
-          className="w-full justify-start gap-2 h-9 text-sm"
+          size="default"
+          className="w-full justify-start gap-3 h-11 text-sm font-medium"
           onClick={handlePatientFileClick}
         >
-          <FolderOpen className="h-4 w-4" />
+          <FolderOpen className="h-5 w-5" />
           Patient File
           {isPatientFileOpen && (
-            <Badge variant="secondary" className="ml-auto text-[10px] h-4">Active</Badge>
+            <Badge variant="secondary" className="ml-auto text-xs h-5 px-2">Active</Badge>
           )}
         </Button>
       </div>
 
-      {/* Menu Items - Full height cards */}
-      <nav className="flex-1 p-2 overflow-y-auto">
-        <ul className="space-y-1">
+      {/* Menu Items */}
+      <nav className="flex-1 p-3 overflow-y-auto">
+        <ul className="space-y-1.5">
           {ENCOUNTER_MENU_ITEMS.map((item, index) => {
             const Icon = iconMap[item.icon];
             const isActive = activeMenuItem === item.id;
@@ -129,7 +126,7 @@ export function EncounterMenu() {
                 <button
                   onClick={() => setActiveMenuItem(item.id)}
                   className={cn(
-                    "w-full flex items-start gap-3 px-3 py-2.5 rounded-lg text-left transition-all duration-150 border-l-2",
+                    "w-full flex items-start gap-3 px-3 py-3 rounded-lg text-left transition-all duration-150 border-l-3",
                     "hover:bg-encounter-item-hover group",
                     statusColors[status],
                     statusBg[status],
@@ -141,7 +138,7 @@ export function EncounterMenu() {
                 >
                   <div
                     className={cn(
-                      "w-8 h-8 rounded-md flex items-center justify-center transition-colors shrink-0 mt-0.5",
+                      "w-9 h-9 rounded-md flex items-center justify-center transition-colors shrink-0",
                       isActive
                         ? "bg-primary text-primary-foreground"
                         : status === "completed"
@@ -150,24 +147,24 @@ export function EncounterMenu() {
                     )}
                   >
                     {status === "completed" ? (
-                      <CheckCircle2 className="w-4 h-4" />
+                      <CheckCircle2 className="w-5 h-5" />
                     ) : (
-                      <Icon className="w-4 h-4" />
+                      <Icon className="w-5 h-5" />
                     )}
                   </div>
                   <div className="flex-1 min-w-0">
                     <div className="flex items-center gap-1.5">
                       <span className={cn(
-                        "text-sm font-medium truncate",
+                        "text-sm font-semibold",
                         isActive ? "text-foreground" : "text-foreground/80"
                       )}>
                         {item.label}
                       </span>
                       {isRecommendedNext && !isActive && (
-                        <Sparkles className="w-3 h-3 text-primary shrink-0 animate-pulse" />
+                        <Sparkles className="w-3.5 h-3.5 text-primary shrink-0 animate-pulse" />
                       )}
                     </div>
-                    <span className="text-[10px] text-muted-foreground leading-tight line-clamp-1">
+                    <span className="text-xs text-muted-foreground leading-snug line-clamp-2 mt-0.5">
                       {recommendation.reason}
                     </span>
                   </div>

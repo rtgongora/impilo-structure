@@ -14,7 +14,6 @@ export function PatientLocationBadge() {
   return <PatientLocationContent />;
 }
 
-/** Safe hook that returns null outside EHR context */
 function useEHRSafe() {
   try {
     return useEHR();
@@ -31,7 +30,6 @@ function PatientLocationContent() {
 
   const queueId = searchParams.get("queueId");
 
-  // Fetch queue name if source is queue
   useEffect(() => {
     if (!queueId) return;
     supabase
@@ -50,61 +48,54 @@ function PatientLocationContent() {
   const source = patientContext.source;
   const patient = currentEncounter.patient;
 
-  // Determine location display
   const getLocationInfo = () => {
-    // Telemedicine / remote
     if (encounterType === "outpatient" && source === "referral") {
       return {
-        icon: <Video className="h-3 w-3" />,
+        icon: <Video className="h-3.5 w-3.5" />,
         label: "Remote Consult",
         detail: currentFacility?.name || "Remote",
         variant: "secondary" as const,
       };
     }
 
-    // Inpatient with ward/bed
     if (encounterType === "inpatient" && patient.ward) {
       return {
-        icon: <Bed className="h-3 w-3" />,
+        icon: <Bed className="h-3.5 w-3.5" />,
         label: patient.ward,
         detail: patient.bed ? `${patient.bed}` : undefined,
         variant: "default" as const,
       };
     }
 
-    // From queue
     if (source === "queue" && queueName) {
       return {
-        icon: <Users className="h-3 w-3" />,
+        icon: <Users className="h-3.5 w-3.5" />,
         label: queueName,
         detail: currentFacility?.name,
         variant: "default" as const,
       };
     }
 
-    // Emergency
     if (encounterType === "emergency") {
       return {
-        icon: <MapPin className="h-3 w-3" />,
+        icon: <MapPin className="h-3.5 w-3.5" />,
         label: "Emergency Dept",
         detail: currentFacility?.name,
         variant: "destructive" as const,
       };
     }
 
-    // Outpatient at facility
     if (currentFacility) {
       return {
-        icon: <Building2 className="h-3 w-3" />,
+        icon: <Building2 className="h-3.5 w-3.5" />,
         label: "Outpatient",
         detail: currentFacility.name,
         variant: "default" as const,
       };
     }
 
-    // Fallback - remote/no facility
     return {
-      icon: <Globe className="h-3 w-3" />,
+      icon: <Globe className="h-3.5 w-3.5" />,
       label: "Remote Consult",
       detail: "No facility assigned",
       variant: "outline" as const,
@@ -118,14 +109,14 @@ function PatientLocationContent() {
       <div className="h-4 w-px bg-border" />
       <Badge
         variant={location.variant}
-        className="gap-1.5 text-[10px] font-medium py-0.5 px-2"
+        className="gap-1.5 text-xs font-medium py-1 px-3"
       >
         {location.icon}
         <span>{location.label}</span>
         {location.detail && (
           <>
             <span className="opacity-50">·</span>
-            <span className="opacity-75 truncate max-w-[140px]">{location.detail}</span>
+            <span className="opacity-75 truncate max-w-[180px]">{location.detail}</span>
           </>
         )}
       </Badge>
