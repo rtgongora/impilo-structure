@@ -1,6 +1,7 @@
 import { ReactNode } from "react";
 import { AppSidebar } from "./AppSidebar";
 import { AppHeader } from "./AppHeader";
+import { UtilityStrip } from "./UtilityStrip";
 import { HelpMenu } from "@/components/help/HelpMenu";
 
 interface AppLayoutProps {
@@ -16,7 +17,12 @@ export function AppLayout({ children, title }: AppLayoutProps) {
 
       {/* Main Content */}
       <div className="flex-1 flex flex-col overflow-hidden min-w-0">
+        {/* UTILITY STRIP — Who, What, Where (system-wide) */}
+        <UtilityStrip />
+
+        {/* APP HEADER — Navigation & Search */}
         <AppHeader title={title} />
+
         <main className="flex-1 flex flex-col overflow-auto overscroll-contain">
           {children}
         </main>
