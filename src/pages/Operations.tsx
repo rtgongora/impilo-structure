@@ -34,7 +34,7 @@ export default function Operations() {
   const [searchParams, setSearchParams] = useSearchParams();
   
   const tabParam = searchParams.get('tab');
-  const [activeTab, setActiveTab] = useState(tabParam || "shift");
+  const [activeTab, setActiveTab] = useState(tabParam || "overview");
 
   useEffect(() => {
     setPageContext("operations");
