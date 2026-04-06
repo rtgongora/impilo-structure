@@ -174,6 +174,18 @@ export default function Operations() {
             <CoverRequestWorkflow facilityId={facilityId} providerId={providerId} />
           </TabsContent>
 
+          <TabsContent value="stock" className="mt-6">
+            <StockManagementPanel />
+          </TabsContent>
+
+          <TabsContent value="hr-shifts" className="mt-6">
+            <HRShiftsPanel />
+          </TabsContent>
+
+          <TabsContent value="billing" className="mt-6">
+            <BillingPanel />
+          </TabsContent>
+
           <TabsContent value="workspaces" className="mt-6">
             <Card>
               <CardHeader>
@@ -188,10 +200,7 @@ export default function Operations() {
               <CardContent>
                 <div className="p-8 text-center text-muted-foreground">
                   <Building2 className="h-12 w-12 mx-auto mb-4 opacity-50" />
-                  <p>Workspace administration coming soon.</p>
-                  <p className="text-sm mt-2">
-                    Configure departments, wards, and service points.
-                  </p>
+                  <p>Navigate to Workspace Management for full workspace administration.</p>
                 </div>
               </CardContent>
             </Card>
