@@ -16,6 +16,7 @@ import { HandoffNotifications } from "@/components/handoff/HandoffNotifications"
 import { VoiceCommandButton } from "@/components/voice/VoiceCommandButton";
 import { ActiveWorkspaceIndicator } from "@/components/layout/ActiveWorkspaceIndicator";
 import { FacilitySelector } from "@/components/layout/FacilitySelector";
+import { HelpMenu } from "@/components/help/HelpMenu";
 
 interface AppHeaderProps {
   title?: string;
@@ -97,6 +98,8 @@ export function AppHeader({ title }: AppHeaderProps) {
         <VoiceCommandButton onCommand={(cmd, action) => console.log(action, cmd)} />
         
         <HandoffNotifications />
+
+        <HelpMenu variant="icon" />
 
         <Button variant="ghost" size="icon" className="relative h-9 w-9">
           <Bell className="h-4 w-4" />
