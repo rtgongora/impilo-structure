@@ -35,6 +35,7 @@ import {
 } from "@/data/mockClinicalData";
 import { LiveVitalsMonitor } from "@/components/ehr/LiveVitalsMonitor";
 import { AllergiesAlert } from "@/components/ehr/AllergiesAlert";
+import { PatientDocumentsPanel } from "@/components/landela/PatientDocumentsPanel";
 
 function VitalCard({ 
   icon: Icon, 
@@ -216,7 +217,7 @@ export function OverviewSection() {
           </CardContent>
         </Card>
 
-        {/* Encounter Details */}
+        {/* Encounter Details & Documents */}
         <Card>
           <CardHeader className="pb-2">
             <CardTitle className="text-base">Encounter Details</CardTitle>
@@ -237,32 +238,14 @@ export function OverviewSection() {
               <span className="text-muted-foreground">Location:</span>
               <span>{currentEncounter.location}</span>
             </div>
-            
+
+            {/* Compact Documents Widget */}
             <div className="border-t border-border pt-3 mt-3">
-              <div className="text-xs font-medium text-muted-foreground mb-2">RECENT ACTIVITY</div>
-              <div className="space-y-2">
-                <div className="flex items-start gap-2 text-xs">
-                  <Clock className="w-3 h-3 text-muted-foreground mt-0.5" />
-                  <div>
-                    <div>Vital signs recorded</div>
-                    <div className="text-muted-foreground">15 min ago</div>
-                  </div>
-                </div>
-                <div className="flex items-start gap-2 text-xs">
-                  <Clock className="w-3 h-3 text-muted-foreground mt-0.5" />
-                  <div>
-                    <div>Medication administered</div>
-                    <div className="text-muted-foreground">1 hour ago</div>
-                  </div>
-                </div>
-                <div className="flex items-start gap-2 text-xs">
-                  <Clock className="w-3 h-3 text-muted-foreground mt-0.5" />
-                  <div>
-                    <div>Lab results received</div>
-                    <div className="text-muted-foreground">3 hours ago</div>
-                  </div>
-                </div>
-              </div>
+              <PatientDocumentsPanel
+                patientId={patient.id || currentEncounter.id}
+                encounterId={currentEncounter.id}
+                compact={true}
+              />
             </div>
           </CardContent>
         </Card>

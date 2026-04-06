@@ -18,10 +18,12 @@ import {
   Pill,
   Heart,
   Syringe,
-  Activity
+  Activity,
+  ScanLine
 } from "lucide-react";
 import { useEHR } from "@/contexts/EHRContext";
-import { DocumentsLibrary } from "@/components/patient/DocumentsLibrary";
+import { PatientDocumentsPanel } from "@/components/landela/PatientDocumentsPanel";
+import { ClinicalDocumentScanner, ScannedDocument } from "@/components/documents/ClinicalDocumentScanner";
 import { VisitsTimeline } from "@/components/patient/VisitsTimeline";
 import { usePatientSummary } from "@/hooks/useSummaries";
 import { toast } from "sonner";
@@ -91,7 +93,7 @@ export function PatientFileWorkspace() {
 
           {/* Documents Tab */}
           <TabsContent value="documents" className="h-full m-0 p-6 overflow-auto">
-            <DocumentsLibrary patientId={patientId} />
+            <PatientDocumentsPanel patientId={patientId} />
           </TabsContent>
 
           {/* IPS Tab */}

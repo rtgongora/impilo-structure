@@ -17,6 +17,7 @@ import { PostEncounterNavigation } from "@/components/ehr/PostEncounterNavigatio
 import { toast } from "sonner";
 import { SummaryActions } from "@/components/summaries";
 import { useEHR } from "@/contexts/EHRContext";
+import { PatientDocumentsPanel } from "@/components/landela/PatientDocumentsPanel";
 type DispositionType = "discharge" | "admit" | "transfer" | "refer" | "death" | "lama" | "";
 
 const DISPOSITION_OPTIONS = [
@@ -143,6 +144,14 @@ export function OutcomeSection() {
 
       {/* Disposition-specific Forms */}
       {disposition && renderDispositionForm()}
+
+      {/* Attached Documents for Outcome */}
+      {disposition && (
+        <PatientDocumentsPanel
+          patientId={currentEncounter.patient.id}
+          encounterId={currentEncounter.id}
+        />
+      )}
 
       {/* Post-Encounter Navigation */}
       <PostEncounterNavigation 

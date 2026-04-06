@@ -1,4 +1,5 @@
 import { useState, useEffect } from "react";
+import { PatientDocumentsPanel } from "@/components/landela/PatientDocumentsPanel";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/contexts/AuthContext";
 import { Button } from "@/components/ui/button";
@@ -375,11 +376,7 @@ export const PatientProfile = ({ patient, onBack, onUpdate }: PatientProfileProp
               </TabsContent>
 
               <TabsContent value="documents" className="mt-4">
-                <Card>
-                  <CardContent className="py-8 text-center text-muted-foreground">
-                    No documents uploaded yet
-                  </CardContent>
-                </Card>
+                <PatientDocumentsPanel patientId={patient.id} />
               </TabsContent>
 
               <TabsContent value="activity" className="mt-4">

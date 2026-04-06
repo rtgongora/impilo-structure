@@ -13,7 +13,8 @@ import {
   Activity,
   FileText,
   Heart,
-  ExternalLink
+  ExternalLink,
+  Upload
 } from "lucide-react";
 import { IPSViewer } from "./IPSViewer";
 import { ConditionsList } from "./ConditionsList";
@@ -21,6 +22,8 @@ import { ImmunizationRecords } from "./ImmunizationRecords";
 import { AllergyList } from "./AllergyList";
 import { ClinicalDocuments } from "./ClinicalDocuments";
 import { HealthDataExport } from "./HealthDataExport";
+import { PatientDocumentsPanel } from "@/components/landela/PatientDocumentsPanel";
+import { ClinicalDocumentScanner } from "@/components/documents/ClinicalDocumentScanner";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -168,7 +171,10 @@ export function PortalPHRHub() {
           <ImmunizationRecords />
         </TabsContent>
 
-        <TabsContent value="documents" className="mt-4">
+        <TabsContent value="documents" className="mt-4 space-y-4">
+          {/* Real patient documents from DMS */}
+          <PatientDocumentsPanel patientId="portal-patient" />
+          {/* Clinical documents (system-generated summaries, reports) */}
           <ClinicalDocuments />
         </TabsContent>
 
