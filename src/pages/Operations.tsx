@@ -9,6 +9,10 @@ import { RosterDashboard } from "@/components/roster/RosterDashboard";
 import { OnDutyView } from "@/components/roster/OnDutyView";
 import { CoverRequestWorkflow } from "@/components/roster/CoverRequestWorkflow";
 import { FacilityControlTower } from "@/components/operations/FacilityControlTower";
+import { StockManagementPanel } from "@/components/workspace-ops/StockManagementPanel";
+import { HRShiftsPanel } from "@/components/workspace-ops/HRShiftsPanel";
+import { BillingPanel } from "@/components/workspace-ops/BillingPanel";
+import { WorkspaceDashboardPanel } from "@/components/workspace-ops/WorkspaceDashboardPanel";
 import { useAuth } from "@/contexts/AuthContext";
 import { useSearchParams } from "react-router-dom";
 import { 
@@ -18,7 +22,10 @@ import {
   ClipboardList, 
   ArrowRightLeft,
   Building2,
-  Gauge
+  Gauge,
+  Package,
+  DollarSign,
+  BarChart3
 } from "lucide-react";
 
 export default function Operations() {
@@ -27,7 +34,7 @@ export default function Operations() {
   const [searchParams, setSearchParams] = useSearchParams();
   
   const tabParam = searchParams.get('tab');
-  const [activeTab, setActiveTab] = useState(tabParam || "shift");
+  const [activeTab, setActiveTab] = useState(tabParam || "overview");
 
   useEffect(() => {
     setPageContext("operations");
@@ -62,32 +69,52 @@ export default function Operations() {
         </div>
 
         <Tabs value={activeTab} onValueChange={handleTabChange} className="w-full">
-          <TabsList className="grid w-full grid-cols-6 lg:w-auto lg:inline-grid">
-            <TabsTrigger value="control-tower" className="flex items-center gap-2">
-              <Gauge className="h-4 w-4" />
+          <TabsList className="flex-wrap justify-start h-auto gap-1">
+            <TabsTrigger value="overview" className="flex items-center gap-1.5 text-xs">
+              <BarChart3 className="h-3.5 w-3.5" />
+              <span className="hidden sm:inline">Overview</span>
+            </TabsTrigger>
+            <TabsTrigger value="control-tower" className="flex items-center gap-1.5 text-xs">
+              <Gauge className="h-3.5 w-3.5" />
               <span className="hidden sm:inline">Control Tower</span>
             </TabsTrigger>
-            <TabsTrigger value="shift" className="flex items-center gap-2">
-              <Clock className="h-4 w-4" />
+            <TabsTrigger value="shift" className="flex items-center gap-1.5 text-xs">
+              <Clock className="h-3.5 w-3.5" />
               <span className="hidden sm:inline">My Shift</span>
             </TabsTrigger>
-            <TabsTrigger value="on-duty" className="flex items-center gap-2">
-              <Users className="h-4 w-4" />
+            <TabsTrigger value="on-duty" className="flex items-center gap-1.5 text-xs">
+              <Users className="h-3.5 w-3.5" />
               <span className="hidden sm:inline">On Duty</span>
             </TabsTrigger>
-            <TabsTrigger value="roster" className="flex items-center gap-2">
-              <Calendar className="h-4 w-4" />
+            <TabsTrigger value="roster" className="flex items-center gap-1.5 text-xs">
+              <Calendar className="h-3.5 w-3.5" />
               <span className="hidden sm:inline">Roster</span>
             </TabsTrigger>
-            <TabsTrigger value="cover" className="flex items-center gap-2">
-              <ArrowRightLeft className="h-4 w-4" />
+            <TabsTrigger value="cover" className="flex items-center gap-1.5 text-xs">
+              <ArrowRightLeft className="h-3.5 w-3.5" />
               <span className="hidden sm:inline">Cover Requests</span>
             </TabsTrigger>
-            <TabsTrigger value="workspaces" className="flex items-center gap-2">
-              <Building2 className="h-4 w-4" />
+            <TabsTrigger value="stock" className="flex items-center gap-1.5 text-xs">
+              <Package className="h-3.5 w-3.5" />
+              <span className="hidden sm:inline">Stock</span>
+            </TabsTrigger>
+            <TabsTrigger value="hr-shifts" className="flex items-center gap-1.5 text-xs">
+              <Users className="h-3.5 w-3.5" />
+              <span className="hidden sm:inline">HR & Shifts</span>
+            </TabsTrigger>
+            <TabsTrigger value="billing" className="flex items-center gap-1.5 text-xs">
+              <DollarSign className="h-3.5 w-3.5" />
+              <span className="hidden sm:inline">Billing</span>
+            </TabsTrigger>
+            <TabsTrigger value="workspaces" className="flex items-center gap-1.5 text-xs">
+              <Building2 className="h-3.5 w-3.5" />
               <span className="hidden sm:inline">Workspaces</span>
             </TabsTrigger>
           </TabsList>
+
+          <TabsContent value="overview" className="mt-6">
+            <WorkspaceDashboardPanel />
+          </TabsContent>
 
           <TabsContent value="control-tower" className="mt-6">
             <FacilityControlTower facilityId={facilityId} facilityName={facilityName} />
@@ -147,6 +174,18 @@ export default function Operations() {
             <CoverRequestWorkflow facilityId={facilityId} providerId={providerId} />
           </TabsContent>
 
+          <TabsContent value="stock" className="mt-6">
+            <StockManagementPanel />
+          </TabsContent>
+
+          <TabsContent value="hr-shifts" className="mt-6">
+            <HRShiftsPanel />
+          </TabsContent>
+
+          <TabsContent value="billing" className="mt-6">
+            <BillingPanel />
+          </TabsContent>
+
           <TabsContent value="workspaces" className="mt-6">
             <Card>
               <CardHeader>
@@ -161,10 +200,7 @@ export default function Operations() {
               <CardContent>
                 <div className="p-8 text-center text-muted-foreground">
                   <Building2 className="h-12 w-12 mx-auto mb-4 opacity-50" />
-                  <p>Workspace administration coming soon.</p>
-                  <p className="text-sm mt-2">
-                    Configure departments, wards, and service points.
-                  </p>
+                  <p>Navigate to Workspace Management for full workspace administration.</p>
                 </div>
               </CardContent>
             </Card>

@@ -4,6 +4,7 @@ import { useAuth } from "@/contexts/AuthContext";
 import { useSystemRoles } from "@/hooks/useSystemRoles";
 import { supabase } from "@/integrations/supabase/client";
 import { AppLayout } from "@/components/layout/AppLayout";
+import { WorkspaceOpsHub, type WorkspaceOpsType } from "@/components/workspace-ops/WorkspaceOpsHub";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -76,7 +77,7 @@ const WorkspaceManagement = () => {
   const [filterFacility, setFilterFacility] = useState<string>("all");
   const [isCreateDialogOpen, setIsCreateDialogOpen] = useState(false);
   const [selectedWorkspace, setSelectedWorkspace] = useState<Workspace | null>(null);
-  
+  const [activeOpsWorkspace, setActiveOpsWorkspace] = useState<Workspace | null>(null);
   // Form state for creating/editing
   const [formData, setFormData] = useState({
     name: "",
@@ -266,6 +267,22 @@ const WorkspaceManagement = () => {
       <AppLayout>
         <div className="flex items-center justify-center h-[60vh]">
           <RefreshCw className="h-8 w-8 animate-spin text-muted-foreground" />
+        </div>
+      </AppLayout>
+    );
+  }
+
+  // If a workspace is open in ops mode, show the ops hub
+  if (activeOpsWorkspace) {
+    return (
+      <AppLayout>
+        <div className="p-4 h-[calc(100vh-4rem)]">
+          <WorkspaceOpsHub
+            workspaceName={activeOpsWorkspace.name}
+            workspaceType={activeOpsWorkspace.workspace_type as WorkspaceOpsType}
+            facilityName={activeOpsWorkspace.facility?.name}
+            onBack={() => setActiveOpsWorkspace(null)}
+          />
         </div>
       </AppLayout>
     );
@@ -543,6 +560,17 @@ const WorkspaceManagement = () => {
                         </div>
                       </div>
                       <div className="flex items-center gap-2">
+                        {workspace.is_active && (
+                          <Button
+                            variant="default"
+                            size="sm"
+                            className="gap-1"
+                            onClick={() => setActiveOpsWorkspace(workspace)}
+                          >
+                            <Eye className="h-3.5 w-3.5" />
+                            Open
+                          </Button>
+                        )}
                         <Button
                           variant="ghost"
                           size="icon"
