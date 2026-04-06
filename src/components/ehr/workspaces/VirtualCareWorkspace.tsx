@@ -6,6 +6,7 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Textarea } from "@/components/ui/textarea";
+import { DictatableTextarea } from "@/components/ui/dictatable-textarea";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
@@ -447,7 +448,7 @@ export function VirtualCareWorkspace() {
 
               <div className="space-y-2">
                 <Label>Assessment</Label>
-                <Textarea
+                <DictatableTextarea
                   value={assessment}
                   onChange={(e) => setAssessment(e.target.value)}
                   rows={3}
@@ -457,7 +458,7 @@ export function VirtualCareWorkspace() {
 
               <div className="space-y-2">
                 <Label>Plan</Label>
-                <Textarea
+                <DictatableTextarea
                   value={plan}
                   onChange={(e) => setPlan(e.target.value)}
                   rows={3}
