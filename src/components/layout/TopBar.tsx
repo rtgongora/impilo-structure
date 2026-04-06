@@ -38,10 +38,8 @@ import {
   AlertDialogTrigger,
 } from "@/components/ui/alert-dialog";
 
-import { ActiveWorkspaceIndicator } from "@/components/layout/ActiveWorkspaceIndicator";
 import { Link, useNavigate } from "react-router-dom";
 import { PatientSearch } from "@/components/search/PatientSearch";
-import impiloLogo from "@/assets/impilo-logo.png";
 
 const iconMap: Record<string, React.ComponentType<{ className?: string }>> = {
   Boxes,
