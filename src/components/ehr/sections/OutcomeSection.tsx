@@ -608,58 +608,62 @@ function TransferForm() {
 
 function ReferForm() {
   return (
-    <Card>
-      <CardHeader className="pb-3">
-        <CardTitle className="text-base flex items-center gap-2">
-          <Send className="w-5 h-5 text-blue-500" />
-          Outpatient Referral
-        </CardTitle>
-      </CardHeader>
-      <CardContent className="space-y-4">
-        <div className="grid grid-cols-2 gap-4">
-          <div>
-            <Label className="text-sm font-medium">Referral Destination</Label>
-            <select className="mt-2 w-full p-2 border rounded-lg bg-background">
-              <option value="">Select clinic/facility...</option>
-              <option value="diabetes">Diabetes Clinic</option>
-              <option value="cardiology">Cardiology Clinic</option>
-              <option value="surgery">Surgical Outpatient</option>
-              <option value="physio">Physiotherapy</option>
-              <option value="nutrition">Nutrition Clinic</option>
-            </select>
-          </div>
-          <div>
-            <Label className="text-sm font-medium">Urgency</Label>
-            <div className="flex gap-2 mt-2">
-              {["Routine", "Soon", "Urgent"].map((level) => (
-                <Badge 
-                  key={level} 
-                  variant={level === "Routine" ? "outline" : level === "Soon" ? "secondary" : "default"}
-                  className="cursor-pointer"
-                >
-                  {level}
-                </Badge>
-              ))}
+    <div className="space-y-4">
+      <Card>
+        <CardHeader className="pb-3">
+          <CardTitle className="text-base flex items-center gap-2">
+            <Send className="w-5 h-5 text-primary" />
+            Outpatient Referral
+          </CardTitle>
+        </CardHeader>
+        <CardContent className="space-y-4">
+          <div className="grid grid-cols-2 gap-4">
+            <div>
+              <Label className="text-sm font-medium">Referral Destination</Label>
+              <select className="mt-2 w-full p-2 border rounded-lg bg-background">
+                <option value="">Select clinic/facility...</option>
+                <option value="diabetes">Diabetes Clinic</option>
+                <option value="cardiology">Cardiology Clinic</option>
+                <option value="surgery">Surgical Outpatient</option>
+                <option value="physio">Physiotherapy</option>
+                <option value="nutrition">Nutrition Clinic</option>
+              </select>
+            </div>
+            <div>
+              <Label className="text-sm font-medium">Urgency</Label>
+              <div className="flex gap-2 mt-2">
+                {["Routine", "Soon", "Urgent"].map((level) => (
+                  <Badge 
+                    key={level} 
+                    variant={level === "Routine" ? "outline" : level === "Soon" ? "secondary" : "default"}
+                    className="cursor-pointer"
+                  >
+                    {level}
+                  </Badge>
+                ))}
+              </div>
             </div>
           </div>
-        </div>
 
-        <div>
-          <Label className="text-sm font-medium">Reason for Referral</Label>
-          <Textarea className="mt-2" placeholder="Clinical indication for referral..." />
-        </div>
+          <div>
+            <Label className="text-sm font-medium">Reason for Referral</Label>
+            <Textarea className="mt-2" placeholder="Clinical indication for referral..." />
+          </div>
 
-        <div>
-          <Label className="text-sm font-medium">Key Clinical Information</Label>
-          <Textarea className="mt-2 min-h-[100px]" placeholder="Relevant history, findings, and current management..." />
-        </div>
+          <div>
+            <Label className="text-sm font-medium">Key Clinical Information</Label>
+            <Textarea className="mt-2 min-h-[100px]" placeholder="Relevant history, findings, and current management..." />
+          </div>
 
-        <div>
-          <Label className="text-sm font-medium">Specific Questions for Specialist</Label>
-          <Textarea className="mt-2" placeholder="What do you need the specialist to address?" />
-        </div>
-      </CardContent>
-    </Card>
+          <div>
+            <Label className="text-sm font-medium">Specific Questions for Specialist</Label>
+            <Textarea className="mt-2" placeholder="What do you need the specialist to address?" />
+          </div>
+        </CardContent>
+      </Card>
+
+      <FollowUpSchedulingCard />
+    </div>
   );
 }
 
