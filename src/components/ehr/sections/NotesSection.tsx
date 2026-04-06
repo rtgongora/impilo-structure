@@ -534,85 +534,53 @@ export function NotesSection() {
         <TabsContent value="attachments" className="space-y-4">
           <Card>
             <CardHeader className="flex flex-row items-center justify-between pb-3">
-              <CardTitle className="text-base">Documents & Attachments</CardTitle>
-              <div className="flex gap-2">
-                <ClinicalDocumentScanner
-                  variant="button"
-                  context="encounter"
-                  onDocumentScanned={handleDocumentScanned}
-                  buttonLabel="Scan"
-                />
-                <Button size="sm" variant="outline">
-                  <Plus className="w-4 h-4 mr-1" />
-                  Upload
-                </Button>
-              </div>
-            </CardHeader>
-            <CardContent>
-              {/* Category Filter */}
-              <div className="flex items-center gap-2 mb-4 flex-wrap">
-                <Badge variant="secondary" className="cursor-pointer">All Files</Badge>
-                <Badge variant="outline" className="cursor-pointer hover:bg-muted">Imaging</Badge>
-                <Badge variant="outline" className="cursor-pointer hover:bg-muted">Laboratory</Badge>
-                <Badge variant="outline" className="cursor-pointer hover:bg-muted">Clinical Documents</Badge>
-                <Badge variant="outline" className="cursor-pointer hover:bg-muted">Clinical Images</Badge>
-                <Badge variant="outline" className="cursor-pointer hover:bg-muted">Correspondence</Badge>
-              </div>
-
-              <div className="space-y-2">
-                {MOCK_ATTACHMENTS.map((attachment) => (
-                  <div
-                    key={attachment.id}
-                    className="p-3 border rounded-lg hover:bg-muted/50 transition-colors flex items-center justify-between group"
-                  >
-                    <div className="flex items-center gap-3">
-                      <div className="w-10 h-10 rounded bg-muted flex items-center justify-center">
-                        {getFileIcon(attachment.type)}
-                      </div>
-                      <div>
-                        <h4 className="font-medium text-sm">{attachment.name}</h4>
-                        <div className="flex items-center gap-2 text-xs text-muted-foreground">
-                          <span>{attachment.date}</span>
-                          <span>•</span>
-                          <span>{attachment.size}</span>
-                          <span>•</span>
-                          <span className="flex items-center gap-1">
-                            <User className="w-3 h-3" />
-                            {attachment.uploadedBy}
-                          </span>
-                        </div>
-                      </div>
+        {/* Documents & Attachments */}
+        <TabsContent value="attachments" className="space-y-4">
+          {/* Recently scanned during this encounter */}
+          {scannedAttachments.length > 0 && (
+            <Card>
+              <CardHeader className="pb-2">
+                <CardTitle className="text-sm flex items-center gap-2">
+                  <ScanLine className="h-4 w-4 text-primary" />
+                  Scanned This Session ({scannedAttachments.length})
+                </CardTitle>
+              </CardHeader>
+              <CardContent className="space-y-1.5">
+                {scannedAttachments.map((doc) => (
+                  <div key={doc.id} className="flex items-center gap-3 p-2 rounded-lg border bg-muted/30">
+                    <div className="h-8 w-8 rounded bg-muted flex items-center justify-center shrink-0">
+                      {doc.imageData ? (
+                        <img src={doc.imageData} alt="" className="h-full w-full object-cover rounded" />
+                      ) : (
+                        <FileText className="h-4 w-4 text-muted-foreground" />
+                      )}
                     </div>
-                    <div className="flex items-center gap-2">
-                      <Badge variant="outline" className={`text-xs ${getCategoryColor(attachment.category)}`}>
-                        {attachment.category}
-                      </Badge>
-                      <div className="flex items-center gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
-                        <Button variant="ghost" size="icon" className="h-8 w-8">
-                          <Eye className="w-4 h-4" />
-                        </Button>
-                        <Button variant="ghost" size="icon" className="h-8 w-8">
-                          <Download className="w-4 h-4" />
-                        </Button>
-                        <Button variant="ghost" size="icon" className="h-8 w-8 text-destructive">
-                          <Trash2 className="w-4 h-4" />
-                        </Button>
-                      </div>
+                    <div className="flex-1 min-w-0">
+                      <p className="text-sm font-medium truncate">{doc.name}</p>
+                      <p className="text-xs text-muted-foreground">{doc.type}</p>
                     </div>
+                    <Badge variant="secondary" className="text-[10px]">New</Badge>
                   </div>
                 ))}
-              </div>
+              </CardContent>
+            </Card>
+          )}
 
-              {/* Upload Zone */}
-              <div className="mt-4 p-6 border-2 border-dashed rounded-lg text-center hover:bg-muted/30 transition-colors cursor-pointer">
-                <Paperclip className="w-8 h-8 mx-auto text-muted-foreground mb-2" />
-                <p className="text-sm font-medium">Drag and drop files here</p>
-                <p className="text-xs text-muted-foreground mt-1">
-                  or click to browse • PDF, JPG, PNG up to 10MB
-                </p>
-              </div>
-            </CardContent>
-          </Card>
+          {/* Full Patient Documents Library */}
+          {patientId ? (
+            <PatientDocumentsPanel
+              patientId={patientId}
+              encounterId={encounterId}
+              visitId={encounterId}
+            />
+          ) : (
+            <Card>
+              <CardContent className="p-6 text-center text-muted-foreground">
+                <FolderOpen className="h-10 w-10 mx-auto mb-3 text-muted-foreground/50" />
+                <p className="text-sm">Select a patient to view documents</p>
+              </CardContent>
+            </Card>
+          )}
         </TabsContent>
       </Tabs>
     </div>
