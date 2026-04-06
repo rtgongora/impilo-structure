@@ -46,23 +46,23 @@ export function EncounterMenu() {
   return (
     <aside
       className={cn(
-        "w-64 bg-encounter-bg border-l border-border flex flex-col transition-opacity duration-200",
+        "w-52 bg-encounter-bg border-l border-border flex flex-col transition-opacity duration-200",
         isDeemphasized && "opacity-50 pointer-events-none"
       )}
     >
       {/* Header */}
-      <div className="p-4 border-b border-border">
-        <h2 className="text-sm font-semibold text-foreground uppercase tracking-wide">
+      <div className="px-3 py-2 border-b border-border">
+        <h2 className="text-xs font-semibold text-foreground uppercase tracking-wide">
           Encounter Record
         </h2>
-        <p className="text-xs text-muted-foreground mt-0.5">Clinical Documentation</p>
       </div>
 
       {/* Patient File Button */}
-      <div className="p-2 border-b border-border">
+      <div className="px-2 py-1.5 border-b border-border">
         <Button
           variant={isPatientFileOpen ? "secondary" : "outline"}
-          className="w-full justify-start gap-2"
+          size="sm"
+          className="w-full justify-start gap-2 h-8 text-xs"
           onClick={handlePatientFileClick}
         >
           <FolderOpen className="h-4 w-4" />
@@ -90,36 +90,26 @@ export function EncounterMenu() {
                 <button
                   onClick={() => setActiveMenuItem(item.id)}
                   className={cn(
-                    "w-full flex items-center gap-3 px-3 py-2.5 rounded-lg text-left transition-all duration-150",
+                    "w-full flex items-center gap-2 px-2 py-1.5 rounded-md text-left transition-all duration-150",
                     "hover:bg-encounter-item-hover group",
                     isActive
                       ? "bg-encounter-item-active-bg text-encounter-item-active font-medium"
-                      : "text-secondary-foreground"
+                      : "text-foreground/80"
                   )}
                 >
                   <div
                     className={cn(
-                      "w-8 h-8 rounded-md flex items-center justify-center transition-colors",
+                      "w-6 h-6 rounded flex items-center justify-center transition-colors shrink-0",
                       isActive
                         ? "bg-primary text-primary-foreground"
                         : "bg-encounter-item text-muted-foreground group-hover:bg-primary-muted group-hover:text-primary"
                     )}
                   >
-                    <Icon className="w-4 h-4" />
+                    <Icon className="w-3.5 h-3.5" />
                   </div>
-                  <div className="flex-1 min-w-0">
-                    <div className="text-sm truncate">{item.label}</div>
-                    <div
-                      className={cn(
-                        "text-xs truncate",
-                        isActive ? "text-encounter-item-active/70" : "text-muted-foreground"
-                      )}
-                    >
-                      {item.description}
-                    </div>
-                  </div>
+                  <span className="text-xs truncate flex-1 min-w-0">{item.label}</span>
                   {isActive && (
-                    <ChevronRight className="w-4 h-4 text-encounter-item-active" />
+                    <ChevronRight className="w-3 h-3 text-encounter-item-active shrink-0" />
                   )}
                 </button>
               </motion.li>
@@ -129,8 +119,8 @@ export function EncounterMenu() {
       </nav>
 
       {/* Footer */}
-      <div className="p-4 border-t border-border bg-muted/30">
-        <div className="flex items-center justify-between text-xs text-muted-foreground">
+      <div className="px-3 py-2 border-t border-border bg-muted/30">
+        <div className="flex items-center justify-between text-[10px] text-muted-foreground">
           <span>Last saved: 2 min ago</span>
           <span className="flex items-center gap-1">
             <span className="w-2 h-2 rounded-full bg-status-active" />
