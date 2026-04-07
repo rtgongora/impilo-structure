@@ -1,3 +1,4 @@
+import { useState } from "react";
 import { AppLayout } from "@/components/layout/AppLayout";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
@@ -14,15 +15,155 @@ import {
   Search, Plus, ArrowRightLeft, FileCheck, Wallet, TrendingUp, Scale, Activity,
   ChevronDown, ChevronUp, Globe, Heart, Banknote, HandCoins
 } from "lucide-react";
-import { MembershipTab } from "@/components/coverage/MembershipTab";
-import { ProviderContractingTab } from "@/components/coverage/ProviderContractingTab";
-import { PreauthTab } from "@/components/coverage/PreauthTab";
-import { ContributionsTab } from "@/components/coverage/ContributionsTab";
-import { SettlementTab } from "@/components/coverage/SettlementTab";
-import { AppealsTab } from "@/components/coverage/AppealsTab";
-import { PayerIntelligenceTab } from "@/components/coverage/PayerIntelligenceTab";
-import { useState } from "react";
 import { toast } from "sonner";
+
+// ── Inline CoverageTabPanel ──
+
+type CoverageWorkItem = {
+  id: string;
+  title: string;
+  party: string;
+  status: string;
+  summary: string;
+};
+
+const statusClasses: Record<string, string> = {
+  Draft: "bg-muted text-muted-foreground",
+  Review: "bg-accent text-accent-foreground",
+  "Needs Info": "bg-secondary text-secondary-foreground",
+  Ready: "bg-primary/10 text-primary",
+  Approved: "bg-primary text-primary-foreground",
+};
+
+function CoverageTabPanel({
+  title, description, createLabel,
+  primaryFieldLabel, primaryFieldPlaceholder,
+  secondaryFieldLabel, secondaryFieldPlaceholder,
+  noteFieldLabel, noteFieldPlaceholder, items,
+}: {
+  title: string; description: string; createLabel: string;
+  primaryFieldLabel: string; primaryFieldPlaceholder: string;
+  secondaryFieldLabel: string; secondaryFieldPlaceholder: string;
+  noteFieldLabel: string; noteFieldPlaceholder: string;
+  items: CoverageWorkItem[];
+}) {
+  const [expandedId, setExpandedId] = useState<string | null>(items[0]?.id ?? null);
+  const [statuses, setStatuses] = useState<Record<string, string>>(() =>
+    Object.fromEntries(items.map((item) => [item.id, item.status])),
+  );
+  const [draft, setDraft] = useState({ primary: "", secondary: "", note: "" });
+
+  const visibleItems = items.map((item) => ({ ...item, status: statuses[item.id] ?? item.status }));
+
+  const handleAction = (item: CoverageWorkItem, nextStatus: string, actionLabel: string) => {
+    setStatuses((c) => ({ ...c, [item.id]: nextStatus }));
+    toast.success(actionLabel, { description: `${item.title} moved to ${nextStatus.toLowerCase()}.` });
+  };
+
+  const handleCreate = (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+    toast.success(`${createLabel} created`, { description: draft.primary ? `${draft.primary} added.` : `New ${createLabel.toLowerCase()} created.` });
+    setDraft({ primary: "", secondary: "", note: "" });
+  };
+
+  const btnBase = "inline-flex items-center justify-center rounded-md border border-input bg-background px-3 py-2 text-sm font-medium text-foreground transition-colors hover:bg-accent hover:text-accent-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring";
+
+  return (
+    <section className="grid gap-4 xl:grid-cols-[minmax(0,1.45fr)_minmax(20rem,0.95fr)]">
+      <article className="rounded-xl border border-border bg-card text-card-foreground shadow-sm">
+        <header className="border-b border-border px-5 py-4">
+          <h3 className="text-lg font-semibold">{title}</h3>
+          <p className="mt-1 text-sm text-muted-foreground">{description}</p>
+        </header>
+        <div className="divide-y divide-border">
+          {visibleItems.map((item) => {
+            const isExpanded = expandedId === item.id;
+            return (
+              <section key={item.id}>
+                <button type="button" onClick={() => setExpandedId(isExpanded ? null : item.id)}
+                  className="flex w-full flex-col gap-2 px-5 py-4 text-left transition-colors hover:bg-muted/60 md:flex-row md:items-center md:justify-between">
+                  <div>
+                    <div className="flex flex-wrap items-center gap-2">
+                      <span className="text-sm font-semibold text-foreground">{item.title}</span>
+                      <span className={`rounded-full px-2.5 py-1 text-xs font-medium ${statusClasses[item.status] ?? statusClasses.Draft}`}>{item.status}</span>
+                    </div>
+                    <p className="mt-1 text-sm text-muted-foreground">{item.party}</p>
+                  </div>
+                  <p className="max-w-xl text-sm text-muted-foreground md:text-right">{item.summary}</p>
+                </button>
+                {isExpanded && (
+                  <div className="space-y-4 border-t border-border bg-muted/30 px-5 py-4">
+                    <div className="grid gap-2 rounded-lg border border-border bg-background p-4">
+                      <span className="text-xs font-medium uppercase tracking-[0.16em] text-muted-foreground">Review summary</span>
+                      <p className="text-sm text-foreground">{item.summary}</p>
+                    </div>
+                    <div className="flex flex-wrap gap-2">
+                      <button type="button" className={btnBase} onClick={() => handleAction(item, "Review", "Review opened")}>Review</button>
+                      <button type="button" className={`${btnBase} border-primary/20 bg-primary text-primary-foreground hover:bg-primary/90 hover:text-primary-foreground`} onClick={() => handleAction(item, "Approved", "Approval recorded")}>Approve</button>
+                      <button type="button" className={btnBase} onClick={() => handleAction(item, "Needs Info", "Information requested")}>Request info</button>
+                    </div>
+                  </div>
+                )}
+              </section>
+            );
+          })}
+        </div>
+      </article>
+      <aside className="rounded-xl border border-border bg-card text-card-foreground shadow-sm">
+        <header className="border-b border-border px-5 py-4">
+          <h3 className="text-lg font-semibold">Create {createLabel}</h3>
+          <p className="mt-1 text-sm text-muted-foreground">Inline setup for coverage, financing, and payer workflows.</p>
+        </header>
+        <form className="space-y-4 px-5 py-4" onSubmit={handleCreate}>
+          <div className="space-y-2"><Label>{primaryFieldLabel}</Label><Input value={draft.primary} onChange={(e) => setDraft((c) => ({ ...c, primary: e.target.value }))} placeholder={primaryFieldPlaceholder} /></div>
+          <div className="space-y-2"><Label>{secondaryFieldLabel}</Label><Input value={draft.secondary} onChange={(e) => setDraft((c) => ({ ...c, secondary: e.target.value }))} placeholder={secondaryFieldPlaceholder} /></div>
+          <div className="space-y-2"><Label>{noteFieldLabel}</Label><Textarea value={draft.note} onChange={(e) => setDraft((c) => ({ ...c, note: e.target.value }))} placeholder={noteFieldPlaceholder} /></div>
+          <button type="submit" className="inline-flex w-full items-center justify-center rounded-md bg-primary px-4 py-2 text-sm font-medium text-primary-foreground transition-colors hover:bg-primary/90 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring">Save {createLabel}</button>
+        </form>
+      </aside>
+    </section>
+  );
+}
+
+// ── Tab Data ──
+
+const MEMBERSHIP_ITEMS: CoverageWorkItem[] = [
+  { id: "member-001", title: "NHIS informal worker household enrolment", party: "Government scheme · Harare urban catchment", status: "Review", summary: "Dependent list and subsidy classification are ready for review before eligibility activation." },
+  { id: "member-002", title: "Mission hospital maternity waiver roster", party: "Faith-based financier · Maternal health window", status: "Needs Info", summary: "Awaiting guardian identity verification and district social welfare confirmation." },
+  { id: "member-003", title: "Mining employer family cover update", party: "Employer scheme · Midlands workforce pool", status: "Draft", summary: "New hires and beneficiary changes have been captured for monthly sponsor approval." },
+];
+const CONTRACTING_ITEMS: CoverageWorkItem[] = [
+  { id: "contract-001", title: "Primary care capitation renewal", party: "Government purchaser · District hospital network", status: "Review", summary: "Facility service bundle, referral limits, and capitation rates are ready for contract review." },
+  { id: "contract-002", title: "ART donor performance contract", party: "Donor programme · HIV treatment sites", status: "Ready", summary: "Milestones and quarterly disbursement conditions have been validated for approval." },
+  { id: "contract-003", title: "Community mutual transport agreement", party: "Community fund · Emergency referral transport", status: "Draft", summary: "Terms capture transport reimbursement ceilings and verification checkpoints for rural referrals." },
+];
+const PREAUTH_ITEMS: CoverageWorkItem[] = [
+  { id: "preauth-001", title: "Orthopaedic theatre request", party: "Medical aid society · Inpatient surgical care", status: "Review", summary: "Clinical justification and estimated theatre charges are waiting for reviewer sign-off." },
+  { id: "preauth-002", title: "Neonatal transfer support", party: "Faith-based safety net · Neonatal intensive care", status: "Needs Info", summary: "Transfer note is present, but incubator bed confirmation is still required from receiving facility." },
+  { id: "preauth-003", title: "Chemotherapy cycle continuation", party: "Employer-sponsored oncology plan", status: "Ready", summary: "Benefit balance, specialist recommendation, and drug list validation are complete." },
+];
+const CONTRIBUTION_ITEMS: CoverageWorkItem[] = [
+  { id: "contrib-001", title: "Quarterly treasury allocation", party: "Government budget transfer · Primary care services", status: "Review", summary: "Budget tranche is uploaded and awaiting release approval to provincial purchasing units." },
+  { id: "contrib-002", title: "Village health fund levy batch", party: "Community mutual · Household pooled contributions", status: "Draft", summary: "Collection sheet for March contributions has been compiled from ward focal persons." },
+  { id: "contrib-003", title: "Donor grant drawdown", party: "External financier · Maternal and newborn programme", status: "Ready", summary: "Drawdown request includes milestone evidence and disbursement split by implementing partner." },
+];
+const SETTLEMENT_ITEMS: CoverageWorkItem[] = [
+  { id: "settlement-001", title: "District hospital remittance pack", party: "Government purchaser · Mixed outpatient claims", status: "Review", summary: "Approved claims are batched and waiting for payment release into the provider account." },
+  { id: "settlement-002", title: "Mission network subsidy settlement", party: "Faith-based financier · Essential services subsidy", status: "Needs Info", summary: "Invoice totals reconcile, but one facility is missing bank confirmation for release." },
+  { id: "settlement-003", title: "TB diagnostics donor disbursement", party: "Donor programme · Laboratory services", status: "Ready", summary: "Service verification and utilisation cap checks are complete for tranche disbursement." },
+];
+const APPEAL_ITEMS: CoverageWorkItem[] = [
+  { id: "appeal-001", title: "Denied caesarean reimbursement appeal", party: "Medical aid member case · Obstetric emergency", status: "Review", summary: "Supporting theatre notes are attached and the provider disputes the original denial reason." },
+  { id: "appeal-002", title: "Community ambulance waiver review", party: "Community fund appeal · Referral transport", status: "Draft", summary: "Transport exception request is drafted pending committee review and beneficiary testimony." },
+  { id: "appeal-003", title: "Social protection benefit exclusion appeal", party: "Government safety net · Chronic disease package", status: "Needs Info", summary: "The appellant needs to attach district medical officer recommendation before committee hearing." },
+];
+const INTELLIGENCE_ITEMS: CoverageWorkItem[] = [
+  { id: "intel-001", title: "Outlier cost trend review", party: "Cross-payer analytics · Surgical episode costs", status: "Review", summary: "High-cost facilities and repeat exceptional claims are grouped for payer operations review." },
+  { id: "intel-002", title: "Donor dependency watchlist", party: "Programme financing intelligence · Essential medicine support", status: "Ready", summary: "Funding concentration risks and pipeline coverage gaps are ready for scenario planning." },
+  { id: "intel-003", title: "Household self-pay distress flag", party: "Citizen affordability monitoring · Catastrophic expenditure risk", status: "Draft", summary: "Recent out-of-pocket encounters indicate rising affordability pressure in peri-urban clinics." },
+];
+
+// ── Main data ──
 
 const SAMPLE_SCHEMES = [
   { id: "SCH-001", name: "National Health Insurance Scheme", type: "Government", subtype: "Social Health Insurance", members: 4200000, status: "active", funding: "Tax-based + Contributions", pools: 3 },
@@ -74,16 +215,14 @@ const payerTypeBadge = (type: string) => {
 
 const claimStatusBadge = (status: string) => {
   const map: Record<string, string> = {
-    approved: "bg-green-100 text-green-700",
-    denied: "bg-red-100 text-red-700",
-    provisionally_adjudicated: "bg-purple-100 text-purple-700",
-    preauthorized: "bg-cyan-100 text-cyan-700",
-    remitted: "bg-emerald-100 text-emerald-700",
-    pending: "bg-amber-100 text-amber-700",
-    paid: "bg-green-100 text-green-700",
+    approved: "bg-green-100 text-green-700", denied: "bg-red-100 text-red-700",
+    provisionally_adjudicated: "bg-purple-100 text-purple-700", preauthorized: "bg-cyan-100 text-cyan-700",
+    remitted: "bg-emerald-100 text-emerald-700", pending: "bg-amber-100 text-amber-700", paid: "bg-green-100 text-green-700",
   };
   return <Badge className={map[status] || "bg-gray-100 text-gray-700"}>{status.replace(/_/g, " ")}</Badge>;
 };
+
+// ── Main Component ──
 
 export default function CoverageOperations() {
   const [showNewScheme, setShowNewScheme] = useState(false);
@@ -102,10 +241,8 @@ export default function CoverageOperations() {
 
   const handleClaimAction = (claimId: string, action: string) => {
     const labels: Record<string, string> = {
-      approve: "Claim approved and queued for settlement",
-      deny: "Claim denied — appellant may file appeal",
-      adjudicate: "Claim sent to adjudication queue",
-      request_info: "Additional information requested from provider",
+      approve: "Claim approved and queued for settlement", deny: "Claim denied — appellant may file appeal",
+      adjudicate: "Claim sent to adjudication queue", request_info: "Additional information requested from provider",
       escalate: "Claim escalated to senior reviewer",
     };
     toast.success(labels[action] || "Action completed", { description: `Claim ${claimId} updated successfully.` });
@@ -144,9 +281,9 @@ export default function CoverageOperations() {
             </TabsList>
           </div>
 
+          {/* Dashboard */}
           <TabsContent value="dashboard">
             <div className="space-y-4">
-              {/* Payer Type Distribution */}
               <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-7 gap-3">
                 {[
                   { icon: Landmark, value: "14.6M", label: "Government Covered", color: "text-blue-600" },
@@ -157,35 +294,29 @@ export default function CoverageOperations() {
                   { icon: HandCoins, value: "18K", label: "Community Pools", color: "text-amber-600" },
                   { icon: Banknote, value: "~6M", label: "Self-Pay / OOP", color: "text-muted-foreground" },
                 ].map((kpi, i) => (
-                  <Card key={i}>
-                    <CardContent className="p-3 text-center">
-                      <kpi.icon className={`h-4 w-4 mx-auto mb-1 ${kpi.color}`} />
-                      <p className={`text-lg font-bold ${kpi.color}`}>{kpi.value}</p>
-                      <p className="text-[9px] text-muted-foreground leading-tight">{kpi.label}</p>
-                    </CardContent>
-                  </Card>
+                  <Card key={i}><CardContent className="p-3 text-center">
+                    <kpi.icon className={`h-4 w-4 mx-auto mb-1 ${kpi.color}`} />
+                    <p className={`text-lg font-bold ${kpi.color}`}>{kpi.value}</p>
+                    <p className="text-[9px] text-muted-foreground leading-tight">{kpi.label}</p>
+                  </CardContent></Card>
                 ))}
               </div>
-
               <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-6 gap-3">
                 {[
-                  { icon: FileText, value: "12,456", label: "Claims This Month", color: "text-info" },
-                  { icon: DollarSign, value: "$2.8M", label: "Settled This Month", color: "text-success" },
-                  { icon: CheckCircle, value: "94.2%", label: "Approval Rate", color: "text-success" },
+                  { icon: FileText, value: "12,456", label: "Claims This Month", color: "text-primary" },
+                  { icon: DollarSign, value: "$2.8M", label: "Settled This Month", color: "text-green-600" },
+                  { icon: CheckCircle, value: "94.2%", label: "Approval Rate", color: "text-green-600" },
                   { icon: Clock, value: "2.3d", label: "Avg Settlement", color: "text-primary" },
                   { icon: AlertTriangle, value: "0.8%", label: "Fraud Rate", color: "text-destructive" },
                   { icon: ArrowRightLeft, value: "$1.2M", label: "Donor Disbursed", color: "text-emerald-600" },
                 ].map((kpi, i) => (
-                  <Card key={i}>
-                    <CardContent className="p-3 text-center">
-                      <kpi.icon className={`h-5 w-5 mx-auto mb-1.5 ${kpi.color}`} />
-                      <p className={`text-xl font-bold ${kpi.color}`}>{kpi.value}</p>
-                      <p className="text-[10px] text-muted-foreground">{kpi.label}</p>
-                    </CardContent>
-                  </Card>
+                  <Card key={i}><CardContent className="p-3 text-center">
+                    <kpi.icon className={`h-5 w-5 mx-auto mb-1.5 ${kpi.color}`} />
+                    <p className={`text-xl font-bold ${kpi.color}`}>{kpi.value}</p>
+                    <p className="text-[10px] text-muted-foreground">{kpi.label}</p>
+                  </CardContent></Card>
                 ))}
               </div>
-
               <Card>
                 <CardHeader className="pb-3">
                   <CardTitle className="text-sm flex items-center gap-2"><Activity className="h-4 w-4" /> Settlement Pipeline</CardTitle>
@@ -207,13 +338,14 @@ export default function CoverageOperations() {
             </div>
           </TabsContent>
 
+          {/* Schemes */}
           <TabsContent value="schemes">
             <Card>
               <CardHeader>
                 <div className="flex items-center justify-between">
                   <div>
                     <CardTitle>Financing Schemes & Payer Registry</CardTitle>
-                    <CardDescription>All health financing mechanisms — government budgets, insurance, donor programmes, community pools, employer schemes, faith-based, and self-pay</CardDescription>
+                    <CardDescription>All health financing mechanisms</CardDescription>
                   </div>
                   <div className="flex gap-2">
                     <div className="relative">
@@ -233,22 +365,22 @@ export default function CoverageOperations() {
                     <CardContent className="p-4">
                       <h4 className="font-semibold text-sm mb-3">Register New Financing Scheme</h4>
                       <div className="grid grid-cols-3 gap-3">
-                        <div><Label className="text-xs">Scheme / Programme Name</Label><Input placeholder="e.g. District Health Fund" className="h-8 text-xs" /></div>
+                        <div><Label className="text-xs">Scheme Name</Label><Input placeholder="e.g. District Health Fund" className="h-8 text-xs" /></div>
                         <div>
                           <Label className="text-xs">Payer Type</Label>
                           <Select><SelectTrigger className="h-8 text-xs"><SelectValue placeholder="Select type" /></SelectTrigger>
                             <SelectContent>
-                              <SelectItem value="government">Government (National/Provincial/District)</SelectItem>
+                              <SelectItem value="government">Government</SelectItem>
                               <SelectItem value="social_insurance">Social Health Insurance</SelectItem>
-                              <SelectItem value="medical_aid">Medical Aid Society / Private Insurance</SelectItem>
-                              <SelectItem value="donor_bilateral">Donor — Bilateral (e.g. PEPFAR, DFID)</SelectItem>
-                              <SelectItem value="donor_multilateral">Donor — Multilateral (e.g. Global Fund, WHO)</SelectItem>
+                              <SelectItem value="medical_aid">Medical Aid / Private Insurance</SelectItem>
+                              <SelectItem value="donor_bilateral">Donor — Bilateral</SelectItem>
+                              <SelectItem value="donor_multilateral">Donor — Multilateral</SelectItem>
                               <SelectItem value="employer">Employer / Corporate</SelectItem>
-                              <SelectItem value="community">Community Health Fund / Mutual Pool</SelectItem>
+                              <SelectItem value="community">Community Health Fund</SelectItem>
                               <SelectItem value="faith_based">Faith-Based Organisation</SelectItem>
                               <SelectItem value="ngo">NGO / Civil Society</SelectItem>
                               <SelectItem value="individual">Individual / Self-Pay</SelectItem>
-                              <SelectItem value="social_protection">Social Protection / Safety Net</SelectItem>
+                              <SelectItem value="social_protection">Social Protection</SelectItem>
                             </SelectContent>
                           </Select>
                         </div>
@@ -256,21 +388,17 @@ export default function CoverageOperations() {
                           <Label className="text-xs">Funding Mechanism</Label>
                           <Select><SelectTrigger className="h-8 text-xs"><SelectValue placeholder="Select mechanism" /></SelectTrigger>
                             <SelectContent>
-                              <SelectItem value="tax">Tax-Based (General Revenue)</SelectItem>
-                              <SelectItem value="premium">Premium / Contribution-Based</SelectItem>
+                              <SelectItem value="tax">Tax-Based</SelectItem>
+                              <SelectItem value="premium">Premium-Based</SelectItem>
                               <SelectItem value="grant">Grant / Donation</SelectItem>
-                              <SelectItem value="levy">Community Levy / Co-operative</SelectItem>
+                              <SelectItem value="levy">Community Levy</SelectItem>
                               <SelectItem value="employer_contribution">Employer Contribution</SelectItem>
                               <SelectItem value="oop">Out-of-Pocket</SelectItem>
                               <SelectItem value="mixed">Mixed / Blended</SelectItem>
                             </SelectContent>
                           </Select>
                         </div>
-                        <div><Label className="text-xs">Governing Body / Authority</Label><Input placeholder="e.g. Ministry of Health" className="h-8 text-xs" /></div>
-                        <div><Label className="text-xs">Coverage Population</Label><Input placeholder="e.g. All citizens, Employees, ART patients" className="h-8 text-xs" /></div>
-                        <div><Label className="text-xs">Benefit Package</Label><Input placeholder="e.g. Essential Health Package" className="h-8 text-xs" /></div>
                       </div>
-                      <div className="mt-3"><Label className="text-xs">Description & Mandate</Label><Textarea placeholder="Describe the scheme's mandate, target population, and key services covered..." className="text-xs min-h-[60px]" /></div>
                       <div className="flex gap-2 mt-3">
                         <Button size="sm" onClick={handleSchemeCreate}>Register Scheme</Button>
                         <Button size="sm" variant="outline" onClick={() => setShowNewScheme(false)}>Cancel</Button>
@@ -278,19 +406,12 @@ export default function CoverageOperations() {
                     </CardContent>
                   </Card>
                 )}
-
                 <Table>
                   <TableHeader>
                     <TableRow>
-                      <TableHead>ID</TableHead>
-                      <TableHead>Scheme / Programme</TableHead>
-                      <TableHead>Payer Type</TableHead>
-                      <TableHead>Sub-Type</TableHead>
-                      <TableHead>Covered Pop.</TableHead>
-                      <TableHead>Funding</TableHead>
-                      <TableHead>Pools</TableHead>
-                      <TableHead>Status</TableHead>
-                      <TableHead></TableHead>
+                      <TableHead>ID</TableHead><TableHead>Scheme</TableHead><TableHead>Type</TableHead>
+                      <TableHead>Sub-Type</TableHead><TableHead>Covered Pop.</TableHead><TableHead>Funding</TableHead>
+                      <TableHead>Pools</TableHead><TableHead>Status</TableHead><TableHead></TableHead>
                     </TableRow>
                   </TableHeader>
                   <TableBody>
@@ -303,11 +424,9 @@ export default function CoverageOperations() {
                         <TableCell>{s.members > 0 ? s.members.toLocaleString() : "—"}</TableCell>
                         <TableCell className="text-xs">{s.funding}</TableCell>
                         <TableCell>{s.pools}</TableCell>
-                        <TableCell><Badge className="bg-success/10 text-success">{s.status}</Badge></TableCell>
+                        <TableCell><Badge className="bg-green-100 text-green-700">{s.status}</Badge></TableCell>
                         <TableCell>
-                          <Button variant="outline" size="sm" className="h-7 text-xs" onClick={() => toast.info(`Managing ${s.name}`, { description: "Opening scheme configuration..." })}>
-                            Manage
-                          </Button>
+                          <Button variant="outline" size="sm" className="h-7 text-xs" onClick={() => toast.info(`Managing ${s.name}`)}>Manage</Button>
                         </TableCell>
                       </TableRow>
                     ))}
@@ -317,34 +436,31 @@ export default function CoverageOperations() {
             </Card>
           </TabsContent>
 
-          <TabsContent value="membership"><MembershipTab /></TabsContent>
+          {/* Inline tabs */}
+          <TabsContent value="membership">
+            <CoverageTabPanel title="Membership operations" description="Register, amend, and review beneficiary coverage across all payer pathways." createLabel="member record" primaryFieldLabel="Member or group" primaryFieldPlaceholder="e.g. Ward 12 maternal subsidy cohort" secondaryFieldLabel="Sponsor or payer" secondaryFieldPlaceholder="e.g. District Social Protection Fund" noteFieldLabel="Coverage note" noteFieldPlaceholder="Add subsidy, contribution, or demographic notes" items={MEMBERSHIP_ITEMS} />
+          </TabsContent>
 
           <TabsContent value="eligibility">
             <Card>
               <CardHeader>
                 <CardTitle className="flex items-center gap-2"><CheckCircle className="h-5 w-5" /> Real-Time Eligibility & Entitlement</CardTitle>
-                <CardDescription>F1 — Immediate verification across all payer types: government, donor, insurance, community, employer, and self-pay</CardDescription>
+                <CardDescription>Immediate verification across all payer types</CardDescription>
               </CardHeader>
               <CardContent>
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                  <Card className="border-success/20 bg-success/5">
+                  <Card className="border-green-200 dark:border-green-800 bg-green-50/50 dark:bg-green-950/20">
                     <CardContent className="p-4">
                       <h4 className="font-medium text-sm mb-3">Real-Time Eligibility Check</h4>
                       <div className="space-y-2 text-sm">
-                        <div className="flex justify-between"><span className="text-muted-foreground">Eligibility</span><Badge className="bg-success/10 text-success">Verified ✓</Badge></div>
+                        <div className="flex justify-between"><span className="text-muted-foreground">Eligibility</span><Badge className="bg-green-100 text-green-700">Verified ✓</Badge></div>
                         <div className="flex justify-between"><span className="text-muted-foreground">Payer Type</span><Badge className="bg-purple-100 text-purple-700">Medical Aid</Badge></div>
-                        <div className="flex justify-between"><span className="text-muted-foreground">Contracted Provider</span><Badge className="bg-success/10 text-success">Verified ✓</Badge></div>
-                        <div className="flex justify-between"><span className="text-muted-foreground">Benefit Package</span><Badge className="bg-success/10 text-success">Gold Plan</Badge></div>
-                        <div className="flex justify-between"><span className="text-muted-foreground">Exclusions</span><Badge className="bg-success/10 text-success">None</Badge></div>
-                        <div className="flex justify-between"><span className="text-muted-foreground">Waiting Period</span><Badge className="bg-success/10 text-success">Completed</Badge></div>
-                        <div className="flex justify-between"><span className="text-muted-foreground">Preauth Required</span><Badge className="bg-warning/10 text-warning">Yes — Surgery</Badge></div>
+                        <div className="flex justify-between"><span className="text-muted-foreground">Preauth Required</span><Badge className="bg-amber-100 text-amber-700">Yes — Surgery</Badge></div>
                         <hr className="my-2" />
                         <div className="flex justify-between font-medium"><span>Member Liability</span><span>$45.00 (co-pay)</span></div>
                         <div className="flex justify-between font-medium"><span>Payer Liability</span><span>$455.00</span></div>
                       </div>
-                      <Button size="sm" className="mt-3 w-full" onClick={() => toast.success("Eligibility verified", { description: "Patient is eligible for services under Gold Plan. Co-pay: $45.00" })}>
-                        Run Eligibility Check
-                      </Button>
+                      <Button size="sm" className="mt-3 w-full" onClick={() => toast.success("Eligibility verified")}>Run Eligibility Check</Button>
                     </CardContent>
                   </Card>
                   <Card className="border-primary/20 bg-primary/5">
@@ -352,17 +468,10 @@ export default function CoverageOperations() {
                       <h4 className="font-medium text-sm mb-3">Guarantee of Payment</h4>
                       <div className="space-y-2 text-sm">
                         <div className="flex justify-between"><span className="text-muted-foreground">GOP Reference</span><span className="font-mono">GOP-2026-00892</span></div>
-                        <div className="flex justify-between"><span className="text-muted-foreground">Status</span><Badge className="bg-primary/10 text-primary">Reserved</Badge></div>
-                        <div className="flex justify-between"><span className="text-muted-foreground">Payer</span><span>CIMAS (Medical Aid)</span></div>
                         <div className="flex justify-between"><span className="text-muted-foreground">Amount Reserved</span><span className="font-medium">$500.00</span></div>
-                        <div className="flex justify-between"><span className="text-muted-foreground">Expires</span><span>2026-03-15T23:59:59Z</span></div>
-                        <div className="flex justify-between"><span className="text-muted-foreground">Approval</span><Badge className="bg-success/10 text-success">Provisional</Badge></div>
-                        <hr className="my-2" />
-                        <p className="text-xs text-muted-foreground">Financial class: F1 — Synchronous authoritative validation</p>
+                        <div className="flex justify-between"><span className="text-muted-foreground">Expires</span><span>2026-03-15</span></div>
                       </div>
-                      <Button size="sm" variant="outline" className="mt-3 w-full" onClick={() => toast.success("GOP issued", { description: "Guarantee of Payment GOP-2026-00893 reserved $500.00 for 30 days." })}>
-                        Issue New GOP
-                      </Button>
+                      <Button size="sm" variant="outline" className="mt-3 w-full" onClick={() => toast.success("GOP issued")}>Issue New GOP</Button>
                     </CardContent>
                   </Card>
                 </div>
@@ -370,9 +479,15 @@ export default function CoverageOperations() {
             </Card>
           </TabsContent>
 
-          <TabsContent value="contracting"><ProviderContractingTab /></TabsContent>
-          <TabsContent value="preauth"><PreauthTab /></TabsContent>
+          <TabsContent value="contracting">
+            <CoverageTabPanel title="Provider contracting" description="Manage capitation, grant, fee-for-service, and hybrid agreements." createLabel="contract package" primaryFieldLabel="Contract title" primaryFieldPlaceholder="e.g. Provincial malaria grant contract" secondaryFieldLabel="Financier or purchaser" secondaryFieldPlaceholder="e.g. Global Fund programme office" noteFieldLabel="Commercial terms" noteFieldPlaceholder="Summarise rates, payment triggers, and compliance conditions" items={CONTRACTING_ITEMS} />
+          </TabsContent>
 
+          <TabsContent value="preauth">
+            <CoverageTabPanel title="Preauthorization" description="Review high-cost and specialised services before care delivery." createLabel="preauthorization" primaryFieldLabel="Service request" primaryFieldPlaceholder="e.g. MRI with contrast" secondaryFieldLabel="Payer or sponsor" secondaryFieldPlaceholder="e.g. Corporate occupational health fund" noteFieldLabel="Clinical rationale" noteFieldPlaceholder="Capture indication, urgency, and attachments" items={PREAUTH_ITEMS} />
+          </TabsContent>
+
+          {/* Claims */}
           <TabsContent value="claims">
             <Card>
               <CardHeader>
@@ -380,90 +495,89 @@ export default function CoverageOperations() {
                   <CardTitle className="flex items-center gap-2"><FileText className="h-5 w-5" /> Claims Capture & Adjudication</CardTitle>
                   <Button size="sm" className="gap-1" onClick={() => toast.info("New claim form opened")}><Plus className="h-3.5 w-3.5" /> Submit Claim</Button>
                 </div>
-                <CardDescription>Claims from all payer types — government, donor, insurance, employer, community, faith-based, and self-pay receipting</CardDescription>
               </CardHeader>
               <CardContent>
                 <Table>
                   <TableHeader>
                     <TableRow>
-                      <TableHead>Claim ID</TableHead>
-                      <TableHead>Patient</TableHead>
-                      <TableHead>Payer</TableHead>
-                      <TableHead>Payer Type</TableHead>
-                      <TableHead>Service</TableHead>
-                      <TableHead>Amount</TableHead>
-                      <TableHead>Status</TableHead>
-                      <TableHead>Submitted</TableHead>
-                      <TableHead></TableHead>
+                      <TableHead>Claim ID</TableHead><TableHead>Patient</TableHead><TableHead>Payer</TableHead>
+                      <TableHead>Type</TableHead><TableHead>Service</TableHead><TableHead>Amount</TableHead>
+                      <TableHead>Status</TableHead><TableHead>Submitted</TableHead><TableHead></TableHead>
                     </TableRow>
                   </TableHeader>
                   <TableBody>
                     {SAMPLE_CLAIMS.map(c => (
-                      <>
-                        <TableRow key={c.id} className={selectedClaim === c.id ? "bg-primary/5" : ""}>
-                          <TableCell className="font-mono text-xs">{c.id}</TableCell>
-                          <TableCell className="font-mono text-xs">{c.patient}</TableCell>
-                          <TableCell className="font-medium">{c.payer}</TableCell>
-                          <TableCell>{payerTypeBadge(c.payerType)}</TableCell>
-                          <TableCell className="text-xs">{c.service}</TableCell>
-                          <TableCell className="font-mono">${c.amount.toFixed(2)}</TableCell>
-                          <TableCell>{claimStatusBadge(c.status)}</TableCell>
-                          <TableCell className="text-xs">{c.submitted}</TableCell>
-                          <TableCell>
-                            <Button variant="outline" size="sm" className="h-7 text-xs" onClick={() => setSelectedClaim(selectedClaim === c.id ? null : c.id)}>
-                              {selectedClaim === c.id ? "Close" : "Review"}
-                            </Button>
-                          </TableCell>
-                        </TableRow>
-                        {selectedClaim === c.id && (
-                          <TableRow key={c.id + "-review"}>
-                            <TableCell colSpan={9}>
-                              <div className="p-3 bg-muted/30 rounded-lg space-y-3">
-                                <h4 className="text-sm font-semibold">Claim Review — {c.id}</h4>
-                                <div className="grid grid-cols-2 gap-3 text-xs">
-                                  <div className="p-2 bg-background rounded border">
-                                    <strong>Service:</strong> {c.service}<br />
-                                    <strong>Payer:</strong> {c.payer} ({c.payerType})<br />
-                                    <strong>Amount Claimed:</strong> ${c.amount.toFixed(2)}
-                                  </div>
-                                  <div className="space-y-2">
-                                    <div>
-                                      <Label className="text-xs">Decision</Label>
-                                      <Select onValueChange={(v) => setClaimDecisions(prev => ({...prev, [c.id]: v}))}>
-                                        <SelectTrigger className="h-8 text-xs"><SelectValue placeholder="Select decision" /></SelectTrigger>
-                                        <SelectContent>
-                                          <SelectItem value="approve">Approve</SelectItem>
-                                          <SelectItem value="deny">Deny</SelectItem>
-                                          <SelectItem value="adjudicate">Send to Adjudication</SelectItem>
-                                          <SelectItem value="request_info">Request More Info</SelectItem>
-                                          <SelectItem value="escalate">Escalate</SelectItem>
-                                        </SelectContent>
-                                      </Select>
-                                    </div>
-                                    <div><Label className="text-xs">Review Notes</Label><Textarea placeholder="Notes..." className="text-xs min-h-[40px]" /></div>
-                                  </div>
-                                </div>
-                                <div className="flex gap-2">
-                                  <Button size="sm" onClick={() => handleClaimAction(c.id, claimDecisions[c.id] || "approve")}>Submit Decision</Button>
-                                  <Button size="sm" variant="outline" onClick={() => toast.info("Patient history loaded")}>View Patient History</Button>
-                                  <Button size="sm" variant="outline" onClick={() => toast.info("Coding validation passed")}>Validate Codes</Button>
-                                </div>
-                              </div>
-                            </TableCell>
-                          </TableRow>
-                        )}
-                      </>
+                      <TableRow key={c.id} className={selectedClaim === c.id ? "bg-primary/5" : ""}>
+                        <TableCell className="font-mono text-xs">{c.id}</TableCell>
+                        <TableCell className="font-mono text-xs">{c.patient}</TableCell>
+                        <TableCell className="font-medium">{c.payer}</TableCell>
+                        <TableCell>{payerTypeBadge(c.payerType)}</TableCell>
+                        <TableCell className="text-xs">{c.service}</TableCell>
+                        <TableCell className="font-mono">${c.amount.toFixed(2)}</TableCell>
+                        <TableCell>{claimStatusBadge(c.status)}</TableCell>
+                        <TableCell className="text-xs">{c.submitted}</TableCell>
+                        <TableCell>
+                          <Button variant="outline" size="sm" className="h-7 text-xs" onClick={() => setSelectedClaim(selectedClaim === c.id ? null : c.id)}>
+                            {selectedClaim === c.id ? "Close" : "Review"}
+                          </Button>
+                        </TableCell>
+                      </TableRow>
                     ))}
                   </TableBody>
                 </Table>
+                {selectedClaim && (() => {
+                  const c = SAMPLE_CLAIMS.find(x => x.id === selectedClaim);
+                  if (!c) return null;
+                  return (
+                    <div className="mt-4 p-4 bg-muted/30 rounded-lg border space-y-3">
+                      <h4 className="text-sm font-semibold">Claim Review — {c.id}</h4>
+                      <div className="grid grid-cols-2 gap-3 text-xs">
+                        <div className="p-2 bg-background rounded border">
+                          <strong>Service:</strong> {c.service}<br /><strong>Payer:</strong> {c.payer} ({c.payerType})<br /><strong>Amount:</strong> ${c.amount.toFixed(2)}
+                        </div>
+                        <div className="space-y-2">
+                          <div>
+                            <Label className="text-xs">Decision</Label>
+                            <Select onValueChange={(v) => setClaimDecisions(prev => ({...prev, [c.id]: v}))}>
+                              <SelectTrigger className="h-8 text-xs"><SelectValue placeholder="Select decision" /></SelectTrigger>
+                              <SelectContent>
+                                <SelectItem value="approve">Approve</SelectItem>
+                                <SelectItem value="deny">Deny</SelectItem>
+                                <SelectItem value="adjudicate">Send to Adjudication</SelectItem>
+                                <SelectItem value="request_info">Request More Info</SelectItem>
+                                <SelectItem value="escalate">Escalate</SelectItem>
+                              </SelectContent>
+                            </Select>
+                          </div>
+                          <div><Label className="text-xs">Review Notes</Label><Textarea placeholder="Notes..." className="text-xs min-h-[40px]" /></div>
+                        </div>
+                      </div>
+                      <div className="flex gap-2">
+                        <Button size="sm" onClick={() => handleClaimAction(c.id, claimDecisions[c.id] || "approve")}>Submit Decision</Button>
+                        <Button size="sm" variant="outline" onClick={() => setSelectedClaim(null)}>Close</Button>
+                      </div>
+                    </div>
+                  );
+                })()}
               </CardContent>
             </Card>
           </TabsContent>
 
-          <TabsContent value="contributions"><ContributionsTab /></TabsContent>
-          <TabsContent value="settlement"><SettlementTab /></TabsContent>
-          <TabsContent value="appeals"><AppealsTab /></TabsContent>
-          <TabsContent value="intelligence"><PayerIntelligenceTab /></TabsContent>
+          <TabsContent value="contributions">
+            <CoverageTabPanel title="Contribution flows" description="Track taxes, premiums, levies, grants, and direct contributions." createLabel="contribution batch" primaryFieldLabel="Batch or tranche" primaryFieldPlaceholder="e.g. Q2 rural clinic allocation" secondaryFieldLabel="Source actor" secondaryFieldPlaceholder="e.g. Provincial treasury office" noteFieldLabel="Funding notes" noteFieldPlaceholder="Add source rules, earmarks, or remittance remarks" items={CONTRIBUTION_ITEMS} />
+          </TabsContent>
+
+          <TabsContent value="settlement">
+            <CoverageTabPanel title="Settlement operations" description="Process remittances, subsidy releases, and reconciliations." createLabel="settlement run" primaryFieldLabel="Settlement reference" primaryFieldPlaceholder="e.g. April provider remittance" secondaryFieldLabel="Paying actor" secondaryFieldPlaceholder="e.g. NHIS purchasing office" noteFieldLabel="Settlement note" noteFieldPlaceholder="Capture remittance window and recovery details" items={SETTLEMENT_ITEMS} />
+          </TabsContent>
+
+          <TabsContent value="appeals">
+            <CoverageTabPanel title="Appeals and reviews" description="Handle beneficiary, provider, and financier disputes." createLabel="appeal case" primaryFieldLabel="Appeal subject" primaryFieldPlaceholder="e.g. Denied emergency surgery claim" secondaryFieldLabel="Submitting actor" secondaryFieldPlaceholder="e.g. Patient advocate office" noteFieldLabel="Grounds for appeal" noteFieldPlaceholder="Summarise dispute details and requested remedy" items={APPEAL_ITEMS} />
+          </TabsContent>
+
+          <TabsContent value="intelligence">
+            <CoverageTabPanel title="Payer intelligence" description="Review risk, utilisation, and funding signals across all financiers." createLabel="intelligence brief" primaryFieldLabel="Insight title" primaryFieldPlaceholder="e.g. District maternal subsidy leakage" secondaryFieldLabel="Scope or actor" secondaryFieldPlaceholder="e.g. Provincial pooled fund" noteFieldLabel="Analyst note" noteFieldPlaceholder="Add key findings and recommended actions" items={INTELLIGENCE_ITEMS} />
+          </TabsContent>
         </Tabs>
       </div>
     </AppLayout>
