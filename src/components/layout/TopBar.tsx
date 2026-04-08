@@ -71,7 +71,7 @@ export function TopBar() {
 
 
   return (
-    <header className="h-14 min-h-[3.5rem] shrink-0 bg-topbar-bg text-topbar-foreground flex items-center justify-between px-3 border-b border-topbar-bg/20 shadow-sm">
+    <header className="h-16 min-h-[4rem] shrink-0 bg-topbar-bg text-topbar-foreground flex items-center justify-between px-5 border-b border-topbar-bg/20 shadow-sm">
       {/* Left: Back, Home, Logo & Actions */}
       <div className="flex items-center gap-2 min-w-0">
         {/* Navigation Buttons */}

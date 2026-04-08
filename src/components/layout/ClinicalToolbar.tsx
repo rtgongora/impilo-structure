@@ -39,7 +39,7 @@ export function ClinicalToolbar() {
     <div className="shrink-0 border-b">
       <SystemFeedbackStrip />
 
-      <div className="h-11 min-h-[2.75rem] bg-muted/50 flex items-center px-3 overflow-x-auto">
+      <div className="h-12 min-h-[3rem] bg-muted/50 flex items-center px-5 overflow-x-auto">
         <div className="flex items-center gap-0.5 flex-1 min-w-0">
           <span className="text-[10px] font-medium text-muted-foreground uppercase tracking-wider shrink-0 mr-1.5">Tools</span>
           <div className="h-4 w-px bg-border mr-0.5 shrink-0" />
