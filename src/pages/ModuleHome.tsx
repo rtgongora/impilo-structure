@@ -176,6 +176,7 @@ const workModuleCategories: ModuleCategory[] = [
       { id: "handoff", label: "Shift Handoff", description: "Care continuity reports", icon: ArrowRightLeft, path: "/handoff", color: "bg-teal-500", roles: ["doctor", "nurse", "admin"], capabilities: ["inpatient", "emergency_24hr"] },
       { id: "dashboard", label: "My Dashboard", description: "Your worklist, tasks, and alerts", icon: ClipboardList, path: "/dashboard", color: "bg-primary" },
       { id: "communication", label: "Communication", description: "Messages, pages & calls", icon: MessageSquare, path: "/communication", color: "bg-primary" },
+      { id: "omnichannel-hub", label: "Omnichannel Hub", description: "All access channels in one view", icon: Radio, path: "/omnichannel", color: "bg-teal-600" },
       { id: "noticeboard", label: "Provider Noticeboard", description: "Announcements & scheduling updates", icon: Megaphone, path: "/scheduling/noticeboard", color: "bg-amber-500" },
       { id: "odoo", label: "Odoo ERP", description: "Enterprise resource planning", icon: Building2, path: "/odoo", color: "bg-gray-600", roles: ["admin"] },
     ],
@@ -197,6 +198,7 @@ const workModuleCategories: ModuleCategory[] = [
       { id: "marketplace", label: "Health Marketplace", description: "Compare prices & order from vendors", icon: Store, path: "/marketplace", color: "bg-green-600" },
       { id: "fulfillment", label: "Prescription Fulfillment", description: "Bidding & vendor selection for Rx", icon: ShoppingCart, path: "/fulfillment", color: "bg-purple-600", roles: ["doctor", "nurse", "pharmacist", "admin"] },
       { id: "vendor-portal", label: "Vendor Portal", description: "View requests & submit bids", icon: Building2, path: "/vendor-portal", color: "bg-orange-600", roles: ["vendor", "pharmacist", "admin"] },
+      { id: "mushex", label: "Finance Engine (MUSHEX)", description: "Claims switch, settlement rail", icon: DollarSign, path: "/admin/mushex", color: "bg-indigo-500", roles: ["admin", "hie_admin"] },
       // Coverage
       { id: "coverage-ops", label: "Coverage Operations", description: "Full payer operations hub", icon: Shield, path: "/coverage", color: "bg-violet-600", roles: ["admin", "hie_admin", "receptionist"] },
       { id: "eligibility", label: "Eligibility & Entitlement", description: "Real-time eligibility checks", icon: UserCheck, path: "/coverage?tab=eligibility", color: "bg-green-600", roles: ["admin", "hie_admin", "receptionist"] },
@@ -240,16 +242,14 @@ const workModuleCategories: ModuleCategory[] = [
       { id: "shr", label: "Shared Health Record (BUTANO)", description: "FHIR longitudinal clinical memory", icon: FileHeart, path: "/admin/butano/timeline", color: "bg-rose-500", roles: ["admin", "hie_admin"] },
       { id: "ubomi", label: "CRVS Interface (UBOMI)", description: "Birth/death linkage & reconciliation", icon: Heart, path: "/admin/ubomi", color: "bg-pink-500", roles: ["admin", "hie_admin"] },
       { id: "msika", label: "Product & Tariff (MSIKA)", description: "Orderables, billables, benefit catalogs", icon: Package, path: "/admin/msika-core", color: "bg-green-500", roles: ["admin", "hie_admin"] },
-      { id: "mushex", label: "Finance Engine (MUSHEX)", description: "Claims switch, settlement rail", icon: DollarSign, path: "/admin/mushex", color: "bg-indigo-500", roles: ["admin", "hie_admin"] },
+      
       { id: "tshepo", label: "Trust Layer (TSHEPO)", description: "IAM, PDP, consent, audit, offline trust", icon: Shield, path: "/admin/tshepo/consents", color: "bg-slate-700", roles: ["admin", "hie_admin"] },
       // Identity Services
       { id: "id-services", label: "ID Services Hub", description: "Generate, validate & recover IDs", icon: Shield, path: "/id-services?tab=generate", color: "bg-primary", roles: ["admin", "registrar", "hie_admin"] },
       { id: "phid-generation", label: "Patient PHID", description: "Generate Patient Health IDs", icon: UserCog, path: "/id-services?tab=generate", color: "bg-blue-500", roles: ["admin", "registrar", "receptionist", "hie_admin"] },
       // Omnichannel
-      { id: "omnichannel-hub", label: "Omnichannel Hub", description: "All access channels in one view", icon: Radio, path: "/omnichannel", color: "bg-teal-600" },
       // Governance
       { id: "admin", label: "System Admin", description: "Users, security & settings", icon: Settings, path: "/admin", color: "bg-gray-700", roles: ["admin"] },
-      { id: "registry-management", label: "Registry Management", description: "Manage HIE registries", icon: Database, path: "/registry-management", color: "bg-purple-600", roles: ["admin", "hie_admin"] },
       { id: "fhir-viewer", label: "FHIR Resources", description: "HL7 FHIR interoperability viewer", icon: FileCheck, path: "/admin", color: "bg-cyan-500", roles: ["admin", "hie_admin"] },
     ],
   },
