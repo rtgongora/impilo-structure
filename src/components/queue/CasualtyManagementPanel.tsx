@@ -153,10 +153,10 @@ export function CasualtyManagementPanel() {
       {/* Tabs */}
       <Tabs value={activeView} onValueChange={setActiveView}>
         <div className="flex items-center justify-between gap-3">
-          <TabsList>
-            <TabsTrigger value="tracking" className="gap-1.5"><Users className="h-4 w-4" /> Patient Tracking</TabsTrigger>
-            <TabsTrigger value="triage" className="gap-1.5"><ArrowUpDown className="h-4 w-4" /> Triage Queue</TabsTrigger>
-            <TabsTrigger value="areas" className="gap-1.5"><Bed className="h-4 w-4" /> Area View</TabsTrigger>
+          <TabsList className="w-full justify-start">
+            <TabsTrigger value="tracking" className="gap-1.5 flex-1"><Users className="h-4 w-4" /> Patient Tracking</TabsTrigger>
+            <TabsTrigger value="triage" className="gap-1.5 flex-1"><ArrowUpDown className="h-4 w-4" /> Triage Queue</TabsTrigger>
+            <TabsTrigger value="areas" className="gap-1.5 flex-1"><Bed className="h-4 w-4" /> Area View</TabsTrigger>
           </TabsList>
           <div className="relative w-64">
             <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
