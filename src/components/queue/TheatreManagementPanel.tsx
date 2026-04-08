@@ -142,11 +142,11 @@ export function TheatreManagementPanel() {
       {/* Tabs: Board / Schedule / Pre-Op / Recovery */}
       <Tabs value={activeView} onValueChange={setActiveView}>
         <div className="flex items-center justify-between gap-3">
-          <TabsList>
-            <TabsTrigger value="board" className="gap-1.5"><Activity className="h-4 w-4" /> Theatre Board</TabsTrigger>
-            <TabsTrigger value="schedule" className="gap-1.5"><CalendarDays className="h-4 w-4" /> Schedule</TabsTrigger>
-            <TabsTrigger value="preop" className="gap-1.5"><ClipboardList className="h-4 w-4" /> Pre-Op</TabsTrigger>
-            <TabsTrigger value="recovery" className="gap-1.5"><Bed className="h-4 w-4" /> Recovery</TabsTrigger>
+          <TabsList className="w-full justify-start">
+            <TabsTrigger value="board" className="gap-1.5 flex-1"><Activity className="h-4 w-4" /> Theatre Board</TabsTrigger>
+            <TabsTrigger value="schedule" className="gap-1.5 flex-1"><CalendarDays className="h-4 w-4" /> Schedule</TabsTrigger>
+            <TabsTrigger value="preop" className="gap-1.5 flex-1"><ClipboardList className="h-4 w-4" /> Pre-Op</TabsTrigger>
+            <TabsTrigger value="recovery" className="gap-1.5 flex-1"><Bed className="h-4 w-4" /> Recovery</TabsTrigger>
           </TabsList>
           <div className="relative w-64">
             <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
