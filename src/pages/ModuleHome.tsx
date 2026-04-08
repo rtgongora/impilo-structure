@@ -98,44 +98,71 @@ import impiloLogo from "@/assets/impilo-logo.png";
 
 // Category icons mapping for expandable cards
 const categoryIcons: Record<string, React.ComponentType<{ className?: string }>> = {
-  "clinical": Stethoscope,
+  "patient-care": Stethoscope,
+  "patient-access": UserPlus,
+  "facility-ops": Gauge,
+  "comms-coordination": MessageSquare,
   "consults-referrals": Video,
-  "orders": ShoppingCart,
-  "scheduling": Calendar,
+  "orders-diagnostics": ShoppingCart,
+  "scheduling-theatre": Calendar,
   "marketplace": Store,
   "finance": DollarSign,
   "inventory": Package,
   "identity": Shield,
   "registries": Database,
-  "admin": Settings,
-  "clinical-tools": Activity,
-  "support": HelpCircle,
   "public-health": Activity,
   "coverage": Shield,
   "ai-intelligence": BarChart3,
-  "kernel": Database,
   "experience": Radio,
+  "oversight-analytics": TrendingUp,
+  "platform-admin": Settings,
+  "support": HelpCircle,
 };
 
 // Category colors mapping
 const categoryColors: Record<string, string> = {
-  "clinical": "bg-blue-500",
-  "consults-referrals": "bg-teal-500",
-  "orders": "bg-green-500",
-  "scheduling": "bg-cyan-500",
+  "patient-care": "bg-blue-500",
+  "patient-access": "bg-emerald-500",
+  "facility-ops": "bg-rose-600",
+  "comms-coordination": "bg-teal-500",
+  "consults-referrals": "bg-teal-600",
+  "orders-diagnostics": "bg-green-500",
+  "scheduling-theatre": "bg-cyan-500",
   "marketplace": "bg-purple-500",
-  "finance": "bg-emerald-500",
+  "finance": "bg-emerald-600",
   "inventory": "bg-orange-500",
   "identity": "bg-indigo-500",
   "registries": "bg-rose-500",
-  "admin": "bg-slate-600",
-  "clinical-tools": "bg-pink-500",
-  "support": "bg-teal-500",
   "public-health": "bg-amber-600",
   "coverage": "bg-violet-600",
   "ai-intelligence": "bg-cyan-600",
-  "kernel": "bg-slate-700",
   "experience": "bg-teal-600",
+  "oversight-analytics": "bg-violet-500",
+  "platform-admin": "bg-slate-600",
+  "support": "bg-teal-500",
+};
+
+// Context relevance tags — which access modes prioritize which categories
+const categoryContextRelevance: Record<string, AccessMode[]> = {
+  "patient-care": ["clinical", "remote_clinical", "independent", "emergency"],
+  "patient-access": ["clinical", "independent"],
+  "facility-ops": ["clinical", "independent"],
+  "comms-coordination": ["clinical", "oversight", "remote_clinical", "remote_admin"],
+  "consults-referrals": ["clinical", "remote_clinical", "independent"],
+  "orders-diagnostics": ["clinical", "independent", "emergency"],
+  "scheduling-theatre": ["clinical"],
+  "marketplace": ["clinical", "independent"],
+  "finance": ["clinical", "independent"],
+  "inventory": ["clinical"],
+  "identity": ["clinical", "oversight"],
+  "registries": ["oversight", "support"],
+  "public-health": ["oversight", "community"],
+  "coverage": ["oversight", "remote_admin"],
+  "ai-intelligence": ["oversight", "support"],
+  "experience": ["oversight", "support"],
+  "oversight-analytics": ["oversight", "oversight_drill", "remote_admin"],
+  "platform-admin": ["support"],
+  "support": [],
 };
 
 interface ModuleItem {
@@ -147,7 +174,6 @@ interface ModuleItem {
   color: string;
   roles?: ModuleAccessRole[];
   requiresAuth?: boolean;
-  // Facility capability requirements - module shows if user's facility has ANY of these capabilities
   capabilities?: FacilityCapability[];
 }
 
@@ -156,33 +182,61 @@ interface ModuleCategory {
   title: string;
   description: string;
   modules: ModuleItem[];
-  roles?: ModuleAccessRole[]; // Category-level role restriction
+  roles?: ModuleAccessRole[];
   requiresAuth?: boolean;
-  // Facility capability requirements - category shows if user's facility has ANY of these capabilities  
   capabilities?: FacilityCapability[];
 }
 
-// Work modules (excluding myhealth and support which go to other tabs)
-// NOTE: Categories WITHOUT roles are visible to ALL authenticated users
-// Modules WITHOUT roles are visible to ALL users who can see the category
+// Refined thematic groupings
 const workModuleCategories: ModuleCategory[] = [
+  // ─── DIRECT PATIENT CARE ───
   {
-    id: "clinical",
-    title: "Clinical Care",
-    description: "Patient encounters, assessments, and care delivery",
-    // No category-level restriction - all authenticated users can see this category
+    id: "patient-care",
+    title: "Patient Care",
+    description: "Clinical encounters, ward rounds, bed management, and discharge",
     modules: [
-      { id: "dashboard", label: "My Dashboard", description: "Your worklist, tasks, and alerts", icon: ClipboardList, path: "/dashboard", color: "bg-primary" },
-      { id: "communication", label: "Communication", description: "Messages, pages & calls", icon: MessageSquare, path: "/communication", color: "bg-primary" },
-      { id: "queue", label: "Queues & Wards", description: "Patient flow: intake, triage, queues & ward management", icon: Users, path: "/queue", color: "bg-orange-500" },
       { id: "ehr", label: "Patient Encounters", description: "Clinical documentation & care", icon: Stethoscope, path: "/encounter", color: "bg-blue-500", roles: ["doctor", "nurse", "specialist", "admin"] },
+      { id: "queue", label: "Queues & Wards", description: "Patient flow: intake, triage, queues & ward management", icon: Users, path: "/queue", color: "bg-orange-500" },
       { id: "beds", label: "Bed Management", description: "Ward status & admissions", icon: Bed, path: "/beds", color: "bg-purple-500", roles: ["doctor", "nurse", "admin"], capabilities: ["inpatient"] },
       { id: "discharge", label: "Discharge & Exit", description: "Discharges, deaths & exits", icon: DoorOpen, path: "/discharge", color: "bg-amber-600", roles: ["doctor", "nurse", "admin"] },
+      { id: "voice-dictation", label: "Voice Dictation", description: "Speech-to-text for notes", icon: Activity, path: "/encounter", color: "bg-rose-500", roles: ["doctor", "nurse", "specialist"] },
+    ],
+  },
+  // ─── PATIENT ACCESS & REGISTRATION ───
+  {
+    id: "patient-access",
+    title: "Patient Access",
+    description: "Registration, patient search, and intake",
+    modules: [
+      { id: "registration", label: "Patient Registration", description: "New patient intake & ID", icon: UserPlus, path: "/registration", color: "bg-emerald-500" },
+      { id: "patients", label: "Patient Registry", description: "Search & manage patients", icon: Users, path: "/patients", color: "bg-slate-500" },
+      { id: "queue-intake", label: "Patient Intake & Sorting", description: "Arrival, triage & queue assignment", icon: ClipboardCheck, path: "/queue", color: "bg-orange-500" },
+      { id: "kiosk", label: "Patient Kiosk", description: "Self-service check-in terminal", icon: Monitor, path: "/kiosk", color: "bg-blue-600" },
+    ],
+  },
+  // ─── FACILITY OPERATIONS ───
+  {
+    id: "facility-ops",
+    title: "Facility Operations",
+    description: "Control tower, shift management, handoffs, and workforce",
+    modules: [
       { id: "control-tower", label: "Control Tower", description: "Real-time facility operations", icon: Gauge, path: "/operations?tab=control-tower", color: "bg-rose-600", roles: ["admin", "nurse", "doctor"] },
       { id: "operations", label: "Operations & Roster", description: "Shifts, roster & workforce", icon: Clock, path: "/operations", color: "bg-cyan-600" },
       { id: "handoff", label: "Shift Handoff", description: "Care continuity reports", icon: ArrowRightLeft, path: "/handoff", color: "bg-teal-500", roles: ["doctor", "nurse", "admin"], capabilities: ["inpatient", "emergency_24hr"] },
     ],
   },
+  // ─── COMMUNICATION & COORDINATION ───
+  {
+    id: "comms-coordination",
+    title: "Communication & Coordination",
+    description: "Messages, pages, calls, and your personal dashboard",
+    modules: [
+      { id: "dashboard", label: "My Dashboard", description: "Your worklist, tasks, and alerts", icon: ClipboardList, path: "/dashboard", color: "bg-primary" },
+      { id: "communication", label: "Communication", description: "Messages, pages & calls", icon: MessageSquare, path: "/communication", color: "bg-primary" },
+      { id: "noticeboard", label: "Provider Noticeboard", description: "Announcements & scheduling updates", icon: Megaphone, path: "/scheduling/noticeboard", color: "bg-amber-500" },
+    ],
+  },
+  // ─── CONSULTS & REFERRALS ───
   {
     id: "consults-referrals",
     title: "Consults & Referrals",
@@ -194,8 +248,9 @@ const workModuleCategories: ModuleCategory[] = [
       { id: "case-reviews", label: "Case Reviews & Boards", description: "M&M and specialist boards", icon: Users, path: "/telemedicine?tab=boards", color: "bg-purple-500", roles: ["doctor", "specialist", "admin"] },
     ],
   },
+  // ─── ORDERS & DIAGNOSTICS ───
   {
-    id: "orders",
+    id: "orders-diagnostics",
     title: "Orders & Diagnostics",
     description: "Lab, imaging, pharmacy, and clinical orders",
     modules: [
@@ -207,27 +262,24 @@ const workModuleCategories: ModuleCategory[] = [
       { id: "pacs", label: "Imaging (PACS)", description: "Radiology & diagnostic imaging", icon: FileText, path: "/pacs", color: "bg-indigo-500", roles: ["radiographer", "doctor", "specialist", "admin"], capabilities: ["pacs", "radiology"] },
     ],
   },
+  // ─── SCHEDULING & THEATRE ───
   {
-    id: "scheduling",
-    title: "Scheduling & Registration",
-    description: "Appointments, patient registration, and theatre",
+    id: "scheduling-theatre",
+    title: "Scheduling & Theatre",
+    description: "Appointments, theatre booking, and resource calendars",
     modules: [
-      { id: "queue-intake", label: "Patient Intake & Sorting", description: "Arrival, triage & queue assignment", icon: ClipboardCheck, path: "/queue", color: "bg-orange-500" },
       { id: "appointments", label: "Appointments", description: "Clinic & provider scheduling", icon: Calendar, path: "/appointments", color: "bg-cyan-500" },
       { id: "scheduling", label: "Appointment Scheduling", description: "Advanced scheduling tools", icon: Calendar, path: "/scheduling", color: "bg-blue-500", roles: ["admin", "receptionist", "doctor", "nurse"] },
-      { id: "noticeboard", label: "Provider Noticeboard", description: "Announcements & scheduling updates", icon: Megaphone, path: "/scheduling/noticeboard", color: "bg-amber-500" },
       { id: "resources", label: "Resource Calendar", description: "Rooms, equipment & assets", icon: LayoutGrid, path: "/scheduling/resources", color: "bg-indigo-500", roles: ["admin", "receptionist"] },
-      { id: "registration", label: "Patient Registration", description: "New patient intake & ID", icon: UserPlus, path: "/registration", color: "bg-emerald-500" },
-      { id: "patients", label: "Patient Registry", description: "Search & manage patients", icon: Users, path: "/patients", color: "bg-slate-500" },
       { id: "theatre", label: "Theatre Booking", description: "Surgical scheduling", icon: Building2, path: "/theatre", color: "bg-rose-500", roles: ["doctor", "specialist", "nurse", "admin"], capabilities: ["theatre"] },
       { id: "theatre-scheduling", label: "Theatre Scheduling", description: "Surgical suite calendar", icon: Calendar, path: "/scheduling/theatre", color: "bg-pink-500", roles: ["doctor", "specialist", "admin"], capabilities: ["theatre"] },
     ],
   },
+  // ─── MARKETPLACE ───
   {
     id: "marketplace",
     title: "Health Products & Marketplace",
     description: "Browse products, compare vendors, and order supplies",
-    // No category-level restriction - accessible to all
     modules: [
       { id: "catalogue", label: "Health Products Catalogue", description: "Browse approved health products", icon: BookOpen, path: "/catalogue", color: "bg-blue-600" },
       { id: "marketplace", label: "Health Marketplace", description: "Compare prices & order from vendors", icon: Store, path: "/marketplace", color: "bg-green-600" },
@@ -235,6 +287,7 @@ const workModuleCategories: ModuleCategory[] = [
       { id: "vendor-portal", label: "Vendor Portal", description: "View requests & submit bids", icon: Building2, path: "/vendor-portal", color: "bg-orange-600", roles: ["vendor", "pharmacist", "admin"] },
     ],
   },
+  // ─── FINANCE & BILLING ───
   {
     id: "finance",
     title: "Finance & Billing",
@@ -245,6 +298,7 @@ const workModuleCategories: ModuleCategory[] = [
       { id: "charges", label: "Encounter Charges", description: "Service & item charges", icon: Receipt, path: "/charges", color: "bg-yellow-600" },
     ],
   },
+  // ─── INVENTORY & SUPPLY CHAIN ───
   {
     id: "inventory",
     title: "Inventory & Supply Chain",
@@ -255,6 +309,7 @@ const workModuleCategories: ModuleCategory[] = [
       { id: "consumables", label: "Consumables", description: "Usage & administration", icon: Syringe, path: "/consumables", color: "bg-red-500" },
     ],
   },
+  // ─── IDENTITY SERVICES ───
   {
     id: "identity",
     title: "Identity Services",
@@ -270,6 +325,7 @@ const workModuleCategories: ModuleCategory[] = [
       { id: "id-batch", label: "Batch Generation", description: "Generate IDs in bulk", icon: Package, path: "/id-services?tab=batch", color: "bg-orange-500", roles: ["admin", "hie_admin"] },
     ],
   },
+  // ─── SOVEREIGN REGISTRIES ───
   {
     id: "registries",
     title: "Kernel & Sovereign Registries",
@@ -290,6 +346,7 @@ const workModuleCategories: ModuleCategory[] = [
       { id: "fhir-viewer", label: "FHIR Resources", description: "HL7 FHIR interoperability viewer", icon: FileCheck, path: "/admin", color: "bg-cyan-500", roles: ["admin", "hie_admin"] },
     ],
   },
+  // ─── PUBLIC HEALTH ───
   {
     id: "public-health",
     title: "Public Health & Local Authority",
@@ -304,6 +361,7 @@ const workModuleCategories: ModuleCategory[] = [
       { id: "indawo-sites", label: "INDAWO Sites", description: "Regulated premises registry", icon: MapPin, path: "/admin/indawo", color: "bg-emerald-500", roles: ["admin", "hie_admin"] },
     ],
   },
+  // ─── COVERAGE & PAYER ───
   {
     id: "coverage",
     title: "Coverage, Financing & Payer",
@@ -317,6 +375,7 @@ const workModuleCategories: ModuleCategory[] = [
       { id: "schemes", label: "Schemes & Products", description: "Plan administration & benefit rules", icon: Briefcase, path: "/coverage?tab=schemes", color: "bg-blue-600", roles: ["admin", "hie_admin"] },
     ],
   },
+  // ─── AI & INTELLIGENCE ───
   {
     id: "ai-intelligence",
     title: "Intelligence, Automation & AI",
@@ -328,6 +387,7 @@ const workModuleCategories: ModuleCategory[] = [
       { id: "ai-models", label: "Model Registry", description: "Approved models, versions, audit", icon: Settings, path: "/ai-governance?tab=models", color: "bg-purple-600", roles: ["admin", "hie_admin"] },
     ],
   },
+  // ─── EXPERIENCE & OMNICHANNEL ───
   {
     id: "experience",
     title: "Experience, Omnichannel & Access",
@@ -342,44 +402,43 @@ const workModuleCategories: ModuleCategory[] = [
       { id: "ai-agent", label: "AI Interaction Agent", description: "Governed AI across channels", icon: Bot, path: "/omnichannel?tab=ai-agent", color: "bg-cyan-600" },
     ],
   },
+  // ─── OVERSIGHT & ANALYTICS ───
   {
-    id: "admin",
-    title: "Governance & Configuration",
-    description: "System settings, audit, jurisdiction packs, and platform administration",
-    roles: ['admin', 'doctor', 'specialist', 'hie_admin'],
+    id: "oversight-analytics",
+    title: "Oversight & Analytics",
+    description: "Above-site dashboards, reports, and operational intelligence",
+    roles: ['admin', 'hie_admin', 'doctor', 'specialist'],
     modules: [
       { id: "above-site", label: "Above-Site Dashboard", description: "District, provincial & national oversight", icon: TrendingUp, path: "/above-site", color: "bg-rose-600", roles: ["admin", "hie_admin"] },
-      { id: "landela", label: "Landela DMS", description: "Document management & scanning", icon: ScanLine, path: "/landela", color: "bg-cyan-600" },
       { id: "reports", label: "Reports & Analytics", description: "Dashboards & insights", icon: BarChart3, path: "/reports", color: "bg-violet-500" },
-      { id: "registry-management", label: "Registry Management", description: "Manage HIE registries", icon: Database, path: "/registry-management", color: "bg-purple-600", roles: ["admin", "hie_admin"] },
-      { id: "odoo", label: "Odoo ERP", description: "ERP integration", icon: Building2, path: "/odoo", color: "bg-gray-600", roles: ["admin"] },
-      { id: "admin", label: "System Admin", description: "Users, security & settings", icon: Settings, path: "/admin", color: "bg-gray-700", roles: ["admin"] },
     ],
   },
+  // ─── PLATFORM ADMINISTRATION ───
   {
-    id: "clinical-tools",
-    title: "Clinical Tools",
-    description: "Advanced clinical documentation and utilities",
-    roles: ['doctor', 'nurse', 'specialist', 'admin'],
+    id: "platform-admin",
+    title: "Platform Administration",
+    description: "System settings, document management, ERP, and registry governance",
+    roles: ['admin', 'hie_admin'],
     modules: [
-      { id: "voice-dictation", label: "Voice Dictation", description: "Speech-to-text for notes", icon: Activity, path: "/encounter", color: "bg-rose-500" },
+      { id: "admin", label: "System Admin", description: "Users, security & settings", icon: Settings, path: "/admin", color: "bg-gray-700", roles: ["admin"] },
+      { id: "registry-management", label: "Registry Management", description: "Manage HIE registries", icon: Database, path: "/registry-management", color: "bg-purple-600", roles: ["admin", "hie_admin"] },
+      { id: "landela", label: "Landela DMS", description: "Document management & scanning", icon: ScanLine, path: "/landela", color: "bg-cyan-600" },
+      { id: "odoo", label: "Odoo ERP", description: "ERP integration", icon: Building2, path: "/odoo", color: "bg-gray-600", roles: ["admin"] },
       { id: "sync", label: "Offline Sync", description: "Conflict resolution & sync status", icon: ArrowRightLeft, path: "/admin", color: "bg-slate-600", roles: ["admin"] },
     ],
   },
+  // ─── HELP & SUPPORT ───
   {
     id: "support",
     title: "Help & Support",
     description: "FAQs, user guides, system utilities and documentation",
-    // No restriction - always visible
     modules: [
       { id: "help", label: "Help Desk", description: "FAQs, guides & documentation", icon: HelpCircle, path: "/help", color: "bg-teal-500" },
       { id: "profile", label: "Profile Settings", description: "Your account & preferences", icon: User, path: "/profile", color: "bg-slate-500" },
-      { id: "kiosk", label: "Patient Kiosk", description: "Self-service check-in terminal", icon: Monitor, path: "/kiosk", color: "bg-blue-600" },
       { id: "install", label: "Install App", description: "Download PWA for offline use", icon: Download, path: "/install", color: "bg-green-600" },
     ],
   },
 ];
-
 
 export default function ModuleHome() {
   const { profile, signOut } = useAuth();
