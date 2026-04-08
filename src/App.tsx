@@ -105,6 +105,8 @@ import PublicHealthOps from "./pages/PublicHealthOps";
 import CoverageOperations from "./pages/CoverageOperations";
 import AIGovernance from "./pages/AIGovernance";
 import OmnichannelHub from "./pages/OmnichannelHub";
+import FacilityMode from "./pages/FacilityMode";
+import RegistryAdmin from "./pages/RegistryAdmin";
 const queryClient = new QueryClient();
 
 const App = () => (
@@ -417,6 +419,16 @@ const App = () => (
             <Route path="/ai-governance" element={<ProtectedRoute><AIGovernance /></ProtectedRoute>} />
             {/* Omnichannel & Experience Hub */}
             <Route path="/omnichannel" element={<ProtectedRoute><OmnichannelHub /></ProtectedRoute>} />
+            <Route path="/facility-mode" element={
+              <ProtectedRoute>
+                <FacilityMode />
+              </ProtectedRoute>
+            } />
+            <Route path="/registry-admin" element={
+              <ProtectedRoute>
+                <RegistryAdmin />
+              </ProtectedRoute>
+            } />
             {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
             <Route path="*" element={<NotFound />} />
           </Routes>
