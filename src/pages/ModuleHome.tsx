@@ -612,7 +612,7 @@ export default function ModuleHome() {
                   </div>
                   <div className="flex flex-wrap gap-2">
                     <Button
-                      className="h-14 px-6 flex items-center gap-3 text-base font-semibold bg-orange-500 hover:bg-orange-600 text-white shadow-md"
+                      className="h-16 px-8 flex items-center gap-3 text-lg font-semibold bg-orange-500 hover:bg-orange-600 text-white shadow-md rounded-xl"
                       onClick={() => navigate("/queue")}
                     >
                       <Users className="h-6 w-6" />
@@ -681,25 +681,25 @@ export default function ModuleHome() {
                   Quick Access
                 </h3>
                 <div className="flex flex-wrap gap-3">
-                  <Button variant="outline" className="h-14 px-6 flex items-center gap-2 text-base hover:bg-red-600 hover:text-white group" onClick={() => navigate("/encounter")}>
+                  <Button variant="outline" className="h-14 px-6 flex items-center gap-2 text-base rounded-xl hover:bg-red-600 hover:text-white group" onClick={() => navigate("/encounter")}>
                     <FileHeart className="h-5 w-5 text-red-600 group-hover:text-white" /> EHR
                   </Button>
-                  <Button variant="outline" className="h-14 px-6 flex items-center gap-2 text-base hover:bg-primary hover:text-primary-foreground group" onClick={() => navigate("/dashboard")}>
+                  <Button variant="outline" className="h-14 px-6 flex items-center gap-2 text-base rounded-xl hover:bg-primary hover:text-primary-foreground group" onClick={() => navigate("/dashboard")}>
                     <ClipboardList className="h-5 w-5 text-primary group-hover:text-primary-foreground" /> Dashboard
                   </Button>
-                  <Button variant="outline" className="h-14 px-6 flex items-center gap-2 text-base hover:bg-emerald-600 hover:text-white group" onClick={() => navigate("/pharmacy")}>
+                  <Button variant="outline" className="h-14 px-6 flex items-center gap-2 text-base rounded-xl hover:bg-emerald-600 hover:text-white group" onClick={() => navigate("/pharmacy")}>
                     <Pill className="h-5 w-5 text-emerald-600 group-hover:text-white" /> Prescribe
                   </Button>
-                  <Button variant="outline" className="h-14 px-6 flex items-center gap-2 text-base hover:bg-green-500 hover:text-white group" onClick={() => navigate("/registration")}>
+                  <Button variant="outline" className="h-14 px-6 flex items-center gap-2 text-base rounded-xl hover:bg-green-500 hover:text-white group" onClick={() => navigate("/registration")}>
                     <UserPlus className="h-5 w-5 text-green-500 group-hover:text-white" /> Register
                   </Button>
-                  <Button variant="outline" className="h-14 px-6 flex items-center gap-2 text-base hover:bg-purple-500 hover:text-white group" onClick={() => navigate("/lab")}>
+                  <Button variant="outline" className="h-14 px-6 flex items-center gap-2 text-base rounded-xl hover:bg-purple-500 hover:text-white group" onClick={() => navigate("/lab")}>
                     <TestTube2 className="h-5 w-5 text-purple-500 group-hover:text-white" /> Lab
                   </Button>
-                  <Button variant="outline" className="h-14 px-6 flex items-center gap-2 text-base hover:bg-rose-500 hover:text-white group" onClick={() => navigate("/radiology")}>
+                  <Button variant="outline" className="h-14 px-6 flex items-center gap-2 text-base rounded-xl hover:bg-rose-500 hover:text-white group" onClick={() => navigate("/radiology")}>
                     <Scan className="h-5 w-5 text-rose-500 group-hover:text-white" /> Radiology
                   </Button>
-                  <Button variant="outline" className="h-14 px-6 flex items-center gap-2 text-base hover:bg-orange-500 hover:text-white group" onClick={() => navigate("/appointments")}>
+                  <Button variant="outline" className="h-14 px-6 flex items-center gap-2 text-base rounded-xl hover:bg-orange-500 hover:text-white group" onClick={() => navigate("/appointments")}>
                     <Calendar className="h-5 w-5 text-orange-500 group-hover:text-white" /> Schedule
                   </Button>
                 </div>

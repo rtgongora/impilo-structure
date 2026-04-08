@@ -43,17 +43,17 @@ export function ExpandableCategoryCard({
     <>
       {/* Category Card - Fills available space */}
       <Card
-        className="cursor-pointer transition-all duration-200 hover:shadow-md hover:border-primary/50 group h-full"
+        className="cursor-pointer transition-all duration-200 hover:shadow-lg hover:border-primary/40 group h-full rounded-2xl"
         onClick={() => setIsOpen(true)}
       >
-        <CardContent className="p-4 flex items-center gap-4 h-full">
+        <CardContent className="p-5 flex items-center gap-4 h-full">
           <div
             className={cn(
-              "w-12 h-12 shrink-0 rounded-xl flex items-center justify-center group-hover:scale-105 transition-transform",
+              "w-14 h-14 shrink-0 rounded-2xl flex items-center justify-center group-hover:scale-105 transition-transform shadow-sm",
               color
             )}
           >
-            <Icon className="h-6 w-6 text-white" />
+            <Icon className="h-7 w-7 text-white" />
           </div>
           <div className="min-w-0 flex-1">
             <p className="text-lg font-semibold leading-tight truncate">{title}</p>
@@ -64,10 +64,10 @@ export function ExpandableCategoryCard({
 
       {/* Expanded Dialog with Modules */}
       <Dialog open={isOpen} onOpenChange={setIsOpen}>
-        <DialogContent className="max-w-[90vw] w-full max-h-[90vh] overflow-y-auto">
+        <DialogContent className="max-w-[90vw] w-full max-h-[90vh] overflow-y-auto rounded-2xl">
           <DialogHeader>
             <div className="flex items-center gap-3">
-              <div className={cn("w-10 h-10 shrink-0 rounded-lg flex items-center justify-center", color)}>
+              <div className={cn("w-12 h-12 shrink-0 rounded-2xl flex items-center justify-center", color)}>
                 <Icon className="h-5 w-5 text-white" />
               </div>
               <div>
@@ -81,7 +81,7 @@ export function ExpandableCategoryCard({
             {modules.map((module) => (
               <Card
                 key={module.id}
-                className="cursor-pointer hover:shadow-md hover:border-primary/50 transition-all group"
+                className="cursor-pointer hover:shadow-lg hover:border-primary/40 transition-all group rounded-2xl"
                 onClick={() => {
                   onModuleClick(module.path);
                   setIsOpen(false);
@@ -89,7 +89,7 @@ export function ExpandableCategoryCard({
               >
                 <CardContent className="p-4">
                   <div className="flex flex-col items-center gap-3 text-center">
-                    <div className={cn("w-12 h-12 shrink-0 rounded-xl flex items-center justify-center", module.color)}>
+                    <div className={cn("w-14 h-14 shrink-0 rounded-2xl flex items-center justify-center shadow-sm", module.color)}>
                       <module.icon className="h-6 w-6 text-white" />
                     </div>
                     <div className="min-w-0 w-full">
