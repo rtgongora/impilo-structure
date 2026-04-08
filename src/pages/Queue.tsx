@@ -8,8 +8,12 @@ import {
   Users, LayoutDashboard, QrCode, Settings, GitBranch, CalendarDays,
   UserPlus, Bed, Building2, Activity, AlertTriangle,
   Stethoscope, Globe, Home, Wifi, ChevronRight, ArrowLeft,
-  Package, DollarSign, Clock, BarChart3, Scissors, Ambulance
+  Package, DollarSign, Clock, BarChart3, Scissors, Ambulance, ChevronDown, Check
 } from "lucide-react";
+import {
+  DropdownMenu, DropdownMenuContent, DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
 import { 
   QueueWorkstation, 
   SupervisorDashboard, 
@@ -211,24 +215,34 @@ const Queue = () => {
               <h2 className="text-sm font-semibold leading-tight">{currentCarePoint.label}</h2>
               <p className="text-xs text-muted-foreground">{currentCarePoint.description}</p>
             </div>
-            {/* Care point quick-switch */}
-            <div className="hidden md:flex items-center gap-1 ml-4 border-l pl-4">
-              {CARE_POINTS.filter(c => c.id !== selectedCarePoint).map(cp => {
-                const CpIcon = cp.icon;
-                return (
-                  <Button 
-                    key={cp.id} 
-                    variant="ghost" 
-                    size="sm" 
-                    className="h-7 text-xs gap-1.5 text-muted-foreground hover:text-foreground"
-                    onClick={() => handleSelectCarePoint(cp.id)}
-                  >
-                    <CpIcon className="h-3.5 w-3.5" />
-                    {cp.label}
-                  </Button>
-                );
-              })}
-            </div>
+            {/* Care point quick-switch dropdown */}
+            <DropdownMenu>
+              <DropdownMenuTrigger asChild>
+                <Button variant="outline" size="sm" className="h-7 text-xs gap-1.5 ml-2">
+                  Switch
+                  <ChevronDown className="h-3 w-3" />
+                </Button>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent align="start" className="w-56">
+                {CARE_POINTS.map(cp => {
+                  const CpIcon = cp.icon;
+                  const isActive = cp.id === selectedCarePoint;
+                  return (
+                    <DropdownMenuItem
+                      key={cp.id}
+                      onClick={() => !isActive && handleSelectCarePoint(cp.id)}
+                      className={isActive ? "bg-accent" : ""}
+                    >
+                      <div className={`h-5 w-5 rounded ${cp.color} flex items-center justify-center text-white mr-2 shrink-0`}>
+                        <CpIcon className="h-3 w-3" />
+                      </div>
+                      <span className="flex-1 text-sm">{cp.label}</span>
+                      {isActive && <Check className="h-3.5 w-3.5 text-primary" />}
+                    </DropdownMenuItem>
+                  );
+                })}
+              </DropdownMenuContent>
+            </DropdownMenu>
           </div>
           <div className="flex items-center gap-2">
             <AddToQueueDialog queues={queues} onSuccess={refetch} />
