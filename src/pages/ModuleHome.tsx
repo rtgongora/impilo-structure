@@ -654,6 +654,9 @@ export default function ModuleHome() {
                     <Button variant="outline" className="h-14 px-5 flex items-center gap-2 text-base rounded-xl" onClick={() => navigate("/communication?tab=calls")}>
                       <Phone className="h-5 w-5 text-success" /> Calls
                     </Button>
+                    <Button variant="outline" className="h-14 px-5 flex items-center gap-2 text-base rounded-xl border-teal-200 hover:bg-teal-50 dark:border-teal-800 dark:hover:bg-teal-900/30" onClick={() => navigate("/omnichannel")}>
+                      <Radio className="h-5 w-5 text-teal-600" /> Omnichannel
+                    </Button>
                   </div>
                   <div className="mt-4 space-y-2">
                     <div className="flex items-center gap-2 text-sm p-2 rounded-xl bg-muted/40">
