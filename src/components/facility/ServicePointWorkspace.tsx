@@ -36,6 +36,8 @@ export function ServicePointWorkspace({ servicePoint, facilityName, facilityId }
     "supervisor": () => <SupervisorWorkspace facilityName={facilityName} />,
     "emergency": () => <EmergencyWorkspace />,
     "inpatient": () => <InpatientWorkspace />,
+    "casualty": () => <CasualtyWorkspace />,
+    "procedure-room": () => <ProcedureRoomWorkspace />,
   };
 
   return (
