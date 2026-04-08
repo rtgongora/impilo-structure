@@ -57,15 +57,16 @@ export default function Registration() {
 
   return (
     <AppLayout title="Client Intake & Identity">
-      <div className="p-6">
-        <div className="max-w-5xl mx-auto">
-          <div className="text-center mb-8">
-            <h2 className="text-3xl font-bold mb-3">Client Intake & Identity</h2>
+      <div className="flex-1 p-6 overflow-auto">
+        <div className="max-w-6xl mx-auto space-y-8">
+          {/* Header */}
+          <div className="text-center">
+            <h2 className="text-3xl font-bold mb-2">Client Intake & Identity</h2>
             <p className="text-muted-foreground text-lg">Register new clients, create visits, and manage identity with biometric verification</p>
           </div>
 
           {/* Primary actions */}
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
             {menuItems.map((item, index) => {
               const Icon = item.icon;
               return (
@@ -89,21 +90,28 @@ export default function Registration() {
             })}
           </div>
 
-          {/* Related modules */}
-          <div className="mb-8">
-            <h3 className="text-lg font-semibold mb-4 text-muted-foreground">Related Modules</h3>
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-              {relatedModules.map((item, index) => {
+          {/* Related modules - larger cards */}
+          <div>
+            <h3 className="text-lg font-semibold mb-4 text-muted-foreground flex items-center gap-2">
+              <Search className="h-4 w-4" />
+              Related Modules
+            </h3>
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-5">
+              {relatedModules.map((item) => {
                 const Icon = item.icon;
                 return (
-                  <Card key={item.title} className="cursor-pointer transition-all hover:shadow-md hover:ring-1 hover:ring-primary/30" onClick={() => navigate(item.path)}>
-                    <CardContent className="p-5 flex items-center gap-4">
-                      <div className={cn("w-12 h-12 rounded-xl flex items-center justify-center shrink-0", item.color)}>
-                        <Icon className="w-6 h-6 text-white" />
+                  <Card 
+                    key={item.title} 
+                    className="cursor-pointer transition-all hover:shadow-lg hover:ring-2 hover:ring-primary/30 group"
+                    onClick={() => navigate(item.path)}
+                  >
+                    <CardContent className="p-6 flex items-start gap-4">
+                      <div className={cn("w-14 h-14 rounded-xl flex items-center justify-center shrink-0 group-hover:scale-105 transition-transform shadow-sm", item.color)}>
+                        <Icon className="w-7 h-7 text-white" />
                       </div>
-                      <div>
-                        <h4 className="font-semibold">{item.title}</h4>
-                        <p className="text-sm text-muted-foreground">{item.description}</p>
+                      <div className="min-w-0">
+                        <h4 className="font-semibold text-base mb-1 group-hover:text-primary transition-colors">{item.title}</h4>
+                        <p className="text-sm text-muted-foreground leading-relaxed">{item.description}</p>
                       </div>
                     </CardContent>
                   </Card>
@@ -112,17 +120,18 @@ export default function Registration() {
             </div>
           </div>
 
-          <div className="grid grid-cols-4 gap-4">
+          {/* Stats */}
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
             {[
-              { label: "Registered Today", value: "24", icon: Users },
-              { label: "Biometric Captures", value: "156", icon: Fingerprint },
-              { label: "Consents Collected", value: "89", icon: FileCheck },
-              { label: "Visits Created", value: "42", icon: Calendar },
+              { label: "Registered Today", value: "24", icon: Users, accent: "text-emerald-500" },
+              { label: "Biometric Captures", value: "156", icon: Fingerprint, accent: "text-blue-500" },
+              { label: "Consents Collected", value: "89", icon: FileCheck, accent: "text-violet-500" },
+              { label: "Visits Created", value: "42", icon: Calendar, accent: "text-orange-500" },
             ].map((stat) => (
-              <Card key={stat.label} className="bg-muted/30">
-                <CardContent className="p-4 flex items-center gap-3">
-                  <div className="w-10 h-10 rounded-lg bg-primary/10 flex items-center justify-center">
-                    <stat.icon className="w-5 h-5 text-primary" />
+              <Card key={stat.label} className="bg-muted/30 border">
+                <CardContent className="p-5 flex items-center gap-4">
+                  <div className="w-12 h-12 rounded-xl bg-primary/10 flex items-center justify-center">
+                    <stat.icon className={cn("w-6 h-6", stat.accent)} />
                   </div>
                   <div>
                     <p className="text-2xl font-bold">{stat.value}</p>

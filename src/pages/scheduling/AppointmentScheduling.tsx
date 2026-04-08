@@ -261,18 +261,18 @@ export default function AppointmentScheduling() {
       {/* Sub-navigation bar */}
       <div className="sticky top-16 z-40 bg-background/95 backdrop-blur-sm border-b">
         <div className="w-full px-4 sm:px-6 lg:px-8">
-          <div className="flex items-center gap-3 h-14 overflow-x-auto">
-            <Button variant="default" size="lg" className="rounded-full shrink-0 h-10 px-5 text-sm font-medium">
-              <CalendarDays className="h-4.5 w-4.5 mr-2" /> Appointments
+          <div className="flex items-center gap-2 h-14 overflow-x-auto">
+            <Button className="rounded-full shrink-0 h-11 px-6 text-sm font-semibold shadow-sm">
+              <CalendarDays className="h-5 w-5 mr-2" /> Appointments
             </Button>
-            <Button variant="ghost" size="lg" className="rounded-full shrink-0 h-10 px-5 text-sm font-medium" onClick={() => navigate("/theatre")}>
-              <MapPin className="h-4.5 w-4.5 mr-2" /> Theatre Booking
+            <Button variant="outline" className="rounded-full shrink-0 h-11 px-6 text-sm font-medium hover:bg-primary/10 hover:text-primary hover:border-primary/40 transition-all" onClick={() => navigate("/theatre")}>
+              <MapPin className="h-5 w-5 mr-2" /> Theatre Booking
             </Button>
-            <Button variant="ghost" size="lg" className="rounded-full shrink-0 h-10 px-5 text-sm font-medium" onClick={() => navigate("/scheduling/resources")}>
-              <ListFilter className="h-4.5 w-4.5 mr-2" /> Resource Calendar
+            <Button variant="outline" className="rounded-full shrink-0 h-11 px-6 text-sm font-medium hover:bg-primary/10 hover:text-primary hover:border-primary/40 transition-all" onClick={() => navigate("/scheduling/resources")}>
+              <ListFilter className="h-5 w-5 mr-2" /> Resource Calendar
             </Button>
-            <Button variant="ghost" size="lg" className="rounded-full shrink-0 h-10 px-5 text-sm font-medium" onClick={() => navigate("/scheduling/noticeboard")}>
-              <AlertCircle className="h-4.5 w-4.5 mr-2" /> Noticeboard
+            <Button variant="outline" className="rounded-full shrink-0 h-11 px-6 text-sm font-medium hover:bg-primary/10 hover:text-primary hover:border-primary/40 transition-all" onClick={() => navigate("/scheduling/noticeboard")}>
+              <AlertCircle className="h-5 w-5 mr-2" /> Noticeboard
             </Button>
           </div>
         </div>
