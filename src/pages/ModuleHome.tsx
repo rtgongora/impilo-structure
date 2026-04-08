@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useMemo } from "react";
 import { useAuth } from "@/contexts/AuthContext";
 import { useNavigate } from "react-router-dom";
 import { useUserRoles, ModuleAccessRole } from "@/hooks/useUserRoles";
@@ -95,6 +95,7 @@ import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/component
 import { EmergencyHub } from "@/components/emergency/EmergencyHub";
 import { toast } from "sonner";
 import impiloLogo from "@/assets/impilo-logo.png";
+import { cn } from "@/lib/utils";
 
 // Category icons mapping for expandable cards
 const categoryIcons: Record<string, React.ComponentType<{ className?: string }>> = {
@@ -310,11 +311,13 @@ export default function ModuleHome() {
   const [activeTab, setActiveTab] = useState(() => {
     const landingTab = sessionStorage.getItem("impilo_landing_tab");
     if (landingTab) {
-      sessionStorage.removeItem("impilo_landing_tab"); // consume it
+      sessionStorage.removeItem("impilo_landing_tab");
       return landingTab;
     }
     return isClient ? "personal" : "work";
   });
+  
+  const [moduleSearch, setModuleSearch] = useState("");
   
   // Also try to restore active context from session if set by context resolver
   useEffect(() => {
@@ -416,6 +419,14 @@ export default function ModuleHome() {
       return bRelevant - aRelevant; // Relevant categories first
     });
   })();
+
+  const searchFilteredModules = useMemo(() => {
+    if (!moduleSearch.trim()) return [];
+    const q = moduleSearch.toLowerCase();
+    return visibleCategories.flatMap(cat => cat.modules).filter(
+      m => m.label.toLowerCase().includes(q) || m.description.toLowerCase().includes(q)
+    );
+  }, [moduleSearch, visibleCategories]);
 
   return (
     <div className="h-screen flex flex-col bg-gradient-to-br from-background via-background to-muted/30">
@@ -680,49 +691,94 @@ export default function ModuleHome() {
                   <Zap className="h-6 w-6 text-amber-500" />
                   Quick Access
                 </h3>
-                <div className="flex flex-wrap gap-3">
-                  <Button variant="outline" className="h-14 px-6 flex items-center gap-2 text-base rounded-xl hover:bg-red-600 hover:text-white group" onClick={() => navigate("/encounter")}>
+                <div className="grid grid-cols-4 lg:grid-cols-7 gap-3">
+                  <Button variant="outline" className="h-14 flex items-center justify-center gap-2 text-base rounded-xl hover:bg-red-600 hover:text-white group" onClick={() => navigate("/encounter")}>
                     <FileHeart className="h-5 w-5 text-red-600 group-hover:text-white" /> EHR
                   </Button>
-                  <Button variant="outline" className="h-14 px-6 flex items-center gap-2 text-base rounded-xl hover:bg-primary hover:text-primary-foreground group" onClick={() => navigate("/dashboard")}>
+                  <Button variant="outline" className="h-14 flex items-center justify-center gap-2 text-base rounded-xl hover:bg-primary hover:text-primary-foreground group" onClick={() => navigate("/dashboard")}>
                     <ClipboardList className="h-5 w-5 text-primary group-hover:text-primary-foreground" /> Dashboard
                   </Button>
-                  <Button variant="outline" className="h-14 px-6 flex items-center gap-2 text-base rounded-xl hover:bg-emerald-600 hover:text-white group" onClick={() => navigate("/pharmacy")}>
+                  <Button variant="outline" className="h-14 flex items-center justify-center gap-2 text-base rounded-xl hover:bg-emerald-600 hover:text-white group" onClick={() => navigate("/pharmacy")}>
                     <Pill className="h-5 w-5 text-emerald-600 group-hover:text-white" /> Prescribe
                   </Button>
-                  <Button variant="outline" className="h-14 px-6 flex items-center gap-2 text-base rounded-xl hover:bg-green-500 hover:text-white group" onClick={() => navigate("/registration")}>
+                  <Button variant="outline" className="h-14 flex items-center justify-center gap-2 text-base rounded-xl hover:bg-green-500 hover:text-white group" onClick={() => navigate("/registration")}>
                     <UserPlus className="h-5 w-5 text-green-500 group-hover:text-white" /> Register
                   </Button>
-                  <Button variant="outline" className="h-14 px-6 flex items-center gap-2 text-base rounded-xl hover:bg-purple-500 hover:text-white group" onClick={() => navigate("/lab")}>
+                  <Button variant="outline" className="h-14 flex items-center justify-center gap-2 text-base rounded-xl hover:bg-purple-500 hover:text-white group" onClick={() => navigate("/lab")}>
                     <TestTube2 className="h-5 w-5 text-purple-500 group-hover:text-white" /> Lab
                   </Button>
-                  <Button variant="outline" className="h-14 px-6 flex items-center gap-2 text-base rounded-xl hover:bg-rose-500 hover:text-white group" onClick={() => navigate("/radiology")}>
+                  <Button variant="outline" className="h-14 flex items-center justify-center gap-2 text-base rounded-xl hover:bg-rose-500 hover:text-white group" onClick={() => navigate("/radiology")}>
                     <Scan className="h-5 w-5 text-rose-500 group-hover:text-white" /> Radiology
                   </Button>
-                  <Button variant="outline" className="h-14 px-6 flex items-center gap-2 text-base rounded-xl hover:bg-orange-500 hover:text-white group" onClick={() => navigate("/appointments")}>
+                  <Button variant="outline" className="h-14 flex items-center justify-center gap-2 text-base rounded-xl hover:bg-orange-500 hover:text-white group" onClick={() => navigate("/appointments")}>
                     <Calendar className="h-5 w-5 text-orange-500 group-hover:text-white" /> Schedule
                   </Button>
                 </div>
               </div>
 
-              {/* Module Categories - 6 groups, 3 per row */}
-              <section className="flex-1 min-h-0 overflow-auto">
-                <div className="grid grid-cols-2 lg:grid-cols-3 gap-4" style={{ gridAutoRows: '1fr' }}>
-                  {visibleCategories.map((category) => (
-                    <ExpandableCategoryCard
-                      key={category.id}
-                      id={category.id}
-                      title={category.title}
-                      description={category.description}
-                      modules={category.modules}
-                      icon={categoryIcons[category.id] || Stethoscope}
-                      color={categoryColors[category.id] || "bg-primary"}
-                      roles={category.roles}
-                      onModuleClick={handleModuleClick}
-                      defaultExpanded={false}
-                    />
-                  ))}
+              {/* Module Search + Categories */}
+              <section className="flex-1 min-h-0 flex flex-col gap-4">
+                {/* Module Search */}
+                <div className="relative flex-shrink-0">
+                  <Search className="absolute left-4 top-1/2 -translate-y-1/2 h-5 w-5 text-muted-foreground" />
+                  <input
+                    type="text"
+                    placeholder="Search all modules..."
+                    value={moduleSearch}
+                    onChange={(e) => setModuleSearch(e.target.value)}
+                    className="w-full h-12 pl-12 pr-4 rounded-2xl border bg-card text-base placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary/40 focus:border-primary transition-colors"
+                  />
                 </div>
+
+                {/* Filtered results or category grid */}
+                {moduleSearch.trim() ? (
+                  <div className="overflow-auto flex-1">
+                    <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4">
+                      {searchFilteredModules.map((module) => (
+                        <Card
+                          key={module.id}
+                          className="cursor-pointer hover:shadow-lg hover:border-primary/40 transition-all group rounded-2xl"
+                          onClick={() => handleModuleClick(module.path)}
+                        >
+                          <CardContent className="p-4 flex flex-col items-center gap-3 text-center">
+                            <div className={cn("w-14 h-14 shrink-0 rounded-2xl flex items-center justify-center shadow-sm", module.color)}>
+                              <module.icon className="h-7 w-7 text-white" />
+                            </div>
+                            <div className="min-w-0 w-full">
+                              <p className="text-base font-semibold truncate">{module.label}</p>
+                              <p className="text-sm text-muted-foreground line-clamp-2">{module.description}</p>
+                            </div>
+                          </CardContent>
+                        </Card>
+                      ))}
+                      {searchFilteredModules.length === 0 && (
+                        <div className="col-span-full text-center py-12 text-muted-foreground">
+                          <Search className="h-8 w-8 mx-auto mb-2 opacity-40" />
+                          <p className="text-base">No modules match "{moduleSearch}"</p>
+                        </div>
+                      )}
+                    </div>
+                  </div>
+                ) : (
+                  <div className="overflow-auto flex-1">
+                    <div className="grid grid-cols-2 lg:grid-cols-3 gap-4" style={{ gridAutoRows: '1fr' }}>
+                      {visibleCategories.map((category) => (
+                        <ExpandableCategoryCard
+                          key={category.id}
+                          id={category.id}
+                          title={category.title}
+                          description={category.description}
+                          modules={category.modules}
+                          icon={categoryIcons[category.id] || Stethoscope}
+                          color={categoryColors[category.id] || "bg-primary"}
+                          roles={category.roles}
+                          onModuleClick={handleModuleClick}
+                          defaultExpanded={false}
+                        />
+                      ))}
+                    </div>
+                  </div>
+                )}
               </section>
               </>
               )}
