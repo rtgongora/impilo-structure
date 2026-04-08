@@ -231,7 +231,7 @@ export default function AppointmentScheduling() {
     <div className="min-h-screen bg-gradient-to-br from-background via-background to-muted/30">
       {/* Header */}
       <header className="sticky top-0 z-50 bg-background/80 backdrop-blur-sm border-b">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div className="w-full px-4 sm:px-6 lg:px-8">
           <div className="flex items-center justify-between h-16">
             <div className="flex items-center gap-3">
               <Button variant="ghost" size="icon" onClick={() => navigate("/")}>
@@ -242,8 +242,8 @@ export default function AppointmentScheduling() {
                   <CalendarCheck className="h-5 w-5 text-primary" />
                 </div>
                 <div>
-                  <h1 className="text-lg font-semibold">Appointment Scheduling</h1>
-                  <p className="text-xs text-muted-foreground">Manage clinic appointments</p>
+                  <h1 className="text-lg font-semibold">Bookings & Appointments</h1>
+                  <p className="text-xs text-muted-foreground">Scheduling, theatre & resource management</p>
                 </div>
               </div>
             </div>
@@ -257,6 +257,26 @@ export default function AppointmentScheduling() {
           </div>
         </div>
       </header>
+
+      {/* Sub-navigation bar */}
+      <div className="sticky top-16 z-40 bg-background/95 backdrop-blur-sm border-b">
+        <div className="w-full px-4 sm:px-6 lg:px-8">
+          <div className="flex items-center gap-2 h-12 overflow-x-auto">
+            <Button variant="default" size="sm" className="rounded-full shrink-0">
+              <CalendarDays className="h-4 w-4 mr-1.5" /> Appointments
+            </Button>
+            <Button variant="ghost" size="sm" className="rounded-full shrink-0" onClick={() => navigate("/theatre")}>
+              <MapPin className="h-4 w-4 mr-1.5" /> Theatre Booking
+            </Button>
+            <Button variant="ghost" size="sm" className="rounded-full shrink-0" onClick={() => navigate("/scheduling/resources")}>
+              <ListFilter className="h-4 w-4 mr-1.5" /> Resource Calendar
+            </Button>
+            <Button variant="ghost" size="sm" className="rounded-full shrink-0" onClick={() => navigate("/scheduling/noticeboard")}>
+              <AlertCircle className="h-4 w-4 mr-1.5" /> Noticeboard
+            </Button>
+          </div>
+        </div>
+      </div>
 
       <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
         {/* Controls */}
