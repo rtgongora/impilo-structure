@@ -622,15 +622,15 @@ export default function ModuleHome() {
                     </Badge>
                   </div>
                   <div className="grid grid-cols-2 lg:grid-cols-4 gap-2">
+                    <Button className="h-14 flex items-center justify-center gap-2 text-base font-semibold rounded-xl bg-green-500 hover:bg-green-600 text-white shadow-md" onClick={() => navigate("/registration")}>
+                      <UserPlus className="h-5 w-5" /> Client Intake
+                    </Button>
                     <Button
                       className="h-14 flex items-center justify-center gap-2 text-base font-semibold bg-orange-500 hover:bg-orange-600 text-white shadow-md rounded-xl"
                       onClick={() => navigate("/queue")}
                     >
                       <Users className="h-5 w-5" />
                       Queues & Wards
-                    </Button>
-                    <Button className="h-14 flex items-center justify-center gap-2 text-base rounded-xl bg-green-500 hover:bg-green-600 text-white shadow-sm" onClick={() => navigate("/registration")}>
-                      <UserPlus className="h-5 w-5" /> Client Intake
                     </Button>
                     <Button variant="outline" className="h-14 flex items-center justify-center gap-2 text-base rounded-xl" onClick={() => navigate("/operations")}>
                       <BarChart3 className="h-5 w-5 text-muted-foreground" /> Operations
@@ -694,7 +694,7 @@ export default function ModuleHome() {
                   <Zap className="h-6 w-6 text-amber-500" />
                   Quick Access
                 </h3>
-                <div className="grid grid-cols-4 lg:grid-cols-8 gap-3">
+                <div className="grid grid-cols-7 gap-3">
                   <Button variant="outline" className="h-14 flex items-center justify-center gap-2 text-base rounded-xl hover:bg-red-600 hover:text-white group" onClick={() => navigate("/encounter")}>
                     <FileHeart className="h-5 w-5 text-red-600 group-hover:text-white" /> EHR
                   </Button>
