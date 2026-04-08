@@ -420,6 +420,14 @@ export default function ModuleHome() {
     });
   })();
 
+  const searchFilteredModules = useMemo(() => {
+    if (!moduleSearch.trim()) return [];
+    const q = moduleSearch.toLowerCase();
+    return visibleCategories.flatMap(cat => cat.modules).filter(
+      m => m.label.toLowerCase().includes(q) || m.description.toLowerCase().includes(q)
+    );
+  }, [moduleSearch, visibleCategories]);
+
   return (
     <div className="h-screen flex flex-col bg-gradient-to-br from-background via-background to-muted/30">
       {/* Compact Header with Profile Menu */}
