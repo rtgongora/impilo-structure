@@ -59,9 +59,7 @@ const Auth = () => {
         navigate("/");
         break;
       case "facility":
-        // Store facility context and route to work
-        sessionStorage.setItem("impilo_landing_tab", "work");
-        sessionStorage.setItem("impilo_current_facility_id", ctx.facility.facility_id);
+        // Store facility context and route to facility mode
         sessionStorage.setItem("impilo_active_context", JSON.stringify({
           type: "facility",
           facilityId: ctx.facility.facility_id,
@@ -70,7 +68,8 @@ const Auth = () => {
           contextLabel: ctx.facility.context_label,
           accessMode: "clinical",
         }));
-        navigate("/");
+        navigate("/facility-mode");
+        break;
         break;
       case "above_site":
         // Need additional scope selection
@@ -78,16 +77,8 @@ const Auth = () => {
         setPhase("above-site-context");
         break;
       case "registry_admin":
-        // Route to the specific registry admin page
-        const registryRoutes: Record<string, string> = {
-          vito: "/client-registry",
-          varapi: "/hpr",
-          tuso: "/facility-registry",
-          tshepo: "/admin/tshepo/consents",
-          zibo: "/admin/zibo",
-        };
-        sessionStorage.setItem("impilo_landing_tab", "work");
-        navigate(registryRoutes[ctx.registry] || "/");
+        // Route to the registry admin workspace
+        navigate(`/registry-admin?registry=${ctx.registry}`);
         break;
       case "org_admin":
         sessionStorage.setItem("impilo_landing_tab", "work");
