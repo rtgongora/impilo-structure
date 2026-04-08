@@ -12,7 +12,8 @@ import {
 export type ServicePointType =
   | "front-desk" | "triage" | "consultation" | "nursing-station"
   | "pharmacy" | "laboratory" | "radiology" | "theatre"
-  | "billing" | "supervisor" | "emergency" | "inpatient";
+  | "billing" | "supervisor" | "emergency" | "inpatient"
+  | "casualty" | "procedure-room";
 
 export interface ServicePointConfig {
   id: ServicePointType;
@@ -29,12 +30,14 @@ export const SERVICE_POINTS: ServicePointConfig[] = [
   { id: "triage", label: "Triage", description: "Vitals, categorisation, fast-track routing", icon: Activity, color: "text-orange-600", bg: "bg-orange-500/10", category: "clinical" },
   { id: "consultation", label: "Consultation", description: "Patient list, clinical workspace, orders, e-Rx", icon: Stethoscope, color: "text-teal-600", bg: "bg-teal-500/10", category: "clinical" },
   { id: "nursing-station", label: "Nursing Station", description: "Bed board, medication tasks, observations, handover", icon: Bed, color: "text-purple-600", bg: "bg-purple-500/10", category: "clinical" },
-  { id: "emergency", label: "Emergency", description: "Trauma bay, resuscitation, rapid assessment", icon: Radio, color: "text-red-600", bg: "bg-red-500/10", category: "clinical" },
+  { id: "casualty", label: "Casualty (ED)", description: "Emergency department, acute presentations, resuscitation", icon: Radio, color: "text-red-600", bg: "bg-red-500/10", category: "clinical" },
+  { id: "emergency", label: "Trauma Bay", description: "Trauma activation, rapid assessment, stabilisation", icon: Radio, color: "text-red-700", bg: "bg-red-600/10", category: "clinical" },
+  { id: "procedure-room", label: "Procedure Room", description: "Minor procedures, biopsies, wound care, sedation", icon: Syringe, color: "text-pink-600", bg: "bg-pink-500/10", category: "clinical" },
+  { id: "inpatient", label: "Inpatient / Ward", description: "Admissions, rounds, discharge planning", icon: Bed, color: "text-violet-600", bg: "bg-violet-500/10", category: "clinical" },
   { id: "pharmacy", label: "Pharmacy", description: "Prescription queue, dispensing, stock", icon: Pill, color: "text-green-600", bg: "bg-green-500/10", category: "support" },
   { id: "laboratory", label: "Laboratory", description: "Order queue, results entry, sample tracking", icon: FlaskConical, color: "text-indigo-600", bg: "bg-indigo-500/10", category: "support" },
   { id: "radiology", label: "Radiology", description: "Imaging queue, PACS viewer, reports", icon: ScanLine, color: "text-cyan-600", bg: "bg-cyan-500/10", category: "support" },
   { id: "theatre", label: "Theatre", description: "Booking, checklists, anaesthesia, notes", icon: Syringe, color: "text-rose-600", bg: "bg-rose-500/10", category: "support" },
-  { id: "inpatient", label: "Inpatient / Ward", description: "Admissions, rounds, discharge planning", icon: Bed, color: "text-violet-600", bg: "bg-violet-500/10", category: "clinical" },
   { id: "billing", label: "Billing & Cashier", description: "Charges, payments, claims, receipts", icon: DollarSign, color: "text-amber-600", bg: "bg-amber-500/10", category: "admin" },
   { id: "supervisor", label: "Supervisor / Admin", description: "Staff, queues, rosters, reports, approvals", icon: Shield, color: "text-slate-600", bg: "bg-slate-500/10", category: "admin" },
 ];
