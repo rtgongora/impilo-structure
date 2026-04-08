@@ -8,7 +8,7 @@ import {
   Users, LayoutDashboard, QrCode, Settings, GitBranch, CalendarDays,
   UserPlus, Bed, Building2, Activity, AlertTriangle,
   Stethoscope, Globe, Home, Wifi, ChevronRight, ArrowLeft,
-  Package, DollarSign, Clock, BarChart3
+  Package, DollarSign, Clock, BarChart3, Scissors, Ambulance
 } from "lucide-react";
 import { 
   QueueWorkstation, 
@@ -19,6 +19,8 @@ import {
 } from "@/components/queue";
 import { PatientSortingDesk } from "@/components/sorting";
 import { WardManagementPanel } from "@/components/queue/WardManagementPanel";
+import { TheatreManagementPanel } from "@/components/queue/TheatreManagementPanel";
+import { CasualtyManagementPanel } from "@/components/queue/CasualtyManagementPanel";
 import { SelfCheckInKiosk } from "@/components/booking/SelfCheckInKiosk";
 import { BookingManager } from "@/components/booking/BookingManager";
 import { WorkspaceDashboardPanel } from "@/components/workspace-ops/WorkspaceDashboardPanel";
@@ -30,12 +32,14 @@ import { useQueueManagement } from "@/hooks/useQueueManagement";
 import { useFacility } from "@/contexts/FacilityContext";
 
 // ── Care Point Types ──
-type CarePoint = 'outpatient' | 'inpatient' | 'community' | 'virtual';
-type TabValue = 'dashboard' | 'intake' | 'workstation' | 'supervisor' | 'wards' | 'bookings' | 'check-in' | 'stock' | 'hr-shifts' | 'billing' | 'config' | 'pathways';
+type CarePoint = 'outpatient' | 'inpatient' | 'procedure' | 'casualty' | 'community' | 'virtual';
+type TabValue = 'dashboard' | 'intake' | 'workstation' | 'supervisor' | 'wards' | 'theatre' | 'casualty' | 'bookings' | 'check-in' | 'stock' | 'hr-shifts' | 'billing' | 'config' | 'pathways';
 
 const CARE_POINTS: { id: CarePoint; label: string; icon: React.ComponentType<{ className?: string }>; description: string; color: string }[] = [
   { id: 'outpatient', label: 'Outpatient', icon: Stethoscope, description: 'OPD, clinics, walk-ins & appointments', color: 'bg-blue-500' },
   { id: 'inpatient', label: 'Inpatient', icon: Bed, description: 'Wards, admissions & bed management', color: 'bg-amber-500' },
+  { id: 'procedure', label: 'Procedure Rooms', icon: Scissors, description: 'Operating theatres, minor procedures & recovery', color: 'bg-rose-500' },
+  { id: 'casualty', label: 'Casualty', icon: Ambulance, description: 'Emergency department, triage & resuscitation', color: 'bg-red-600' },
   { id: 'community', label: 'Community', icon: Home, description: 'Community health, outreach & home visits', color: 'bg-green-500' },
   { id: 'virtual', label: 'Virtual', icon: Wifi, description: 'Telemedicine, teleconsults & remote care', color: 'bg-purple-500' },
 ];
@@ -43,10 +47,10 @@ const CARE_POINTS: { id: CarePoint; label: string; icon: React.ComponentType<{ c
 // Role-based tab visibility — combined clinical + operational roles
 const ROLE_TAB_ACCESS: Record<string, TabValue[]> = {
   receptionist: ['dashboard', 'intake', 'workstation', 'bookings', 'check-in'],
-  nurse: ['dashboard', 'intake', 'workstation', 'supervisor', 'wards', 'bookings', 'stock'],
-  doctor: ['dashboard', 'workstation', 'supervisor', 'wards', 'bookings'],
-  specialist: ['dashboard', 'workstation', 'supervisor', 'wards'],
-  admin: ['dashboard', 'intake', 'workstation', 'supervisor', 'wards', 'bookings', 'check-in', 'stock', 'hr-shifts', 'billing', 'config', 'pathways'],
+  nurse: ['dashboard', 'intake', 'workstation', 'supervisor', 'wards', 'theatre', 'casualty', 'bookings', 'stock'],
+  doctor: ['dashboard', 'workstation', 'supervisor', 'wards', 'theatre', 'casualty', 'bookings'],
+  specialist: ['dashboard', 'workstation', 'supervisor', 'wards', 'theatre', 'casualty'],
+  admin: ['dashboard', 'intake', 'workstation', 'supervisor', 'wards', 'theatre', 'casualty', 'bookings', 'check-in', 'stock', 'hr-shifts', 'billing', 'config', 'pathways'],
   pharmacist: ['dashboard', 'workstation', 'stock'],
   lab_tech: ['dashboard', 'workstation', 'stock'],
   // Operational roles
@@ -54,7 +58,7 @@ const ROLE_TAB_ACCESS: Record<string, TabValue[]> = {
   stock_controller: ['dashboard', 'stock', 'config'],
   hr_officer: ['dashboard', 'hr-shifts'],
   finance_officer: ['dashboard', 'billing'],
-  facility_manager: ['dashboard', 'intake', 'workstation', 'supervisor', 'wards', 'bookings', 'stock', 'hr-shifts', 'billing', 'config', 'pathways'],
+  facility_manager: ['dashboard', 'intake', 'workstation', 'supervisor', 'wards', 'theatre', 'casualty', 'bookings', 'stock', 'hr-shifts', 'billing', 'config', 'pathways'],
 };
 
 function getVisibleTabs(role: string): TabValue[] {
@@ -67,6 +71,8 @@ const TAB_CONFIG: Record<TabValue, { label: string; icon: React.ComponentType<{ 
   workstation: { label: "My Queue", icon: Users, description: "Active queue workstation" },
   supervisor: { label: "Supervisor", icon: LayoutDashboard, description: "All queues overview" },
   wards: { label: "Wards", icon: Bed, description: "Ward occupancy & flow" },
+  theatre: { label: "Theatres", icon: Scissors, description: "Operating rooms & schedule" },
+  casualty: { label: "Casualty", icon: Ambulance, description: "Emergency tracking & triage" },
   bookings: { label: "Bookings", icon: CalendarDays, description: "Appointments & bookings" },
   'check-in': { label: "Self Check-In", icon: QrCode, description: "Kiosk mode" },
   stock: { label: "Stock", icon: Package, description: "Inventory, orders & receiving" },
@@ -80,6 +86,8 @@ const TAB_CONFIG: Record<TabValue, { label: string; icon: React.ComponentType<{ 
 const CARE_POINT_DEFAULT_TAB: Record<CarePoint, TabValue> = {
   outpatient: 'dashboard',
   inpatient: 'dashboard',
+  procedure: 'theatre',
+  casualty: 'casualty',
   community: 'dashboard',
   virtual: 'dashboard',
 };
@@ -88,6 +96,8 @@ const CARE_POINT_DEFAULT_TAB: Record<CarePoint, TabValue> = {
 const CARE_POINT_TABS: Record<CarePoint, TabValue[]> = {
   outpatient: ['dashboard', 'intake', 'workstation', 'supervisor', 'bookings', 'check-in', 'stock', 'hr-shifts', 'billing', 'config', 'pathways'],
   inpatient: ['dashboard', 'wards', 'workstation', 'supervisor', 'bookings', 'stock', 'hr-shifts', 'billing', 'config'],
+  procedure: ['dashboard', 'theatre', 'workstation', 'supervisor', 'bookings', 'stock', 'hr-shifts', 'billing', 'config'],
+  casualty: ['dashboard', 'casualty', 'intake', 'workstation', 'supervisor', 'bookings', 'stock', 'hr-shifts', 'billing', 'config'],
   community: ['dashboard', 'workstation', 'supervisor', 'bookings', 'stock', 'hr-shifts', 'billing', 'config'],
   virtual: ['dashboard', 'workstation', 'supervisor', 'bookings', 'billing', 'config'],
 };
