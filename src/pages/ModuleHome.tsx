@@ -559,7 +559,18 @@ export default function ModuleHome() {
     navigate(path);
   };
 
-  const visibleCategories = getVisibleCategories(workModuleCategories);
+  // Context-aware dynamic reordering: categories relevant to current access mode float to top
+  const visibleCategories = (() => {
+    const filtered = getVisibleCategories(workModuleCategories);
+    if (!activeContext?.accessMode) return filtered;
+    
+    const currentMode = activeContext.accessMode;
+    return [...filtered].sort((a, b) => {
+      const aRelevant = categoryContextRelevance[a.id]?.includes(currentMode) ? 1 : 0;
+      const bRelevant = categoryContextRelevance[b.id]?.includes(currentMode) ? 1 : 0;
+      return bRelevant - aRelevant; // Relevant categories first
+    });
+  })();
 
   return (
     <div className="h-screen flex flex-col bg-gradient-to-br from-background via-background to-muted/30">
