@@ -163,6 +163,12 @@ const workModuleCategories: ModuleCategory[] = [
       { id: "discharge", label: "Discharge & Exit", description: "Discharges, deaths & exits", icon: DoorOpen, path: "/discharge", color: "bg-amber-600", roles: ["doctor", "nurse", "admin"] },
       { id: "landela", label: "Landela DMS", description: "Clinical document management & scanning", icon: ScanLine, path: "/landela", color: "bg-cyan-600" },
       // Orders & Diagnostics
+      { id: "orders", label: "Orders & CPOE", description: "Computerized order entry, MAR & reconciliation", icon: ShoppingCart, path: "/orders", color: "bg-blue-600" },
+      { id: "lims", label: "Laboratory (LIMS)", description: "Lab orders, specimen tracking & results", icon: TestTube2, path: "/lims", color: "bg-purple-500", capabilities: ["laboratory", "lims"] },
+      { id: "pacs", label: "Imaging (PACS)", description: "Radiology orders, worklist & DICOM viewer", icon: Scan, path: "/pacs", color: "bg-rose-500", capabilities: ["radiology", "pacs"] },
+      { id: "pharmacy-orders", label: "Pharmacy & Rx", description: "Prescriptions, dispensing & formulary", icon: Pill, path: "/pharmacy", color: "bg-emerald-500", capabilities: ["pharmacy", "dispensing"] },
+      { id: "referrals", label: "Referrals", description: "Internal & external referral management", icon: ArrowRightLeft, path: "/telemedicine", color: "bg-indigo-500" },
+      { id: "scheduling", label: "Bookings & Appointments", description: "Schedule, waitlist & resource calendar", icon: Calendar, path: "/scheduling", color: "bg-orange-500" },
     ],
   },
   // ─── 2. FACILITY OPERATIONS ───
@@ -690,11 +696,11 @@ export default function ModuleHome() {
                     <Pill className="h-6 w-6 text-emerald-600 group-hover:text-white shrink-0" />
                     <span>Prescribe</span>
                   </Button>
-                  <Button variant="outline" className="h-[4.5rem] flex flex-col items-center justify-center gap-1.5 text-sm font-semibold rounded-xl hover:bg-purple-500 hover:text-white hover:border-purple-500 group transition-all" onClick={() => navigate("/lab")}>
+                  <Button variant="outline" className="h-[4.5rem] flex flex-col items-center justify-center gap-1.5 text-sm font-semibold rounded-xl hover:bg-purple-500 hover:text-white hover:border-purple-500 group transition-all" onClick={() => navigate("/lims")}>
                     <TestTube2 className="h-6 w-6 text-purple-500 group-hover:text-white shrink-0" />
                     <span>Lab</span>
                   </Button>
-                  <Button variant="outline" className="h-[4.5rem] flex flex-col items-center justify-center gap-1.5 text-sm font-semibold rounded-xl hover:bg-rose-500 hover:text-white hover:border-rose-500 group transition-all" onClick={() => navigate("/radiology")}>
+                  <Button variant="outline" className="h-[4.5rem] flex flex-col items-center justify-center gap-1.5 text-sm font-semibold rounded-xl hover:bg-rose-500 hover:text-white hover:border-rose-500 group transition-all" onClick={() => navigate("/pacs")}>
                     <Scan className="h-6 w-6 text-rose-500 group-hover:text-white shrink-0" />
                     <span>Radiology</span>
                   </Button>
