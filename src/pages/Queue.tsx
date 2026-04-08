@@ -67,7 +67,7 @@ function getVisibleTabs(role: string): TabValue[] {
 
 const TAB_CONFIG: Record<TabValue, { label: string; icon: React.ComponentType<{ className?: string }>; description: string }> = {
   dashboard: { label: "Dashboard", icon: BarChart3, description: "Workspace overview & KPIs" },
-  intake: { label: "Patient Intake", icon: UserPlus, description: "Arrival, registration & triage" },
+  intake: { label: "Client Intake", icon: UserPlus, description: "Registration, triage & queue sorting" },
   workstation: { label: "My Queue", icon: Users, description: "Active queue workstation" },
   supervisor: { label: "Supervisor", icon: LayoutDashboard, description: "All queues overview" },
   wards: { label: "Wards", icon: Bed, description: "Ward occupancy & flow" },
