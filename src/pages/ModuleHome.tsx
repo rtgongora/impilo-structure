@@ -163,26 +163,7 @@ const workModuleCategories: ModuleCategory[] = [
       { id: "beds", label: "Bed Management", description: "Ward status & admissions", icon: Bed, path: "/beds", color: "bg-purple-500", roles: ["doctor", "nurse", "admin"], capabilities: ["inpatient"] },
       { id: "discharge", label: "Discharge & Exit", description: "Discharges, deaths & exits", icon: DoorOpen, path: "/discharge", color: "bg-amber-600", roles: ["doctor", "nurse", "admin"] },
       { id: "landela", label: "Landela DMS", description: "Clinical document management & scanning", icon: ScanLine, path: "/landela", color: "bg-cyan-600" },
-      { id: "voice-dictation", label: "Voice Dictation", description: "Speech-to-text for notes", icon: Activity, path: "/encounter", color: "bg-rose-500", roles: ["doctor", "nurse", "specialist"] },
-      // Patient Access
-      { id: "registration", label: "Patient Registration", description: "New patient intake & ID", icon: UserPlus, path: "/registration", color: "bg-emerald-500" },
-      { id: "patients", label: "Patient Registry", description: "Search & manage patients", icon: Users, path: "/patients", color: "bg-slate-500" },
-      { id: "queue-intake", label: "Patient Intake & Sorting", description: "Arrival, triage & queue assignment", icon: ClipboardCheck, path: "/queue", color: "bg-orange-500" },
-      { id: "kiosk", label: "Patient Kiosk", description: "Self-service check-in terminal", icon: Monitor, path: "/kiosk", color: "bg-blue-600" },
       // Orders & Diagnostics
-      { id: "orders", label: "Order Entry", description: "Medications, labs, & imaging", icon: ShoppingCart, path: "/orders", color: "bg-green-500", roles: ["doctor", "nurse", "specialist", "admin"] },
-      { id: "eprescriptions", label: "ePrescriptions", description: "Electronic prescriptions & formulary", icon: Pill, path: "/pharmacy", color: "bg-emerald-600", roles: ["doctor", "specialist", "pharmacist", "admin"], capabilities: ["pharmacy", "pharmacy_basic"] },
-      { id: "pharmacy", label: "Pharmacy", description: "Dispensing & medication tracking", icon: Syringe, path: "/pharmacy", color: "bg-pink-500", roles: ["pharmacist", "doctor", "nurse", "admin"], capabilities: ["pharmacy", "pharmacy_basic", "dispensing"] },
-      { id: "lims", label: "Laboratory", description: "Lab orders & results", icon: FlaskConical, path: "/lims", color: "bg-amber-500", roles: ["lab_tech", "doctor", "nurse", "specialist", "admin"], capabilities: ["laboratory", "lims", "specimen_collection"] },
-      { id: "pacs", label: "Imaging (PACS)", description: "Radiology & diagnostic imaging", icon: FileText, path: "/pacs", color: "bg-indigo-500", roles: ["radiographer", "doctor", "specialist", "admin"], capabilities: ["pacs", "radiology"] },
-      // Consults & Referrals
-      { id: "telemedicine-hub", label: "Telemedicine Hub", description: "Full-circle teleconsultation workflow", icon: Video, path: "/telemedicine", color: "bg-teal-600" },
-      { id: "referrals", label: "Referrals", description: "Outgoing & incoming referrals", icon: ArrowRightLeft, path: "/telemedicine?tab=referrals", color: "bg-blue-500", roles: ["doctor", "nurse", "specialist", "admin"] },
-      { id: "case-reviews", label: "Case Reviews & Boards", description: "M&M and specialist boards", icon: Users, path: "/telemedicine?tab=boards", color: "bg-purple-500", roles: ["doctor", "specialist", "admin"] },
-      // Scheduling & Theatre
-      { id: "appointments", label: "Appointments", description: "Clinic & provider scheduling", icon: Calendar, path: "/appointments", color: "bg-cyan-500" },
-      { id: "theatre", label: "Theatre Booking", description: "Surgical scheduling", icon: Building2, path: "/theatre", color: "bg-rose-500", roles: ["doctor", "specialist", "nurse", "admin"], capabilities: ["theatre"] },
-      { id: "resources", label: "Resource Calendar", description: "Rooms, equipment & assets", icon: LayoutGrid, path: "/scheduling/resources", color: "bg-indigo-500", roles: ["admin", "receptionist"] },
     ],
   },
   // ─── 2. FACILITY OPERATIONS ───
@@ -694,9 +675,9 @@ export default function ModuleHome() {
                   <Zap className="h-6 w-6 text-amber-500" />
                   Quick Access
                 </h3>
-                <div className="grid grid-cols-7 gap-3">
+                <div className="grid grid-cols-6 gap-3">
                   <Button variant="outline" className="h-14 flex items-center justify-center gap-2 text-base rounded-xl hover:bg-red-600 hover:text-white group" onClick={() => navigate("/encounter")}>
-                    <FileHeart className="h-5 w-5 text-red-600 group-hover:text-white" /> EHR
+                    <FileHeart className="h-5 w-5 text-red-600 group-hover:text-white" /> Encounters
                   </Button>
                   <Button variant="outline" className="h-14 flex items-center justify-center gap-2 text-base rounded-xl hover:bg-primary hover:text-primary-foreground group" onClick={() => navigate("/dashboard")}>
                     <ClipboardList className="h-5 w-5 text-primary group-hover:text-primary-foreground" /> Dashboard
@@ -710,11 +691,8 @@ export default function ModuleHome() {
                   <Button variant="outline" className="h-14 flex items-center justify-center gap-2 text-base rounded-xl hover:bg-rose-500 hover:text-white group" onClick={() => navigate("/radiology")}>
                     <Scan className="h-5 w-5 text-rose-500 group-hover:text-white" /> Radiology
                   </Button>
-                  <Button variant="outline" className="h-14 flex items-center justify-center gap-2 text-base rounded-xl hover:bg-orange-500 hover:text-white group" onClick={() => navigate("/appointments")}>
-                    <Calendar className="h-5 w-5 text-orange-500 group-hover:text-white" /> Schedule
-                  </Button>
-                  <Button variant="outline" className="h-14 flex items-center justify-center gap-2 text-base rounded-xl hover:bg-cyan-600 hover:text-white group" onClick={() => navigate("/scheduling")}>
-                    <Building2 className="h-5 w-5 text-cyan-600 group-hover:text-white" /> Bookings
+                  <Button variant="outline" className="h-14 flex items-center justify-center gap-2 text-base rounded-xl hover:bg-orange-500 hover:text-white group" onClick={() => navigate("/scheduling")}>
+                    <Calendar className="h-5 w-5 text-orange-500 group-hover:text-white" /> Bookings & Appointments
                   </Button>
                 </div>
               </div>
