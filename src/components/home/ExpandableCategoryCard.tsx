@@ -72,7 +72,7 @@ export function ExpandableCategoryCard({
       </Card>
 
       <Dialog open={isOpen} onOpenChange={(open) => { setIsOpen(open); if (!open) setDialogSearch(""); }}>
-        <DialogContent className="max-w-4xl w-[95vw] h-[80vh] flex flex-col rounded-2xl p-0 gap-0">
+        <DialogContent className="max-w-[96vw] w-full h-[92vh] flex flex-col rounded-2xl p-0 gap-0">
           {/* Fixed header */}
           <div className="shrink-0 px-6 pt-5 pb-4 border-b">
             <div className="flex items-center gap-3">
