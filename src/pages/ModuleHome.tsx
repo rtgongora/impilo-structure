@@ -402,8 +402,41 @@ export default function ModuleHome() {
   // Detect if user is a client (patient) vs provider
   const isClient = profile?.role === "client" || profile?.role === "patient";
   
-  // Default to personal tab for clients, work tab for providers
-  const [activeTab, setActiveTab] = useState(isClient ? "personal" : "work");
+  // Respect landing tab from context resolver, then fall back to role-based default
+  const [activeTab, setActiveTab] = useState(() => {
+    const landingTab = sessionStorage.getItem("impilo_landing_tab");
+    if (landingTab) {
+      sessionStorage.removeItem("impilo_landing_tab"); // consume it
+      return landingTab;
+    }
+    return isClient ? "personal" : "work";
+  });
+  
+  // Also try to restore active context from session if set by context resolver
+  useEffect(() => {
+    const storedCtx = sessionStorage.getItem("impilo_active_context");
+    if (storedCtx && !hasActiveContext) {
+      try {
+        const ctx = JSON.parse(storedCtx);
+        if (ctx.type === "facility" && ctx.facilityId) {
+          // Find matching facility and auto-select
+          selectFacility({
+            facility_id: ctx.facilityId,
+            facility_name: ctx.facilityName || "Facility",
+            facility_type: ctx.facilityType || "Unknown",
+            level_of_care: ctx.levelOfCare || "primary",
+            context_label: ctx.contextLabel || "Staff",
+            is_primary: false,
+            is_pic: false,
+            is_owner: false,
+            can_access: true,
+            privileges: [],
+          });
+          sessionStorage.removeItem("impilo_active_context");
+        }
+      } catch {}
+    }
+  }, [hasActiveContext, selectFacility]);
   
   // Update tab when profile loads (for cases where profile loads after initial render)
   useEffect(() => {
