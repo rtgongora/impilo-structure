@@ -281,12 +281,20 @@ const Queue = () => {
               <WardManagementPanel />
             </TabsContent>
 
+            {/* Theatres / Procedure Rooms */}
+            <TabsContent value="theatre" className="h-full mt-0">
+              <TheatreManagementPanel />
+            </TabsContent>
+
+            {/* Casualty / Emergency */}
+            <TabsContent value="casualty" className="h-full mt-0">
+              <CasualtyManagementPanel />
+            </TabsContent>
+
             {/* Bookings */}
             <TabsContent value="bookings" className="h-full mt-0">
               <BookingManager />
             </TabsContent>
-
-            {/* Self Check-In Kiosk */}
             <TabsContent value="check-in" className="h-full mt-0">
               <div className="max-w-md mx-auto">
                 <SelfCheckInKiosk facilityName="Impilo Health" />
