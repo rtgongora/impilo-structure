@@ -1,8 +1,8 @@
-import { useState } from "react";
+import { useState, useMemo } from "react";
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
-import { Lock } from "lucide-react";
+import { Lock, Search } from "lucide-react";
 import { cn } from "@/lib/utils";
 
 interface ModuleItem {
@@ -38,6 +38,15 @@ export function ExpandableCategoryCard({
   onModuleClick,
 }: ExpandableCategoryCardProps) {
   const [isOpen, setIsOpen] = useState(false);
+  const [dialogSearch, setDialogSearch] = useState("");
+
+  const filteredModules = useMemo(() => {
+    if (!dialogSearch.trim()) return modules;
+    const q = dialogSearch.toLowerCase();
+    return modules.filter(
+      m => m.label.toLowerCase().includes(q) || m.description.toLowerCase().includes(q)
+    );
+  }, [dialogSearch, modules]);
 
   return (
     <>
@@ -63,7 +72,7 @@ export function ExpandableCategoryCard({
       </Card>
 
       {/* Expanded Dialog with Modules */}
-      <Dialog open={isOpen} onOpenChange={setIsOpen}>
+      <Dialog open={isOpen} onOpenChange={(open) => { setIsOpen(open); if (!open) setDialogSearch(""); }}>
         <DialogContent className="max-w-[90vw] w-full max-h-[90vh] overflow-y-auto rounded-2xl">
           <DialogHeader>
             <div className="flex items-center gap-3">
@@ -76,9 +85,23 @@ export function ExpandableCategoryCard({
               </div>
             </div>
           </DialogHeader>
+
+          {/* Search within category */}
+          {modules.length > 6 && (
+            <div className="relative mt-2">
+              <Search className="absolute left-4 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+              <input
+                type="text"
+                placeholder={`Search ${modules.length} modules...`}
+                value={dialogSearch}
+                onChange={(e) => setDialogSearch(e.target.value)}
+                className="w-full h-10 pl-10 pr-4 rounded-xl border bg-muted/30 text-sm placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary/40 focus:border-primary transition-colors"
+              />
+            </div>
+          )}
           
           <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4 mt-4">
-            {modules.map((module) => (
+            {filteredModules.map((module) => (
               <Card
                 key={module.id}
                 className="cursor-pointer hover:shadow-lg hover:border-primary/40 transition-all group rounded-2xl"
@@ -103,6 +126,12 @@ export function ExpandableCategoryCard({
                 </CardContent>
               </Card>
             ))}
+            {filteredModules.length === 0 && (
+              <div className="col-span-full text-center py-8 text-muted-foreground">
+                <Search className="h-6 w-6 mx-auto mb-2 opacity-40" />
+                <p className="text-sm">No modules match "{dialogSearch}"</p>
+              </div>
+            )}
           </div>
         </DialogContent>
       </Dialog>
