@@ -635,6 +635,9 @@ export default function ModuleHome() {
                     <Button variant="outline" className="h-14 px-6 flex items-center gap-2 text-base rounded-xl" onClick={() => navigate("/operations")}>
                       <BarChart3 className="h-5 w-5 text-muted-foreground" /> Operations
                     </Button>
+                    <Button className="h-14 px-6 flex items-center gap-2 text-base rounded-xl bg-green-500 hover:bg-green-600 text-white shadow-sm" onClick={() => navigate("/registration")}>
+                      <UserPlus className="h-5 w-5" /> Client Intake
+                    </Button>
                   </div>
                   <div className="mt-4 grid grid-cols-3 gap-3 text-center">
                     <div className="bg-muted/40 rounded-xl p-3">
