@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useMemo } from "react";
 import { useAuth } from "@/contexts/AuthContext";
 import { useNavigate } from "react-router-dom";
 import { useUserRoles, ModuleAccessRole } from "@/hooks/useUserRoles";
@@ -95,6 +95,7 @@ import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/component
 import { EmergencyHub } from "@/components/emergency/EmergencyHub";
 import { toast } from "sonner";
 import impiloLogo from "@/assets/impilo-logo.png";
+import { cn } from "@/lib/utils";
 
 // Category icons mapping for expandable cards
 const categoryIcons: Record<string, React.ComponentType<{ className?: string }>> = {
@@ -310,11 +311,13 @@ export default function ModuleHome() {
   const [activeTab, setActiveTab] = useState(() => {
     const landingTab = sessionStorage.getItem("impilo_landing_tab");
     if (landingTab) {
-      sessionStorage.removeItem("impilo_landing_tab"); // consume it
+      sessionStorage.removeItem("impilo_landing_tab");
       return landingTab;
     }
     return isClient ? "personal" : "work";
   });
+  
+  const [moduleSearch, setModuleSearch] = useState("");
   
   // Also try to restore active context from session if set by context resolver
   useEffect(() => {
