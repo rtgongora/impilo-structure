@@ -68,7 +68,7 @@
     --input: 0 0% 83%;
     --ring: 161 93% 30%;
 
-    --radius: 0.5rem;
+    --radius: 0.75rem;
 
     /* Sidebar/Nav */
     --sidebar-background: 0 0% 100%;
@@ -234,7 +234,9 @@
 
   html {
     font-family: var(--font-sans);
-    font-size: 13px; /* Compact base for tablets */
+    font-size: 14px;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
   }
 
   body {
@@ -263,7 +265,7 @@
   /* Desktop - larger screens */
   @media (min-width: 1440px) {
     html {
-      font-size: 14px;
+      font-size: 15px;
     }
   }
 

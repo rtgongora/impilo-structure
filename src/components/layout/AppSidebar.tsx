@@ -276,7 +276,7 @@ function NavSection({ title, items, collapsed, userRole }: NavSectionProps) {
             <NavLink
               to={item.path}
               className={cn(
-                "flex items-center gap-2.5 px-3 py-2.5 rounded-lg text-sm font-medium transition-colors",
+                "flex items-center gap-2.5 px-3 py-3 rounded-xl text-sm font-medium transition-colors",
                 "hover:bg-sidebar-accent hover:text-sidebar-accent-foreground",
                 isActive 
                   ? "bg-sidebar-primary text-sidebar-primary-foreground" 
