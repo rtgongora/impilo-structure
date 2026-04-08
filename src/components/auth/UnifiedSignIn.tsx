@@ -148,7 +148,6 @@ export function UnifiedSignIn({ onAuthenticated, onShowMaintenance }: UnifiedSig
         </div>
         <BiometricAuth
           providerId={provider!.providerId}
-          providerName={provider!.fullName}
           onVerified={handleBiometricVerified}
           onFailed={handleBiometricFailed}
           onCancel={() => { setMethod("provider-id"); setProvider(null); }}

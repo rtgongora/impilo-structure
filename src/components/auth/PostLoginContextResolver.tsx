@@ -42,7 +42,7 @@ export function PostLoginContextResolver({ onContextSelected }: PostLoginContext
   const { user, profile } = useAuth();
   const { facilities, loading: facilitiesLoading, isDemoMode } = useProviderFacilities();
   const { isAboveSiteUser, roles: aboveSiteRoles, loading: aboveSiteLoading } = useAboveSiteRole();
-  const { roles: systemRoles, loading: systemRolesLoading } = useSystemRoles();
+  const { systemRoles, loading: systemRolesLoading, isSuperAdmin, hasSystemRole } = useSystemRoles();
   const [rememberChoice, setRememberChoice] = useState(false);
 
   const isLoading = facilitiesLoading || aboveSiteLoading || systemRolesLoading;
