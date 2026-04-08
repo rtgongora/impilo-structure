@@ -3,7 +3,7 @@ import React from "react";
 import { useNavigate, useSearchParams } from "react-router-dom";
 import { RegistryAdminWorkspace } from "@/components/registry/RegistryAdminWorkspace";
 
-type RegistryType = "vito" | "varapi" | "tuso" | "tshepo" | "zibo";
+type RegistryType = "vito" | "varapi" | "tuso" | "tshepo" | "zibo" | "indawo" | "msika";
 
 const RegistryAdmin = () => {
   const navigate = useNavigate();
