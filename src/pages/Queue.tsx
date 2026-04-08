@@ -67,7 +67,7 @@ function getVisibleTabs(role: string): TabValue[] {
 
 const TAB_CONFIG: Record<TabValue, { label: string; icon: React.ComponentType<{ className?: string }>; description: string }> = {
   dashboard: { label: "Dashboard", icon: BarChart3, description: "Workspace overview & KPIs" },
-  intake: { label: "Patient Intake", icon: UserPlus, description: "Arrival, registration & triage" },
+  intake: { label: "Client Intake", icon: UserPlus, description: "Registration, triage & queue sorting" },
   workstation: { label: "My Queue", icon: Users, description: "Active queue workstation" },
   supervisor: { label: "Supervisor", icon: LayoutDashboard, description: "All queues overview" },
   wards: { label: "Wards", icon: Bed, description: "Ward occupancy & flow" },
@@ -95,11 +95,11 @@ const CARE_POINT_DEFAULT_TAB: Record<CarePoint, TabValue> = {
 // Filter tabs per care point — all care points get operational tabs
 const CARE_POINT_TABS: Record<CarePoint, TabValue[]> = {
   outpatient: ['dashboard', 'intake', 'workstation', 'supervisor', 'bookings', 'check-in', 'stock', 'hr-shifts', 'billing', 'config', 'pathways'],
-  inpatient: ['dashboard', 'wards', 'workstation', 'supervisor', 'bookings', 'stock', 'hr-shifts', 'billing', 'config'],
-  procedure: ['dashboard', 'theatre', 'workstation', 'supervisor', 'bookings', 'stock', 'hr-shifts', 'billing', 'config'],
+  inpatient: ['dashboard', 'intake', 'wards', 'workstation', 'supervisor', 'bookings', 'stock', 'hr-shifts', 'billing', 'config'],
+  procedure: ['dashboard', 'intake', 'theatre', 'workstation', 'supervisor', 'bookings', 'stock', 'hr-shifts', 'billing', 'config'],
   casualty: ['dashboard', 'casualty', 'intake', 'workstation', 'supervisor', 'bookings', 'stock', 'hr-shifts', 'billing', 'config'],
-  community: ['dashboard', 'workstation', 'supervisor', 'bookings', 'stock', 'hr-shifts', 'billing', 'config'],
-  virtual: ['dashboard', 'workstation', 'supervisor', 'bookings', 'billing', 'config'],
+  community: ['dashboard', 'intake', 'workstation', 'supervisor', 'bookings', 'stock', 'hr-shifts', 'billing', 'config'],
+  virtual: ['dashboard', 'intake', 'workstation', 'supervisor', 'bookings', 'billing', 'config'],
 };
 
 const Queue = () => {
