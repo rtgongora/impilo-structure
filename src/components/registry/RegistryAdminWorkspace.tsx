@@ -19,7 +19,7 @@ import {
   Users, Stethoscope, Building2, Shield, BookOpen, Search,
   ClipboardList, CheckCircle2, XCircle, Clock, Eye, FileText,
   AlertTriangle, ArrowLeft, Lock, History, BarChart3, Plus,
-  GitMerge, UserCheck, Loader2,
+  GitMerge, UserCheck, Loader2, MapPin, Store,
 } from "lucide-react";
 
 type RegistryType = "vito" | "varapi" | "tuso" | "tshepo" | "zibo" | "indawo" | "msika";
@@ -44,6 +44,8 @@ const REGISTRY_CONFIG: Record<RegistryType, { label: string; fullLabel: string; 
   tuso: { label: "TUSO", fullLabel: "Facility Registry", icon: Building2, color: "text-amber-600", bg: "bg-amber-500/10" },
   tshepo: { label: "TSHEPO", fullLabel: "Trust & IAM", icon: Shield, color: "text-indigo-600", bg: "bg-indigo-500/10" },
   zibo: { label: "ZIBO", fullLabel: "Terminology", icon: BookOpen, color: "text-purple-600", bg: "bg-purple-500/10" },
+  indawo: { label: "INDAWO", fullLabel: "Site & Premises Registry", icon: MapPin, color: "text-emerald-600", bg: "bg-emerald-500/10" },
+  msika: { label: "MSIKA", fullLabel: "Products & Services Registry", icon: Store, color: "text-pink-600", bg: "bg-pink-500/10" },
 };
 
 const MOCK_CHANGE_REQUESTS: ChangeRequest[] = [
