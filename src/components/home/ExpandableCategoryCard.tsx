@@ -121,7 +121,7 @@ export function ExpandableCategoryCard({
 
           {/* Scrollable content area */}
           <ScrollArea className="flex-1 min-h-0">
-            <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-4 p-6">
+            <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-4 p-6">
               {filteredModules.map((module) => (
                 <Card
                   key={module.id}
