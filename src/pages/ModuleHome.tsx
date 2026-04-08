@@ -240,16 +240,14 @@ const workModuleCategories: ModuleCategory[] = [
       { id: "shr", label: "Shared Health Record (BUTANO)", description: "FHIR longitudinal clinical memory", icon: FileHeart, path: "/admin/butano/timeline", color: "bg-rose-500", roles: ["admin", "hie_admin"] },
       { id: "ubomi", label: "CRVS Interface (UBOMI)", description: "Birth/death linkage & reconciliation", icon: Heart, path: "/admin/ubomi", color: "bg-pink-500", roles: ["admin", "hie_admin"] },
       { id: "msika", label: "Product & Tariff (MSIKA)", description: "Orderables, billables, benefit catalogs", icon: Package, path: "/admin/msika-core", color: "bg-green-500", roles: ["admin", "hie_admin"] },
-      { id: "mushex", label: "Finance Engine (MUSHEX)", description: "Claims switch, settlement rail", icon: DollarSign, path: "/admin/mushex", color: "bg-indigo-500", roles: ["admin", "hie_admin"] },
+      { id: "mushex", label: "Finance (MUSHEX)", description: "Claims switch, settlement rail", icon: DollarSign, path: "/admin/mushex", color: "bg-indigo-500", roles: ["admin", "hie_admin"] },
       { id: "tshepo", label: "Trust Layer (TSHEPO)", description: "IAM, PDP, consent, audit, offline trust", icon: Shield, path: "/admin/tshepo/consents", color: "bg-slate-700", roles: ["admin", "hie_admin"] },
       // Identity Services
       { id: "id-services", label: "ID Services Hub", description: "Generate, validate & recover IDs", icon: Shield, path: "/id-services?tab=generate", color: "bg-primary", roles: ["admin", "registrar", "hie_admin"] },
       { id: "phid-generation", label: "Patient PHID", description: "Generate Patient Health IDs", icon: UserCog, path: "/id-services?tab=generate", color: "bg-blue-500", roles: ["admin", "registrar", "receptionist", "hie_admin"] },
-      // Omnichannel
-      { id: "omnichannel-hub", label: "Omnichannel Hub", description: "All access channels in one view", icon: Radio, path: "/omnichannel", color: "bg-teal-600" },
-      // Governance
+      // Comms & Governance
+      { id: "comms-hub", label: "Comms Hub", description: "Unified communication channels", icon: Radio, path: "/omnichannel", color: "bg-teal-600" },
       { id: "admin", label: "System Admin", description: "Users, security & settings", icon: Settings, path: "/admin", color: "bg-gray-700", roles: ["admin"] },
-      { id: "registry-management", label: "Registry Management", description: "Manage HIE registries", icon: Database, path: "/registry-management", color: "bg-purple-600", roles: ["admin", "hie_admin"] },
       { id: "fhir-viewer", label: "FHIR Resources", description: "HL7 FHIR interoperability viewer", icon: FileCheck, path: "/admin", color: "bg-cyan-500", roles: ["admin", "hie_admin"] },
     ],
   },
