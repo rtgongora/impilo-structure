@@ -22,7 +22,7 @@ import {
   GitMerge, UserCheck, Loader2,
 } from "lucide-react";
 
-type RegistryType = "vito" | "varapi" | "tuso" | "tshepo" | "zibo";
+type RegistryType = "vito" | "varapi" | "tuso" | "tshepo" | "zibo" | "indawo" | "msika";
 type ChangeRequestStatus = "submitted" | "under_review" | "approved" | "rejected" | "escalated";
 
 interface ChangeRequest {
