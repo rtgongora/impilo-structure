@@ -3,7 +3,7 @@ import { useAuth } from "@/contexts/AuthContext";
 import { useNavigate } from "react-router-dom";
 import { useUserRoles, ModuleAccessRole } from "@/hooks/useUserRoles";
 import { useModuleAvailability } from "@/hooks/useFacilityCapabilities";
-import { useActiveWorkContext } from "@/hooks/useActiveWorkContext";
+import { useActiveWorkContext, AccessMode } from "@/hooks/useActiveWorkContext";
 import { FacilityCapability } from "@/contexts/FacilityContext";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
