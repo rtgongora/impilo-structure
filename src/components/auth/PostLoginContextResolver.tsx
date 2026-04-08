@@ -52,10 +52,10 @@ export function PostLoginContextResolver({ onContextSelected }: PostLoginContext
   // Detect registry admin capabilities from system roles
   const registryAdminContexts = useMemo(() => {
     const contexts: { registry: string; registryLabel: string; icon: React.ElementType }[] = [];
-    if (!systemRoles) return contexts;
+    if (!systemRoles || systemRoles.length === 0) return contexts;
 
-    const roleNames = systemRoles.map(r => r.role_type || r.role);
-    if (roleNames.some(r => r === "hie_admin" || r === "admin")) {
+    const hasAdmin = isSuperAdmin || hasSystemRole('system_superadmin');
+    if (hasAdmin) {
       contexts.push(
         { registry: "vito", registryLabel: "Client Registry (VITO)", icon: Users },
         { registry: "varapi", registryLabel: "Provider Registry (VARAPI)", icon: Stethoscope },
@@ -65,7 +65,7 @@ export function PostLoginContextResolver({ onContextSelected }: PostLoginContext
       );
     }
     return contexts;
-  }, [systemRoles]);
+  }, [systemRoles, isSuperAdmin, hasSystemRole]);
 
   // Count available contexts
   const contextCount = useMemo(() => {
