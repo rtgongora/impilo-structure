@@ -515,3 +515,75 @@ function SupervisorWorkspace({ facilityName }: { facilityName: string }) {
     </>
   );
 }
+
+// ─── Casualty (Emergency Department) ───
+function CasualtyWorkspace() {
+  return (
+    <>
+      <div className="grid grid-cols-4 gap-3">
+        <StatCard label="Resus Bay" value={1} icon={Radio} color="text-red-500" />
+        <StatCard label="Acute Area" value={6} icon={AlertTriangle} color="text-orange-500" />
+        <StatCard label="Sub-Acute" value={9} icon={Users} />
+        <StatCard label="4hr Breaches" value={3} icon={Clock} color="text-red-500" />
+      </div>
+      <Card>
+        <CardHeader className="pb-3"><CardTitle className="text-base">Casualty / ED Board</CardTitle></CardHeader>
+        <CardContent className="space-y-2">
+          {[
+            { name: "Tafadzwa Chinyama", complaint: "Chest pain", triage: "Red", time: "08:12", area: "Resus" },
+            { name: "Rumbidzai Moyo", complaint: "RTA — limb injuries", triage: "Orange", time: "08:45", area: "Acute" },
+            { name: "Blessing Ncube", complaint: "Abdominal pain", triage: "Yellow", time: "09:20", area: "Sub-Acute" },
+            { name: "Chipo Dube", complaint: "Laceration — hand", triage: "Green", time: "09:55", area: "Minor" },
+          ].map((p, i) => (
+            <div key={i} className="flex items-center justify-between p-3 rounded-lg border border-border">
+              <div className="flex items-center gap-3">
+                <Badge variant={p.triage === "Red" ? "destructive" : "outline"} className="text-[10px] w-14 justify-center">{p.triage}</Badge>
+                <div>
+                  <p className="text-sm font-medium">{p.name}</p>
+                  <p className="text-xs text-muted-foreground">{p.complaint} • {p.area} • {p.time}</p>
+                </div>
+              </div>
+              <Button size="sm" variant={p.triage === "Red" ? "destructive" : "outline"} className="h-7 text-xs" onClick={() => toast.success(`Attending ${p.name}`)}>
+                {p.triage === "Red" ? "RESUS" : "Assess"}
+              </Button>
+            </div>
+          ))}
+        </CardContent>
+      </Card>
+    </>
+  );
+}
+
+// ─── Procedure Room ───
+function ProcedureRoomWorkspace() {
+  return (
+    <>
+      <div className="grid grid-cols-4 gap-3">
+        <StatCard label="Scheduled" value={5} icon={Syringe} />
+        <StatCard label="In Progress" value={1} icon={Activity} color="text-blue-500" />
+        <StatCard label="Recovery" value={2} icon={Heart} color="text-green-500" />
+        <StatCard label="Completed Today" value={3} icon={FileText} />
+      </div>
+      <Card>
+        <CardHeader className="pb-3"><CardTitle className="text-base">Procedure Schedule</CardTitle></CardHeader>
+        <CardContent className="space-y-2">
+          {[
+            { procedure: "Incision & Drainage", patient: "Munyaradzi Banda", time: "08:30", room: "Proc Room 1", status: "completed" },
+            { procedure: "Wound Debridement", patient: "Tatenda Zvobgo", time: "10:00", room: "Proc Room 1", status: "in-progress" },
+            { procedure: "Punch Biopsy", patient: "Nyasha Mutasa", time: "11:30", room: "Proc Room 2", status: "scheduled" },
+            { procedure: "Joint Aspiration", patient: "Kudzai Maposa", time: "14:00", room: "Proc Room 1", status: "scheduled" },
+            { procedure: "Conscious Sedation — Reduction", patient: "Rudo Chigwe", time: "15:00", room: "Proc Room 2", status: "scheduled" },
+          ].map((c, i) => (
+            <div key={i} className="flex items-center justify-between p-3 rounded-lg border border-border">
+              <div>
+                <p className="text-sm font-medium">{c.procedure}</p>
+                <p className="text-xs text-muted-foreground">{c.patient} • {c.time} • {c.room}</p>
+              </div>
+              <Badge variant={c.status === "completed" ? "secondary" : c.status === "in-progress" ? "default" : "outline"} className="text-[10px]">{c.status}</Badge>
+            </div>
+          ))}
+        </CardContent>
+      </Card>
+    </>
+  );
+}
