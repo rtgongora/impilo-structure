@@ -19,10 +19,10 @@ import {
   Users, Stethoscope, Building2, Shield, BookOpen, Search,
   ClipboardList, CheckCircle2, XCircle, Clock, Eye, FileText,
   AlertTriangle, ArrowLeft, Lock, History, BarChart3, Plus,
-  GitMerge, UserCheck, Loader2,
+  GitMerge, UserCheck, Loader2, MapPin, Store,
 } from "lucide-react";
 
-type RegistryType = "vito" | "varapi" | "tuso" | "tshepo" | "zibo";
+type RegistryType = "vito" | "varapi" | "tuso" | "tshepo" | "zibo" | "indawo" | "msika";
 type ChangeRequestStatus = "submitted" | "under_review" | "approved" | "rejected" | "escalated";
 
 interface ChangeRequest {
@@ -44,6 +44,8 @@ const REGISTRY_CONFIG: Record<RegistryType, { label: string; fullLabel: string; 
   tuso: { label: "TUSO", fullLabel: "Facility Registry", icon: Building2, color: "text-amber-600", bg: "bg-amber-500/10" },
   tshepo: { label: "TSHEPO", fullLabel: "Trust & IAM", icon: Shield, color: "text-indigo-600", bg: "bg-indigo-500/10" },
   zibo: { label: "ZIBO", fullLabel: "Terminology", icon: BookOpen, color: "text-purple-600", bg: "bg-purple-500/10" },
+  indawo: { label: "INDAWO", fullLabel: "Site & Premises Registry", icon: MapPin, color: "text-emerald-600", bg: "bg-emerald-500/10" },
+  msika: { label: "MSIKA", fullLabel: "Products & Services Registry", icon: Store, color: "text-pink-600", bg: "bg-pink-500/10" },
 };
 
 const MOCK_CHANGE_REQUESTS: ChangeRequest[] = [
@@ -53,6 +55,10 @@ const MOCK_CHANGE_REQUESTS: ChangeRequest[] = [
   { id: "CR-004", title: "Bulk import — ICD-11 code system update", description: "Import 245 new ICD-11 codes from WHO 2026 release.", submittedBy: "System", submittedAt: "2d ago", status: "under_review", priority: "high", registry: "zibo", changeType: "bulk_import" },
   { id: "CR-005", title: "Privilege elevation — Emergency super-admin", description: "Temporary elevation for T. Banda to resolve account lockout affecting 12 users.", submittedBy: "S. Moyo", submittedAt: "30m ago", status: "submitted", priority: "critical", registry: "tshepo", changeType: "privilege_elevation" },
   { id: "CR-006", title: "Identity dispute resolution", description: "Client claims record belongs to different person. Requires verification.", submittedBy: "K. Nkomo", submittedAt: "6h ago", status: "submitted", priority: "normal", registry: "vito", changeType: "dispute" },
+  { id: "CR-007", title: "Register new premises — Mbare Market", description: "Register Mbare Musika Market as a regulated food premises under Harare City Council jurisdiction.", submittedBy: "P. Makoni", submittedAt: "3h ago", status: "submitted", priority: "normal", registry: "indawo", changeType: "create" },
+  { id: "CR-008", title: "Decommission water point — Epworth Well #3", description: "Water point condemned after contamination test. Mark as decommissioned with effective date.", submittedBy: "T. Nyoni", submittedAt: "1d ago", status: "under_review", priority: "high", registry: "indawo", changeType: "status_change" },
+  { id: "CR-009", title: "New tariff schedule — Surgical consumables 2026", description: "Publish updated tariff schedule for surgical consumables effective Q3 2026.", submittedBy: "M. Banda", submittedAt: "5h ago", status: "submitted", priority: "high", registry: "msika", changeType: "tariff_update" },
+  { id: "CR-010", title: "Product catalogue update — Essential medicines list", description: "Add 18 new items from WHO Model List of Essential Medicines 2026 to national catalogue.", submittedBy: "System", submittedAt: "2d ago", status: "submitted", priority: "normal", registry: "msika", changeType: "catalogue_update" },
 ];
 
 interface RegistryAdminWorkspaceProps {
