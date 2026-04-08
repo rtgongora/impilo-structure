@@ -129,8 +129,10 @@ const Auth = () => {
       <div className="min-h-screen flex items-center justify-center bg-background p-4">
         <div className="w-full max-w-lg">
           <AboveSiteContextSelection
+            roles={[]}
+            availableContexts={[]}
             onContextSelected={handleAboveSiteContextSelected}
-            onCancel={() => setPhase("context-resolver")}
+            onBack={() => setPhase("context-resolver")}
           />
         </div>
       </div>
@@ -142,7 +144,7 @@ const Auth = () => {
     return (
       <div className="min-h-screen flex items-center justify-center bg-background p-4">
         <div className="w-full max-w-md">
-          <SystemMaintenanceAuth onCancel={() => setPhase("sign-in")} />
+          <SystemMaintenanceAuth onBack={() => setPhase("sign-in")} />
         </div>
       </div>
     );
