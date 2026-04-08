@@ -60,6 +60,8 @@ export function PostLoginContextResolver({ onContextSelected }: PostLoginContext
         { registry: "vito", registryLabel: "Client Registry (VITO)", icon: Users },
         { registry: "varapi", registryLabel: "Provider Registry (VARAPI)", icon: Stethoscope },
         { registry: "tuso", registryLabel: "Facility Registry (TUSO)", icon: Building2 },
+        { registry: "indawo", registryLabel: "Site & Premises Registry (INDAWO)", icon: Globe },
+        { registry: "msika", registryLabel: "Products & Services Registry (MSIKA)", icon: Star },
         { registry: "tshepo", registryLabel: "Trust & IAM (TSHEPO)", icon: Shield },
         { registry: "zibo", registryLabel: "Terminology (ZIBO)", icon: BookOpen },
       );
