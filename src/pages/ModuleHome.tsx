@@ -704,9 +704,6 @@ export default function ModuleHome() {
                   <Button variant="outline" className="h-14 flex items-center justify-center gap-2 text-base rounded-xl hover:bg-emerald-600 hover:text-white group" onClick={() => navigate("/pharmacy")}>
                     <Pill className="h-5 w-5 text-emerald-600 group-hover:text-white" /> Prescribe
                   </Button>
-                  <Button variant="outline" className="h-14 flex items-center justify-center gap-2 text-base rounded-xl hover:bg-green-500 hover:text-white group" onClick={() => navigate("/registration")}>
-                    <UserPlus className="h-5 w-5 text-green-500 group-hover:text-white" /> Client Intake
-                  </Button>
                   <Button variant="outline" className="h-14 flex items-center justify-center gap-2 text-base rounded-xl hover:bg-purple-500 hover:text-white group" onClick={() => navigate("/lab")}>
                     <TestTube2 className="h-5 w-5 text-purple-500 group-hover:text-white" /> Lab
                   </Button>
