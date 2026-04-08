@@ -131,14 +131,14 @@ export function ExpandableCategoryCard({
                     setIsOpen(false);
                   }}
                 >
-                  <CardContent className="p-4">
+                  <CardContent className="p-5">
                     <div className="flex flex-col items-center gap-3 text-center">
-                      <div className={cn("w-12 h-12 shrink-0 rounded-2xl flex items-center justify-center shadow-sm", module.color)}>
-                        <module.icon className="h-5 w-5 text-white" />
+                      <div className={cn("w-14 h-14 shrink-0 rounded-2xl flex items-center justify-center shadow-sm", module.color)}>
+                        <module.icon className="h-6 w-6 text-white" />
                       </div>
                       <div className="min-w-0 w-full">
-                        <p className="text-sm font-semibold truncate">{module.label}</p>
-                        <p className="text-xs text-muted-foreground line-clamp-2">{module.description}</p>
+                        <p className="text-base font-semibold truncate">{module.label}</p>
+                        <p className="text-sm text-muted-foreground line-clamp-2">{module.description}</p>
                       </div>
                       {module.roles && module.roles.length > 0 && (
                         <Lock className="h-3.5 w-3.5 text-muted-foreground/50 shrink-0" />
