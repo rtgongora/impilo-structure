@@ -138,7 +138,7 @@ const categoryColors: Record<string, string> = {
   "ai-intelligence": "bg-cyan-600",
   "experience": "bg-teal-600",
   "oversight-analytics": "bg-violet-500",
-  "platform-admin": "bg-slate-600",
+  "platform-admin": "bg-slate-700",
   "support": "bg-teal-500",
 };
 
