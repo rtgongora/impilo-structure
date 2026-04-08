@@ -621,22 +621,22 @@ export default function ModuleHome() {
                       {activeContext?.facilityName || "No workspace"}
                     </Badge>
                   </div>
-                  <div className="flex flex-wrap gap-2">
+                  <div className="grid grid-cols-2 lg:grid-cols-4 gap-2">
                     <Button
-                      className="h-16 px-8 flex items-center gap-3 text-lg font-semibold bg-orange-500 hover:bg-orange-600 text-white shadow-md rounded-xl"
+                      className="h-14 flex items-center justify-center gap-2 text-base font-semibold bg-orange-500 hover:bg-orange-600 text-white shadow-md rounded-xl"
                       onClick={() => navigate("/queue")}
                     >
-                      <Users className="h-6 w-6" />
+                      <Users className="h-5 w-5" />
                       Queues & Wards
                     </Button>
-                    <Button variant="outline" className="h-14 px-6 flex items-center gap-2 text-base rounded-xl" onClick={() => navigate("/workspace-management")}>
-                      <Settings className="h-5 w-5 text-muted-foreground" /> Manage
+                    <Button className="h-14 flex items-center justify-center gap-2 text-base rounded-xl bg-green-500 hover:bg-green-600 text-white shadow-sm" onClick={() => navigate("/registration")}>
+                      <UserPlus className="h-5 w-5" /> Client Intake
                     </Button>
-                    <Button variant="outline" className="h-14 px-6 flex items-center gap-2 text-base rounded-xl" onClick={() => navigate("/operations")}>
+                    <Button variant="outline" className="h-14 flex items-center justify-center gap-2 text-base rounded-xl" onClick={() => navigate("/operations")}>
                       <BarChart3 className="h-5 w-5 text-muted-foreground" /> Operations
                     </Button>
-                    <Button className="h-14 px-6 flex items-center gap-2 text-base rounded-xl bg-green-500 hover:bg-green-600 text-white shadow-sm" onClick={() => navigate("/registration")}>
-                      <UserPlus className="h-5 w-5" /> Client Intake
+                    <Button variant="outline" className="h-14 flex items-center justify-center gap-2 text-base rounded-xl" onClick={() => navigate("/workspace-management")}>
+                      <Settings className="h-5 w-5 text-muted-foreground" /> Manage
                     </Button>
                   </div>
                   <div className="mt-4 grid grid-cols-3 gap-3 text-center">
