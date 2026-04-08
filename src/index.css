@@ -317,7 +317,7 @@
 
   /* Page container - full height minus header */
   .page-container {
-    @apply h-[calc(100vh-48px)] flex flex-col overflow-hidden;
+    @apply h-[calc(100vh-56px)] flex flex-col overflow-hidden;
   }
 
   /* Scrollable content area */
@@ -412,7 +412,7 @@
 
   /* Header compact */
   .header-compact {
-    @apply h-10 px-3 flex items-center justify-between border-b shrink-0;
+    @apply h-12 px-5 flex items-center justify-between border-b shrink-0;
   }
 
   .header-title {

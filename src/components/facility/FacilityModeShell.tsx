@@ -86,7 +86,7 @@ export function FacilityModeShell({
   return (
     <div className="h-screen flex flex-col overflow-hidden bg-background">
       {/* Facility Mode Top Bar */}
-      <div className="h-10 min-h-[2.5rem] shrink-0 bg-card border-b border-border flex items-center justify-between px-3 z-50">
+      <div className="h-12 min-h-[3rem] shrink-0 bg-card border-b border-border flex items-center justify-between px-5 z-50">
         <div className="flex items-center gap-3">
           <img src={impiloLogo} alt="Impilo" className="h-5 w-auto" />
           <div className="h-4 w-px bg-border" />

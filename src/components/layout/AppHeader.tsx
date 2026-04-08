@@ -17,7 +17,7 @@ export function AppHeader({ title }: AppHeaderProps) {
   const isDashboard = location.pathname === "/dashboard";
 
   return (
-    <header className="h-12 bg-card border-b border-border flex items-center justify-between px-4 shrink-0">
+    <header className="h-14 min-h-[3.5rem] bg-card border-b border-border flex items-center justify-between px-5 shrink-0">
       {/* Left: Navigation & Title */}
       <div className="flex items-center gap-2">
         {!isHomePage && (
