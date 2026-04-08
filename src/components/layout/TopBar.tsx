@@ -71,9 +71,9 @@ export function TopBar() {
 
 
   return (
-    <header className="h-16 min-h-[4rem] shrink-0 bg-topbar-bg text-topbar-foreground flex items-center justify-between px-5 border-b border-topbar-bg/20 shadow-sm">
+    <header className="h-16 min-h-[4rem] shrink-0 bg-topbar-bg text-topbar-foreground flex items-center px-5 border-b border-topbar-bg/20 shadow-sm">
       {/* Left: Back, Home, Logo & Actions */}
-      <div className="flex items-center gap-2 min-w-0">
+      <div className="flex items-center gap-2 min-w-0 flex-1">
         {/* Navigation Buttons */}
         <div className="flex items-center gap-1">
           <Button
@@ -103,7 +103,7 @@ export function TopBar() {
           <>
             <div className="h-6 w-px bg-topbar-muted/30" />
             <TooltipProvider delayDuration={200}>
-               <nav className="flex items-center gap-1">
+               <nav className="flex items-center gap-1 flex-1">
                 {TOP_BAR_ACTIONS.map((action) => {
                   const Icon = iconMap[action.icon];
                   const isActive = activeTopBarAction === action.id;

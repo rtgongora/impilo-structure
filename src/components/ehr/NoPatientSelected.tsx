@@ -319,52 +319,67 @@ export function NoPatientSelected() {
           </Card>
         </div>
 
+        {/* Find Patient - Prominent Search Bar */}
+        <Card className="bg-muted/30 border-border">
+          <CardContent className="p-4 flex items-center gap-4">
+            <div className="h-11 w-11 rounded-xl bg-primary/10 flex items-center justify-center shrink-0">
+              <Search className="h-5 w-5 text-primary" />
+            </div>
+            <div className="flex-1">
+              <h3 className="font-semibold text-base">Find Patient</h3>
+              <p className="text-sm text-muted-foreground">Search by name, ID, or MRN</p>
+            </div>
+            <Button onClick={() => navigate("/patients")} className="shrink-0">
+              <Search className="h-4 w-4 mr-2" />
+              Patient Search
+            </Button>
+          </CardContent>
+        </Card>
+
         {/* Main Work Area with Tabs */}
         <div className="flex-1 min-h-0">
           <Tabs value={activeTab} onValueChange={setActiveTab} className="h-full flex flex-col">
-            <ScrollArea className="w-full">
-              <TabsList className="w-fit flex-nowrap">
-                <TabsTrigger value="queues" className="gap-1.5 whitespace-nowrap">
-                  <Users className="h-4 w-4" />
-                  Queues
-                  <Badge variant="secondary" className="ml-1">{totalWaiting}</Badge>
-                </TabsTrigger>
-                <TabsTrigger value="results" className="gap-1.5 whitespace-nowrap">
-                  <FlaskConical className="h-4 w-4" />
-                  Results
-                  <Badge variant="secondary" className="ml-1">{mockResults.length}</Badge>
-                </TabsTrigger>
-                <TabsTrigger value="tasks" className="gap-1.5 whitespace-nowrap">
-                  <ClipboardList className="h-4 w-4" />
-                  Tasks
-                  <Badge variant="secondary" className="ml-1">{mockTasks.length}</Badge>
-                </TabsTrigger>
-                <TabsTrigger value="alerts" className="gap-1.5 whitespace-nowrap">
-                  <Bell className="h-4 w-4" />
-                  Alerts
-                  {mockAlerts.length > 0 && (
-                    <Badge variant="destructive" className="ml-1">{mockAlerts.length}</Badge>
-                  )}
-                </TabsTrigger>
-                <TabsTrigger value="referrals" className="gap-1.5 whitespace-nowrap">
-                  <Send className="h-4 w-4" />
-                  Referrals
-                  <Badge variant="secondary" className="ml-1">{mockReferrals.length}</Badge>
-                </TabsTrigger>
-                <TabsTrigger value="stock" className="gap-1.5 whitespace-nowrap">
-                  <Package className="h-4 w-4" />
-                  Stock
-                  {mockStockAlerts.filter(s => s.level === "Critical").length > 0 && (
-                    <Badge variant="destructive" className="ml-1">{mockStockAlerts.filter(s => s.level === "Critical").length}</Badge>
-                  )}
-                </TabsTrigger>
-                <TabsTrigger value="handoff" className="gap-1.5 whitespace-nowrap">
-                  <ArrowDownUp className="h-4 w-4" />
-                  Handoff
-                  <Badge variant="secondary" className="ml-1">{mockHandoffItems.length}</Badge>
-                </TabsTrigger>
-              </TabsList>
-            </ScrollArea>
+            <TabsList className="w-full justify-start flex-nowrap overflow-x-auto">
+              <TabsTrigger value="queues" className="gap-1.5 whitespace-nowrap flex-1">
+                <Users className="h-4 w-4" />
+                Queues
+                <Badge variant="secondary" className="ml-1">{totalWaiting}</Badge>
+              </TabsTrigger>
+              <TabsTrigger value="results" className="gap-1.5 whitespace-nowrap flex-1">
+                <FlaskConical className="h-4 w-4" />
+                Results
+                <Badge variant="secondary" className="ml-1">{mockResults.length}</Badge>
+              </TabsTrigger>
+              <TabsTrigger value="tasks" className="gap-1.5 whitespace-nowrap flex-1">
+                <ClipboardList className="h-4 w-4" />
+                Tasks
+                <Badge variant="secondary" className="ml-1">{mockTasks.length}</Badge>
+              </TabsTrigger>
+              <TabsTrigger value="alerts" className="gap-1.5 whitespace-nowrap flex-1">
+                <Bell className="h-4 w-4" />
+                Alerts
+                {mockAlerts.length > 0 && (
+                  <Badge variant="destructive" className="ml-1">{mockAlerts.length}</Badge>
+                )}
+              </TabsTrigger>
+              <TabsTrigger value="referrals" className="gap-1.5 whitespace-nowrap flex-1">
+                <Send className="h-4 w-4" />
+                Referrals
+                <Badge variant="secondary" className="ml-1">{mockReferrals.length}</Badge>
+              </TabsTrigger>
+              <TabsTrigger value="stock" className="gap-1.5 whitespace-nowrap flex-1">
+                <Package className="h-4 w-4" />
+                Stock
+                {mockStockAlerts.filter(s => s.level === "Critical").length > 0 && (
+                  <Badge variant="destructive" className="ml-1">{mockStockAlerts.filter(s => s.level === "Critical").length}</Badge>
+                )}
+              </TabsTrigger>
+              <TabsTrigger value="handoff" className="gap-1.5 whitespace-nowrap flex-1">
+                <ArrowDownUp className="h-4 w-4" />
+                Handoff
+                <Badge variant="secondary" className="ml-1">{mockHandoffItems.length}</Badge>
+              </TabsTrigger>
+            </TabsList>
 
             {/* Queues Tab */}
             <TabsContent value="queues" className="flex-1 mt-4 overflow-auto">
@@ -469,21 +484,6 @@ export function NoPatientSelected() {
                     </Card>
                   ))}
 
-                  {/* Quick Actions Card */}
-                  <Card className="border-dashed bg-muted/20">
-                    <CardContent className="p-6 flex flex-col items-center justify-center h-full text-center gap-4">
-                      <div className="h-12 w-12 rounded-full bg-muted flex items-center justify-center">
-                        <Search className="h-6 w-6 text-muted-foreground" />
-                      </div>
-                      <div>
-                        <h3 className="font-medium">Find Patient</h3>
-                        <p className="text-sm text-muted-foreground">Search by name, ID, or MRN</p>
-                      </div>
-                      <Button variant="outline" onClick={() => navigate("/patients")}>
-                        Patient Search
-                      </Button>
-                    </CardContent>
-                  </Card>
                 </div>
               )}
             </TabsContent>
