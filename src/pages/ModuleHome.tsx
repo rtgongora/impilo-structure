@@ -668,30 +668,36 @@ export default function ModuleHome() {
                 </div>
               </div>
 
-              {/* Quick Access */}
+              {/* Quick Access - Full Width */}
               <div className="bg-card border rounded-2xl p-6 shadow-sm flex-shrink-0">
                 <h3 className="text-xl font-semibold mb-4 flex items-center gap-2">
                   <Zap className="h-6 w-6 text-amber-500" />
                   Quick Access
                 </h3>
-                <div className="grid grid-cols-6 gap-3">
-                  <Button variant="outline" className="h-16 flex items-center justify-center gap-2.5 text-base font-medium rounded-xl hover:bg-red-600 hover:text-white group" onClick={() => navigate("/encounter")}>
-                    <FileHeart className="h-5 w-5 text-red-600 group-hover:text-white shrink-0" /> EHR
+                <div className="grid grid-cols-3 md:grid-cols-6 gap-3">
+                  <Button variant="outline" className="h-[4.5rem] flex flex-col items-center justify-center gap-1.5 text-sm font-semibold rounded-xl hover:bg-red-600 hover:text-white hover:border-red-600 group transition-all" onClick={() => navigate("/encounter")}>
+                    <FileHeart className="h-6 w-6 text-red-600 group-hover:text-white shrink-0" />
+                    <span>EHR</span>
                   </Button>
-                  <Button variant="outline" className="h-16 flex items-center justify-center gap-2.5 text-base font-medium rounded-xl hover:bg-primary hover:text-primary-foreground group" onClick={() => navigate("/dashboard")}>
-                    <ClipboardList className="h-5 w-5 text-primary group-hover:text-primary-foreground shrink-0" /> Dashboard
+                  <Button variant="outline" className="h-[4.5rem] flex flex-col items-center justify-center gap-1.5 text-sm font-semibold rounded-xl hover:bg-primary hover:text-primary-foreground hover:border-primary group transition-all" onClick={() => navigate("/dashboard")}>
+                    <ClipboardList className="h-6 w-6 text-primary group-hover:text-primary-foreground shrink-0" />
+                    <span>Dashboard</span>
                   </Button>
-                  <Button variant="outline" className="h-16 flex items-center justify-center gap-2.5 text-base font-medium rounded-xl hover:bg-emerald-600 hover:text-white group" onClick={() => navigate("/pharmacy")}>
-                    <Pill className="h-5 w-5 text-emerald-600 group-hover:text-white shrink-0" /> Prescribe
+                  <Button variant="outline" className="h-[4.5rem] flex flex-col items-center justify-center gap-1.5 text-sm font-semibold rounded-xl hover:bg-emerald-600 hover:text-white hover:border-emerald-600 group transition-all" onClick={() => navigate("/pharmacy")}>
+                    <Pill className="h-6 w-6 text-emerald-600 group-hover:text-white shrink-0" />
+                    <span>Prescribe</span>
                   </Button>
-                  <Button variant="outline" className="h-16 flex items-center justify-center gap-2.5 text-base font-medium rounded-xl hover:bg-purple-500 hover:text-white group" onClick={() => navigate("/lab")}>
-                    <TestTube2 className="h-5 w-5 text-purple-500 group-hover:text-white shrink-0" /> Lab
+                  <Button variant="outline" className="h-[4.5rem] flex flex-col items-center justify-center gap-1.5 text-sm font-semibold rounded-xl hover:bg-purple-500 hover:text-white hover:border-purple-500 group transition-all" onClick={() => navigate("/lab")}>
+                    <TestTube2 className="h-6 w-6 text-purple-500 group-hover:text-white shrink-0" />
+                    <span>Lab</span>
                   </Button>
-                  <Button variant="outline" className="h-16 flex items-center justify-center gap-2.5 text-base font-medium rounded-xl hover:bg-rose-500 hover:text-white group" onClick={() => navigate("/radiology")}>
-                    <Scan className="h-5 w-5 text-rose-500 group-hover:text-white shrink-0" /> Radiology
+                  <Button variant="outline" className="h-[4.5rem] flex flex-col items-center justify-center gap-1.5 text-sm font-semibold rounded-xl hover:bg-rose-500 hover:text-white hover:border-rose-500 group transition-all" onClick={() => navigate("/radiology")}>
+                    <Scan className="h-6 w-6 text-rose-500 group-hover:text-white shrink-0" />
+                    <span>Radiology</span>
                   </Button>
-                  <Button variant="outline" className="h-16 flex items-center justify-center gap-2.5 text-base font-medium rounded-xl hover:bg-orange-500 hover:text-white group" onClick={() => navigate("/scheduling")}>
-                    <Calendar className="h-5 w-5 text-orange-500 group-hover:text-white shrink-0" /> Bookings
+                  <Button variant="outline" className="h-[4.5rem] flex flex-col items-center justify-center gap-1.5 text-sm font-semibold rounded-xl hover:bg-orange-500 hover:text-white hover:border-orange-500 group transition-all" onClick={() => navigate("/scheduling")}>
+                    <Calendar className="h-6 w-6 text-orange-500 group-hover:text-white shrink-0" />
+                    <span>Bookings</span>
                   </Button>
                 </div>
               </div>
