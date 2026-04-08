@@ -218,11 +218,13 @@ const workModuleCategories: ModuleCategory[] = [
   {
     id: "facility-ops",
     title: "Facility Operations",
-    description: "Control tower, shift management, handoffs, and workforce",
+    description: "Control tower, shift management, handoffs, document management, and ERP",
     modules: [
       { id: "control-tower", label: "Control Tower", description: "Real-time facility operations", icon: Gauge, path: "/operations?tab=control-tower", color: "bg-rose-600", roles: ["admin", "nurse", "doctor"] },
       { id: "operations", label: "Operations & Roster", description: "Shifts, roster & workforce", icon: Clock, path: "/operations", color: "bg-cyan-600" },
       { id: "handoff", label: "Shift Handoff", description: "Care continuity reports", icon: ArrowRightLeft, path: "/handoff", color: "bg-teal-500", roles: ["doctor", "nurse", "admin"], capabilities: ["inpatient", "emergency_24hr"] },
+      { id: "landela", label: "Landela DMS", description: "Document management & scanning", icon: ScanLine, path: "/landela", color: "bg-cyan-600" },
+      { id: "odoo", label: "Odoo ERP", description: "Enterprise resource planning", icon: Building2, path: "/odoo", color: "bg-gray-600", roles: ["admin"] },
     ],
   },
   // ─── COMMUNICATION & COORDINATION ───
@@ -413,18 +415,15 @@ const workModuleCategories: ModuleCategory[] = [
       { id: "reports", label: "Reports & Analytics", description: "Dashboards & insights", icon: BarChart3, path: "/reports", color: "bg-violet-500" },
     ],
   },
-  // ─── PLATFORM ADMINISTRATION ───
+  // ─── GOVERNANCE & CONFIGURATION ───
   {
     id: "platform-admin",
-    title: "Platform Administration",
-    description: "System settings, document management, ERP, and registry governance",
+    title: "Governance & Configuration",
+    description: "System settings, security, and registry governance",
     roles: ['admin', 'hie_admin'],
     modules: [
       { id: "admin", label: "System Admin", description: "Users, security & settings", icon: Settings, path: "/admin", color: "bg-gray-700", roles: ["admin"] },
       { id: "registry-management", label: "Registry Management", description: "Manage HIE registries", icon: Database, path: "/registry-management", color: "bg-purple-600", roles: ["admin", "hie_admin"] },
-      { id: "landela", label: "Landela DMS", description: "Document management & scanning", icon: ScanLine, path: "/landela", color: "bg-cyan-600" },
-      { id: "odoo", label: "Odoo ERP", description: "ERP integration", icon: Building2, path: "/odoo", color: "bg-gray-600", roles: ["admin"] },
-      { id: "sync", label: "Offline Sync", description: "Conflict resolution & sync status", icon: ArrowRightLeft, path: "/admin", color: "bg-slate-600", roles: ["admin"] },
     ],
   },
   // ─── HELP & SUPPORT ───
@@ -436,6 +435,7 @@ const workModuleCategories: ModuleCategory[] = [
       { id: "help", label: "Help Desk", description: "FAQs, guides & documentation", icon: HelpCircle, path: "/help", color: "bg-teal-500" },
       { id: "profile", label: "Profile Settings", description: "Your account & preferences", icon: User, path: "/profile", color: "bg-slate-500" },
       { id: "install", label: "Install App", description: "Download PWA for offline use", icon: Download, path: "/install", color: "bg-green-600" },
+      { id: "sync", label: "Offline Sync", description: "Conflict resolution & sync status", icon: ArrowRightLeft, path: "/admin", color: "bg-slate-600", roles: ["admin"] },
     ],
   },
 ];
