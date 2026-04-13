@@ -100,6 +100,9 @@ export const SystemMaintenanceAuth: React.FC<SystemMaintenanceAuthProps> = ({ on
         description: "Zero-restriction access enabled. DEV/TEST ONLY." 
       });
 
+      // Set maintenance flag so ModuleHome auto-selects support context
+      sessionStorage.setItem("impilo_maintenance_mode", "true");
+
       navigate("/");
     } catch (error) {
       console.error("Dev login error:", error);
