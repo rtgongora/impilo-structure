@@ -229,7 +229,7 @@ const Auth = () => {
 
           <UnifiedSignIn
             onAuthenticated={() => setPhase("context-resolver")}
-            onShowMaintenance={showMaintenanceOption ? () => setPhase("system-maintenance") : undefined}
+            onShowMaintenance={() => setPhase("system-maintenance")}
           />
         </div>
       </div>
