@@ -2,6 +2,7 @@ import { useState, useEffect, useMemo } from "react";
 import { useAuth } from "@/contexts/AuthContext";
 import { useNavigate } from "react-router-dom";
 import { useUserRoles, ModuleAccessRole } from "@/hooks/useUserRoles";
+import { useSystemRoles } from "@/hooks/useSystemRoles";
 import { useModuleAvailability } from "@/hooks/useFacilityCapabilities";
 import { useActiveWorkContext, AccessMode } from "@/hooks/useActiveWorkContext";
 import { FacilityCapability } from "@/contexts/FacilityContext";
@@ -276,6 +277,7 @@ export default function ModuleHome() {
   const { profile, signOut } = useAuth();
   const navigate = useNavigate();
   const { canAccessModule, isAdmin, loading: rolesLoading } = useUserRoles();
+  const { isSuperAdmin, isDevTester, loading: systemRolesLoading } = useSystemRoles();
   const { 
     activeContext, 
     hasActiveContext, 
@@ -337,6 +339,22 @@ export default function ModuleHome() {
       setActiveTab("personal");
     }
   }, [profile?.role]);
+
+  useEffect(() => {
+    if (hasActiveContext || systemRolesLoading) return;
+    if (sessionStorage.getItem("impilo_active_context")) return;
+
+    if (isSuperAdmin || isDevTester) {
+      selectSupportMode(undefined, undefined, "System maintenance access");
+      setActiveTab("work");
+    }
+  }, [
+    hasActiveContext,
+    systemRolesLoading,
+    isSuperAdmin,
+    isDevTester,
+    selectSupportMode,
+  ]);
 
   const getDisplayTitle = () => {
     const role = profile?.role;
