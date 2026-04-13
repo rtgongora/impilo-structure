@@ -252,7 +252,7 @@ export function UnifiedSignIn({ onAuthenticated, onShowMaintenance }: UnifiedSig
       </div>
 
       {/* Maintenance shortcut */}
-      {(showMaintenanceHint || onShowMaintenance) && showMaintenanceHint && (
+      {(showMaintenanceHint || onShowMaintenance) && (
         <Button
           variant="ghost"
           className="w-full text-amber-600 border border-amber-500/30 hover:bg-amber-500/10"
