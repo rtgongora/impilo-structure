@@ -2,6 +2,7 @@ import { useState, useEffect, useMemo } from "react";
 import { useAuth } from "@/contexts/AuthContext";
 import { useNavigate } from "react-router-dom";
 import { useUserRoles, ModuleAccessRole } from "@/hooks/useUserRoles";
+import { useSystemRoles } from "@/hooks/useSystemRoles";
 import { useModuleAvailability } from "@/hooks/useFacilityCapabilities";
 import { useActiveWorkContext, AccessMode } from "@/hooks/useActiveWorkContext";
 import { FacilityCapability } from "@/contexts/FacilityContext";
@@ -276,6 +277,7 @@ export default function ModuleHome() {
   const { profile, signOut } = useAuth();
   const navigate = useNavigate();
   const { canAccessModule, isAdmin, loading: rolesLoading } = useUserRoles();
+  const { isSuperAdmin, isDevTester, loading: systemRolesLoading } = useSystemRoles();
   const { 
     activeContext, 
     hasActiveContext, 
@@ -337,6 +339,24 @@ export default function ModuleHome() {
       setActiveTab("personal");
     }
   }, [profile?.role]);
+
+  useEffect(() => {
+    if (hasActiveContext || systemRolesLoading) return;
+    if (sessionStorage.getItem("impilo_active_context")) return;
+
+    if (isSuperAdmin || isDevTester) {
+      selectSupportMode(undefined, undefined, "System maintenance access");
+      setActiveTab("work");
+    }
+  }, [
+    hasActiveContext,
+    systemRolesLoading,
+    isSuperAdmin,
+    isDevTester,
+    selectSupportMode,
+  ]);
+
+  const shouldShowModuleGroups = hasActiveContext || (!systemRolesLoading && (isSuperAdmin || isDevTester));
 
   const getDisplayTitle = () => {
     const role = profile?.role;
@@ -580,7 +600,7 @@ export default function ModuleHome() {
             {/* My Work Tab */}
             <TabsContent value="work" className="mt-0 flex-1 flex flex-col gap-4 min-h-0 overflow-auto">
               {/* Show Workplace Selection Hub if no context selected */}
-              {!hasActiveContext ? (
+              {!shouldShowModuleGroups ? (
                 <WorkplaceSelectionHub
                   onFacilitySelect={selectFacility}
                   onAboveSiteSelect={selectAboveSite}
@@ -604,7 +624,7 @@ export default function ModuleHome() {
                       Workspaces
                     </h3>
                     <Badge variant="outline" className="text-xs">
-                      {activeContext?.facilityName || "No workspace"}
+                      {activeContext?.facilityName || (isSuperAdmin || isDevTester ? "System Support" : "No workspace")}
                     </Badge>
                   </div>
                   <div className="grid grid-cols-2 lg:grid-cols-4 gap-2">
