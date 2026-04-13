@@ -71,10 +71,15 @@ export function useSystemRoles(): UseSystemRolesReturn {
       // Cast to string since dev_tester is a new enum value that types haven't updated for yet
       const hasDevTesterRole = userRoles?.some(r => (r.role as string) === 'dev_tester');
 
+      // Also check maintenance mode flag and dev emails as fallback
+      const isMaintenanceSession = sessionStorage.getItem("impilo_maintenance_mode") === "true";
+      const devEmails = ['dev@impilo.health', 'admin@impilo.health', 'test@impilo.health'];
+      const isDevEmail = user.email ? devEmails.includes(user.email.toLowerCase()) : false;
+
       // Build system roles from available data
       const roles: SystemRoleAssignment[] = [];
 
-      if (hasAdminRole) {
+      if (hasAdminRole || (isMaintenanceSession && isDevEmail)) {
         roles.push({
           id: 'admin-role',
           user_id: user.id,
@@ -85,7 +90,7 @@ export function useSystemRoles(): UseSystemRolesReturn {
         });
       }
 
-      if (hasDevTesterRole) {
+      if (hasDevTesterRole || (isMaintenanceSession && isDevEmail)) {
         roles.push({
           id: 'dev-tester-role',
           user_id: user.id,
