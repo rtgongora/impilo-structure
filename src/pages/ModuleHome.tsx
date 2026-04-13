@@ -306,6 +306,9 @@ export default function ModuleHome() {
   });
   
   const [moduleSearch, setModuleSearch] = useState("");
+  const [isMaintenanceMode, setIsMaintenanceMode] = useState(
+    () => sessionStorage.getItem("impilo_maintenance_mode") === "true"
+  );
   
   // Also try to restore active context from session if set by context resolver
   useEffect(() => {
@@ -340,9 +343,11 @@ export default function ModuleHome() {
     }
   }, [profile?.role]);
 
-  const isMaintenanceMode = sessionStorage.getItem("impilo_maintenance_mode") === "true";
-
   useEffect(() => {
+    // Re-check maintenance flag on each render cycle
+    const flag = sessionStorage.getItem("impilo_maintenance_mode") === "true";
+    if (flag && !isMaintenanceMode) setIsMaintenanceMode(true);
+    
     if (hasActiveContext || systemRolesLoading) return;
     if (sessionStorage.getItem("impilo_active_context")) return;
 
