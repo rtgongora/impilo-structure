@@ -340,11 +340,13 @@ export default function ModuleHome() {
     }
   }, [profile?.role]);
 
+  const isMaintenanceMode = sessionStorage.getItem("impilo_maintenance_mode") === "true";
+
   useEffect(() => {
     if (hasActiveContext || systemRolesLoading) return;
     if (sessionStorage.getItem("impilo_active_context")) return;
 
-    if (isSuperAdmin || isDevTester) {
+    if (isMaintenanceMode || isSuperAdmin || isDevTester) {
       selectSupportMode(undefined, undefined, "System maintenance access");
       setActiveTab("work");
     }
@@ -354,9 +356,10 @@ export default function ModuleHome() {
     isSuperAdmin,
     isDevTester,
     selectSupportMode,
+    isMaintenanceMode,
   ]);
 
-  const shouldShowModuleGroups = hasActiveContext || (!systemRolesLoading && (isSuperAdmin || isDevTester));
+  const shouldShowModuleGroups = hasActiveContext || isMaintenanceMode || (!systemRolesLoading && (isSuperAdmin || isDevTester));
 
   const getDisplayTitle = () => {
     const role = profile?.role;
