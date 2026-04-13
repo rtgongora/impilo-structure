@@ -34,6 +34,7 @@ const Auth = () => {
   useEffect(() => {
     if (searchParams.get("mode") === "maintenance") {
       setShowMaintenanceOption(true);
+      sessionStorage.setItem("impilo_maintenance_mode", "true");
     }
   }, [searchParams]);
 
