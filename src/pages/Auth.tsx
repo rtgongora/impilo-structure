@@ -39,12 +39,17 @@ const Auth = () => {
 
   // When user becomes authenticated, move to context resolver
   useEffect(() => {
-    if (user && !loading && !aboveSiteLoading) {
-      if (phase === "sign-in") {
-        setPhase("context-resolver");
-      }
+    if (!user || loading || aboveSiteLoading) return;
+
+    if (phase === "system-maintenance") {
+      navigate("/", { replace: true });
+      return;
     }
-  }, [user, loading, aboveSiteLoading, phase]);
+
+    if (phase === "sign-in") {
+      setPhase("context-resolver");
+    }
+  }, [user, loading, aboveSiteLoading, phase, navigate]);
 
   // Handle context selection from the resolver
   const handleContextSelected = (ctx: OperationalContext) => {
