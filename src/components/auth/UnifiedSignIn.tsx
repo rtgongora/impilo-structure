@@ -256,7 +256,14 @@ export function UnifiedSignIn({ onAuthenticated, onShowMaintenance }: UnifiedSig
         <Button
           variant="ghost"
           className="w-full text-amber-600 border border-amber-500/30 hover:bg-amber-500/10"
-          onClick={onShowMaintenance}
+          onClick={() => {
+            if (onShowMaintenance) {
+              onShowMaintenance();
+            } else {
+              // showMaintenanceHint is true but no handler — navigate with mode param
+              window.location.href = `/auth?mode=maintenance`;
+            }
+          }}
         >
           <Wrench className="mr-2 h-4 w-4" />
           System Maintenance
