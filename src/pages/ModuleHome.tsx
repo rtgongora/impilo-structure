@@ -356,6 +356,8 @@ export default function ModuleHome() {
     selectSupportMode,
   ]);
 
+  const shouldShowModuleGroups = hasActiveContext || (!systemRolesLoading && (isSuperAdmin || isDevTester));
+
   const getDisplayTitle = () => {
     const role = profile?.role;
     const name = profile?.display_name || "User";
@@ -598,7 +600,7 @@ export default function ModuleHome() {
             {/* My Work Tab */}
             <TabsContent value="work" className="mt-0 flex-1 flex flex-col gap-4 min-h-0 overflow-auto">
               {/* Show Workplace Selection Hub if no context selected */}
-              {!hasActiveContext ? (
+              {!shouldShowModuleGroups ? (
                 <WorkplaceSelectionHub
                   onFacilitySelect={selectFacility}
                   onAboveSiteSelect={selectAboveSite}
@@ -622,7 +624,7 @@ export default function ModuleHome() {
                       Workspaces
                     </h3>
                     <Badge variant="outline" className="text-xs">
-                      {activeContext?.facilityName || "No workspace"}
+                      {activeContext?.facilityName || (isSuperAdmin || isDevTester ? "System Support" : "No workspace")}
                     </Badge>
                   </div>
                   <div className="grid grid-cols-2 lg:grid-cols-4 gap-2">
