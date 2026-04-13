@@ -560,7 +560,7 @@ export default function ModuleHome() {
       </header>
 
       {/* Main Content - Fill Screen */}
-      <main className="flex-1 flex flex-col overflow-hidden px-5 py-4">
+      <main className="flex-1 flex flex-col overflow-auto px-5 py-4">
         <div className="flex-1 flex flex-col w-full h-full">
           {/* Welcome Header - Only show when workspace is selected */}
           {hasActiveContext && (
