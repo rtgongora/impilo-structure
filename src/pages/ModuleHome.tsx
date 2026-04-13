@@ -348,10 +348,10 @@ export default function ModuleHome() {
     const flag = sessionStorage.getItem("impilo_maintenance_mode") === "true";
     if (flag && !isMaintenanceMode) setIsMaintenanceMode(true);
     
-    if (hasActiveContext || systemRolesLoading) return;
+    if (hasActiveContext) return;
     if (sessionStorage.getItem("impilo_active_context")) return;
 
-    if (isMaintenanceMode || isSuperAdmin || isDevTester) {
+    if (flag || isMaintenanceMode || (!systemRolesLoading && (isSuperAdmin || isDevTester))) {
       selectSupportMode(undefined, undefined, "System maintenance access");
       setActiveTab("work");
     }
