@@ -740,7 +740,7 @@ export default function ModuleHome() {
               </div>
 
               {/* Module Search + Categories */}
-              <section className="flex-1 min-h-0 flex flex-col gap-4">
+              <section className="flex flex-col gap-4">
                 {/* Module Search */}
                 <div className="relative flex-shrink-0">
                   <Search className="absolute left-4 top-1/2 -translate-y-1/2 h-5 w-5 text-muted-foreground" />
